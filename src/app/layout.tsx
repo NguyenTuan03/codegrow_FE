@@ -30,14 +30,14 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
                 <Toaster />
                 <AuthContext>
-                    {/* <ThemeProvider
+                    <ThemeProvider
                         attribute="class"
                         defaultTheme="system"
                         enableSystem
                         disableTransitionOnChange
-                    > */}
-                    {children}
-                    {/* </ThemeProvider> */}
+                    >
+                        {children}
+                    </ThemeProvider>
                 </AuthContext>
             </body>
         </html>
