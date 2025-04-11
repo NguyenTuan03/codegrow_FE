@@ -53,14 +53,14 @@ export default function Challenge() {
                 <div className="w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm">
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Hello World!</h1>
                     <p className="text-gray-600 text-sm mb-3">
-                        "Hello World!" program is a simple code that outputs Hello World! to the
-                        screen.
+                        `Hello World! program is a simple code that outputs Hello World! to the
+                        screen.``
                     </p>
                     <p className="text-gray-600 text-sm mb-3">
-                        It's often used to introduce a new programming language to a beginner.
+                        It`s often used to introduce a new programming language to a beginner.
                     </p>
                     <p className="text-gray-600 text-sm mb-3">
-                        Let's see Java "Hello World!" program,
+                        Let`s see Java `Hello World!`` program,
                     </p>
                     <div className="bg-[#2D2D2D] text-white p-4 rounded-lg mb-4">
                         <pre>
@@ -73,7 +73,7 @@ export default function Challenge() {
                                 <br />
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                 <span className="text-white">System.out.println(</span>
-                                <span className="text-green-400">"Hello world!"</span>
+                                <span className="text-green-400">`Hello world!`</span>
                                 <span className="text-white">);</span>
                                 <br />
                                 &nbsp;&nbsp;{'}'}
@@ -139,7 +139,7 @@ export default function Challenge() {
                                     <span className="text-orange-400">public static void</span>{' '}
                                     main(String[] args) {'{'}
                                     <br />
-                                    <span className="text-gray-500">// write code here</span>
+                                    <span className="text-gray-500"> `write code here` </span>
                                     <br />
                                     {'}'}
                                     <br />
@@ -205,12 +205,12 @@ export default function Challenge() {
                             </p>
                             <div className="bg-[#2D2D2D] text-white p-2 rounded-lg mt-2">
                                 <pre>
-                                    <code>System.out.println("Hello world!");</code>
+                                    <code>System.out.println(`Hello world!``);</code>
                                 </pre>
                             </div>
                             <div className="bg-[#2D2D2D] text-white p-2 rounded-lg mt-2">
                                 <pre>
-                                    <code>System.out.println("HELLO WORLD!");</code>
+                                    <code>System.out.println(`HELLO WORLD!``);</code>
                                 </pre>
                             </div>
                             <p className="text-sm text-gray-600 mt-2">
