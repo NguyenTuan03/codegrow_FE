@@ -10,7 +10,7 @@ const Layout = ({ children }: Props) => {
     return (
         <div>
             <Customerheader />
-            <div>{children}</div>
+            <div className='bg-[#EEF1EF]'>{children}</div>
             <Footer />
         </div>
     );
