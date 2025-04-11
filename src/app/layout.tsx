@@ -4,6 +4,7 @@ import './globals.css';
 import AuthContext from '@/lib/components/context/AuthContext';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { ModeToggle } from '@/components/mode-toggle';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -37,6 +38,7 @@ export default function RootLayout({
                         disableTransitionOnChange
                     >
                         {children}
+                        <ModeToggle />
                     </ThemeProvider>
                 </AuthContext>
             </body>
