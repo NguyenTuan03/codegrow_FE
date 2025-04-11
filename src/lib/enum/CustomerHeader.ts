@@ -5,7 +5,7 @@ export const CUSTOMER_HEADER = [
     },
     {
         name: 'Course',
-        href: '/customer/course',
+        href: '/customer/courses',
     },
     {
         name: 'Roadmap',
