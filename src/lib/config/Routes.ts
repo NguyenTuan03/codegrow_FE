@@ -10,4 +10,7 @@ export const Routes = {
     payment: '/customer/payment',
     profile: '/customer/profile',
     history: '/customer/history',
+    testdetail: '/customer/testdetail',
+    testresult: '/customer/result',
+    challenge: '/customer/challenge',
 };
