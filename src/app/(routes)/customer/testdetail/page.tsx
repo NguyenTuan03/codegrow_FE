@@ -161,11 +161,11 @@ export default function TestDetail() {
                     <Link href="/" className="text-gray-600 hover:text-gray-900">
                         <Home className="w-4 h-4" />
                     </Link>
-                    <span className="text-gray-600">></span>
+                    <span className="text-gray-600">${'>'}</span>
                     <Link href="/customer/test" className="text-gray-600 hover:text-gray-900">
                         Test
                     </Link>
-                    <span className="text-gray-600">></span>
+                    <span className="text-gray-600">${'>'}</span>
                     <span className="text-gray-900">{testTitle}</span>
                     <Badge className="ml-2 bg-blue-100 text-blue-800 text-xs">NEW</Badge>
                 </div>
