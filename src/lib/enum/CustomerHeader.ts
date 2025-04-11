@@ -1,20 +1,30 @@
-export const CUSTOMER_HEADER = [    
+export const CUSTOMER_HEADER = [
     {
-        name: 'Home'
+        name: 'Home',
+        href: '/',
     },
     {
-        name: 'Courese'
+        name: 'Course',
+        href: '/customer/course',
     },
     {
-        name: 'Roadmap'
+        name: 'Roadmap',
+        href: '/customer/roadmap',
     },
     {
-        name: 'More'
+        name: 'More',
+        href: '/customer/more',
     },
     {
-        name: 'Test'
+        name: 'Test',
+        href: '/customer/test',
     },
     {
-        name: 'Process'
+        name: 'Process',
+        href: '/customer/process',
     },
-]
+    {
+        name: 'Project',
+        href: '/customer/project',
+    },
+];
