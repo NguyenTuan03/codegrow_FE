@@ -3,18 +3,29 @@
 import Image from 'next/image';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Crown, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
-const tests = [
+// Define types for test items
+interface TestItem {
+    title: string;
+    description: string;
+    imageUrl: string;
+    isPremium: boolean;
+    isTaken: boolean;
+    testId: string;
+}
+
+const tests: TestItem[] = [
     {
         title: 'Kiểm tra kiến thức nền',
         description: 'Đánh giá trình độ hiểu biết ban đầu về một lĩnh vực...',
         imageUrl: '/hk1.png',
         isPremium: true,
         isTaken: false,
+        testId: 'knowledge-base-test',
     },
     {
         title: 'Kiểm tra học thuật',
@@ -22,6 +33,7 @@ const tests = [
         imageUrl: '/hk1.png',
         isPremium: true,
         isTaken: false,
+        testId: 'academic-test',
     },
     {
         title: 'Kiểm tra kiến thức Abap',
@@ -29,6 +41,7 @@ const tests = [
         imageUrl: '/hk1.png',
         isPremium: false,
         isTaken: false,
+        testId: 'abap-knowledge-test',
     },
     {
         title: 'Kiểm tra kiến thức nền',
@@ -36,6 +49,7 @@ const tests = [
         imageUrl: '/hk1.png',
         isPremium: false,
         isTaken: true,
+        testId: 'completed-test-1',
     },
     {
         title: 'Kiểm tra kiến thức nền',
@@ -43,6 +57,7 @@ const tests = [
         imageUrl: '/hk1.png',
         isPremium: false,
         isTaken: true,
+        testId: 'completed-test-2',
     },
     {
         title: 'Kiểm tra kiến thức nền',
@@ -50,6 +65,7 @@ const tests = [
         imageUrl: '/hk1.png',
         isPremium: false,
         isTaken: true,
+        testId: 'completed-test-3',
     },
 ];
 
@@ -123,21 +139,32 @@ export default function Test() {
                         <CardContent className="flex items-center justify-between p-0 mt-4">
                             <div className="space-y-2">
                                 {test.isTaken ? (
-                                    <>
-                                        <Button
-                                            variant="outline"
-                                            className="text-sm bg-[#c6f0e2] text-[#008060] border-none hover:bg-[#b2e9d3]"
-                                        >
-                                            Đã hoàn thành <CheckCircle className="ml-2 w-4 h-4" />
-                                        </Button>
-                                        <p className="text-xs text-[#008060] underline hover:opacity-80 cursor-pointer">
-                                            View Your Mark &gt;
-                                        </p>
-                                    </>
+                                    <div className="space-y-1">
+                                        <Link href={`/customer/result`} passHref>
+                                            <Button
+                                                variant="outline"
+                                                className="text-sm bg-[#c6f0e2] text-[#008060] border-none hover:bg-[#b2e9d3]"
+                                            >
+                                                Đã hoàn thành{' '}
+                                                <CheckCircle className="ml-2 w-4 h-4" />
+                                            </Button>
+                                        </Link>
+
+                                        <Link href={`/customer/result`} passHref>
+                                            <p className="text-xs ml-2 mt-2 text-[#008060] underline hover:opacity-80 cursor-pointer">
+                                                View Your Mark &gt;
+                                            </p>
+                                        </Link>
+                                    </div>
                                 ) : (
-                                    <Button className="text-sm bg-[#ef476f] hover:bg-[#e63956] text-white">
-                                        Làm Bài Thi
-                                    </Button>
+                                    <Link href={`/customer/testdetail`} passHref>
+                                        <Button
+                                            asChild
+                                            className="text-sm bg-[#ef476f] hover:bg-[#e63956] text-white"
+                                        >
+                                            <h1> Làm Bài Thi</h1>
+                                        </Button>
+                                    </Link>
                                 )}
                             </div>
 
