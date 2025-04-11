@@ -6,4 +6,8 @@ export const Routes = {
     test: '/customer/test',
     process: '/customer/process',
     project: '/customer/project',
+    upgrade: '/customer/upgrade',
+    payment: '/customer/payment',
+    profile: '/customer/profile',
+    history: '/customer/history',
 };
