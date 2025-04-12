@@ -13,7 +13,8 @@ export default function Page() {
             router.replace('/login');
             return;
         }
-
+        console.log("role 1st = ",auth.userAuth.role);
+        
         switch (auth.userAuth.role) {
             case 'admin':
                 router.replace('/admin');

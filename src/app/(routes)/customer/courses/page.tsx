@@ -79,7 +79,7 @@ export default function CoursesPage() {
 
                                 <div className="flex items-center justify-between">
                                     <Link
-                                        href="/customer/coursesdetail"
+                                        href={`/customer/courses/${course.title}`}
                                         className="w-full max-w-[150px]"
                                     >
                                         <Button

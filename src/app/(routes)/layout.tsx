@@ -28,7 +28,7 @@ const layout = ({ children }: Props) => {
 
     const { userAuth } = authContext;
     const role = userAuth?.role;
-
+    console.log('role =',role);    
     const renderSidebar = () => {
         switch (role) {
             case 'admin':

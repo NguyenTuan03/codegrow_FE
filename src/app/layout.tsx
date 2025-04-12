@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import AuthContext from '@/lib/components/context/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -29,15 +30,17 @@ export default function RootLayout({
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
                 <Toaster />
                 <AuthContext>
-                    {/* <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    > */}
-                    {children}
-                    {/* <ModeToggle /> */}
-                    {/* </ThemeProvider> */}
+                    <SidebarProvider>
+                        {/* <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        > */}
+                        {children}
+                        {/* <ModeToggle /> */}
+                        {/* </ThemeProvider> */}
+                    </SidebarProvider>                    
                 </AuthContext>
             </body>
         </html>
