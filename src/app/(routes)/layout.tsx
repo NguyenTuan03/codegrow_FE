@@ -10,6 +10,7 @@ import Mentorheader from '@/lib/components/layout/header/Mentorheader';
 import QAQCheader from '@/lib/components/layout/header/QAQCheader';
 import { AdminSidebar } from '@/lib/components/layout/sidebar/AdminSidebar';
 import { AdminHeader } from '@/lib/components/layout/header/Adminheader';
+import Footer from '@/lib/components/layout/footer/Page';
 
 type Props = {
     children: ReactNode;
@@ -58,6 +59,7 @@ const layout = ({ children }: Props) => {
             <div className="flex-1">
                 {renderHeader()}
                 <main>{children}</main>
+                <Footer />
             </div>
         </div>
     );
