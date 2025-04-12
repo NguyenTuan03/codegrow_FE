@@ -38,9 +38,14 @@ const AuthContext = ({ children }: Props) => {
                 }
             } else {
                 // If no user in localStorage, set a fake user for demo
+                // const fakeUser: User = {
+                //     id: '1',
+                //     role: 'customer',
+                //     fullname: 'Fake Customer',
+                // };
                 const fakeUser: User = {
                     id: '1',
-                    role: 'customer',
+                    role: 'admin',
                     fullname: 'Fake Customer',
                 };
                 setUserAuth(fakeUser);
