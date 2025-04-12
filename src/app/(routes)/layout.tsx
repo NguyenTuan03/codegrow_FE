@@ -1,29 +1,30 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-'use client'
+'use client';
 import React, { ReactNode, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import MentorSidebar from '@/lib/components/layout/sidebar/MentorSidebar';
 import QAQCSidebar from '@/lib/components/layout/sidebar/QAQCSidebar';
-import Adminheader from '@/lib/components/layout/header/Adminheader';
+
 import Mentorheader from '@/lib/components/layout/header/Mentorheader';
 import QAQCheader from '@/lib/components/layout/header/QAQCheader';
-import AdminSidebar from '@/lib/components/layout/sidebar/AdminSidebar';
+import { AdminSidebar } from '@/lib/components/layout/sidebar/AdminSidebar';
+import { AdminHeader } from '@/lib/components/layout/header/Adminheader';
 
 type Props = {
     children: ReactNode;
 };
 
 const layout = ({ children }: Props) => {
-    const router = useRouter()
+    const router = useRouter();
     const authContext = useContext(Auth);
 
     if (!authContext) {
-        console.log("not authentication");
-        router.push('/login')
+        console.log('not authentication');
+        router.push('/login');
         return null;
     }
-    
+
     const { userAuth } = authContext;
     const role = userAuth?.role;
 
@@ -42,7 +43,7 @@ const layout = ({ children }: Props) => {
     const renderHeader = () => {
         switch (role) {
             case 'admin':
-                return <Adminheader />;
+                return <AdminHeader />;
             case 'mentor':
                 return <Mentorheader />;
             case 'qaqc':
