@@ -66,7 +66,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/overviewuser"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Eye className="h-4 w-4" />
@@ -77,7 +77,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/adduser"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Plus className="h-4 w-4" />
@@ -104,7 +104,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/users"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Users className="h-4 w-4" />
@@ -115,7 +115,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/contact"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Contact className="h-4 w-4" />
@@ -155,7 +155,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/overviewproject"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Eye className="h-4 w-4" />
@@ -166,7 +166,7 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="#"
+                                                                href="/admin/calender"
                                                                 className="flex items-center gap-2 px-2 py-1 text-sm"
                                                             >
                                                                 <Calendar className="h-4 w-4" />
