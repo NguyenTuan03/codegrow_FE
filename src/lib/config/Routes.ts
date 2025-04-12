@@ -13,4 +13,6 @@ export const Routes = {
     testdetail: '/customer/testdetail',
     testresult: '/customer/result',
     challenge: '/customer/challenge',
+    coursesdetail: '/customer/coursesdetail',
+    coursesdetailreading: '/customer/coursesdetailreading',
 };
