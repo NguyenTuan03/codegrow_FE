@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, User, Settings, BookOpen, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Search, User, Settings, BookOpen, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
