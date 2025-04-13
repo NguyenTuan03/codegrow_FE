@@ -1,4 +1,3 @@
-import Footer from '@/lib/components/layout/footer/Page';
 import Customerheader from '@/lib/components/layout/header/Customerheader';
 import React, { ReactNode } from 'react';
 
@@ -8,10 +7,10 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
     return (
-        <div className='w-full'>
+        <div className="w-full">
             <Customerheader />
             <div className="bg-[#EEF1EF]">{children}</div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 };
