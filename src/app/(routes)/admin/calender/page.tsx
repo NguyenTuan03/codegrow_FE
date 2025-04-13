@@ -1,5 +1,3 @@
-'use client';
-
 export default function CalendarPage() {
     return (
         <div className="min-h-screen bg-[#f5f6fa] px-8 py-6">

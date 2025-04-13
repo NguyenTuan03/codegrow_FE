@@ -15,6 +15,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -41,11 +42,11 @@ export const AdminHeader = () => {
     ];
 
     return (
-        <header className="sticky top-0 z-50 bg-white shadow-sm border-b">
+        <header className="sticky w-full top-0 z-50 bg-white shadow-sm border-b">
             <div className="container flex h-16 items-center justify-between px-4">
                 {/* Left side - Logo and Dropdowns */}
                 <div className="flex items-center gap-6">
-                    <div className="text-xl font-bold mr-4">CODEGROW</div>
+                    {/* <div className="text-xl font-bold mr-4">CODEGROW</div> */}
 
                     {/* Report và Menu ngang hàng */}
                     <div className="flex items-center gap-4">
@@ -62,7 +63,7 @@ export const AdminHeader = () => {
                                         {reportItems.map((item) => (
                                             <a
                                                 key={item.name}
-                                                href="#"
+                                                href={`/admin/report/${item.name.toLowerCase()}`}
                                                 className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
                                             >
                                                 {item.icon}
@@ -85,14 +86,14 @@ export const AdminHeader = () => {
                                 <AccordionContent className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                                     <div className="py-1">
                                         {menuItems.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.name}
-                                                href="#"
+                                                href={`/admin/report/${item.name.toLowerCase()}`}
                                                 className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
                                             >
                                                 {item.icon}
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         ))}
                                     </div>
                                 </AccordionContent>

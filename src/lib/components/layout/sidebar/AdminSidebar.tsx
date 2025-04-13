@@ -1,5 +1,3 @@
-'use client';
-
 import {
     LayoutDashboard,
     Users,
@@ -35,10 +33,18 @@ export const AdminSidebar = () => {
         <Sidebar className="fixed left-0 top-0 h-screen w-[240px] pt-16 border-r bg-muted/40">
             <SidebarContent>
                 {/* Header */}
-                <div className="flex h-[60px] items-center border-b px-4">
-                    <h2 className="text-base font-semibold text-foreground">Dashboard</h2>
+                <div className="flex items-center justify-center w-full h-[60px]">
+                    <h1 className="text-2xl font-extrabold tracking-wide text-primary transition-all duration-300">
+                        CODEGROW
+                    </h1>
                 </div>
-
+                <div className="flex h-[60px] items-center border-b px-4">
+                    <Link href="/admin" className="w-full">
+                        <h2 className="text-base font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
+                            Dashboard
+                        </h2>
+                    </Link>
+                </div>
                 <SidebarGroup>
                     <Accordion type="multiple" className="w-full">
                         {/* Pages Section */}
