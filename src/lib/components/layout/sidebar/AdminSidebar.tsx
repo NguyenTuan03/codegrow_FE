@@ -30,7 +30,7 @@ import {
 
 export const AdminSidebar = () => {
     return (
-        <Sidebar className="fixed left-0 top-0 h-screen w-[240px] pt-16 border-r bg-muted/40">
+        <Sidebar className="h-screen pt-16 border-r bg-muted/40">
             <SidebarContent>
                 {/* Header */}
                 <div className="flex items-center justify-center w-full h-[60px]">

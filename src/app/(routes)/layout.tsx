@@ -56,16 +56,10 @@ const Layout = ({ children }: Props) => {
 
     return (
         <div className="flex min-h-screen w-full">
-            <div className="fixed h-screen z-50">{renderSidebar()}</div>
-
-            <div className="flex-1 flex flex-col ml-[240px] w-[calc(100%-240px)]">
+            <div className="h-screen z-50">{renderSidebar()}</div>
+            <div className="flex-1 flex flex-col w-full">
                 <header className="w-full sticky top-0 z-40">{renderHeader()}</header>
-
-                <main className="flex-1 p-6 w-full overflow-auto">{children}</main>
-
-                <footer className="w-full">
-                    <Footer />
-                </footer>
+                <main className="flex-1 p-6 w-full overflow-auto">{children}</main>                
             </div>
         </div>
     );
