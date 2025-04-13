@@ -2,8 +2,7 @@
 
 import React from 'react';
 import '@xyflow/react/dist/style.css';
-import { ReactFlow, Background, Controls, ReactFlowProvider } from '@xyflow/react';
-import { FEedges, FEnodes } from '@/lib/enum/roadmap/FrontEnd';
+import { ReactFlowProvider } from '@xyflow/react';
 import Link from 'next/link';
 export default function Page() {
     const roadmap = [

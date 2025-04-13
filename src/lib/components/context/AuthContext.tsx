@@ -19,16 +19,13 @@ interface AuthContextType {
     logoutUser: () => void;
 }
 
-// Create a context for the authentication state
 export const Auth = createContext<AuthContextType | undefined>(undefined);
 
 const AuthContext = ({ children }: Props) => {
     const [userAuth, setUserAuth] = useState<User | null>(null);
 
-    // Use effect to check localStorage and set user if available (client-side only)
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            // Ensures this runs on the client side only
+        if (typeof window !== 'undefined') {   
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 try {
@@ -36,16 +33,10 @@ const AuthContext = ({ children }: Props) => {
                 } catch (e) {
                     console.error('Failed to parse user from localStorage', e);
                 }
-            } else {
-                // If no user in localStorage, set a fake user for demo
-                // const fakeUser: User = {
-                //     id: '1',
-                //     role: 'customer',
-                //     fullname: 'Fake Customer',
-                // };
+            } else {                
                 const fakeUser: User = {
                     id: '1',
-                    role: 'admin',
+                    role: 'qaqc',
                     fullname: 'Fake Customer',
                 };
                 setUserAuth(fakeUser);
@@ -54,23 +45,23 @@ const AuthContext = ({ children }: Props) => {
         }
     }, []);
 
-    // Function to log in the user (sets user and saves to localStorage)
+    
     const loginUser = (user: User) => {
         setUserAuth(user);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify(user)); // Save to localStorage
+            localStorage.setItem('user', JSON.stringify(user)); 
         }
     };
 
-    // Function to log out the user (clears user from state and localStorage)
+    
     const logoutUser = () => {
         setUserAuth(null);
         if (typeof window !== 'undefined') {
-            localStorage.removeItem('user'); // Remove from localStorage
+            localStorage.removeItem('user'); 
         }
     };
 
-    // Value provided by the context
+    
     const value: AuthContextType = {
         userAuth,
         setUserAuth,
