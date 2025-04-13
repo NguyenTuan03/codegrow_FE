@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+// import Image from 'next/image';
 
 export default function MentorDashboard() {
     return (
@@ -11,11 +12,13 @@ export default function MentorDashboard() {
             <Card className="bg-blue-50 border-none shadow-lg">
                 <CardContent className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                        <img
+                        {/* <Image
                             src="https://randomuser.me/api/portraits/women/20.jpg"
                             alt="Instructor"
+                            width={64} // Required
+                            height={64} // Required
                             className="h-16 w-16 rounded-full shadow-lg"
-                        />
+                        /> */}
                         <div>
                             <p className="font-semibold text-gray-900 text-2xl">
                                 Introducing generative AI for educators
@@ -54,11 +57,13 @@ export default function MentorDashboard() {
                         </CardHeader>
                         <CardContent className="p-6 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <img
+                                {/* <Image
                                     src="https://randomuser.me/api/portraits/women/30.jpg"
                                     alt="Instructor"
+                                    width={64} // Required
+                                    height={64} // Required
                                     className="h-16 w-16 rounded-full shadow-lg"
-                                />
+                                /> */}
                                 <div className="h-16 w-16 bg-gray-200 rounded-lg flex items-center justify-center shadow-md">
                                     <span className="text-xl text-gray-600">📊</span>
                                 </div>

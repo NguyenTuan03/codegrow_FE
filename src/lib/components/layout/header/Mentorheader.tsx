@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, LayoutGrid } from 'lucide-react';
@@ -14,7 +12,9 @@ export default function Header() {
     return (
         <header className="bg-white shadow-sm p-4 flex justify-between items-center">
             {/* Logo */}
-            <div className="text-xl font-bold text-gray-900">CODEGROW</div>
+            <div className="text-xl font-bold text-gray-900">
+                <h1></h1>
+            </div>
 
             {/* Right Side: Icons and Avatar */}
             <div className="flex items-center gap-3">

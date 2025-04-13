@@ -36,7 +36,9 @@ const AuthContext = ({ children }: Props) => {
             } else {                
                 const fakeUser: User = {
                     id: '1',
+
                     role: 'qaqc',
+
                     fullname: 'Fake Customer',
                 };
                 setUserAuth(fakeUser);
