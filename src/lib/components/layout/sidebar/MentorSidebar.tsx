@@ -81,7 +81,7 @@ export default function MentorSidebar() {
     ];
 
     return (
-        <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-60 lg:overflow-y-auto lg:bg-white lg:border-r">
+        <div className="lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-60 lg:overflow-y-auto lg:bg-white lg:border-r">
             <div className="flex h-full flex-col gap-y-8 px-6 py-4">
                 {/* Logo Section */}
                 <div className="flex items-center gap-x-3">
