@@ -25,7 +25,7 @@ const AuthContext = ({ children }: Props) => {
     const [userAuth, setUserAuth] = useState<User | null>(null);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {   
+        if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 try {
@@ -33,10 +33,10 @@ const AuthContext = ({ children }: Props) => {
                 } catch (e) {
                     console.error('Failed to parse user from localStorage', e);
                 }
-            } else {                
+            } else {
                 const fakeUser: User = {
                     id: '1',
-                    role: 'qaqc',
+                    role: 'mentor',
                     fullname: 'Fake Customer',
                 };
                 setUserAuth(fakeUser);
@@ -45,23 +45,20 @@ const AuthContext = ({ children }: Props) => {
         }
     }, []);
 
-    
     const loginUser = (user: User) => {
         setUserAuth(user);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('user', JSON.stringify(user)); 
+            localStorage.setItem('user', JSON.stringify(user));
         }
     };
 
-    
     const logoutUser = () => {
         setUserAuth(null);
         if (typeof window !== 'undefined') {
-            localStorage.removeItem('user'); 
+            localStorage.removeItem('user');
         }
     };
 
-    
     const value: AuthContextType = {
         userAuth,
         setUserAuth,
