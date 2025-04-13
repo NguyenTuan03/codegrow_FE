@@ -54,7 +54,7 @@ const layout = ({ children }: Props) => {
         }
     };
     return (
-        <div className="flex">
+        <div className="flex w-full">
             {renderSidebar()}
             <div className="flex-1">
                 {renderHeader()}
