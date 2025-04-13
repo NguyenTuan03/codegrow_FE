@@ -7,7 +7,7 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
     return (
-        <div>
+        <div className='w-full'>
             <Customerheader />
             <div className="bg-[#EEF1EF]">{children}</div>
             {/* <Footer /> */}

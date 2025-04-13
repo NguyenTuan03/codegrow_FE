@@ -49,7 +49,7 @@ const page = () => {
         return () => clearTimeout(timer);
     }, []);
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 w-full">
             <div className="grid grid-cols-12 gap-4 mb-10">
                 <div className="col-span-8">
                     <h3 className="text-3xl mb-3">Welcome back, customer</h3>
