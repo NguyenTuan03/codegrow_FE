@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import MentorSidebar from '@/lib/components/layout/sidebar/MentorSidebar';
 import QAQCSidebar from '@/lib/components/layout/sidebar/QAQCSidebar';
-
 import Mentorheader from '@/lib/components/layout/header/Mentorheader';
 import QAQCheader from '@/lib/components/layout/header/QAQCheader';
 import { AdminSidebar } from '@/lib/components/layout/sidebar/AdminSidebar';
@@ -16,7 +15,7 @@ type Props = {
     children: ReactNode;
 };
 
-const layout = ({ children }: Props) => {
+const Layout = ({ children }: Props) => {
     const router = useRouter();
     const authContext = useContext(Auth);
 
@@ -28,7 +27,7 @@ const layout = ({ children }: Props) => {
 
     const { userAuth } = authContext;
     const role = userAuth?.role;
-    console.log('role =',role);    
+
     const renderSidebar = () => {
         switch (role) {
             case 'admin':
@@ -41,6 +40,7 @@ const layout = ({ children }: Props) => {
                 return null;
         }
     };
+
     const renderHeader = () => {
         switch (role) {
             case 'admin':
@@ -53,16 +53,22 @@ const layout = ({ children }: Props) => {
                 return null;
         }
     };
+
     return (
-        <div className="flex">
-            {renderSidebar()}
-            <div className="flex-1">
-                {renderHeader()}
-                <main>{children}</main>
-                <Footer />
+        <div className="flex min-h-screen w-full">
+            <div className="fixed h-screen z-50">{renderSidebar()}</div>
+
+            <div className="flex-1 flex flex-col ml-[240px] w-[calc(100%-240px)]">
+                <header className="w-full sticky top-0 z-40">{renderHeader()}</header>
+
+                <main className="flex-1 p-6 w-full overflow-auto">{children}</main>
+
+                <footer className="w-full">
+                    <Footer />
+                </footer>
             </div>
         </div>
     );
 };
 
-export default layout;
+export default Layout;
