@@ -24,7 +24,7 @@ const QAQCSidebar = () => {
     const router = useRouter()
     return (
         <>
-            <aside className="w-64 h-screen bg-white border-r flex flex-col">
+            <aside className="w-64 h-full bg-white border-r flex flex-col">
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                     <h1 className="text-xl font-bold">CODEGROW</h1>
                 </div>

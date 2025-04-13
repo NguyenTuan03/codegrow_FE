@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 
 export default function MentorDashboard() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 p-6">
             {/* Banner */}
             <Card className="bg-blue-50 border-none shadow-lg">
                 <CardContent className="p-6 flex items-center justify-between">

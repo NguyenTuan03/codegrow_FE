@@ -25,7 +25,7 @@ const Customerheader = () => {
     };
 
     return (
-        <div className="flex h-[80px] px-4 items-center border-b shadow-sm bg-white">
+        <div className="flex w-full h-[80px] px-4 items-center border-b shadow-sm bg-white">
             {/* Logo */}
             <Image src="/Logo.png" alt="Logo" width={60} height={60} />
 

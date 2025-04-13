@@ -9,7 +9,6 @@ import Mentorheader from '@/lib/components/layout/header/Mentorheader';
 import QAQCheader from '@/lib/components/layout/header/QAQCheader';
 import { AdminSidebar } from '@/lib/components/layout/sidebar/AdminSidebar';
 import { AdminHeader } from '@/lib/components/layout/header/Adminheader';
-import Footer from '@/lib/components/layout/footer/Page';
 
 type Props = {
     children: ReactNode;
@@ -56,10 +55,10 @@ const Layout = ({ children }: Props) => {
 
     return (
         <div className="flex min-h-screen w-full">
-            <div className="h-screen z-50">{renderSidebar()}</div>
+            <div className="h-full z-50">{renderSidebar()}</div>
             <div className="flex-1 flex flex-col w-full">
                 <header className="w-full sticky top-0 z-40">{renderHeader()}</header>
-                <main className="flex-1 p-6 w-full overflow-auto">{children}</main>                
+                <main className="flex-1 w-full overflow-auto">{children}</main>                
             </div>
         </div>
     );
