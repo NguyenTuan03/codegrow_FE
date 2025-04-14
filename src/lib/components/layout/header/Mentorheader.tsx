@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, LayoutGrid } from 'lucide-react';
@@ -7,8 +8,21 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-
-export default function Header() {
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+export default function MentorHeader() {
+    const router = useRouter();
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            // Nếu không có user, chuyển hướng đến trang đăng nhập
+            router.push('/login');
+        }
+    }, [router]);
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        router.push('/login');
+    };
     return (
         <header className="bg-white shadow-sm p-4 flex justify-between items-center">
             {/* Logo */}
@@ -41,7 +55,10 @@ export default function Header() {
                             <DropdownMenuItem className="w-full text-sm">
                                 Profile Settings
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="w-full text-sm mt-2">
+                            <DropdownMenuItem
+                                onClick={handleLogout}
+                                className="w-full text-sm mt-2"
+                            >
                                 Logout
                             </DropdownMenuItem>
                         </div>

@@ -34,8 +34,8 @@ const RegisterForm = () => {
     const form = useForm<RegisterBodyType>({
         resolver: zodResolver(RegisterBody),
         defaultValues: {
+            fullName: '',
             email: '',
-            name: '',
             password: '',
         },
     });
@@ -50,7 +50,7 @@ const RegisterForm = () => {
                 description: 'Google login failed. Please try again.',
                 variant: 'destructive',
             });
-            setLoading(false);
+            setGoogleLoading(false);
         }
     };
     const onSubmit = async (data: RegisterBodyType) => {
@@ -58,10 +58,8 @@ const RegisterForm = () => {
 
         setLoading(true);
 
-        try {            
-            const result = await signUp(data.name, data.email, data.password);
-            console.log(result);
-            
+        try {
+            const result = await signUp(data.fullName, data.email, data.password);
             console.log('✅ Registered user:', result);
 
             toast({
@@ -71,15 +69,14 @@ const RegisterForm = () => {
             router.push('/register/verify');
         } catch (error: unknown) {
             let errorMessage = 'Registration failed. Please try again.';
-
             if (axios.isAxiosError(error)) {
+                console.error('Axios Error:', error.response?.data); // Log chi tiết lỗi từ backend
                 if (error.response?.status === 400) {
                     errorMessage = error.response.data || 'Email already exists.';
                 }
-                console.error('Axios Error:', error.response?.data);
             } else if (error instanceof Error) {
+                console.error('JS Error:', error.message); // Log lỗi JavaScript
                 errorMessage = error.message;
-                console.error('JS Error:', error.message);
             }
 
             toast({
@@ -100,7 +97,7 @@ const RegisterForm = () => {
                     {/* Name Field */}
                     <FormField
                         control={form.control}
-                        name="name"
+                        name="fullName"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Full Name</FormLabel>
