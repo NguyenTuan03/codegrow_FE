@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bell, Camera, User, History, User2, LogOut } from 'lucide-react';
@@ -16,10 +16,21 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { useRouter } from 'next/navigation';
 
 const Customerheader = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (user) {
+            const parsedUser = JSON.parse(user); // Chuyển chuỗi JSON thành object
+            setIsLoggedIn(!!parsedUser.id); // Kiểm tra nếu `user.id` tồn tại
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, []);
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setIsLoggedIn(false);
         router.push('/login');
     };

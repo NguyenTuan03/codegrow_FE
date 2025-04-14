@@ -1,7 +1,7 @@
 'use client';
 
-import { Search, User, Settings, BookOpen, LayoutDashboard } from 'lucide-react';
-import { useState } from 'react';
+import { Search, User, Settings, BookOpen, LayoutDashboard, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Accordion,
@@ -16,10 +16,31 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
+
+    // Kiểm tra trạng thái đăng nhập từ localStorage
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token); // Nếu có token, đặt isLoggedIn thành true
+    }, []);
+
+    const handleLogout = () => {
+        // Xóa token và thông tin người dùng khỏi localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        // Cập nhật trạng thái đăng nhập
+        setIsLoggedIn(false);
+
+        // Chuyển hướng về trang đăng nhập
+        router.push('/login');
+    };
 
     const searchResults = [
         { id: 1, title: 'User Management', icon: <User className="h-4 w-4" />, category: 'Users' },
@@ -46,8 +67,6 @@ export const AdminHeader = () => {
             <div className="container flex h-16 items-center justify-between px-4">
                 {/* Left side - Logo and Dropdowns */}
                 <div className="flex items-center gap-6">
-                    {/* <div className="text-xl font-bold mr-4">CODEGROW</div> */}
-
                     {/* Report và Menu ngang hàng */}
                     <div className="flex items-center gap-4">
                         {/* Report Dropdown */}
@@ -152,26 +171,37 @@ export const AdminHeader = () => {
 
                 {/* Right Side - User, Settings, Book */}
                 <div className="flex items-center gap-4">
-                    {/* User Dropdown */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <User className="h-5 w-5" />
+                    {isLoggedIn ? (
+                        <>
+                            {/* User Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <User className="h-5 w-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-48" align="end">
+                                    <DropdownMenuItem>
+                                        <a href="#" className="w-full">
+                                            Profile
+                                        </a>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleLogout}>
+                                        <div className="flex items-center gap-2">
+                                            <LogOut className="h-4 w-4" />
+                                            Logout
+                                        </div>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </>
+                    ) : (
+                        <>
+                            <Button variant="outline">
+                                <Link href="/login">LogIn</Link>
                             </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48" align="end">
-                            <DropdownMenuItem>
-                                <a href="#" className="w-full">
-                                    Profile
-                                </a>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <a href="#" className="w-full">
-                                    Logout
-                                </a>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        </>
+                    )}
 
                     {/* Settings Dropdown */}
                     <DropdownMenu>
