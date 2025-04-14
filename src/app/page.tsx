@@ -13,6 +13,7 @@ export default function Page() {
     const router = useRouter();
     const auth = useContext(Auth);
     const searchParams = useSearchParams();
+
     useEffect(() => {
         const token: string | null = searchParams.get('token');
         let jwtdecode: JwtPayload | undefined;
@@ -37,7 +38,7 @@ export default function Page() {
     }, [searchParams, router]);
     useEffect(() => {
         if (!auth || !auth.userAuth) {
-            router.replace('/login');
+            router.replace('/customer');
             return;
         }
 
@@ -55,7 +56,7 @@ export default function Page() {
                 router.replace('/customer');
                 break;
             default:
-                router.replace('/login');
+                router.replace('/customer');
                 break;
         }
     }, [auth?.userAuth, router]);

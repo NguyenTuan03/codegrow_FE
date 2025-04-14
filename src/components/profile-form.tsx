@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -16,6 +15,7 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // Define the form schema using zod
 const profileSchema = z.object({
@@ -31,7 +31,7 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function MyProfileForm() {
+export default function ProfileForm() {
     // Initialize the form with react-hook-form and zod validation
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
@@ -54,43 +54,46 @@ export default function MyProfileForm() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col gap-8 p-6 bg-white shadow-md rounded-lg">
+            {/* Header */}
+            <div className="text-center">
+                <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
+                <p className="text-sm text-gray-600">Update your personal information below</p>
+            </div>
+
             {/* Avatar + Basic Info */}
-            <div className="space-y-4 text-center md:text-left">
-                <div className="w-24 h-24 rounded-full overflow-hidden mx-auto md:mx-0 border border-gray-200 shadow-sm">
-                    <Image
-                        src="/avatar.png"
-                        alt="avatar"
-                        width={96}
-                        height={96}
-                        className="object-cover"
-                    />
+            <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="w-28 h-28 rounded-full overflow-hidden border border-gray-300 shadow-sm">
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
                 </div>
-                <div>
-                    <p className="text-sm font-medium text-gray-900">Rafiqul Rahman</p>
-                    <p className="text-xs text-gray-600">Leeds, United Kingdom</p>
+                <div className="text-center md:text-left">
+                    <p className="text-lg font-medium text-gray-900">Rafiqul Rahman</p>
+                    <p className="text-sm text-gray-600">Leeds, United Kingdom</p>
                 </div>
             </div>
 
             {/* Personal Info */}
-            <div className="flex-1 space-y-6">
+            <div className="space-y-6">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" noValidate>
-                        <Separator className="bg-gray-200" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Separator className="bg-gray-300" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             First Name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="firstName"
                                                 placeholder="Rafiqul"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -103,14 +106,14 @@ export default function MyProfileForm() {
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Last Name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="lastName"
                                                 placeholder="Rahman"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -120,20 +123,20 @@ export default function MyProfileForm() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Email Address
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="email"
                                                 placeholder="rafiqur.rahman@gmail.com"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -146,14 +149,14 @@ export default function MyProfileForm() {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Role
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="role"
                                                 placeholder="Team Manager"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -163,22 +166,22 @@ export default function MyProfileForm() {
                             />
                         </div>
 
-                        <Separator className="bg-gray-200" />
+                        <Separator className="bg-gray-300" />
                         {/* Address */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="country"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Country
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="country"
                                                 placeholder="United Kingdom"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -191,14 +194,14 @@ export default function MyProfileForm() {
                                 name="city"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             City/Region
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="city"
                                                 placeholder="Leeds, East London"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -208,20 +211,20 @@ export default function MyProfileForm() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="postal"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Postal Code
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="postal"
                                                 placeholder="ERT 2354"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -234,14 +237,14 @@ export default function MyProfileForm() {
                                 name="tel"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-600">
+                                        <FormLabel className="text-sm font-medium text-gray-700">
                                             Phone
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 id="tel"
                                                 placeholder="+99 345 346 xxx"
-                                                className="mt-1 border-gray-200 focus:ring-pink-500 focus:border-pink-500"
+                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -255,8 +258,7 @@ export default function MyProfileForm() {
                         <div className="flex justify-end mt-6">
                             <Button
                                 type="submit"
-                                variant="outline"
-                                className="text-sm border-gray-200 hover:bg-gray-100"
+                                className="text-sm bg-blue-500 text-white hover:bg-blue-600 px-6 py-2 rounded-md"
                             >
                                 Save Changes
                             </Button>

@@ -69,7 +69,8 @@ const RegisterForm = () => {
             console.log('✅ Registered user:', result);
 
             toast({
-                description: 'Registration successful!',
+                description: 'Register successful!',
+                className: 'bg-green-500 text-black',
             });
 
             router.push('/register/verify');
@@ -86,8 +87,8 @@ const RegisterForm = () => {
             }
 
             toast({
-                description: errorMessage,
-                variant: 'destructive',
+                description: 'Login failed. Please check your credentials and try again.',
+                className: 'bg-red-500 text-black', // Màu nền đỏ cho trạng thái thất bại
             });
         } finally {
             setLoading(false);
