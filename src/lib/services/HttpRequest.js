@@ -2,7 +2,7 @@ import axios from 'axios';
 console.log('✅ ENV Base URL:', process.env.NEXT_PUBLIC_HOST_CODEGROW);
 
 const httpRequest = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_HOST_CODEGROW,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
         'Content-Type': 'application/json',
     },

@@ -58,15 +58,17 @@ const RegisterForm = () => {
 
         setLoading(true);
 
-        try {
+        try {            
             const result = await signUp(data.name, data.email, data.password);
+            console.log(result);
+            
             console.log('✅ Registered user:', result);
 
             toast({
                 description: 'Registration successful!',
             });
 
-            router.push('/login');
+            router.push('/register/verify');
         } catch (error: unknown) {
             let errorMessage = 'Registration failed. Please try again.';
 
@@ -74,10 +76,10 @@ const RegisterForm = () => {
                 if (error.response?.status === 400) {
                     errorMessage = error.response.data || 'Email already exists.';
                 }
-                console.error('❌ Axios Error:', error.response?.data);
+                console.error('Axios Error:', error.response?.data);
             } else if (error instanceof Error) {
                 errorMessage = error.message;
-                console.error('❌ JS Error:', error.message);
+                console.error('JS Error:', error.message);
             }
 
             toast({
