@@ -37,6 +37,7 @@ const RegisterForm = () => {
             fullName: '',
             email: '',
             password: '',
+            confirmPassword: '',
         },
     });
 
@@ -59,7 +60,12 @@ const RegisterForm = () => {
         setLoading(true);
 
         try {
-            const result = await signUp(data.fullName, data.email, data.password);
+            const result = await signUp(
+                data.fullName,
+                data.email,
+                data.password,
+                data.confirmPassword,
+            );
             console.log('✅ Registered user:', result);
 
             toast({
@@ -164,7 +170,37 @@ const RegisterForm = () => {
                             </FormItem>
                         )}
                     />
-
+                    <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Confirm Password</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="Confirm your password"
+                                            className="!border-none !shadow-none focus-visible:ring-0 focus-visible:outline-none pr-10"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOffIcon size={18} />
+                                            ) : (
+                                                <EyeIcon size={18} />
+                                            )}
+                                        </button>
+                                    </div>
+                                </FormControl>
+                                <FormMessage className="text-sm text-red-500" />
+                            </FormItem>
+                        )}
+                    />
                     <Button
                         type="submit"
                         disabled={loading}

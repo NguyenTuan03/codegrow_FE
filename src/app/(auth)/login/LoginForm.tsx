@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import GoogleButton from 'react-google-button';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
@@ -23,10 +23,13 @@ import { useRouter } from 'next/navigation';
 
 import { LoginBody } from '@/schemaValidations/auth.schema';
 import { LoginBodyType } from '@/schemaValidations/auth.schema';
+import { jwtDecode } from 'jwt-decode';
+import { Auth } from '@/lib/components/context/AuthContext';
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
+    const userAuth = useContext(Auth);
     const router = useRouter();
     const form = useForm<LoginBodyType>({
         resolver: zodResolver(LoginBody),
@@ -41,9 +44,12 @@ const LoginForm = () => {
         setLoading(true);
         try {
             const response = await login(data.email, data.password);
-            const { token, user } = response;
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            // const { token, user } = response;
+            // localStorage.setItem('token', token);
+            // localStorage.setItem('user', JSON.stringify(user));
+            const token = response.metadata;
+            const decoded = jwtDecode(token);
+            userAuth?.loginUser(decoded);
             console.log('Login response:', response);
             toast({ description: 'Login successful!' });
             router.push('/');
