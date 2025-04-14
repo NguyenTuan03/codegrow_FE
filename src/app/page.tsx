@@ -55,7 +55,7 @@ export default function Page() {
                 router.replace('/customer');
                 break;
             default:
-                router.replace('/');
+                router.replace('/login');
                 break;
         }
     }, [auth?.userAuth, router]);
