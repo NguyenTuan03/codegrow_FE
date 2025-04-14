@@ -23,9 +23,12 @@ import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { signUp } from '@/lib/services/auth/SignUp';
 import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
+import VerifyGmailDialog from '@/app/(auth)/verifypage/VerifyPage';
 
 const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
+    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+    const [gmailToken, setGmailToken] = useState<string | null>(null);
     const [googleLoading, setGoogleLoading] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -49,7 +52,10 @@ const RegisterForm = () => {
 
             console.log('✅ Google Sign-In successful:', result);
 
-            router.push('/');
+            setShowVerifyDialog(true);
+            const token = result.token;
+            localStorage.setItem('token', token);
+            setGmailToken(token);
 
             toast({
                 title: 'Thành công',
@@ -228,6 +234,12 @@ const RegisterForm = () => {
                         }}
                     />
                 </div>
+                {showVerifyDialog && (
+                    <VerifyGmailDialog
+                        token={gmailToken}
+                        onClose={() => setShowVerifyDialog(false)}
+                    />
+                )}
             </div>
         </div>
     );
