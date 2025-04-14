@@ -23,7 +23,7 @@ import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { signUp } from '@/lib/services/auth/SignUp';
 import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
-import VerifyGmailDialog from '@/app/(auth)/verifypage/VerifyPage';
+import VerifyGmailDialog from '@/lib/components/verify/VerifyPage';
 
 const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
@@ -79,15 +79,17 @@ const RegisterForm = () => {
 
         setLoading(true);
 
-        try {
+        try {            
             const result = await signUp(data.name, data.email, data.password);
+            console.log(result);
+            
             console.log('✅ Registered user:', result);
 
             toast({
                 description: 'Registration successful!',
             });
 
-            router.push('/login');
+            router.push('/register/verify');
         } catch (error: unknown) {
             let errorMessage = 'Registration failed. Please try again.';
 
