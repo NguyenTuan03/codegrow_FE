@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
 import GoogleButton from 'react-google-button';
@@ -21,8 +20,7 @@ import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { login } from '@/lib/services/auth/Login';
-import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
-import VerifyGmailDialog from '@/app/(auth)/verifypage/VerifyPage';
+import { useRouter } from 'next/navigation';
 
 const LoginBody = z.object({
     email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -32,12 +30,10 @@ const LoginBody = z.object({
 type LoginBodyType = z.infer<typeof LoginBody>;
 
 const LoginForm = () => {
-    const [loading, setLoading] = useState(false);
-    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+    const [loading, setLoading] = useState(false);    
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
     const router = useRouter();
-    const [gmailToken, setGmailToken] = useState<string | null>(null);
     const form = useForm<LoginBodyType>({
         resolver: zodResolver(LoginBody),
         defaultValues: {
@@ -58,6 +54,7 @@ const LoginForm = () => {
             toast({ description: 'Login successful!' });
             router.push('/');
         } catch (error) {
+            console.log(error);            
             toast({
                 description: 'Login failed. Please check your credentials and try again.',
                 variant: 'destructive',
@@ -70,22 +67,13 @@ const LoginForm = () => {
     const handleGoogleLogin = async () => {
         if (loading) return;
         setLoading(true);
-
         try {
-            const response = await loginGoogle();
-            console.log('Google login response:', response); // Use response
-            toast({ description: 'Google login successful!' });
-            // router.push('/');
-            setShowVerifyDialog(true);
-            const token = response.token;
-            localStorage.setItem('token', token);
-            setGmailToken(token);
+            router.push(process.env.NEXT_PUBLIC_API_URL+'/auth/login/google')            
         } catch {
             toast({
                 description: 'Google login failed. Please try again.',
                 variant: 'destructive',
             });
-        } finally {
             setLoading(false);
         }
     };
@@ -194,10 +182,7 @@ const LoginForm = () => {
                 <Button className="mt-2" disabled={loading}>
                     <GoogleButton onClick={handleGoogleLogin} />
                 </Button>
-            </div>
-            {showVerifyDialog && (
-                <VerifyGmailDialog token={gmailToken} onClose={() => setShowVerifyDialog(false)} />
-            )}
+            </div>            
         </div>
     );
 };

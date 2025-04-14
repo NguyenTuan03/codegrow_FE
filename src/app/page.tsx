@@ -1,12 +1,42 @@
 'use client';
 import { Auth } from '@/lib/components/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-
+import { jwtDecode } from "jwt-decode";
+interface JwtPayload {
+    _id: string;
+    role: string;
+    name: string; 
+    email: string;
+}
 export default function Page() {
     const router = useRouter();
     const auth = useContext(Auth);
-
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        const token: string | null = searchParams.get('token');
+        let jwtdecode: JwtPayload | undefined;
+        
+        if (token) {
+            try {
+                jwtdecode = jwtDecode<JwtPayload>(token);
+                console.log(jwtdecode);
+            } catch (e) {
+                console.error('JWT decode error:', e);
+            }
+        }
+        
+        if (jwtdecode) {
+            auth?.loginUser({
+                id: jwtdecode._id,
+                role: jwtdecode.role,
+                fullname: jwtdecode.name, 
+                email: jwtdecode.email,
+            });
+        }
+                
+       
+    }, [searchParams, router]);
     useEffect(() => {
         if (!auth || !auth.userAuth) {
             router.replace('/login');
