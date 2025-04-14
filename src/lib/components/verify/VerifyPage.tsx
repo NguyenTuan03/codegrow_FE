@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { VerifyGmail } from '@/lib/services/auth/VerifyGmail';
 import { useRouter } from 'next/navigation';
 
 interface VerifyGmailDialogProps {
@@ -28,9 +27,7 @@ const VerifyGmailDialog: React.FC<VerifyGmailDialogProps> = ({ token, onClose })
 
         setLoading(true);
 
-        try {
-            const response = await VerifyGmail(token);
-            console.log('Verification successful:', response);
+        try {                        
 
             toast({
                 description: 'Verification successful!',
