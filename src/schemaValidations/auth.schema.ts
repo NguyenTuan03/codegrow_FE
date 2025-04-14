@@ -5,8 +5,18 @@ export const RegisterBody = z
         fullName: z.string().trim().min(2, 'Tên quá ngắn').max(256, 'Tên quá dài'),
         email: z.string().email('Email không hợp lệ'),
         password: z.string().min(6, 'Mật khẩu phải ít nhất 6 ký tự').max(100),
+        confirmPassword: z.string().min(6, 'Mật khẩu phải ít nhất 6 ký tự').max(100),
     })
-    .strict();
+    .strict()
+    .superRefine(({ confirmPassword, password }, ctx) => {
+        if (confirmPassword !== password) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Mật khẩu không khớp',
+                path: ['confirmPassword'],
+            });
+        }
+    });
 
 export type RegisterBodyType = z.TypeOf<typeof RegisterBody>;
 

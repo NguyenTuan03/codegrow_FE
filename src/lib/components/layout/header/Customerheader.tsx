@@ -22,8 +22,8 @@ const Customerheader = () => {
         const user = localStorage.getItem('user');
         if (user) {
             const parsedUser = JSON.parse(user);
-            setIsLoggedIn(!!parsedUser.id);
-            console.log('User:', parsedUser.id);
+            setIsLoggedIn(!!parsedUser._id);
+            console.log('User:', parsedUser._id);
         } else {
             setIsLoggedIn(false);
         }
