@@ -5,7 +5,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import { useRouter } from 'next/navigation';
 
-const socket = io("http://localhost:8888", {
+const socket = io(process.env.NEXT_PUBLIC_API_URL, {
     transports: ["websocket"], 
     timeout: 5000, 
   });
@@ -21,13 +21,10 @@ const Page = () => {
           setHtmlResponse("<h2 style='color:red'>Thiếu mã xác minh trong đường dẫn.</h2>");
           return;
         }
-      
-        // Kiểm tra khi socket kết nối
+              
         socket.on('connect', () => {
           const socketId = socket.id;
-          console.log('✅ Socket connected with ID:', socketId);
-      
-          // Gửi request sau khi socket sẵn sàng
+          console.log('✅ Socket connected with ID:', socketId);          
           axios
             .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email`, {
               token,
@@ -50,10 +47,9 @@ const Page = () => {
               }
             });
         });
-      
-        // ✅ Có thể thêm xử lý khi lỗi kết nối
+              
         socket.on('connect_error', (err) => {
-          console.error('❌ Lỗi kết nối socket:', err);
+          console.error('Lỗi kết nối socket:', err);
           setHtmlResponse("<h2 style='color:red'>Không thể kết nối socket.io</h2>");
         });
       

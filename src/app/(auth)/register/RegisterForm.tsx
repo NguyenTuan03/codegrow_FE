@@ -97,10 +97,10 @@ const RegisterForm = () => {
                 if (error.response?.status === 400) {
                     errorMessage = error.response.data || 'Email already exists.';
                 }
-                console.error('❌ Axios Error:', error.response?.data);
+                console.error('Axios Error:', error.response?.data);
             } else if (error instanceof Error) {
                 errorMessage = error.message;
-                console.error('❌ JS Error:', error.message);
+                console.error('JS Error:', error.message);
             }
 
             toast({
