@@ -2,7 +2,7 @@ import z from 'zod';
 
 export const RegisterBody = z
     .object({
-        name: z.string().trim().min(2, 'Tên quá ngắn').max(256, 'Tên quá dài'),
+        fullName: z.string().trim().min(2, 'Tên quá ngắn').max(256, 'Tên quá dài'),
         email: z.string().email('Email không hợp lệ'),
         password: z.string().min(6, 'Mật khẩu phải ít nhất 6 ký tự').max(100),
     })
@@ -16,7 +16,7 @@ export const RegisterRes = z.object({
         expiresAt: z.string(),
         account: z.object({
             id: z.number(),
-            name: z.string(),
+            fullName: z.string(),
             email: z.string(),
         }),
     }),
@@ -25,12 +25,13 @@ export const RegisterRes = z.object({
 
 export type RegisterResType = z.TypeOf<typeof RegisterRes>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const LoginBody = z
     .object({
-        email: z.string().email(),
-        password: z.string().min(6).max(100),
+        email: z.string().email({ message: 'Please enter a valid email address' }),
+        password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
     })
-    .strict();
+    .strict(); // Fixed the placement of .strict()
 
 export type LoginBodyType = z.TypeOf<typeof LoginBody>;
 
