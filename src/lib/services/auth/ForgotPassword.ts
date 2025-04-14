@@ -1,9 +1,8 @@
 import httpRequest from './../HttpRequest';
-export const login = async (email: string, password: string) => {
+export const forgotPassword = async (email: string) => {
     try {
-        const res = await httpRequest.post('auth/login', {
+        const res = await httpRequest.post('auth/forgot-password', {
             email,
-            password,
         });
         return res.data;
     } catch (error) {

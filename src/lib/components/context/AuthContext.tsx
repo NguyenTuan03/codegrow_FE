@@ -33,16 +33,6 @@ const AuthContext = ({ children }: Props) => {
                 } catch (e) {
                     console.error('Failed to parse user from localStorage', e);
                 }
-            } else {
-                const fakeUser: User = {
-                    id: '1',
-
-                    role: 'admin',
-
-                    fullname: 'Fake Customer',
-                };
-                setUserAuth(fakeUser);
-                localStorage.setItem('user', JSON.stringify(fakeUser));
             }
         }
     }, []);
