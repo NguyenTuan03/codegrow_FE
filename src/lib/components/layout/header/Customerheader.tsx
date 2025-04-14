@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bell, Camera, User, History, User2, LogOut } from 'lucide-react';
@@ -16,10 +16,16 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { useRouter } from 'next/navigation';
 
 const Customerheader = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setIsLoggedIn(false);
         router.push('/login');
     };

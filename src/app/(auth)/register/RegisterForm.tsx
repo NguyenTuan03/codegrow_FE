@@ -22,13 +22,10 @@ import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { signUp } from '@/lib/services/auth/SignUp';
-import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
-import VerifyGmailDialog from '@/app/(auth)/verifypage/VerifyPage';
 
 const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
-    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
-    const [gmailToken, setGmailToken] = useState<string | null>(null);
+
     const [googleLoading, setGoogleLoading] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -42,36 +39,18 @@ const RegisterForm = () => {
             password: '',
         },
     });
-    const handleGoogleSignIn = async () => {
-        if (googleLoading) return;
-        setGoogleLoading(true);
 
+    const handleGoogleLogin = async () => {
+        if (loading) return;
+        setLoading(true);
         try {
-            const result = await loginGoogle(); // Gọi API loginGoogle
-            if (!result) throw new Error('Google Sign-In failed.');
-
-            console.log('✅ Google Sign-In successful:', result);
-
-            setShowVerifyDialog(true);
-            const token = result.token;
-            localStorage.setItem('token', token);
-            setGmailToken(token);
-
+            router.push(process.env.NEXT_PUBLIC_API_URL + '/auth/login/google');
+        } catch {
             toast({
-                title: 'Thành công',
-                description: 'Đăng nhập bằng Google thành công!',
-                variant: 'default',
-            });
-        } catch (error) {
-            console.error('❌ Google Sign-In failed:', error);
-
-            toast({
-                title: 'Lỗi',
-                description: error instanceof Error ? error.message : 'Đăng nhập Google thất bại',
+                description: 'Google login failed. Please try again.',
                 variant: 'destructive',
             });
-        } finally {
-            setGoogleLoading(false);
+            setLoading(false);
         }
     };
     const onSubmit = async (data: RegisterBodyType) => {
@@ -187,18 +166,6 @@ const RegisterForm = () => {
                         )}
                     />
 
-                    <p className="text-sm text-muted-foreground">
-                        By continuing, you agree to the{' '}
-                        <Link href={'/'} className="underline hover:text-primary">
-                            Terms of use
-                        </Link>{' '}
-                        and{' '}
-                        <Link href={'/'} className="underline hover:text-primary">
-                            Privacy Policy
-                        </Link>
-                        .
-                    </p>
-
                     <Button
                         type="submit"
                         disabled={loading}
@@ -226,7 +193,7 @@ const RegisterForm = () => {
                 </div>
                 <div className="mt-2 w-full flex justify-center">
                     <GoogleButton
-                        onClick={handleGoogleSignIn}
+                        onClick={handleGoogleLogin}
                         disabled={googleLoading}
                         style={{
                             opacity: googleLoading ? 0.7 : 1,
@@ -234,12 +201,6 @@ const RegisterForm = () => {
                         }}
                     />
                 </div>
-                {showVerifyDialog && (
-                    <VerifyGmailDialog
-                        token={gmailToken}
-                        onClose={() => setShowVerifyDialog(false)}
-                    />
-                )}
             </div>
         </div>
     );
