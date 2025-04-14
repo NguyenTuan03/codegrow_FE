@@ -23,19 +23,22 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onSelect 
             <h3 className="text-lg font-medium text-gray-900">Language:</h3>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-48 justify-between">
+                    <Button
+                        variant="outline"
+                        className="w-48 justify-between bg-amber-300 hover:bg-amber-400"
+                    >
                         {language}
                         <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48">
+                <DropdownMenuContent className="w-48 bg-gray-50 border border-gray-200 shadow-lg">
                     {languages.map(([lang, version]) => (
                         <DropdownMenuItem
                             key={lang}
                             className={`${
                                 lang === language
-                                    ? 'bg-gray-100 text-blue-600 font-semibold'
-                                    : 'hover:bg-gray-100 hover:text-blue-600'
+                                    ? 'bg-blue-100 text-blue-600 font-semibold' // Màu nền khi được chọn
+                                    : 'hover:bg-blue-50 hover:text-blue-600' // Màu nền khi hover
                             } cursor-pointer`}
                             onClick={() => onSelect(lang)}
                         >

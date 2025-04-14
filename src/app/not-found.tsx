@@ -7,7 +7,7 @@ export default function NotFound() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 text-center">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 text-center">
             <div className="max-w-md space-y-6">
                 {/* Animated 404 text */}
                 <div className="relative">
