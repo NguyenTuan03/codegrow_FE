@@ -19,8 +19,13 @@ const Customerheader = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
+        const user = localStorage.getItem('user');
+        if (user) {
+            const parsedUser = JSON.parse(user); // Chuyển chuỗi JSON thành object
+            setIsLoggedIn(!!parsedUser.id); // Kiểm tra nếu `user.id` tồn tại
+        } else {
+            setIsLoggedIn(false);
+        }
     }, []);
 
     const handleLogout = () => {

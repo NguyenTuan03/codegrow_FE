@@ -2,11 +2,11 @@
 import { Auth } from '@/lib/components/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 interface JwtPayload {
     _id: string;
     role: string;
-    name: string; 
+    name: string;
     email: string;
 }
 export default function Page() {
@@ -16,7 +16,7 @@ export default function Page() {
     useEffect(() => {
         const token: string | null = searchParams.get('token');
         let jwtdecode: JwtPayload | undefined;
-        
+
         if (token) {
             try {
                 jwtdecode = jwtDecode<JwtPayload>(token);
@@ -25,17 +25,15 @@ export default function Page() {
                 console.error('JWT decode error:', e);
             }
         }
-        
+
         if (jwtdecode) {
             auth?.loginUser({
                 id: jwtdecode._id,
                 role: jwtdecode.role,
-                fullname: jwtdecode.name, 
+                fullname: jwtdecode.name,
                 email: jwtdecode.email,
             });
         }
-                
-       
     }, [searchParams, router]);
     useEffect(() => {
         if (!auth || !auth.userAuth) {
@@ -57,13 +55,13 @@ export default function Page() {
                 router.replace('/customer');
                 break;
             default:
-                router.replace('/login');
+                router.replace('/');
                 break;
         }
     }, [auth?.userAuth, router]);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
             <div className="text-center space-y-6 max-w-md">
                 {/* Animated spinner */}
                 <div className="relative inline-block">
