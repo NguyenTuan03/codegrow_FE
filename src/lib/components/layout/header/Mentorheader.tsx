@@ -8,10 +8,14 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Auth } from '@/lib/components/context/AuthContext';
+import Link from 'next/link';
 export default function MentorHeader() {
     const router = useRouter();
+    const userAuth = useContext(Auth);
+    // Kiểm tra trạng thái đăng nhập từ localStorage
     useEffect(() => {
         const user = localStorage.getItem('user');
         if (!user) {
@@ -20,9 +24,13 @@ export default function MentorHeader() {
         }
     }, [router]);
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        router.push('/login');
+        if (userAuth) {
+            userAuth.logoutUser(); // Gọi hàm logout từ AuthContext
+            console.log('User logged out');
+            router.push('/'); // Chuyển hướng đến trang đăng nhập
+        }
     };
+
     return (
         <header className="bg-white shadow-sm p-4 flex justify-between items-center">
             {/* Logo */}
@@ -53,7 +61,9 @@ export default function MentorHeader() {
                         <p className="text-sm text-gray-500">user@example.com</p>
                         <div className="mt-4">
                             <DropdownMenuItem className="w-full text-sm">
-                                Profile Settings
+                                <Link href="/mentor/profilementor" className="w-full">
+                                    Profile Settings
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={handleLogout}

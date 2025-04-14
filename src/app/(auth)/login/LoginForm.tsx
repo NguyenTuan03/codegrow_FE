@@ -51,13 +51,16 @@ const LoginForm = () => {
             const decoded = jwtDecode(token);
             userAuth?.loginUser(decoded);
             console.log('Login response:', response);
-            toast({ description: 'Login successful!' });
+            toast({
+                description: 'Login successful!',
+                className: 'bg-green-500 text-black', // Màu nền xanh lá cho trạng thái thành công
+            });
             router.push('/');
         } catch (error) {
             console.log(error);
             toast({
                 description: 'Login failed. Please check your credentials and try again.',
-                variant: 'destructive',
+                className: 'bg-red-500 text-black', // Màu nền đỏ cho trạng thái thất bại
             });
         } finally {
             setLoading(false);

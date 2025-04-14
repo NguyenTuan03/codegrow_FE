@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bell, Camera, User, History, User2, LogOut } from 'lucide-react';
+import { Bell, Camera, History, User2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -14,8 +14,11 @@ import {
 import { CUSTOMER_HEADER } from '@/lib/enum/CustomerHeader';
 import { ModeToggle } from '@/components/mode-toggle';
 import { useRouter } from 'next/navigation';
+import { Auth } from '@/lib/components/context/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Customerheader = () => {
+    const userAuth = useContext(Auth);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
     useEffect(() => {
@@ -30,9 +33,11 @@ const Customerheader = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        setIsLoggedIn(false);
-        router.push('/login');
+        if (userAuth) {
+            userAuth.logoutUser(); // Gọi hàm logout từ AuthContext
+            console.log('User logged out');
+            router.push('/'); // Chuyển hướng đến trang đăng nhập
+        }
     };
 
     return (
@@ -64,12 +69,10 @@ const Customerheader = () => {
                         <Camera className="w-5 h-5 cursor-pointer" />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="p-0 hover:bg-gray-100 rounded-full transition-colors"
-                                >
-                                    <User className="w-8 h-8 p-1.5 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow" />
-                                </Button>
+                                <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
+                                    <AvatarImage src="/path-to-user-image.jpg" alt="User Avatar" />
+                                    <AvatarFallback>U</AvatarFallback>
+                                </Avatar>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="end"
@@ -83,7 +86,7 @@ const Customerheader = () => {
                                     <span className="text-sm font-medium">History Transaction</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                    onClick={() => router.push('/customer/profile')}
+                                    onClick={() => router.push('/customer/profilecustomer')}
                                     className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-md transition-colors"
                                 >
                                     <User2 className="w-4 h-4 text-gray-500" />

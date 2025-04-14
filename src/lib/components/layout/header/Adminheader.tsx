@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, User, Settings, BookOpen, LayoutDashboard, LogOut } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Accordion,
@@ -17,12 +17,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Auth } from '@/lib/components/context/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
-
+    const userAuth = useContext(Auth);
     // Kiểm tra trạng thái đăng nhập từ localStorage
     useEffect(() => {
         const user = localStorage.getItem('user');
@@ -33,8 +35,11 @@ export const AdminHeader = () => {
     }, [router]);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        router.push('/login');
+        if (userAuth) {
+            userAuth.logoutUser(); // Gọi hàm logout từ AuthContext
+            console.log('User logged out');
+            router.push('/'); // Chuyển hướng đến trang đăng nhập
+        }
     };
 
     const searchResults = [
@@ -167,13 +172,17 @@ export const AdminHeader = () => {
                 <div className="flex items-center gap-4">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <User className="h-5 w-5" />
-                            </Button>
+                            <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
+                                <AvatarImage src="/path-to-user-image.jpg" alt="User Avatar" />
+                                <AvatarFallback>A</AvatarFallback>
+                            </Avatar>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48" align="end">
+                        <DropdownMenuContent
+                            className="w-48 bg-gray-100 border border-gray-300 rounded-md shadow-lg"
+                            align="end"
+                        >
                             <DropdownMenuItem>
-                                <a href="#" className="w-full">
+                                <a href="/admin/profileadmin" className="w-full">
                                     Profile
                                 </a>
                             </DropdownMenuItem>
@@ -192,7 +201,10 @@ export const AdminHeader = () => {
                                 <Settings className="h-5 w-5" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48" align="end">
+                        <DropdownMenuContent
+                            className="w-48 bg-gray-100 border border-gray-300 rounded-md shadow-lg"
+                            align="end"
+                        >
                             <DropdownMenuItem>
                                 <a href="#" className="w-full">
                                     System Settings
@@ -205,10 +217,6 @@ export const AdminHeader = () => {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-
-                    <Button variant="ghost" size="icon">
-                        <BookOpen className="h-5 w-5" />
-                    </Button>
                 </div>
             </div>
         </header>
