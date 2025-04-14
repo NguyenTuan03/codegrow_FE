@@ -24,15 +24,9 @@ const forgotPasswordSchema = z.object({
     email: z.string().email('Invalid email address'),
 });
 
-const resetPasswordSchema = z
-    .object({
-        password: z.string().min(6, 'Password must be at least 6 characters'),
-        confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: 'Passwords do not match',
-        path: ['confirmPassword'],
-    });
+const resetPasswordSchema = z.object({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+});
 
 const PasswordPage = () => {
     const searchParams = useSearchParams();
@@ -48,7 +42,7 @@ const PasswordPage = () => {
 
     const resetPasswordForm = useForm({
         resolver: zodResolver(resetPasswordSchema),
-        defaultValues: { password: '', confirmPassword: '' },
+        defaultValues: { password: '' },
     });
 
     const handleForgetPassword = async (data: { email: string }) => {
@@ -69,7 +63,7 @@ const PasswordPage = () => {
         }
     };
 
-    const handleResetPassword = async (data: { password: string; confirmPassword: string }) => {
+    const handleResetPassword = async (data: { password: string }) => {
         setLoading(true);
         try {
             const response = await resetPassword(token as string, data.password);
@@ -120,6 +114,11 @@ const PasswordPage = () => {
                             </Button>
                         </form>
                     </Form>
+                    <p className="text-sm text-center mt-4">
+                        <a href="/login" className="text-blue-500 underline hover:text-blue-700">
+                            Back to Login
+                        </a>
+                    </p>
                 </>
             ) : (
                 <>
@@ -146,23 +145,6 @@ const PasswordPage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={resetPasswordForm.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirm Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="password"
-                                                placeholder="Confirm new password"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                             <Button
                                 type="submit"
                                 disabled={loading}
@@ -172,6 +154,11 @@ const PasswordPage = () => {
                             </Button>
                         </form>
                     </Form>
+                    <p className="text-sm text-center mt-4">
+                        <a href="/login" className="text-blue-500 underline hover:text-blue-700">
+                            Back to Login
+                        </a>
+                    </p>
                 </>
             )}
         </div>

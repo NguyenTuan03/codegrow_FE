@@ -20,9 +20,9 @@ import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { login } from '@/lib/services/auth/Login';
-import { useRouter } from 'next/navigation';
+import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
+import VerifyGmailDialog from '@/app/(auth)/verifypage/VerifyPage';
 
-// Define the schema for login form validation
 const LoginBody = z.object({
     email: z.string().email({ message: 'Please enter a valid email address' }),
     password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
@@ -32,10 +32,11 @@ type LoginBodyType = z.infer<typeof LoginBody>;
 
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
+    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
-    const router = useRouter();            
-    
+    const router = useRouter();
+    const [gmailToken, setGmailToken] = useState<string | null>(null);
     const form = useForm<LoginBodyType>({
         resolver: zodResolver(LoginBody),
         defaultValues: {
@@ -47,13 +48,15 @@ const LoginForm = () => {
     const onSubmit = async (data: LoginBodyType) => {
         if (loading) return;
         setLoading(true);
-
         try {
             const response = await login(data.email, data.password);
-            console.log('Login response:', response); // Use response to avoid TS6133
+            const { token, user } = response;
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            console.log('Login response:', response);
             toast({ description: 'Login successful!' });
             router.push('/');
-        } catch {
+        } catch (error) {
             toast({
                 description: 'Login failed. Please check your credentials and try again.',
                 variant: 'destructive',
@@ -67,7 +70,14 @@ const LoginForm = () => {
         if (loading) return;
         setLoading(true);
         try {
-            router.push(process.env.NEXT_PUBLIC_API_URL+'/auth/login/google')
+            const response = await loginGoogle();
+            console.log('Google login response:', response); // Use response
+            toast({ description: 'Google login successful!' });
+            // router.push('/');
+            setShowVerifyDialog(true);
+            const token = response.token;
+            localStorage.setItem('token', token);
+            setGmailToken(token);
         } catch {
             toast({
                 description: 'Google login failed. Please try again.',
@@ -182,6 +192,9 @@ const LoginForm = () => {
                     <GoogleButton onClick={handleGoogleLogin} />
                 </Button>
             </div>
+            {showVerifyDialog && (
+                <VerifyGmailDialog token={gmailToken} onClose={() => setShowVerifyDialog(false)} />
+            )}
         </div>
     );
 };
