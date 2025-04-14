@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
 import GoogleButton from 'react-google-button';
@@ -21,7 +20,7 @@ import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { login } from '@/lib/services/auth/Login';
-import { loginGoogle } from '@/lib/services/auth/LoginGoogle';
+import { useRouter } from 'next/navigation';
 
 // Define the schema for login form validation
 const LoginBody = z.object({
@@ -35,8 +34,8 @@ const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
-    const router = useRouter();
-
+    const router = useRouter();            
+    
     const form = useForm<LoginBodyType>({
         resolver: zodResolver(LoginBody),
         defaultValues: {
@@ -64,21 +63,16 @@ const LoginForm = () => {
         }
     };
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleLogin = () => {
         if (loading) return;
         setLoading(true);
-
         try {
-            const response = await loginGoogle();
-            console.log('Google login response:', response); // Use response
-            toast({ description: 'Google login successful!' });
-            router.push('/');
+            router.push(process.env.NEXT_PUBLIC_API_URL+'/auth/login/google')
         } catch {
             toast({
                 description: 'Google login failed. Please try again.',
                 variant: 'destructive',
             });
-        } finally {
             setLoading(false);
         }
     };

@@ -1,12 +1,39 @@
 'use client';
+import { toast } from '@/components/ui/use-toast';
 import { Auth } from '@/lib/components/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-
+import { jwtDecode } from "jwt-decode";
 export default function Page() {
     const router = useRouter();
     const auth = useContext(Auth);
-
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        const token  = searchParams.get('token');
+        const jwtdecode = jwtDecode(token)
+        console.log(jwtdecode);
+        
+        if (jwtdecode) {
+            auth?.loginUser({
+                id:jwtdecode._id,
+                role:jwtdecode.role,
+                fullname:jwtdecode.name,
+                email:jwtdecode.email
+            })
+        }
+        
+        const error = searchParams.get('error');
+        
+        if (token) {
+            localStorage.setItem('token', token);
+            toast({ description: 'Google login successful!' });
+        } else if (error) {
+            toast({
+                description: 'Google login failed. Please try again.',
+                variant: 'destructive',
+            });
+        }
+    }, [searchParams, router]);
     useEffect(() => {
         if (!auth || !auth.userAuth) {
             router.replace('/login');
