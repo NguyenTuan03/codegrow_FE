@@ -21,15 +21,15 @@ const Customerheader = () => {
     useEffect(() => {
         const user = localStorage.getItem('user');
         if (user) {
-            const parsedUser = JSON.parse(user); // Chuyển chuỗi JSON thành object
-            setIsLoggedIn(!!parsedUser.id); // Kiểm tra nếu `user.id` tồn tại
+            const parsedUser = JSON.parse(user);
+            setIsLoggedIn(!!parsedUser.id);
+            console.log('User:', parsedUser.id);
         } else {
             setIsLoggedIn(false);
         }
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
         setIsLoggedIn(false);
         router.push('/login');

@@ -21,24 +21,19 @@ import { useRouter } from 'next/navigation';
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
 
     // Kiểm tra trạng thái đăng nhập từ localStorage
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token); // Nếu có token, đặt isLoggedIn thành true
-    }, []);
+        const user = localStorage.getItem('user');
+        if (!user) {
+            // Nếu không có user, chuyển hướng đến trang đăng nhập
+            router.push('/login');
+        }
+    }, [router]);
 
     const handleLogout = () => {
-        // Xóa token và thông tin người dùng khỏi localStorage
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
-
-        // Cập nhật trạng thái đăng nhập
-        setIsLoggedIn(false);
-
-        // Chuyển hướng về trang đăng nhập
         router.push('/login');
     };
 
@@ -169,41 +164,28 @@ export const AdminHeader = () => {
                     )}
                 </div>
 
-                {/* Right Side - User, Settings, Book */}
                 <div className="flex items-center gap-4">
-                    {isLoggedIn ? (
-                        <>
-                            {/* User Dropdown */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                        <User className="h-5 w-5" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-48" align="end">
-                                    <DropdownMenuItem>
-                                        <a href="#" className="w-full">
-                                            Profile
-                                        </a>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={handleLogout}>
-                                        <div className="flex items-center gap-2">
-                                            <LogOut className="h-4 w-4" />
-                                            Logout
-                                        </div>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </>
-                    ) : (
-                        <>
-                            <Button variant="outline">
-                                <Link href="/login">LogIn</Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <User className="h-5 w-5" />
                             </Button>
-                        </>
-                    )}
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48" align="end">
+                            <DropdownMenuItem>
+                                <a href="#" className="w-full">
+                                    Profile
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleLogout}>
+                                <div className="flex items-center gap-2">
+                                    <LogOut className="h-4 w-4" />
+                                    Logout
+                                </div>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
-                    {/* Settings Dropdown */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
@@ -224,7 +206,6 @@ export const AdminHeader = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {/* Book Icon */}
                     <Button variant="ghost" size="icon">
                         <BookOpen className="h-5 w-5" />
                     </Button>
