@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useState } from 'react';
-import { z } from 'zod';
 import GoogleButton from 'react-google-button';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
@@ -22,15 +21,10 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { login } from '@/lib/services/auth/Login';
 import { useRouter } from 'next/navigation';
 
-const LoginBody = z.object({
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-});
-
-type LoginBodyType = z.infer<typeof LoginBody>;
-
+import { LoginBody } from '@/schemaValidations/auth.schema';
+import { LoginBodyType } from '@/schemaValidations/auth.schema';
 const LoginForm = () => {
-    const [loading, setLoading] = useState(false);    
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -54,7 +48,7 @@ const LoginForm = () => {
             toast({ description: 'Login successful!' });
             router.push('/');
         } catch (error) {
-            console.log(error);            
+            console.log(error);
             toast({
                 description: 'Login failed. Please check your credentials and try again.',
                 variant: 'destructive',
@@ -68,7 +62,7 @@ const LoginForm = () => {
         if (loading) return;
         setLoading(true);
         try {
-            router.push(process.env.NEXT_PUBLIC_API_URL+'/auth/login/google')            
+            router.push(process.env.NEXT_PUBLIC_API_URL + '/auth/login/google');
         } catch {
             toast({
                 description: 'Google login failed. Please try again.',
@@ -137,18 +131,6 @@ const LoginForm = () => {
                             )}
                         />
 
-                        <p className="text-sm text-muted-foreground">
-                            By continuing, you agree to the{' '}
-                            <a href="#" className="underline">
-                                Terms of use
-                            </a>{' '}
-                            and{' '}
-                            <a href="#" className="underline">
-                                Privacy Policy
-                            </a>
-                            .
-                        </p>
-
                         <Button
                             type="submit"
                             disabled={loading}
@@ -182,7 +164,7 @@ const LoginForm = () => {
                 <Button className="mt-2" disabled={loading}>
                     <GoogleButton onClick={handleGoogleLogin} />
                 </Button>
-            </div>            
+            </div>
         </div>
     );
 };
