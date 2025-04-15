@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { handleErrorApi } from '@/lib/utils';
 
 // Validation schema for resetting password
 const resetPasswordSchema = z.object({
@@ -47,13 +48,14 @@ export default function ResetPasswordPage() {
 
             toast({
                 description: response?.message || 'Password reset successfully!',
+                className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
             });
             router.push('/login'); // Redirect to login page
-        } catch (error: any) {
-            console.error('Error resetting password:', error);
-            toast({
-                description: error.message || 'Failed to reset password. Please try again.',
-                variant: 'destructive',
+        } catch (error) {
+            handleErrorApi({
+                error,
+                setError: resetPasswordForm.setError,
+                duration: 3000,
             });
         } finally {
             setLoading(false);
