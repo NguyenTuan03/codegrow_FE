@@ -1,4 +1,4 @@
-import httpRequest from './../HttpRequest';
+import httpRequest from '../../util/HttpRequest';
 export const forgotPassword = async (email: string) => {
     try {
         const res = await httpRequest.post('auth/forgot-password', {

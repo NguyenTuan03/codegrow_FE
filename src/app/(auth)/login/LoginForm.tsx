@@ -44,18 +44,16 @@ const LoginForm = () => {
         setLoading(true);
         try {
             const response = await login(data.email, data.password);
-            // const { token, user } = response;
-            // localStorage.setItem('token', token);
-            // localStorage.setItem('user', JSON.stringify(user));
-            const token = response.metadata;
-            const decoded = jwtDecode(token);
-            userAuth?.loginUser(decoded);
-            console.log('Login response:', response);
+            const token = response.metadata; 
+            localStorage.setItem('token',JSON.stringify(token))
+            const decoded = jwtDecode(token); 
+            userAuth?.loginUser(decoded); 
             toast({
                 description: 'Login successful!',
                 className: 'bg-green-500 text-black',
+                duration: 1000,
             });
-            router.push('/');
+            router.push('/'); 
         } catch (error) {
             console.log(error);
             toast({

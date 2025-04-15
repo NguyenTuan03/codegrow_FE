@@ -1,4 +1,4 @@
-import httpRequest from './../HttpRequest';
+import httpRequest from '../../util/HttpRequest';
 
 export const loginGoogle = async () => {
     try {

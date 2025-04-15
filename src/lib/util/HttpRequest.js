@@ -1,8 +1,9 @@
 import axios from 'axios';
-console.log('✅ ENV Base URL:', process.env.NEXT_PUBLIC_HOST_CODEGROW);
+console.log('✅ ENV Base URL:', process.env.NEXT_PUBLIC_API_URL);
 
 const httpRequest = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
+    withCredentials:true,
     headers: {
         'Content-Type': 'application/json',
     },
