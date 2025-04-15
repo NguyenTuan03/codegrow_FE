@@ -47,13 +47,13 @@ const LoginForm = () => {
             const response = await login(data.email, data.password);
             const token = response.metadata; // Lấy token từ response
             const decoded = jwtDecode(token); // Giải mã token
-            userAuth?.loginUser(decoded); // Lưu thông tin user vào AuthContext
+            userAuth?.loginUser(decoded, token); // Lưu thông tin user và token vào AuthContext
             toast({
                 description: 'Login successful!',
                 className: 'bg-green-500 text-black',
                 duration: 1000,
             });
-            router.push('/'); // Chuyển hướng sau khi login thành công
+            router.push('/');
         } catch (error) {
             handleErrorApi({
                 error,
