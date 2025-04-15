@@ -48,6 +48,7 @@ const page = () => {
         const timer = setTimeout(() => setProgress(66), 500);
         return () => clearTimeout(timer);
     }, []);
+
     return (
         <div className="container mx-auto px-4 py-8 w-full">
             <div className="grid grid-cols-12 gap-4 mb-10">
@@ -87,7 +88,7 @@ const page = () => {
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4">
                             <Progress value={progress} className="w-[60%] bg-[#B7CFFF]" />
-                            <div>{progress} exercies completed</div>
+                            <div>{progress} exercises completed</div>
                         </div>
                     </div>
                     <Card className="bg-[#eaf1ff] border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
@@ -105,7 +106,7 @@ const page = () => {
                             <h2 className="text-xl font-bold mb-2">Become a mentor</h2>
                             <p className="text-gray-600 mb-6 text-sm">
                                 Mentoring is a great way to reinforce your own learning, and help
-                                students learn and discover the things they don’t know.
+                                students learn and discover the things they dont know.
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6">
@@ -157,7 +158,7 @@ const page = () => {
                                         </div>
                                         <div className="flex flex-row items-center gap-2">
                                             <Image
-                                                src={item.learnerIcon}
+                                                src={item.moduleIcon}
                                                 width={30}
                                                 height={30}
                                                 alt=""
@@ -166,7 +167,7 @@ const page = () => {
                                         </div>
                                         <div className="flex flex-row items-center gap-2">
                                             <Image
-                                                src={item.learnerIcon}
+                                                src={item.timerIcon}
                                                 width={30}
                                                 height={30}
                                                 alt=""

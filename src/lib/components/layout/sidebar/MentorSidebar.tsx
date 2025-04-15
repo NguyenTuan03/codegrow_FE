@@ -81,7 +81,9 @@ export default function MentorSidebar() {
                 {/* Classes Section */}
                 <SidebarGroup>
                     <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 uppercase flex items-center justify-between">
-                        <span>Classes</span>
+                        <Link href="/mentor/classes">
+                            <span className="cursor-pointer hover:text-indigo-600">Classes</span>
+                        </Link>
                         <SidebarMenuAction className="ml-2 mt-2 mr-2">
                             <Link href="/mentor/classes/create">
                                 <Plus className="h-4 w-4 text-gray-500 hover:text-indigo-600" />
