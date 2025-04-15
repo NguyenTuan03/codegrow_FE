@@ -18,6 +18,7 @@ import { forgotPassword } from '@/lib/services/auth/ForgotPassword';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { handleErrorApi } from '@/lib/utils';
 
 const forgotPasswordSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -39,12 +40,14 @@ const PasswordPage = () => {
             const response = await forgotPassword(data.email);
             console.log('Forgot password response:', response);
             toast({
-                description: 'Reset password email sent successfully!',
+                description: response?.message || 'Send reset link successfully!',
+                className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
             });
         } catch (error) {
-            toast({
-                description: 'Failed to send reset password email. Please try again.',
-                variant: 'destructive',
+            handleErrorApi({
+                error,
+                setError: forgotPasswordForm.setError,
+                duration: 3000,
             });
         } finally {
             setLoading(false);

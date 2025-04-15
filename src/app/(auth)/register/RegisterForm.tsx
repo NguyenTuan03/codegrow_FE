@@ -15,12 +15,12 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import axios from 'axios';
 import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.schema';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { signUp } from '@/lib/services/auth/SignUp';
+import { handleErrorApi } from '@/lib/utils';
 
 const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
@@ -73,31 +73,40 @@ const RegisterForm = () => {
             });
 
             router.push('/register/verify');
-        } catch (error: unknown) {
-            let errorMessage = 'Registration failed. Please try again.';
-            if (axios.isAxiosError(error)) {
-                console.error('Axios Error:', error.response?.data); // Log chi tiết lỗi từ backend
-                if (error.response?.status === 400) {
-                    errorMessage = error.response.data || 'Email already exists.';
-                }
-            } else if (error instanceof Error) {
-                console.error('JS Error:', error.message); // Log lỗi JavaScript
-                errorMessage = error.message;
-            }
-
-            toast({
-                description: 'Login failed. Please check your credentials and try again.',
-                className: 'bg-red-500 text-black', // Màu nền đỏ cho trạng thái thất bại
+        } catch (error) {
+            handleErrorApi({
+                error,
+                setError: form.setError,
+                duration: 5000,
             });
         } finally {
             setLoading(false);
         }
+        // catch (error: unknown) {
+        //     let errorMessage = 'Registration failed. Please try again.';
+        //     if (axios.isAxiosError(error)) {
+        //         console.error('Axios Error:', error.response?.data); // Log chi tiết lỗi từ backend
+        //         if (error.response?.status === 400) {
+        //             errorMessage = error.response.data || 'Email already exists.';
+        //         }
+        //     } else if (error instanceof Error) {
+        //         console.error('JS Error:', error.message); // Log lỗi JavaScript
+        //         errorMessage = error.message;
+        //     }
+
+        //     toast({
+        //         description: 'Login failed. Please check your credentials and try again.',
+        //         className: 'bg-red-500 text-black', // Màu nền đỏ cho trạng thái thất bại
+        //     });
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     return (
         <div className="w-full max-w-lg p-8 rounded-[1.5rem] shadow-lg bg-white border border-gray-200">
             {/* Header */}
-            <h1 className="text-3xl text-center font-bold text-gray-800 mb-6">Create an Account</h1>
+            <h1 className="text-3xl text-center font-bold text-pink-500 mb-6">Create an Account</h1>
 
             {/* Form */}
             <Form {...form}>

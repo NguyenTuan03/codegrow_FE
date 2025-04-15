@@ -1,12 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
     Form,
     FormControl,
@@ -15,257 +11,188 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { handleErrorApi } from '@/lib/utils';
+import { useState } from 'react';
+import { updateProfile } from '@/lib/services/api/UpdateProfile';
+import { UpdateProfileBody, UpdateProfileBodyType } from '@/schemaValidations/account.schema';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'; // Import Avatar từ shadcn
 
-// Define the form schema using zod
-const profileSchema = z.object({
-    firstName: z.string().min(1, { message: 'First name is required' }),
-    lastName: z.string().min(1, { message: 'Last name is required' }),
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    role: z.string().min(1, { message: 'Role is required' }),
-    country: z.string().min(1, { message: 'Country is required' }),
-    city: z.string().min(1, { message: 'City/Region is required' }),
-    postal: z.string().min(1, { message: 'Postal code is required' }),
-    tel: z.string().min(1, { message: 'Phone number is required' }),
-});
+interface Profile {
+    fullName: string;
+    email: string;
+    imgUrl?: string;
+    phone?: string;
+}
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
+const ProfileForm = ({ profile }: { profile: Profile }) => {
+    const [loading, setLoading] = useState(false);
+    const [avatar, setAvatar] = useState(profile.imgUrl || '/default-avatar.png'); // Avatar mặc định
+    const { toast } = useToast();
+    const router = useRouter();
 
-export default function ProfileForm() {
-    // Initialize the form with react-hook-form and zod validation
-    const form = useForm<ProfileFormValues>({
-        resolver: zodResolver(profileSchema),
+    const form = useForm<UpdateProfileBodyType>({
+        resolver: zodResolver(UpdateProfileBody),
         defaultValues: {
-            firstName: 'Rafiqul',
-            lastName: 'Rahman',
-            email: 'rafiqur.rahman@gmail.com',
-            role: 'Team Manager',
-            country: 'United Kingdom',
-            city: 'Leeds, East London',
-            postal: 'ERT 2354',
-            tel: '+99 345 346 xxx',
+            fullName: profile.fullName || '',
+            password: '',
+            confirmPassword: '',
+            imgUrl: profile.imgUrl || '',
+            phone: profile.phone || '',
         },
     });
 
-    // Handle form submission
-    const onSubmit = (data: ProfileFormValues) => {
-        console.log('Profile updated:', data);
-        // Add your form submission logic here (e.g., API call)
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setAvatar(reader.result as string); // Hiển thị ảnh mới
+                form.setValue('imgUrl', reader.result as string); // Cập nhật giá trị imgUrl
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
+    async function onSubmit(values: UpdateProfileBodyType) {
+        if (loading) return;
+        setLoading(true);
+
+        try {
+            const result = await updateProfile(
+                values.fullName,
+                values.password || '',
+                values.confirmPassword || '',
+                values.imgUrl || '',
+                values.phone || '',
+            );
+
+            toast({
+                title: '🎉 Cập nhật thành công',
+                description: result.message || 'Thông tin đã được lưu.',
+                className: 'bg-green-500 text-white',
+            });
+
+            router.refresh();
+        } catch (error: any) {
+            handleErrorApi({
+                error,
+                setError: form.setError,
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <div className="flex flex-col gap-8 p-6 bg-white shadow-md rounded-lg">
-            {/* Header */}
-            <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
-                <p className="text-sm text-gray-600">Update your personal information below</p>
-            </div>
-
-            {/* Avatar + Basic Info */}
-            <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="w-28 h-28 rounded-full overflow-hidden border border-gray-300 shadow-sm">
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+        <Form {...form}>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6 max-w-xl w-full bg-white p-6 rounded-xl shadow-sm"
+                noValidate
+            >
+                {/* Avatar */}
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="relative">
+                        <Avatar className="w-32 h-32">
+                            <AvatarImage src={avatar} alt="Avatar" />
+                            <AvatarFallback>AV</AvatarFallback>
+                        </Avatar>
+                        <label
+                            htmlFor="avatar-upload"
+                            className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-600 transition"
+                        >
+                            <span className="material-icons">edit</span>
+                        </label>
+                        <input
+                            id="avatar-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleAvatarChange}
+                        />
+                    </div>
                 </div>
-                <div className="text-center md:text-left">
-                    <p className="text-lg font-medium text-gray-900">Rafiqul Rahman</p>
-                    <p className="text-sm text-gray-600">Leeds, United Kingdom</p>
+
+                {/* Email read-only */}
+                <div className="space-y-1">
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                        value={profile.email}
+                        readOnly
+                        className="bg-gray-100 cursor-not-allowed"
+                    />
                 </div>
-            </div>
 
-            {/* Personal Info */}
-            <div className="space-y-6">
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" noValidate>
-                        <Separator className="bg-gray-300" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="firstName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            First Name
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="firstName"
-                                                placeholder="Rafiqul"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="lastName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Last Name
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="lastName"
-                                                placeholder="Rahman"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                {/* Full Name */}
+                <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Họ và tên</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Nguyễn Văn A" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Email Address
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="email"
-                                                placeholder="rafiqur.rahman@gmail.com"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="role"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Role
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="role"
-                                                placeholder="Team Manager"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                {/* Phone */}
+                <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Số điện thoại</FormLabel>
+                            <FormControl>
+                                <Input placeholder="0123456789" type="tel" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                        <Separator className="bg-gray-300" />
-                        {/* Address */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="country"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Country
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="country"
-                                                placeholder="United Kingdom"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="city"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            City/Region
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="city"
-                                                placeholder="Leeds, East London"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                {/* Password */}
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Mật khẩu mới</FormLabel>
+                            <FormControl>
+                                <Input placeholder="********" type="password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="postal"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Postal Code
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="postal"
-                                                placeholder="ERT 2354"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="tel"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium text-gray-700">
-                                            Phone
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="tel"
-                                                placeholder="+99 345 346 xxx"
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                {/* Confirm Password */}
+                <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Nhập lại mật khẩu</FormLabel>
+                            <FormControl>
+                                <Input placeholder="********" type="password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                        {/* Save Changes Button */}
-                        <div className="flex justify-end mt-6">
-                            <Button
-                                type="submit"
-                                className="text-sm bg-blue-500 text-white hover:bg-blue-600 px-6 py-2 rounded-md"
-                            >
-                                Save Changes
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            </div>
-        </div>
+                {/* Submit */}
+                <Button type="submit" disabled={loading} className="w-full mt-4">
+                    {loading ? 'Đang cập nhật...' : 'Cập nhật thông tin'}
+                </Button>
+            </form>
+        </Form>
     );
-}
+};
+
+export default ProfileForm;

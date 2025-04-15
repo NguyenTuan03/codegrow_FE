@@ -24,6 +24,7 @@ import { LoginBody } from '@/schemaValidations/auth.schema';
 import { LoginBodyType } from '@/schemaValidations/auth.schema';
 import { jwtDecode } from 'jwt-decode';
 import { Auth } from '@/lib/components/context/AuthContext';
+import { handleErrorApi } from '@/lib/utils';
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -52,19 +53,19 @@ const LoginForm = () => {
                 description: 'Login successful!',
                 className: 'bg-green-500 text-black',
                 duration: 1000,
+                duration: 1000,
             });
             router.push('/'); 
         } catch (error) {
-            console.log(error);
-            toast({
-                description: 'Login failed. Please check your credentials and try again.',
-                className: 'bg-red-500 text-black',
+            handleErrorApi({
+                error,
+                setError: form.setError,
+                duration: 5000,
             });
         } finally {
             setLoading(false);
         }
     };
-
     const handleGoogleLogin = async () => {
         if (googleLoading) return;
         setGoogleLoading(true);
@@ -88,7 +89,7 @@ const LoginForm = () => {
         >
             {/* Header */}
             <div className="text-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
+                <h1 className="text-3xl font-bold text-pink-500">Welcome Back</h1>
                 <p className="text-sm text-gray-500">Log in to your account</p>
             </div>
 
