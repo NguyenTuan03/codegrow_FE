@@ -157,12 +157,15 @@ export default function Test() {
                                         </Link>
                                     </div>
                                 ) : (
-                                    <Link href={`/customer/testdetail`} passHref>
-                                        <Button
-                                            asChild
-                                            className="text-sm bg-[#ef476f] hover:bg-[#e63956] text-white"
-                                        >
-                                            <h1> Làm Bài Thi</h1>
+                                    <Link
+                                        href={{
+                                            pathname: `/customer/test/${test.testId}`,
+                                            query: { title: encodeURIComponent(test.title) }, // Encode để đảm bảo an toàn
+                                        }}
+                                        passHref
+                                    >
+                                        <Button className="text-sm bg-[#ef476f] hover:bg-[#e63956] text-white">
+                                            Làm Bài Thi
                                         </Button>
                                     </Link>
                                 )}

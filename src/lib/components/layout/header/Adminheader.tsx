@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, User, Settings, BookOpen, LayoutDashboard, LogOut } from 'lucide-react';
+import { Search, User, Settings, BookOpen, Bell, LayoutDashboard, LogOut } from 'lucide-react';
 import { useState, useEffect, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -191,6 +191,42 @@ export const AdminHeader = () => {
                                     <LogOut className="h-4 w-4" />
                                     Logout
                                 </div>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Bell className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className="w-72 bg-white border border-gray-300 rounded-md shadow-lg"
+                            align="end"
+                        >
+                            <div className="px-4 py-2 text-sm font-semibold text-gray-700">
+                                Notifications
+                            </div>
+                            <DropdownMenuItem>
+                                <div className="flex flex-col gap-1 text-sm">
+                                    <span className="font-medium">New user registered</span>
+                                    <span className="text-xs text-gray-500">2 minutes ago</span>
+                                </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <div className="flex flex-col gap-1 text-sm">
+                                    <span className="font-medium">System update completed</span>
+                                    <span className="text-xs text-gray-500">10 minutes ago</span>
+                                </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <div className="flex flex-col gap-1 text-sm">
+                                    <span className="font-medium">You have 3 unread messages</span>
+                                    <span className="text-xs text-gray-500">30 minutes ago</span>
+                                </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="justify-center text-blue-600 hover:text-blue-800">
+                                <a href="#">View all</a>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

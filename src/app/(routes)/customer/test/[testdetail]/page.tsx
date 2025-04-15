@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+// import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import useRouter for navigation
@@ -23,6 +24,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import { useState } from 'react';
 
 interface TestOption {
     id: string;
@@ -36,9 +38,11 @@ export default function TestDetail() {
     const [selectedTest, setSelectedTest] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 3;
-    const testTitle = 'Kiểm tra kiến thức nền';
     const router = useRouter(); // Initialize useRouter for navigation
-
+    const searchParams = useSearchParams();
+    // Lấy và decode title
+    const encodedTitle = searchParams.get('title');
+    const testTitle = encodedTitle ? decodeURIComponent(encodedTitle) : null;
     const testOptions: TestOption[] = [
         {
             id: '1',
@@ -76,11 +80,30 @@ export default function TestDetail() {
             difficulty: 'Hard',
         },
     ];
+    // const [testTitle, setTestTitle] = useState<string | null>(null);
+    //   useEffect(() => {
+    //     const fetchTestTitle = async () => {
+    //       try {
+    //         const res = await fetch(`/api/tests/${testId}`);
+    //         const data = await res.json();
+    //         setTestTitle(data.title);
+    //       } catch (error) {
+    //         router.push('/customer/test');
+    //       }
+    //     };
 
+    //     if (!searchParams.get('title')) {
+    //       fetchTestTitle();
+    //     } else {
+    //       setTestTitle(decodeURIComponent(searchParams.get('title')!));
+    //     }
+    //   }, [testId, searchParams]);
     const handleStartTest = () => {
         // Redirect to the challenge page
         router.push('/customer/challenge');
     };
+    const [selectedLanguage, setSelectedLanguage] = useState('Language'); // State cho Language
+    const [selectedDifficulty, setSelectedDifficulty] = useState('Difficulty'); // State cho Difficulty
 
     const totalPages = Math.ceil(testOptions.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -88,45 +111,6 @@ export default function TestDetail() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Header */}
-            <header className="border-b py-4 px-6">
-                <div className="container mx-auto flex items-center justify-between">
-                    <div className="flex items-center">
-                        <Link href="/" className="mr-8">
-                            <div className="w-10 h-10 bg-gray-200 flex items-center justify-center rounded-md">
-                                <span className="text-gray-600">Logo</span>
-                            </div>
-                        </Link>
-                        <nav className="hidden md:flex space-x-6">
-                            <Link href="/" className="text-gray-700 hover:text-gray-900">
-                                Home
-                            </Link>
-                            <Link href="/courses" className="text-gray-700 hover:text-gray-900">
-                                Courses
-                            </Link>
-                            <Link href="/roadmap" className="text-gray-700 hover:text-gray-900">
-                                Roadmap
-                            </Link>
-                            <Link href="/more" className="text-gray-700 hover:text-gray-900">
-                                More
-                            </Link>
-                            <Link href="/test" className="text-gray-900 font-medium">
-                                Test
-                            </Link>
-                            <Link href="/process" className="text-gray-700 hover:text-gray-900">
-                                Process
-                            </Link>
-                        </nav>
-                    </div>
-                    <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                            Sign in
-                        </Button>
-                        <Button size="sm">Register</Button>
-                    </div>
-                </div>
-            </header>
-
             {/* Banner */}
             <div className="w-full relative h-[300px] md:h-[400px] overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-100 z-0" />
@@ -161,11 +145,11 @@ export default function TestDetail() {
                     <Link href="/" className="text-gray-600 hover:text-gray-900">
                         <Home className="w-4 h-4" />
                     </Link>
-                    <span className="text-gray-600">${'>'}</span>
+                    <span className="text-gray-600">{'>'}</span>
                     <Link href="/customer/test" className="text-gray-600 hover:text-gray-900">
                         Test
                     </Link>
-                    <span className="text-gray-600">${'>'}</span>
+                    <span className="text-gray-600">{'>'}</span>
                     <span className="text-gray-900">{testTitle}</span>
                     <Badge className="ml-2 bg-blue-100 text-blue-800 text-xs">NEW</Badge>
                 </div>
@@ -173,30 +157,69 @@ export default function TestDetail() {
                 <h1 className="text-4xl font-bold my-8">TEST</h1>
 
                 <div className="flex space-x-4 mb-6">
+                    {/* Dropdown for Language */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="flex items-center space-x-2">
-                                <span>Language</span>
+                            <Button
+                                variant="outline"
+                                className="flex items-center space-x-2 bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-800"
+                            >
+                                <span>{selectedLanguage}</span> {/* Hiển thị giá trị được chọn */}
                                 <ChevronDown className="w-4 h-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem>Python</DropdownMenuItem>
-                            <DropdownMenuItem>JavaScript</DropdownMenuItem>
-                            <DropdownMenuItem>SQL</DropdownMenuItem>
+                        <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg rounded-lg p-2 z-50">
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedLanguage('Python')} // Cập nhật state
+                            >
+                                Python
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedLanguage('JavaScript')} // Cập nhật state
+                            >
+                                JavaScript
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedLanguage('SQL')} // Cập nhật state
+                            >
+                                SQL
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+
+                    {/* Dropdown for Difficulty */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="flex items-center space-x-2">
-                                <span>Difficulty</span>
+                            <Button
+                                variant="outline"
+                                className="flex items-center space-x-2 bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-800"
+                            >
+                                <span>{selectedDifficulty}</span> {/* Hiển thị giá trị được chọn */}
                                 <ChevronDown className="w-4 h-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem>Easy</DropdownMenuItem>
-                            <DropdownMenuItem>Medium</DropdownMenuItem>
-                            <DropdownMenuItem>Hard</DropdownMenuItem>
+                        <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg rounded-lg p-2 z-50">
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedDifficulty('Easy')} // Cập nhật state
+                            >
+                                Easy
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedDifficulty('Medium')} // Cập nhật state
+                            >
+                                Medium
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                onClick={() => setSelectedDifficulty('Hard')} // Cập nhật state
+                            >
+                                Hard
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

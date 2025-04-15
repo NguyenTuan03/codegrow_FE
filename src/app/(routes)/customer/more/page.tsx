@@ -1,54 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award, Rocket, Globe, Briefcase } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form';
+
 import ContactForm from '@/app/(routes)/customer/more/contact-form';
 
-// Define the form schema using zod
-const contactFormSchema = z.object({
-    fullName: z.string().min(2, { message: 'Full name must be at least 2 characters' }),
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    phoneNumber: z
-        .string()
-        .min(10, { message: 'Phone number must be at least 10 digits' })
-        .regex(/^\d+$/, { message: 'Phone number must contain only digits' }),
-    city: z.string().min(2, { message: 'City must be at least 2 characters' }),
-});
-
-type ContactFormValues = z.infer<typeof contactFormSchema>;
-
 export default function MentorCourses() {
-    // Initialize the form with react-hook-form and zod validation
-    const form = useForm<ContactFormValues>({
-        resolver: zodResolver(contactFormSchema),
-        defaultValues: {
-            fullName: '',
-            email: '',
-            phoneNumber: '',
-            city: '',
-        },
-    });
-
-    // Handle form submission
-    const onSubmit = (data: ContactFormValues) => {
-        console.log('Form submitted:', data);
-        // Add your form submission logic here (e.g., API call)
-    };
-
     return (
         <div className="space-y-16 px-6 py-10 md:px-16">
             {/* Hero Section */}
@@ -61,7 +19,7 @@ export default function MentorCourses() {
                 </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-10 items-center">
+            <div className="grid md:grid-cols-2 ml-70 gap-10 items-center">
                 {/* One-on-One */}
 
                 <div>
