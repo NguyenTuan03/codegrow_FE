@@ -1,4 +1,5 @@
-import httpRequest from '../HttpRequest';
+import httpRequest from '@/lib/util/HttpRequest';
+
 export const GetClass = async () => {
     try {
         const res = await httpRequest.get('mentor/getClass', {

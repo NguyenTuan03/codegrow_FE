@@ -1,4 +1,4 @@
-import httpRequest from '../HttpRequest';
+import httpRequest from '@/lib/util/HttpRequest';
 
 export const DeleteUser = async (token: string, id: string) => {
     try {
