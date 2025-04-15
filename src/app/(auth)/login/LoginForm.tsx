@@ -52,8 +52,7 @@ const LoginForm = () => {
             toast({
                 description: 'Login successful!',
                 className: 'bg-green-500 text-black',
-                duration: 1000,
-                duration: 1000,
+                duration: 1000,                
             });
             router.push('/'); 
         } catch (error) {
