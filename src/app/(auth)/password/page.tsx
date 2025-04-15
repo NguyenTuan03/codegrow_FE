@@ -108,15 +108,15 @@ const PasswordPage = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-blue-500 text-white"
+                                className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
                             >
                                 {loading ? 'Sending...' : 'Send Reset Link'}
                             </Button>
                         </form>
                     </Form>
                     <p className="text-sm text-center mt-4">
-                        <a href="/login" className="text-blue-500 underline hover:text-blue-700">
-                            Back to Login
+                        <a href="/login" className="text-pink-500 hover:text-pink-600">
+                            {'<---'} Back to Login
                         </a>
                     </p>
                 </>
@@ -148,14 +148,14 @@ const PasswordPage = () => {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-blue-500 text-white"
+                                className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
                             >
                                 {loading ? 'Resetting...' : 'Reset Password'}
                             </Button>
                         </form>
                     </Form>
                     <p className="text-sm text-center mt-4">
-                        <a href="/login" className="text-blue-500 underline hover:text-blue-700">
+                        <a href="/login" className="text-pink-500 underline hover:text-pink-600">
                             Back to Login
                         </a>
                     </p>

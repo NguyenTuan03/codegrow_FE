@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bell, Camera, History, User2, LogOut } from 'lucide-react';
+import { Bell, History, User2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -39,6 +39,15 @@ const Customerheader = () => {
             router.push('/'); // Chuyển hướng đến trang đăng nhập
         }
     };
+    const [notifications, setNotifications] = useState([
+        { id: 1, message: 'You have a new message!', link: '/messages' },
+        { id: 2, message: 'Your subscription is about to expire.', link: '/subscription' },
+        {
+            id: 3,
+            message: 'New course available: React Advanced.',
+            link: '/courses/react-advanced',
+        },
+    ]);
 
     return (
         <div className="flex w-full h-[80px] px-4 items-center border-b shadow-sm bg-white">
@@ -65,8 +74,44 @@ const Customerheader = () => {
                         >
                             Upgrade
                         </Button>
-                        <Bell className="w-5 h-5 cursor-pointer" />
-                        <Camera className="w-5 h-5 cursor-pointer" />
+                        <div className="flex items-center gap-3">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <div className="relative">
+                                        <Bell className="w-5 h-5 cursor-pointer" />
+                                        {notifications.length > 0 && (
+                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                                                {notifications.length}
+                                            </span>
+                                        )}
+                                    </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg rounded-lg p-2 w-64">
+                                    {notifications.length > 0 ? (
+                                        notifications.map((notification) => (
+                                            <DropdownMenuItem
+                                                key={notification.id}
+                                                className="px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-800 rounded-md"
+                                                onClick={() => {
+                                                    // Optional: Handle notification click
+                                                }}
+                                            >
+                                                <a
+                                                    href={notification.link}
+                                                    className="block w-full"
+                                                >
+                                                    {notification.message}
+                                                </a>
+                                            </DropdownMenuItem>
+                                        ))
+                                    ) : (
+                                        <div className="px-4 py-2 text-gray-500 text-sm">
+                                            No new notifications.
+                                        </div>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
@@ -104,10 +149,13 @@ const Customerheader = () => {
                     </>
                 ) : (
                     <>
-                        <Button className="me-2" variant="outline">
+                        <Button
+                            className="me-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+                            variant="outline"
+                        >
                             <Link href="/login">LogIn</Link>
                         </Button>
-                        <Button>
+                        <Button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
                             <Link href="/register">Register</Link>
                         </Button>
                     </>

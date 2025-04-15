@@ -513,160 +513,133 @@ export default function ClassPage() {
 
     // Marks Tab Content
     const MarksTab = () => {
-        // Calculate the conic-gradient for the performance chart
-        const getPerformanceGradient = () => {
-            let total = 0;
-            const segments = classData.performance.breakdown.map((segment) => {
-                const start = total;
-                total += segment.count;
-                return `${segment.color} ${start}deg ${total}deg`;
-            });
-            return `conic-gradient(${segments.join(', ')})`;
-        };
+        // Mock data for marks
+        const marksData = [
+            {
+                id: 1,
+                name: 'Nguyen Manh Tien',
+                scores: [
+                    { test: 'Quiz 1', score: 85, status: 'Completed' },
+                    { test: 'Assignment 1', score: 90, status: 'Completed' },
+                    { test: 'Quiz 2', score: null, status: 'Not Submitted' },
+                ],
+            },
+            {
+                id: 2,
+                name: 'Tran Huy Hoang',
+                scores: [
+                    { test: 'Quiz 1', score: 70, status: 'Completed' },
+                    { test: 'Assignment 1', score: null, status: 'Not Submitted' },
+                    { test: 'Quiz 2', score: 80, status: 'Completed' },
+                ],
+            },
+            {
+                id: 3,
+                name: 'Phan Nguyen Doan Vu',
+                scores: [
+                    { test: 'Quiz 1', score: 95, status: 'Completed' },
+                    { test: 'Assignment 1', score: 88, status: 'Completed' },
+                    { test: 'Quiz 2', score: 92, status: 'Completed' },
+                ],
+            },
+        ];
+
+        // Extract unique test names
+        const testNames = Array.from(
+            new Set(marksData.flatMap((student) => student.scores.map((score) => score.test))),
+        );
 
         return (
             <div>
-                {/* Top Section: Performance, Attendance, and To Do */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    {/* Average Group Performance */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-lg font-semibold mb-4">Average Group Performance</h2>
-                        <div className="flex items-center justify-center relative">
-                            <div
-                                className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100"
-                                style={{
-                                    background: getPerformanceGradient(),
-                                }}
-                            >
-                                <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center">
-                                    <span className="text-2xl font-bold">
-                                        {classData.performance.average}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-4 space-y-2">
-                            {classData.performance.breakdown.map((segment, index) => (
-                                <div key={index} className="flex items-center">
-                                    <div
-                                        className={`h-4 w-4 rounded-full ${segment.color} mr-2`}
-                                    ></div>
-                                    <span className="text-sm">
-                                        {segment.range}: {segment.count} students
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                        <Button
-                            variant="link"
-                            className="mt-3 text-blue-600 hover:underline text-sm p-0"
-                            aria-label="Export performance data as CSV"
-                        >
-                            Export CSV
-                        </Button>
-                    </div>
-
-                    {/* Average Students Attendance */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-lg font-semibold mb-4">Average Students Attendance</h2>
-                        <div className="flex items-center justify-center relative">
-                            <div
-                                className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100"
-                                style={{
-                                    background: `conic-gradient(#22c55e 0deg ${classData.attendance.average * 3.6}deg, #e5e7eb ${classData.attendance.average * 3.6}deg 360deg)`,
-                                }}
-                            >
-                                <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center">
-                                    <span className="text-2xl font-bold">
-                                        {classData.attendance.average}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <Button
-                            variant="link"
-                            className="mt-3 text-blue-600 hover:underline text-sm p-0"
-                            aria-label="Export attendance data"
-                        >
-                            Export
-                        </Button>
-                    </div>
-
-                    {/* To Do */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-lg font-semibold mb-4">To Do</h2>
-                        <div className="space-y-3">
-                            {classData.toDo.map((item, index) => (
-                                <div key={index} className="flex items-center">
-                                    <Input
-                                        type="checkbox"
-                                        id={`todo-${index}`}
-                                        checked={item.completed}
-                                        onChange={() => {}}
-                                        className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                    />
-                                    <label htmlFor={`todo-${index}`} className="ml-3 text-sm">
-                                        {item.task}
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                {/* Header */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold">Marks Overview</h2>
+                    <p className="text-gray-600">
+                        Detailed scores and submission status for each student.
+                    </p>
                 </div>
 
-                {/* Hometasks to Check */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-lg font-semibold mb-4">Hometasks to Check</h2>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full text-left text-sm">
-                            <thead>
-                                <tr className="border-b">
-                                    <th className="p-3">Progress</th>
-                                    <th className="p-3">Name</th>
-                                    <th className="p-3">Subject</th>
-                                    <th className="p-3">Grade</th>
-                                    <th className="p-3">Group</th>
-                                    <th className="p-3">Count</th>
-                                    <th className="p-3">Deadline</th>
-                                    <th className="p-3">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {classData.hometasks.map((task, index) => (
-                                    <tr key={index} className="border-b hover:bg-gray-50">
-                                        <td className="p-3">
-                                            <div
-                                                className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center relative"
-                                                style={{
-                                                    background: `conic-gradient(#3b82f6 0deg ${task.progress * 3.6}deg, #e5e7eb ${task.progress * 3.6}deg 360deg)`,
-                                                }}
-                                            >
-                                                <div className="h-6 w-6 bg-white rounded-full flex items-center justify-center text-xs">
-                                                    {task.progress}%
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="p-3">{task.name}</td>
-                                        <td className="p-3">{task.subject}</td>
-                                        <td className="p-3">{task.grade}</td>
-                                        <td className="p-3">{task.group}</td>
-                                        <td className="p-3">{task.count} of 30</td>
-                                        <td className="p-3">{task.deadline}</td>
-                                        <td className="p-3">
-                                            <span
-                                                className={`text-xs px-2 py-1 rounded ${
-                                                    task.status === 'Ready to check'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-orange-100 text-orange-800'
+                {/* Table */}
+                <div className="overflow-x-auto bg-white p-4 rounded-lg shadow">
+                    <table className="min-w-full text-left text-sm">
+                        <thead>
+                            <tr className="border-b">
+                                <th className="p-3">Student Name</th>
+                                {testNames.map((test, index) => (
+                                    <th key={index} className="p-3">
+                                        {test}
+                                    </th>
+                                ))}
+                                <th className="p-3">Completed</th>
+                                <th className="p-3">Not Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {marksData.map((student) => {
+                                const completedCount = student.scores.filter(
+                                    (score) => score.status === 'Completed',
+                                ).length;
+                                const notSubmittedCount = student.scores.filter(
+                                    (score) => score.status === 'Not Submitted',
+                                ).length;
+
+                                return (
+                                    <tr key={student.id} className="border-b hover:bg-gray-50">
+                                        <td className="p-3 font-medium">{student.name}</td>
+                                        {student.scores.map((score, index) => (
+                                            <td
+                                                key={index}
+                                                className={`p-3 ${
+                                                    score.status === 'Completed'
+                                                        ? 'text-green-600'
+                                                        : 'text-red-600'
                                                 }`}
                                             >
-                                                {task.status}
-                                            </span>
-                                        </td>
+                                                {score.score !== null
+                                                    ? `${score.score}/100`
+                                                    : score.status}
+                                            </td>
+                                        ))}
+                                        <td className="p-3 text-green-600">{completedCount}</td>
+                                        <td className="p-3 text-red-600">{notSubmittedCount}</td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Summary Section */}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Total Submissions */}
+                    <div className="bg-white p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-semibold mb-2">Total Submissions</h3>
+                        <p className="text-gray-600">
+                            {marksData.reduce(
+                                (total, student) =>
+                                    total +
+                                    student.scores.filter((score) => score.status === 'Completed')
+                                        .length,
+                                0,
+                            )}{' '}
+                            completed submissions out of {marksData.length * testNames.length}.
+                        </p>
+                    </div>
+
+                    {/* Not Submitted */}
+                    <div className="bg-white p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-semibold mb-2">Not Submitted</h3>
+                        <p className="text-gray-600">
+                            {marksData.reduce(
+                                (total, student) =>
+                                    total +
+                                    student.scores.filter(
+                                        (score) => score.status === 'Not Submitted',
+                                    ).length,
+                                0,
+                            )}{' '}
+                            submissions are still pending.
+                        </p>
                     </div>
                 </div>
             </div>

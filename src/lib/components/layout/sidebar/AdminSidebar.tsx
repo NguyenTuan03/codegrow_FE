@@ -137,7 +137,7 @@ export const AdminSidebar = () => {
                                         <SidebarMenuItem>
                                             <SidebarMenuButton asChild>
                                                 <Link
-                                                    href="#"
+                                                    href="/admin/account"
                                                     className="flex items-center gap-2 px-2 py-1 text-sm"
                                                 >
                                                     <Settings className="h-4 w-4" />
