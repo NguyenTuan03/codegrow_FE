@@ -1,4 +1,4 @@
-import httpRequest from './../HttpRequest';
+import httpRequest from '../../util/HttpRequest';
 export const resetPassword = async (token: string, newpass: string) => {
     try {
         const res = await httpRequest.post('auth/reset-password', {

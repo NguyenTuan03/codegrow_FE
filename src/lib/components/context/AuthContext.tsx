@@ -1,5 +1,6 @@
 'use client';
 
+import { setupAxiosInterceptor } from '@/lib/util/axiosInterceptor';
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
 
 type Props = {
@@ -26,6 +27,10 @@ const AuthContext = ({ children }: Props) => {
     const [userAuth, setUserAuth] = useState<User | null>(null);
 
     useEffect(() => {
+        setupAxiosInterceptor();
+      }, []);
+      
+    useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
@@ -36,7 +41,7 @@ const AuthContext = ({ children }: Props) => {
                 }
             }
         }
-    }, []);
+    }, []);    
 
     const loginUser = (user: User) => {
         setUserAuth(user);
