@@ -1,27 +1,31 @@
 'use client';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileForm from '@/components/profile-form';
-import { profile } from '@/lib/services/api/Profile';
 import { useToast } from '@/components/ui/use-toast';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 
 export default function ProfileCustomer() {
     const { toast } = useToast();
     const [loading, setLoading] = React.useState(true);
     const [profileData, setProfileData] = useState(null);
 
-    // Lấy dữ liệu profile từ API
     useEffect(() => {
         async function fetchProfile() {
             try {
-                const response = await profile();
-                setProfileData(response.payload.data);
-                toast({
-                    description: response?.message || 'Profile retrieved successfully!',
-                    className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md',
-                });
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    throw new Error('User data is missing');
+                }
+
+                const user = JSON.parse(userData);
+                const id = user._id;
+
+                const userDetail = await getUserDetail(id);
+                console.log(`User detail for ID ${id}:`, userDetail);
+                setProfileData(userDetail.metadata);
             } catch (error) {
+                console.error('❌ Error fetching user details:', error);
                 toast({
                     description: 'Failed to retrieve profile. Please try again.',
                     variant: 'destructive',
@@ -34,57 +38,50 @@ export default function ProfileCustomer() {
         fetchProfile();
     }, [toast]);
 
-    if (loading) {
-        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-    }
-
-    if (!profileData) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <p>Failed to load profile data.</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-6 md:p-10">
-                <div className="flex flex-col md:flex-row gap-8">
-                    {/* Sidebar (Vertical Tabs) */}
-                    <div className="w-full md:w-[250px]">
-                        <Tabs defaultValue="profile" orientation="vertical" className="space-y-2">
-                            <TabsList className="flex md:flex-col w-full justify-start bg-gray-100 rounded-lg shadow-md p-2">
-                                <TabsTrigger
-                                    value="profile"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">My Profile</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="security"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">Security</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="billing"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">Billing</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="delete"
-                                    className="flex items-center gap-2 px-4 py-3 text-red-500 font-medium rounded-md data-[state=active]:bg-red-50 data-[state=active]:text-red-600 data-[state=active]:shadow-sm hover:bg-red-100 transition-all"
-                                >
-                                    <span className="material-icons">Delete Account</span>
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </div>
-                    {/* Profile Form */}
-                    <ProfileForm profile={profileData} />
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
+            {loading ? (
+                <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+                    <p className="mt-4 text-gray-600 font-medium">Loading your profile...</p>
                 </div>
-            </div>
+            ) : !profileData ? (
+                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white rounded-lg shadow-md p-8 max-w-md w-full">
+                    <svg
+                        className="w-16 h-16 text-red-500 mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                    </svg>
+                    <p className="text-gray-700 text-lg font-medium text-center">
+                        Failed to load profile data. Please try again later.
+                    </p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                        Retry
+                    </button>
+                </div>
+            ) : (
+                <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-800">Your Profile</h1>
+                        <p className="text-gray-500 mt-2">Manage your personal information</p>
+                    </div>
+                    <div className="flex flex-col gap-6">
+                        <ProfileForm profile={profileData} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

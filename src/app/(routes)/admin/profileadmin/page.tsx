@@ -1,47 +1,180 @@
+'use client';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileForm from '@/components/profile-form';
+import { useToast } from '@/components/ui/use-toast';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function ProfileAdmin() {
+    const { toast } = useToast();
+    const [loading, setLoading] = React.useState(true);
+    const [profileData, setProfileData] = useState(null);
+
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    throw new Error('User data is missing');
+                }
+
+                const user = JSON.parse(userData);
+                const id = user._id;
+
+                const userDetail = await getUserDetail(id);
+                console.log(`User detail for ID ${id}:`, userDetail);
+                setProfileData(userDetail.metadata);
+            } catch (error) {
+                console.error('❌ Error fetching user details:', error);
+                toast({
+                    description: 'Failed to retrieve profile. Please try again.',
+                    variant: 'destructive',
+                });
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchProfile();
+    }, [toast]);
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-6 md:p-10">
-                <div className="flex flex-col md:flex-row gap-8">
-                    {/* Sidebar (Vertical Tabs) */}
-                    <div className="w-full md:w-[250px]">
-                        <Tabs defaultValue="profile" orientation="vertical" className="space-y-2">
-                            <TabsList className="flex md:flex-col w-full justify-start bg-gray-100 rounded-lg shadow-md p-2">
-                                <TabsTrigger
-                                    value="profile"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">My Profile</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="security"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">Security</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="billing"
-                                    className="flex items-center gap-2 px-4 py-3 text-gray-600 font-medium rounded-md data-[state=active]:bg-blue-50 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm hover:bg-gray-200 transition-all"
-                                >
-                                    <span className="material-icons">Billing</span>
-                                </TabsTrigger>
-                                <TabsTrigger
-                                    value="delete"
-                                    className="flex items-center gap-2 px-4 py-3 text-red-500 font-medium rounded-md data-[state=active]:bg-red-50 data-[state=active]:text-red-600 data-[state=active]:shadow-sm hover:bg-red-100 transition-all"
-                                >
-                                    <span className="material-icons">Delete Account</span>
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </div>
-                    {/* Profile Form */}
-                    <ProfileForm />
+        <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-700 p-6 flex items-center justify-center">
+            {loading ? (
+                <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-gold-400 border-solid"></div>
+                    <p className="mt-4 text-gold-200 font-medium">Loading admin profile...</p>
                 </div>
-            </div>
+            ) : !profileData ? (
+                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+                    <svg
+                        className="w-16 h-16 text-red-500 mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Error icon"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                    </svg>
+                    <p className="text-gray-700 text-lg font-medium text-center">
+                        Failed to load admin profile. Please try again later.
+                    </p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-6 px-6 py-2 bg-navy-600 text-white rounded-lg hover:bg-navy-700 transition-colors"
+                    >
+                        Retry
+                    </button>
+                </div>
+            ) : (
+                <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-300 hover:shadow-3xl">
+                    {/* Header Section */}
+                    <div className="flex flex-col sm:flex-row items-center gap-6 mb-10">
+                        <div className="relative">
+                            <Avatar className="w-28 h-28 border-4 border-gold-400 shadow-md">
+                                <AvatarImage
+                                    src={profileData.imgUrl || '/default-avatar.png'}
+                                    alt="Admin Avatar"
+                                />
+                                <AvatarFallback className="bg-gold-400 text-white font-bold">
+                                    {profileData.fullName?.charAt(0) || 'A'}
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                        <div className="text-center sm:text-left">
+                            <h1 className="text-3xl font-bold text-navy-800">
+                                {profileData.fullName || 'Administrator'}
+                            </h1>
+                            <p className="text-gold-600 font-medium mt-1">
+                                {profileData.role || 'System Administrator'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Profile Information */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                        <div className="bg-navy-50 p-6 rounded-lg shadow-sm">
+                            <h2 className="text-lg font-semibold text-navy-700 flex items-center gap-2">
+                                <svg
+                                    className="w-5 h-5 text-gold-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M3 8l9-6 9 6v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"
+                                    />
+                                </svg>
+                                Contact Information
+                            </h2>
+                            <p className="text-navy-600 mt-3">
+                                <strong>Email:</strong> {profileData.email || 'N/A'}
+                            </p>
+                            <p className="text-navy-600 mt-2">
+                                <strong>Phone:</strong> {profileData.phone || 'N/A'}
+                            </p>
+                        </div>
+                        <div className="bg-navy-50 p-6 rounded-lg shadow-sm">
+                            <h2 className="text-lg font-semibold text-navy-700 flex items-center gap-2">
+                                <svg
+                                    className="w-5 h-5 text-gold-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2"
+                                    />
+                                </svg>
+                                Account Details
+                            </h2>
+                            <p className="text-navy-600 mt-3">
+                                <strong>Role:</strong> {profileData.role || 'N/A'}
+                            </p>
+                            <p className="text-navy-600 mt-2">
+                                <strong>Status:</strong> {profileData.status || 'Active'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Profile Form */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-navy-700 mb-4 flex items-center gap-2">
+                            <svg
+                                className="w-5 h-5 text-gold-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                />
+                            </svg>
+                            Edit Profile
+                        </h2>
+                        <ProfileForm profile={profileData} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
