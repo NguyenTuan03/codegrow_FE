@@ -14,7 +14,7 @@ export default function CourseVideoPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 px-6 py-12 md:px-24 lg:px-32">
+        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-12 md:px-24 lg:px-32">
             <div className="bg-white p-8 rounded-xl shadow-lg space-y-6">
                 {/* Header with Back Button */}
                 <div className="flex items-center justify-between">
@@ -56,7 +56,7 @@ export default function CourseVideoPage() {
                 <div className="flex justify-end pt-6">
                     <Button
                         onClick={handleMarkComplete}
-                        className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                        className="bg-[#5AD3AF] hover:bg-[#4EB8A1] text-white flex items-center gap-2"
                     >
                         <CheckCircle className="w-4 h-4" /> Mark as Complete
                     </Button>

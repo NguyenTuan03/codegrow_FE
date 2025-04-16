@@ -50,20 +50,22 @@ const page = () => {
     }, []);
 
     return (
-        <div className="container mx-auto px-4 py-8 w-full">
+        <div className="container mx-auto px-4 py-8 w-full bg-gradient-to-r from-blue-50 to-purple-50">
             <div className="grid grid-cols-12 gap-4 mb-10">
                 <div className="col-span-8">
-                    <h3 className="text-3xl mb-3">Welcome back, customer</h3>
-                    <p className="mb-2">
+                    <h3 className="text-3xl mb-3 text-[#000000]">Welcome back, customer</h3>
+                    <p className="mb-2 text-[#000000]">
                         Solve coding exercises and get mentored to develop fluency in your chosen
                         programming languages.
                     </p>
-                    <div className="font-bold text-[18px] mt-5 mb-3">Where to start...</div>
+                    <div className="font-bold text-[18px] mt-5 mb-3 text-[#000000]">
+                        Where to start...
+                    </div>
                     <div className="grid grid-cols-12 gap-6 px-4 py-8">
                         {HOME_INTRODUCTION.map((item, index) => (
                             <Card
                                 key={index}
-                                className="col-span-12 md:col-span-6 lg:col-span-3 shadow-md"
+                                className="col-span-12 md:col-span-6 lg:col-span-3 shadow-md bg-white"
                             >
                                 <CardHeader className="flex justify-center">
                                     <div className="relative w-[100px] h-[100px]">
@@ -76,22 +78,22 @@ const page = () => {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="text-center">
-                                    <p className="text-gray-700 font-medium">{item.name}</p>
+                                    <p className="text-[#657ED4] font-medium">{item.name}</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
                 </div>
                 <div className="col-span-4">
-                    <div className="text-xl font-bold mb-4">Your track</div>
+                    <div className="text-xl font-bold mb-4 text-[#000000]">Your track</div>
                     <div className="flex flex-row items-center">
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4">
-                            <Progress value={progress} className="w-[60%] bg-[#B7CFFF]" />
-                            <div>{progress} exercises completed</div>
+                            <Progress value={progress} className="w-[60%] bg-[#657ED4]" />
+                            <div className="text-[#000000]">{progress} exercises completed</div>
                         </div>
                     </div>
-                    <Card className="bg-[#eaf1ff] border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
+                    <Card className="bg-[#EEF1EF] border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
                         <CardHeader className="flex justify-center">
                             <div className="relative w-[120px] h-[120px]">
                                 <Image
@@ -103,18 +105,20 @@ const page = () => {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <h2 className="text-xl font-bold mb-2">Become a mentor</h2>
-                            <p className="text-gray-600 mb-6 text-sm">
+                            <h2 className="text-xl font-bold mb-2 text-[#000000]">
+                                Become a mentor
+                            </h2>
+                            <p className="text-[#657ED4] mb-6 text-sm">
                                 Mentoring is a great way to reinforce your own learning, and help
                                 students learn and discover the things they dont know.
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6">
+                                <Button className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6">
                                     Apply
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-gray-400 text-gray-700 px-6 hover:bg-gray-100"
+                                    className="border-[#657ED4] text-[#657ED4] px-6 hover:bg-[#EEF1EF]"
                                 >
                                     Read
                                 </Button>
@@ -125,7 +129,7 @@ const page = () => {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-3xl text-center my-3">
+                    <CardTitle className="text-3xl font-bold  mb-2 text-center my-3 text-[#000000]">
                         All courses in CODEGROW
                     </CardTitle>
                 </CardHeader>
@@ -133,7 +137,7 @@ const page = () => {
                     <div className="grid grid-cols-12 gap-4">
                         {COURSES.map((item, index) => {
                             return (
-                                <Card key={index} className="col-span-4">
+                                <Card key={index} className="col-span-4 bg-white shadow-md">
                                     <CardHeader>
                                         <Image
                                             src={item.img}
@@ -189,7 +193,7 @@ const page = () => {
                 </CardFooter>
             </Card>
             <div>
-                <h3 className="text-center font-bold text-2xl mt-8 mb-6">
+                <h3 className="text-center font-bold text-2xl mt-8 mb-6 text-[#000000]">
                     What you get from CODEGROW
                 </h3>
 

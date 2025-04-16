@@ -55,9 +55,11 @@ const PasswordPage = () => {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-white">
+        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
             <>
-                <h1 className="text-2xl font-semibold text-center mb-4">Forgot Password</h1>
+                <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
+                    Forgot Password
+                </h1>
                 <Form {...forgotPasswordForm}>
                     <form
                         onSubmit={forgotPasswordForm.handleSubmit(handleForgetPassword)}
@@ -68,9 +70,13 @@ const PasswordPage = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel className="text-[#000000]">Email</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="Enter your email" />
+                                        <Input
+                                            {...field}
+                                            placeholder="Enter your email"
+                                            className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -79,14 +85,14 @@ const PasswordPage = () => {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
+                            className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg py-2"
                         >
                             {loading ? 'Sending...' : 'Send Reset Link'}
                         </Button>
                     </form>
                 </Form>
                 <p className="text-sm text-center mt-4">
-                    <a href="/login" className="text-pink-500 hover:text-pink-600">
+                    <a href="/login" className="text-[#657ED4]  hover:text-[#7696ff]">
                         {'<---'} Back to Login
                     </a>
                 </p>

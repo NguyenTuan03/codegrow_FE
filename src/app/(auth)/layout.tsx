@@ -16,7 +16,7 @@ const layout = ({ children }: { children: ReactNode }) => {
         >
             {/* Nút ở góc trên trái */}
             <Link href="/" passHref>
-                <Button className="absolute top-4 left-4 bg-white text-black hover:bg-gray-200 rounded-full shadow">
+                <Button className="absolute top-4 left-4 bg-[#657ED4] text-white hover:bg-[#7696ff] rounded-full shadow-lg px-4 py-2">
                     ← Back to Homepage
                 </Button>
             </Link>

@@ -137,7 +137,7 @@ export default function TransactionHistory() {
         .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-gradient-to-r from-blue-50 to-purple-50">
             {/* Main Content */}
             <main className="flex-1 py-8 px-4 md:px-8 lg:px-12">
                 <div className="max-w-7xl mx-auto space-y-6">

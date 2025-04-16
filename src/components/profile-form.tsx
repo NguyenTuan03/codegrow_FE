@@ -18,7 +18,7 @@ import { handleErrorApi } from '@/lib/utils';
 import { useState } from 'react';
 import { ProfileResType, UpdateMeBody, UpdateMeBodyType } from '@/schemaValidations/profile.schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UpdateAccount } from '@/lib/services/admin/UpdateUser';
+import { UpdateAccount } from '@/lib/services/admin/updateaccount';
 
 type Profile = ProfileResType['data'];
 
@@ -45,14 +45,14 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
         console.log('Dữ liệu gửi đến API:', values);
 
         try {
-            const token = localStorage.getItem('token');
-            const id = profile._id;
+            const token = localStorage.getItem('token') || '';
+            const id = profile._id.toString();
             const result = await UpdateAccount(
                 token,
                 id,
                 values.fullName,
                 values.email,
-                values.role,
+                values.role || '',
             );
             console.log('Kết quả từ API:', result);
 
@@ -64,7 +64,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
 
             setIsEditing(false);
             router.refresh();
-        } catch (error: any) {
+        } catch (error) {
             console.error('Lỗi từ API:', error);
             handleErrorApi({
                 error,
@@ -203,7 +203,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     <Button
                                         type="button"
                                         onClick={() => setIsEditing(true)}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-sm transition-colors"
+                                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white px-6 py-3 rounded-lg shadow-sm transition-colors"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -228,7 +228,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors disabled:opacity-70"
+                                        className="px-6 py-3 bg-[#657ED4] hover:bg-[#5A6BBE] text-white rounded-lg shadow-sm transition-colors disabled:opacity-70"
                                     >
                                         {loading ? (
                                             <span className="flex items-center">
