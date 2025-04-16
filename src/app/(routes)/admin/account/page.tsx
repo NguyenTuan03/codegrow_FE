@@ -26,10 +26,10 @@ import { RemoveUser } from '@/lib/services/admin/removeuser';
 
 import { useRouter } from 'next/navigation';
 import { Toast } from '@/components/ui/toast';
-import { UpdateAccount } from '@/lib/services/admin/updateuser';
-import { CreateUser } from '@/lib/services/admin/createuser';
 import CreateNewUser from '@/app/(routes)/admin/account/CreateNewUser';
 import { toast } from '@/components/ui/use-toast';
+import { CreateUser } from '@/lib/services/admin/CreateUser';
+import { UpdateAccount } from '@/lib/services/admin/UpdateUser';
 
 interface Account {
     _id: string;

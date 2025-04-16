@@ -18,7 +18,7 @@ import { handleErrorApi } from '@/lib/utils';
 import { useState } from 'react';
 import { ProfileResType, UpdateMeBody, UpdateMeBodyType } from '@/schemaValidations/profile.schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UpdateAccount } from '@/lib/services/admin/updateuser';
+import { UpdateAccount } from '@/lib/services/admin/UpdateUser';
 
 type Profile = ProfileResType['data'];
 
