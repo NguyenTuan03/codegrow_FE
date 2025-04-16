@@ -4,6 +4,7 @@ import './globals.css';
 import AuthContext from '@/lib/components/context/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -26,22 +27,23 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" suppressContentEditableWarning>
+        <html lang="en" suppressHydrationWarning>
             <body className={`${geistSans.variable} ${geistMono.variable}`}>
-                <Toaster />
-                <AuthContext>
-                    <SidebarProvider>
-                        {/* <ThemeProvider
-                            attribute="class"
-                            defaultTheme="system"
-                            enableSystem
-                            disableTransitionOnChange
-                        > */}
-                        {children}
-                        {/* <ModeToggle /> */}
-                        {/* </ThemeProvider> */}
-                    </SidebarProvider>                    
-                </AuthContext>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="light" // Hoặc 'dark' nếu bạn muốn mặc định
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <Toaster />
+                    <AuthContext>
+                        <SidebarProvider>
+                            {/* ThemeProvider nên chỉ nên hydrate trên client */}
+
+                            {children}
+                        </SidebarProvider>
+                    </AuthContext>
+                </ThemeProvider>
             </body>
         </html>
     );

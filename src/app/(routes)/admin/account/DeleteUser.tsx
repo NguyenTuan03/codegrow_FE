@@ -9,7 +9,7 @@ export default function DeleteUser({
     onDelete,
     onClose,
 }: {
-    account: any;
+    account: { id: string; name: string } | null;
     onDelete: () => void;
     onClose: () => void;
 }) {
@@ -26,7 +26,7 @@ export default function DeleteUser({
                 <CardContent>
                     <p className="text-gray-700">
                         Are you sure you want to delete the account for{' '}
-                        <strong className="text-gray-900">{account.name}</strong>?
+                        <strong className="text-gray-900">{account?.name || 'this user'}</strong>?
                     </p>
                     <div className="flex justify-end gap-2 mt-6">
                         <Button variant="outline" onClick={onClose}>
@@ -34,7 +34,7 @@ export default function DeleteUser({
                         </Button>
                         <Button
                             className="bg-red-500 text-white hover:bg-red-600"
-                            onClick={onDelete}
+                            onClick={onDelete} // Gọi callback onDelete
                         >
                             Delete
                         </Button>

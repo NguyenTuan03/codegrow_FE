@@ -48,7 +48,7 @@ export default function MentorHeader() {
                 </Button>
 
                 {/* Avatar with Dropdown */}
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                     <DropdownMenuTrigger>
                         <Avatar>
                             <AvatarImage src="https://randomuser.me/api/portraits/women/10.jpg" />

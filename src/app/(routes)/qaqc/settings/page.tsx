@@ -48,7 +48,7 @@ export default function QaqcSettingsPage() {
 
                         <div className="space-y-2">
                             <Label className="text-base">QAQC Mode</Label>
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="w-full justify-start">
                                         {currentLabel}

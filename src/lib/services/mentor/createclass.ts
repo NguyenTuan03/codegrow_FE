@@ -1,5 +1,5 @@
+import httpRequest from '@/lib/util/HttpRequest';
 import { CreateClassBodyType } from '@/schemaValidations/class.schema';
-import httpRequest from '../HttpRequest';
 
 export const CreateClass = async ({
     className,

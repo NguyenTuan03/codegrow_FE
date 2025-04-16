@@ -21,7 +21,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onSelect 
     return (
         <div className="flex items-center space-x-4">
             <h3 className="text-lg font-medium text-gray-900">Language:</h3>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="outline"

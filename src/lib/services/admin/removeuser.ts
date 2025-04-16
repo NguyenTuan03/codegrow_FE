@@ -1,10 +1,10 @@
 import httpRequest from '@/lib/util/HttpRequest';
 
-export const DeleteUser = async (token: string, id: string) => {
+export const RemoveUser = async (id: string, token: string) => {
     try {
-        const response = await httpRequest.delete(`/admin/user/${id}`, {
+        const response = await httpRequest.delete(`/users/${id}`, {
             headers: {
-                token,
+                Authorization: `Bearer ${token}`, // Gửi token trong header
             },
         });
 

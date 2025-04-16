@@ -158,7 +158,7 @@ export default function TestDetail() {
 
                 <div className="flex space-x-4 mb-6">
                     {/* Dropdown for Language */}
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="outline"
@@ -191,7 +191,7 @@ export default function TestDetail() {
                     </DropdownMenu>
 
                     {/* Dropdown for Difficulty */}
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="outline"
