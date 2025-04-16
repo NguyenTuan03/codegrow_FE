@@ -25,18 +25,22 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { RemoveUser } from '@/lib/services/admin/removeuser';
 
 import { useRouter } from 'next/navigation';
-import { Toast } from '@/components/ui/toast';
+import { CreateUser } from '@/lib/services/admin/createuser'; // Import API
 import CreateNewUser from '@/app/(routes)/admin/account/CreateNewUser';
+import { UpdateAccount } from '@/lib/services/admin/updateaccount'; // Import API
 import { toast } from '@/components/ui/use-toast';
-import { CreateUser } from '@/lib/services/admin/CreateUser';
-import { UpdateAccount } from '@/lib/services/admin/UpdateUser';
 
 interface Account {
     _id: string;
     fullName: string;
     email: string;
     password: string;
-    role: string;
+    role: 'customer' | 'mentor' | 'admin';
+    wallet: number;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+    avatar?: string;
 }
 
 export default function Account() {
@@ -97,14 +101,13 @@ export default function Account() {
                     variant: 'destructive',
                 });
             }
-        } catch (error: any) {
-            if (error.response?.status === 401) {
-                console.error('❌ Unauthorized: Please check your token.');
-            } else if (error.response?.status === 500) {
-                console.error('❌ Server error: Please check the server logs.');
-            } else {
-                console.error('❌ Error deleting user:', error.message);
-            }
+        } catch (error: unknown) {
+            console.error('❌ Error deleting user:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to delete the user. Please try again.',
+                variant: 'destructive',
+            });
         }
     };
     useEffect(() => {
@@ -113,7 +116,7 @@ export default function Account() {
     const handleUpdate = async (id: string, updatedData: Partial<Account>) => {
         try {
             console.log(`Updating user with ID: ${id}`, updatedData);
-            const token = localStorage.getItem('token'); // Lấy token từ localStorage
+            const token = localStorage.getItem('token') || ''; // Lấy token từ localStorage
             console.log('Session ID:', token);
 
             // Gọi API UpdateAccount với các tham số được kiểm tra
@@ -153,7 +156,7 @@ export default function Account() {
                     duration: 2000,
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('❌ Error updating user:', error);
 
             throw error; // Ném lại lỗi để xử lý tiếp ở nơi gọi hàm
@@ -168,7 +171,7 @@ export default function Account() {
     }) => {
         try {
             console.log('Creating new user:', newData);
-            const token = localStorage.getItem('token'); // Lấy token từ localStorage
+            const token = localStorage.getItem('token') || ''; // Lấy token từ localStorage
 
             // Gọi API CreateUser
             const response = await CreateUser(
@@ -191,8 +194,8 @@ export default function Account() {
             });
             router.refresh(); // Tải lại trang sau khi tạo thành công
             setModal(''); // Đóng modal
-        } catch (error: any) {
-            console.error('❌ Error creating user:', error.message);
+        } catch (error: unknown) {
+            console.error('❌ Error creating user:', error);
         }
     };
     return (
@@ -201,7 +204,7 @@ export default function Account() {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-600">Account Management</h1>
                     <Button
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white"
                         onClick={() => setModal('create')}
                     >
                         Create Account
@@ -226,10 +229,10 @@ export default function Account() {
                                     <span
                                         className={`px-2 py-1 rounded-full text-sm ${
                                             account.role === 'mentor'
-                                                ? 'bg-blue-100 text-blue-800'
+                                                ? 'bg-[#657ED4] text-[#ffffff]'
                                                 : account.role === 'customer'
-                                                  ? 'bg-green-100 text-green-800'
-                                                  : 'bg-yellow-100 text-yellow-800'
+                                                  ? 'bg-[#5AD3AF] text-[#FFFFFF]'
+                                                  : 'bg-[#F76F8E] text-[#FFFFFF]'
                                         }`}
                                     >
                                         {account.role}
@@ -279,8 +282,17 @@ export default function Account() {
             </div>
             {modal === 'create' && (
                 <CreateNewUser
-                    onCreate={(newData) => handleCreate(newData)} // Gọi hàm handleCreate
-                    onClose={() => setModal('')} // Đóng modal khi nhấn "Cancel"
+                    onCreate={(newData) => {
+                        // Ensure all required fields are provided
+                        const safeData = {
+                            fullName: newData.fullName || '',
+                            email: newData.email || '',
+                            password: newData.password || '',
+                            role: newData.role || 'customer', // Default role if not provided
+                        };
+                        handleCreate(safeData); // Pass the safe data to handleCreate
+                    }}
+                    onClose={() => setModal('')} // Close modal when "Cancel" is clicked
                 />
             )}
             {modal === 'view' && selectedAccount && (
@@ -288,7 +300,10 @@ export default function Account() {
             )}
             {modal === 'delete' && selectedAccount && (
                 <DeleteUser
-                    account={selectedAccount}
+                    account={{
+                        id: selectedAccount._id,
+                        name: selectedAccount.fullName,
+                    }}
                     onDelete={() => handleDelete(selectedAccount._id)} // Gọi hàm handleDelete từ trang chính
                     onClose={() => setModal('')} // Đóng modal khi nhấn "Cancel"
                 />

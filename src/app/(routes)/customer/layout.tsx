@@ -1,4 +1,3 @@
-import { ModeToggle } from '@/components/mode-toggle';
 import Customerheader from '@/lib/components/layout/header/Customerheader';
 import React, { ReactNode } from 'react';
 
@@ -10,7 +9,7 @@ const Layout = ({ children }: Props) => {
     return (
         <div className="w-full">
             <Customerheader />
-            <div className="bg-[#EEF1EF]">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50">
                 <main>{children}</main>
             </div>
         </div>

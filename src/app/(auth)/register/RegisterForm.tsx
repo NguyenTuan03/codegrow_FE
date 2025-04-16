@@ -104,9 +104,11 @@ const RegisterForm = () => {
     };
 
     return (
-        <div className="w-full max-w-lg p-8 rounded-[1.5rem] shadow-lg bg-white border border-gray-200">
+        <div className="w-full max-w-lg p-8 rounded-[1.5rem] shadow-lg bg-[#EEF1EF] border border-gray-200">
             {/* Header */}
-            <h1 className="text-3xl text-center font-bold text-pink-500 mb-6">Create an Account</h1>
+            <h1 className="text-3xl text-center font-bold text-[#5AD3AF] mb-6">
+                Create an Account
+            </h1>
 
             {/* Form */}
             <Form {...form}>
@@ -117,14 +119,14 @@ const RegisterForm = () => {
                         name="fullName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
+                                <FormLabel className="text-sm font-medium text-[#000000]">
                                     Full Name
                                 </FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         placeholder="Enter your full name"
-                                        className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                        className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
                                     />
                                 </FormControl>
                                 <FormMessage className="text-sm text-red-500" />
@@ -138,7 +140,7 @@ const RegisterForm = () => {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
+                                <FormLabel className="text-sm font-medium text-[#000000]">
                                     Email Address
                                 </FormLabel>
                                 <FormControl>
@@ -146,7 +148,7 @@ const RegisterForm = () => {
                                         {...field}
                                         placeholder="Enter your email"
                                         type="email"
-                                        className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                        className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
                                     />
                                 </FormControl>
                                 <FormMessage className="text-sm text-red-500" />
@@ -160,7 +162,7 @@ const RegisterForm = () => {
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
+                                <FormLabel className="text-sm font-medium text-[#000000]">
                                     Password
                                 </FormLabel>
                                 <FormControl>
@@ -169,7 +171,7 @@ const RegisterForm = () => {
                                             {...field}
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="Enter your password"
-                                            className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                            className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] pr-10"
                                         />
                                         <button
                                             type="button"
@@ -195,7 +197,7 @@ const RegisterForm = () => {
                         name="confirmPassword"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
+                                <FormLabel className="text-sm font-medium text-[#000000]">
                                     Confirm Password
                                 </FormLabel>
                                 <FormControl>
@@ -204,7 +206,7 @@ const RegisterForm = () => {
                                             {...field}
                                             type={showPassword ? 'text' : 'password'}
                                             placeholder="Confirm your password"
-                                            className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                            className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] pr-10"
                                         />
                                         <button
                                             type="button"
@@ -228,7 +230,7 @@ const RegisterForm = () => {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
+                        className="w-full bg-[#5AD3AF] hover:bg-[#6bbea6] text-white rounded-lg py-2"
                     >
                         {loading ? 'Signing up...' : 'Sign Up'}
                     </Button>
@@ -241,7 +243,7 @@ const RegisterForm = () => {
                     Already have an account?{' '}
                     <Link
                         href={Routes.login}
-                        className="text-pink-500  font-medium hover:text-pink-600"
+                        className="text-[#657ED4] font-medium hover:text-[#7696ff] transition-colors duration-200 underline"
                     >
                         Log in
                     </Link>
@@ -259,7 +261,7 @@ const RegisterForm = () => {
             <div className="flex justify-center mt-4">
                 <Button
                     onClick={handleGoogleLogin}
-                    className="w-full max-w-sm bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2 flex items-center justify-center gap-2"
+                    className="w-full max-w-sm bg-[#657ED4] hover:bg-[#485b99] text-white rounded-lg py-2 flex items-center justify-center gap-2"
                     disabled={googleLoading}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">

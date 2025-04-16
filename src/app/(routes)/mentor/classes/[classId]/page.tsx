@@ -2,7 +2,6 @@
 import { useParams, usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { MoreVertical, Mail } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function ClassPage() {
@@ -654,27 +653,27 @@ export default function ClassPage() {
         { id: 'marks', label: 'Marks', content: <MarksTab /> },
     ];
 
-    // Handle keyboard navigation for tabs
-    const handleKeyDown = (e: React.KeyboardEvent, tabId: string) => {
-        const currentIndex = tabs.findIndex((t) => t.id === tabId);
-        let newIndex = currentIndex;
+    // // Handle keyboard navigation for tabs
+    // const handleKeyDown = (e: React.KeyboardEvent, tabId: string) => {
+    //     const currentIndex = tabs.findIndex((t) => t.id === tabId);
+    //     let newIndex = currentIndex;
 
-        if (e.key === 'ArrowRight') {
-            newIndex = (currentIndex + 1) % tabs.length;
-        } else if (e.key === 'ArrowLeft') {
-            newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-        } else if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setTab(tabId);
-            return;
-        } else {
-            return;
-        }
+    //     if (e.key === 'ArrowRight') {
+    //         newIndex = (currentIndex + 1) % tabs.length;
+    //     } else if (e.key === 'ArrowLeft') {
+    //         newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    //     } else if (e.key === 'Enter' || e.key === ' ') {
+    //         e.preventDefault();
+    //         setTab(tabId);
+    //         return;
+    //     } else {
+    //         return;
+    //     }
 
-        setTab(tabs[newIndex].id);
-        const nextTab = document.getElementById(`${tabs[newIndex].id}-tab-button`);
-        if (nextTab) nextTab.focus();
-    };
+    //     setTab(tabs[newIndex].id);
+    //     const nextTab = document.getElementById(`${tabs[newIndex].id}-tab-button`);
+    //     if (nextTab) nextTab.focus();
+    // };
 
     return (
         <div className="flex-1 p-6">
@@ -697,19 +696,20 @@ export default function ClassPage() {
             </div>
 
             {/* Navigation Tabs - Accessible Version */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
                 <div className="border-b">
                     <div role="tablist" className="flex space-x-4">
                         {tabs.map((tabItem) => (
                             <button
                                 key={tabItem.id}
                                 role="tab"
-                                aria-selected={isActive(tabItem.id)}
+                                aria-selected={isActive(tabItem.id) ? 'true' : 'false'} // Fix invalid ARIA value
                                 aria-controls={`${tabItem.id}-panel`}
                                 id={`${tabItem.id}-tab`}
                                 tabIndex={isActive(tabItem.id) ? 0 : -1}
                                 onClick={() => setTab(tabItem.id)}
                                 onKeyDown={(e) => handleKeyDown(e, tabItem.id)}
+                                type="button" // Add type attribute to button
                                 className={`px-3 py-2 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                                     isActive(tabItem.id)
                                         ? 'text-blue-600 border-b-2 border-blue-600'
@@ -721,7 +721,7 @@ export default function ClassPage() {
                         ))}
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Tab Content */}
             {tabs.map((tabItem) => (

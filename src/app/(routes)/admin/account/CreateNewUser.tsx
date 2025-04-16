@@ -127,7 +127,6 @@ export default function CreateNewUser({
                                     </FormItem>
                                 )}
                             />
-                            {/* Role Field */}
                             <FormField
                                 control={form.control}
                                 name="role"
@@ -139,15 +138,28 @@ export default function CreateNewUser({
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                             >
-                                                <SelectTrigger>
+                                                <SelectTrigger className="bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-blue-500 rounded-lg">
                                                     <SelectValue placeholder="Select a role" />
                                                 </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="mentor">Mentor</SelectItem>
-                                                    <SelectItem value="customer">
+                                                <SelectContent className="bg-white shadow-lg rounded-lg">
+                                                    <SelectItem
+                                                        value="mentor"
+                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                    >
+                                                        Mentor
+                                                    </SelectItem>
+                                                    <SelectItem
+                                                        value="customer"
+                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                    >
                                                         Customer
                                                     </SelectItem>
-                                                    <SelectItem value="qaqc">QAQC</SelectItem>
+                                                    <SelectItem
+                                                        value="qaqc"
+                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                    >
+                                                        QAQC
+                                                    </SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </FormControl>

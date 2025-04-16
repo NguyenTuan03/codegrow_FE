@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 const CourseLearningPage = () => {
     const router = useRouter();
-    const [completedModules, setCompletedModules] = useState({
+    const [completedModules] = useState({
         'module-1': false,
         'module-2': false,
         'module-3': false,
@@ -29,7 +29,7 @@ const CourseLearningPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 px-6 py-12 md:px-24 lg:px-32 space-y-8">
+        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-12 md:px-24 lg:px-32 space-y-8">
             {/* Breadcrumbs */}
             <div className="text-sm text-gray-500 space-x-2">
                 <span className="hover:text-gray-700 transition-colors cursor-pointer">
@@ -196,7 +196,7 @@ const CourseLearningPage = () => {
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-semibold text-gray-900">Ghi chú của bạn</h3>
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                            <Button className="bg-[#5B83E0] hover:bg-[#4A6BBE] text-white">
                                 + Thêm ghi chú mới
                             </Button>
                         </div>
@@ -293,7 +293,7 @@ const CourseLearningPage = () => {
                                     placeholder="Đặt câu hỏi hoặc tham gia thảo luận..."
                                 ></textarea>
                                 <div className="mt-3 flex justify-end">
-                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                                    <Button className="bg-[#5B83E0] hover:bg-[#4A6BBE] text-white">
                                         Đăng câu hỏi
                                     </Button>
                                 </div>
@@ -421,7 +421,7 @@ const CourseLearningPage = () => {
                                         {completedModules['module-1'] ? (
                                             <CheckCircle2 className="w-5 h-5 text-green-500" />
                                         ) : (
-                                            <PlayCircle className="w-5 h-5 text-blue-500" />
+                                            <PlayCircle className="w-5 h-5 text-[#657ED4]" />
                                         )}
                                         <div className="font-medium text-gray-800">
                                             1. Introduction to TDD
@@ -431,7 +431,7 @@ const CourseLearningPage = () => {
                                         onClick={() =>
                                             handleNavigation('/customer/coursesdetailwatching')
                                         }
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="flex items-center gap-2 bg-[#657ED4] hover:bg-[#354065] text-white"
                                     >
                                         <PlayCircle className="w-4 h-4" /> Start Learning
                                     </Button>
@@ -461,7 +461,7 @@ const CourseLearningPage = () => {
                                         onClick={() =>
                                             handleNavigation('/customer/coursesdetailreading')
                                         }
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="flex items-center gap-2 bg-[#657ED4] hover:bg-[#354065] text-white"
                                     >
                                         <BookOpen className="w-4 h-4" /> Start Reading
                                     </Button>
@@ -491,7 +491,7 @@ const CourseLearningPage = () => {
                                         onClick={() =>
                                             handleNavigation('/customer/coursesdetailreading')
                                         }
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="flex items-center gap-2  bg-[#657ED4] hover:bg-[#354065] text-white"
                                     >
                                         <BookOpen className="w-4 h-4" /> Start Reading
                                     </Button>
@@ -521,7 +521,7 @@ const CourseLearningPage = () => {
                                         onClick={() =>
                                             handleNavigation('/customer/coursesdetailwatching')
                                         }
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="flex items-center gap-2  bg-[#657ED4] hover:bg-[#354065] text-white"
                                     >
                                         <PlayCircle className="w-4 h-4" /> Watch Video
                                     </Button>
@@ -551,7 +551,7 @@ const CourseLearningPage = () => {
                                         onClick={() =>
                                             handleNavigation('/customer/coursesdetailpractice')
                                         }
-                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                                        className="flex items-center gap-2  bg-[#657ED4] hover:bg-[#354065] text-white"
                                     >
                                         <Code className="w-4 h-4" /> Start Practice
                                     </Button>

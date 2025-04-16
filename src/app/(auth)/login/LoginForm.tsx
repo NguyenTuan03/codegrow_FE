@@ -22,8 +22,14 @@ import { useRouter } from 'next/navigation';
 
 import { LoginBody } from '@/schemaValidations/auth.schema';
 import { LoginBodyType } from '@/schemaValidations/auth.schema';
-import { jwtDecode } from 'jwt-decode';
 import { Auth } from '@/lib/components/context/AuthContext';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
+interface ExtendedJwtPayload extends JwtPayload {
+    _id: string;
+    role: string;
+    fullname: string;
+    email: string;
+}
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -47,18 +53,28 @@ const LoginForm = () => {
             console.log('Login response:', response);
             const token = response.metadata; // Lấy token từ response
             localStorage.setItem('token', JSON.stringify(token)); // Lưu token vào localStorage
-            const decoded = jwtDecode(token); // Giải mã token
-            userAuth?.loginUser(decoded); // Lưu thông tin user và token vào AuthContext
+            // Giải mã token và ánh xạ sang kiểu User
+            const decoded = jwtDecode<ExtendedJwtPayload>(token);
+            const user = {
+                id: decoded._id,
+                role: decoded.role,
+                fullname: decoded.fullname,
+                email: decoded.email,
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            userAuth?.loginUser(user); // Lưu thông tin user và token vào AuthContext
+            console.log('Decoded token:', decoded);
+
             toast({
                 description: 'Login successful!',
-                className: 'bg-green-500 text-black',
+                className: 'bg-[#5AD3AF] text-black',
                 duration: 1000,
             });
             router.push('/');
         } catch (error) {
             toast({
                 description: 'Login failed. Please check your credentials.',
-                className: 'bg-red-500 text-black',
+                className: 'bg-[#F76F8E] text-black',
                 variant: 'destructive',
                 duration: 1000,
             });
@@ -86,12 +102,12 @@ const LoginForm = () => {
     return (
         <div
             style={{ padding: '30px' }}
-            className="w-full max-w-lg rounded-[1.5rem] shadow-lg bg-white border border-gray-200"
+            className="w-full max-w-lg rounded-[1.5rem] shadow-lg bg-[#EEF1EF] border border-gray-200"
         >
             {/* Header */}
             <div className="text-center mb-6">
-                <h1 className="text-3xl font-bold text-pink-500">Welcome Back</h1>
-                <p className="text-sm text-gray-500">Log in to your account</p>
+                <h1 className="text-3xl font-bold text-[#5AD3AF]">Welcome Back</h1>
+                <p className="text-sm text-[#000000]">Log in to your account</p>
             </div>
 
             {/* Form */}
@@ -104,7 +120,7 @@ const LoginForm = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700">
+                                    <FormLabel className="text-sm font-medium text-[#000000]">
                                         Email Address
                                     </FormLabel>
                                     <FormControl>
@@ -112,7 +128,7 @@ const LoginForm = () => {
                                             {...field}
                                             placeholder="Enter your email"
                                             type="email"
-                                            className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                            className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-sm text-red-500" />
@@ -126,7 +142,7 @@ const LoginForm = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700">
+                                    <FormLabel className="text-sm font-medium text-[#000000]">
                                         Password
                                     </FormLabel>
                                     <FormControl>
@@ -135,7 +151,7 @@ const LoginForm = () => {
                                                 {...field}
                                                 placeholder="Enter your password"
                                                 type={showPassword ? 'text' : 'password'}
-                                                className="mt-1 border-gray-300 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] pr-10"
                                             />
                                             <div
                                                 onClick={() => setShowPassword(!showPassword)}
@@ -158,7 +174,7 @@ const LoginForm = () => {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
+                            className="w-full bg-[#5AD3AF] hover:bg-[#6bbea6] text-white rounded-lg py-2"
                         >
                             {loading ? 'Logging in...' : 'Log in'}
                         </Button>
@@ -171,7 +187,7 @@ const LoginForm = () => {
                         Don’t have an account?{' '}
                         <Link
                             href={Routes.register}
-                            className="text-pink-500 font-medium hover:text-pink-600"
+                            className="text-[#657ED4] font-medium hover:text-[#485b99]  transition-colors duration-200 underline"
                         >
                             Sign up
                         </Link>
@@ -179,7 +195,7 @@ const LoginForm = () => {
                     <p className="text-sm">
                         <Link
                             href="/password"
-                            className="text-pink-500 underline font-medium hover:text-pink-600"
+                            className="text-[#657ED4] underline font-medium hover:text-[#7696ff]"
                         >
                             Forget your password?
                         </Link>
@@ -198,7 +214,7 @@ const LoginForm = () => {
             <div className="flex justify-center mt-4">
                 <Button
                     onClick={handleGoogleLogin}
-                    className="w-full max-w-sm bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2 flex items-center justify-center gap-2"
+                    className="w-full max-w-sm bg-[#657ED4] hover:bg-[#485b99] text-white rounded-lg py-2 flex items-center justify-center gap-2"
                     disabled={googleLoading}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">

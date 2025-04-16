@@ -20,14 +20,14 @@ const courses = new Array(6).fill({
 
 export default function CoursesPage() {
     return (
-        <div className="py-12 bg-gray-50 min-h-screen">
+        <div className="py-12 bg-gradient-to-r from-blue-50 to-purple-50 min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-3xl font-bold text-[#000000] mb-2">
                         Tổng hợp khoá học lập trình tại{' '}
-                        <span className="text-blue-600">CODEGROW</span>
+                        <span className="text-[#5AD3AF]">CODEGROW</span>
                     </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-[#000000] max-w-2xl mx-auto">
                         Học lập trình từ cơ bản đến nâng cao với lộ trình bài bản, dễ hiểu
                     </p>
                 </div>
@@ -36,7 +36,7 @@ export default function CoursesPage() {
                     {courses.map((course, index) => (
                         <Card
                             key={index}
-                            className="rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200 group"
+                            className="rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-[#EEF1EF] group"
                         >
                             <div className="relative w-full h-[200px]">
                                 <Image
@@ -47,33 +47,35 @@ export default function CoursesPage() {
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                                <Badge className="absolute top-3 left-3 bg-white text-blue-600 hover:bg-white">
+                                <Badge className="absolute top-3 left-3 bg-gradient-to-r from-blue-50 to-purple-50 hover:bg-[#EEF1EF]">
                                     {course.progress}
                                 </Badge>
                             </div>
 
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-xl font-bold text-gray-900 line-clamp-2">
+                                <CardTitle className="text-xl font-bold text-[#000000] line-clamp-2">
                                     {course.title}
                                 </CardTitle>
-                                <p className="text-gray-600 text-sm line-clamp-2">
+                                <p className="text-[#EEF1EF] text-sm line-clamp-2">
                                     {course.description}
                                 </p>
                             </CardHeader>
 
                             <CardContent className="space-y-4">
-                                <div className="flex justify-between items-center text-sm text-gray-600">
+                                <div className="flex justify-between items-center text-sm text-[#EEF1EF]">
                                     <div className="flex items-center gap-2">
-                                        <FaUserFriends className="text-blue-500" />
-                                        <span>{course.students} học viên</span>
+                                        <FaUserFriends className="text-[#5AD3AF]" />
+                                        <span className="text-black">
+                                            {course.students} học viên
+                                        </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <FaPlay className="text-blue-500" />
-                                        <span>{course.lessons} bài học</span>
+                                        <FaPlay className="text-[#5AD3AF]" />
+                                        <span className="text-black">{course.lessons} bài học</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <FaClock className="text-blue-500" />
-                                        <span>{course.duration}</span>
+                                        <FaClock className="text-[#5AD3AF]" />
+                                        <span className="text-black">{course.duration}</span>
                                     </div>
                                 </div>
 
@@ -83,7 +85,7 @@ export default function CoursesPage() {
                                         className="w-full max-w-[150px]"
                                     >
                                         <Button
-                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 flex items-center gap-2"
+                                            className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-300 flex items-center gap-2"
                                             size="lg"
                                         >
                                             Vào học ngay

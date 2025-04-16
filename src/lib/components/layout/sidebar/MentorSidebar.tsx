@@ -49,10 +49,10 @@ export default function MentorSidebar() {
     ];
 
     return (
-        <Sidebar className="w-64 bg-gray-50 border-r shadow-md">
+        <Sidebar className="w-64 pt-5 bg-gray-50 border-r shadow-md">
             <SidebarContent>
                 {/* Logo Section */}
-                <div className="flex items-center gap-x-3 px-6 py-4  text-black">
+                <div className="flex items-center gap-x-3 px-12  text-black">
                     <h1 className="text-2xl font-bold">CODEGROW</h1>
                 </div>
 

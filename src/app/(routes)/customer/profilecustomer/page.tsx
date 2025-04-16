@@ -19,7 +19,7 @@ export default function ProfileCustomer() {
                 }
 
                 const user = JSON.parse(userData);
-                const id = user._id;
+                const id = user.id;
 
                 const userDetail = await getUserDetail(id);
                 console.log(`User detail for ID ${id}:`, userDetail);
@@ -39,7 +39,7 @@ export default function ProfileCustomer() {
     }, [toast]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center p-4">
             {loading ? (
                 <div className="flex flex-col items-center justify-center min-h-[50vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
@@ -66,7 +66,7 @@ export default function ProfileCustomer() {
                     </p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        className="mt-6 px-4 py-2 bg-[#657ED4] text-white rounded-lg hover:bg-blue-600 transition-colors"
                     >
                         Retry
                     </button>

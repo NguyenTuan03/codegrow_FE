@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { handleErrorApi } from '@/lib/utils';
 
 // Validation schema for resetting password
 const resetPasswordSchema = z.object({
@@ -48,22 +47,26 @@ export default function ResetPasswordPage() {
 
             toast({
                 description: response?.message || 'Password reset successfully!',
-                className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
+                className: 'bg-[#5AD3AF] text-black font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
             });
             router.push('/login'); // Redirect to login page
         } catch (error) {
-            handleErrorApi({
-                error,
-                setError: resetPasswordForm.setError,
-                duration: 3000,
+            toast({
+                description: 'Password reset failed. Please try again.',
+                className: 'bg-[#F76F8E] text-black font-medium p-4 rounded-lg shadow-md',
+                variant: 'destructive',
+                duration: 1000,
             });
+            console.log('Login error:', error);
         } finally {
             setLoading(false);
         }
     };
     return (
-        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-white">
-            <h1 className="text-2xl font-semibold text-center mb-4">Reset Password</h1>
+        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
+            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
+                Reset Password
+            </h1>
             <Form {...resetPasswordForm}>
                 <form
                     onSubmit={resetPasswordForm.handleSubmit(handleResetPassword)}
@@ -74,12 +77,13 @@ export default function ResetPasswordPage() {
                         name="newpass"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>New Password</FormLabel>
+                                <FormLabel className="text-[#000000]">New Password</FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="password"
                                         placeholder="Enter new password"
+                                        className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -89,14 +93,14 @@ export default function ResetPasswordPage() {
                     <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2"
+                        className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg py-2"
                     >
                         {loading ? 'Resetting...' : 'Reset Password'}
                     </Button>
                 </form>
             </Form>
             <p className="text-sm text-center mt-4">
-                <a href="/login" className="text-pink-500 underline hover:text-pink-600">
+                <a href="/login" className="text-[#657ED4] underline hover:text-[#7696ff]">
                     Back to Login
                 </a>
             </p>

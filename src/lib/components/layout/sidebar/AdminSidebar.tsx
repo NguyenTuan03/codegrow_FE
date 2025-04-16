@@ -30,17 +30,15 @@ import {
 
 export const AdminSidebar = () => {
     return (
-        <Sidebar className="h-screen pt-16 border-r bg-muted/40">
+        <Sidebar className="h-screen pt-5 border-r bg-muted/40">
             <SidebarContent>
                 {/* Header */}
-                <div className="flex items-center justify-center w-full h-[60px]">
-                    <h1 className="text-2xl font-extrabold tracking-wide text-primary transition-all duration-300">
-                        CODEGROW
-                    </h1>
+                <div className="flex items-center px-12 text-black">
+                    <h1 className="text-xl font-bold">CODEGROW</h1>
                 </div>
                 <div className="flex h-[60px] items-center border-b px-4">
                     <Link href="/admin" className="w-full">
-                        <h2 className="text-base font-semibold text-foreground hover:text-primary transition-colors cursor-pointer">
+                        <h2 className="text-base font-semibold text-foreground hover:text-primary transition-colors hover:underline cursor-pointer">
                             Dashboard
                         </h2>
                     </Link>
@@ -61,7 +59,7 @@ export const AdminSidebar = () => {
                                         <AccordionItem value="users" className="border-b-0">
                                             <AccordionTrigger className="py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180">
                                                 <div className="flex w-full items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-sm">
+                                                    <div className="flex items-center gap-2 text-base">
                                                         <Users className="h-4 w-4" />
                                                         Users
                                                     </div>
@@ -73,9 +71,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/overviewuser"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Eye className="h-4 w-4" />
+                                                                <Eye className="h-5 w-5 " />
                                                                 Overview
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -84,9 +82,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/adduser"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Plus className="h-4 w-4" />
+                                                                <Plus className="h-5 w-5" />
                                                                 Add User
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -99,7 +97,7 @@ export const AdminSidebar = () => {
                                         <AccordionItem value="user-profile" className="border-b-0">
                                             <AccordionTrigger className="py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180">
                                                 <div className="flex w-full items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-sm">
+                                                    <div className="flex items-center gap-2 text-base">
                                                         <User className="h-4 w-4" />
                                                         User Profile
                                                     </div>
@@ -111,9 +109,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/users"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Users className="h-4 w-4" />
+                                                                <Users className="h-5 w-5" />
                                                                 Users
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -122,9 +120,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/contact"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Contact className="h-4 w-4" />
+                                                                <Contact className="h-5 w-5" />
                                                                 Contact
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -138,9 +136,9 @@ export const AdminSidebar = () => {
                                             <SidebarMenuButton asChild>
                                                 <Link
                                                     href="/admin/account"
-                                                    className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                    className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer"
                                                 >
-                                                    <Settings className="h-4 w-4" />
+                                                    <Settings className="h-5 w-5" />
                                                     Account
                                                 </Link>
                                             </SidebarMenuButton>
@@ -148,9 +146,9 @@ export const AdminSidebar = () => {
 
                                         {/* Projects */}
                                         <AccordionItem value="projects" className="border-b-0">
-                                            <AccordionTrigger className="py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                                            <AccordionTrigger className="py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ">
                                                 <div className="flex w-full items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-sm">
+                                                    <div className="flex items-center gap-2 text-base">
                                                         <Folder className="h-4 w-4" />
                                                         Projects
                                                     </div>
@@ -162,9 +160,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/overviewproject"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Eye className="h-4 w-4" />
+                                                                <Eye className="h-5 w-5" />
                                                                 Overview
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -173,9 +171,9 @@ export const AdminSidebar = () => {
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/calender"
-                                                                className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base  hover:underline cursor-pointer"
                                                             >
-                                                                <Calendar className="h-4 w-4" />
+                                                                <Calendar className="h-5 w-5" />
                                                                 Calendar
                                                             </Link>
                                                         </SidebarMenuButton>
@@ -202,9 +200,9 @@ export const AdminSidebar = () => {
                                             <SidebarMenuButton asChild>
                                                 <Link
                                                     href="#"
-                                                    className="flex items-center gap-2 px-2 py-1 text-sm"
+                                                    className="flex items-center gap-2 px-2 py-1 text-base"
                                                 >
-                                                    <Key className="h-4 w-4" />
+                                                    <Key className="h-5 w-5" />
                                                     API Keys
                                                 </Link>
                                             </SidebarMenuButton>
@@ -223,8 +221,8 @@ export const AdminSidebar = () => {
                 <SidebarMenu className="pl-2">
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <Link href="#" className="flex items-center gap-2 px-2 py-1 text-sm">
-                                <LayoutDashboard className="h-4 w-4" />
+                            <Link href="#" className="flex items-center gap-2 px-2 py-1 text-base">
+                                <LayoutDashboard className="h-5 w-5" />
                                 Layouts
                             </Link>
                         </SidebarMenuButton>
