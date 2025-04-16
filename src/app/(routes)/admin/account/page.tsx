@@ -29,6 +29,7 @@ import { Toast } from '@/components/ui/toast';
 import { UpdateAccount } from '@/lib/services/admin/updateuser';
 import { CreateUser } from '@/lib/services/admin/createuser';
 import CreateNewUser from '@/app/(routes)/admin/account/CreateNewUser';
+import { toast } from '@/components/ui/use-toast';
 
 interface Account {
     _id: string;
@@ -60,27 +61,39 @@ export default function Account() {
 
             setSelectedAccount(userDetail.metadata); // Lưu thông tin chi tiết vào state
             setModal('view'); // Mở modal hiển thị chi tiết
+            toast({
+                title: 'Success',
+                content: 'User details fetched successfully.',
+                variant: 'default',
+                duration: 2000,
+            });
+            router.refresh(); // Tải lại trang sau khi lấy thông tin chi tiết thành công
         } catch (error) {
             console.error('❌ Error fetching user details:', error);
+            toast({
+                title: 'Error',
+                content: 'Failed to fetch user details. Please try again.',
+                variant: 'destructive',
+                duration: 2000,
+            });
         }
     };
     const handleDelete = async (id: string) => {
         try {
-            console.log(`Deleting user with ID: ${id}`);
             const token = localStorage.getItem('token'); // Lấy token từ localStorage
             const response = await RemoveUser(id, token!); // Gọi API xóa tài khoản
-            console.log('✅ User deleted successfully:', response);
-            if (response?.message) {
-                Toast({
+            if (response?.status === 200) {
+                setModal(''); // Đóng modal trước
+                toast({
                     title: 'Success',
-                    content: 'User deleted successfully.',
+                    description: 'User deleted successfully.',
                     variant: 'default',
                 });
                 router.refresh(); // Tải lại trang sau khi xóa thành công
             } else {
-                Toast({
+                toast({
                     title: 'Error',
-                    content: 'Failed to delete the user. Please try again.',
+                    description: 'Failed to delete the user. Please try again.',
                     variant: 'destructive',
                 });
             }
@@ -99,22 +112,20 @@ export default function Account() {
     }, []);
     const handleUpdate = async (id: string, updatedData: Partial<Account>) => {
         try {
-            console.log(`Updating user with ID: ${id}`);
+            console.log(`Updating user with ID: ${id}`, updatedData);
             const token = localStorage.getItem('token'); // Lấy token từ localStorage
-            if (!token) {
-                throw new Error('Token is missing');
-            }
+            console.log('Session ID:', token);
 
-            // Gọi API UpdateAccount
-            const response = await UpdateAccount(
+            // Gọi API UpdateAccount với các tham số được kiểm tra
+            const result = await UpdateAccount(
                 token,
                 id,
                 updatedData.fullName || '',
                 updatedData.email || '',
-                updatedData.role || 'customer', // Giá trị mặc định nếu role không được cung cấp
+                updatedData.role || 'customer',
             );
 
-            console.log('✅ User updated successfully:', response);
+            console.log('✅ User updated successfully:', result);
 
             // Cập nhật danh sách tài khoản
             setAccounts((prevAccounts) =>
@@ -122,21 +133,30 @@ export default function Account() {
                     account._id === id ? { ...account, ...updatedData } : account,
                 ),
             );
-
-            Toast({
-                title: 'Success',
-                content: 'User updated successfully.',
-                variant: 'default',
-            });
-
-            setModal(''); // Đóng modal
+            if (result?.status === 200) {
+                console.log('User updated successfully:', result);
+                toast({
+                    title: 'Success',
+                    content: 'User updated successfully.',
+                    variant: 'default',
+                    duration: 2000,
+                });
+                router.refresh(); // Tải lại trang sau khi cập nhật thành công
+                // Trả về kết quả để có thể sử dụng tiếp nếu cần
+                setModal('');
+            } else {
+                console.error('❌ Error updating user:', result);
+                toast({
+                    title: 'Error',
+                    content: 'Failed to update the user. Please try again.',
+                    variant: 'destructive',
+                    duration: 2000,
+                });
+            }
         } catch (error: any) {
-            console.error('❌ Error updating user:', error.message);
-            Toast({
-                title: 'Error',
-                content: 'An error occurred while updating the user.',
-                variant: 'destructive',
-            });
+            console.error('❌ Error updating user:', error);
+
+            throw error; // Ném lại lỗi để xử lý tiếp ở nơi gọi hàm
         }
     };
 
@@ -163,7 +183,13 @@ export default function Account() {
 
             // Cập nhật danh sách tài khoản
             setAccounts((prevAccounts) => [...prevAccounts, response.metadata]);
-
+            toast({
+                title: 'Success',
+                content: 'User created successfully.',
+                variant: 'default',
+                duration: 2000,
+            });
+            router.refresh(); // Tải lại trang sau khi tạo thành công
             setModal(''); // Đóng modal
         } catch (error: any) {
             console.error('❌ Error creating user:', error.message);

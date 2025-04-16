@@ -46,6 +46,7 @@ const LoginForm = () => {
             const response = await login(data.email, data.password);
             console.log('Login response:', response);
             const token = response.metadata; // Lấy token từ response
+            localStorage.setItem('token', JSON.stringify(token)); // Lưu token vào localStorage
             const decoded = jwtDecode(token); // Giải mã token
             userAuth?.loginUser(decoded); // Lưu thông tin user và token vào AuthContext
             toast({

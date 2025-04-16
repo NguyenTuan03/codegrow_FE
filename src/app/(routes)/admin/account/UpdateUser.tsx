@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 
-// Define the Account type
 type Account = {
+    _id: string; // Thêm trường này nếu cần
     fullName: string;
     email: string;
     role: 'mentor' | 'customer' | 'admin';
@@ -23,34 +23,41 @@ export default function UpdateUser({
         role: account.role,
     });
 
-    const handleSubmit = () => {
-        onUpdate(formData); // Gọi callback onUpdate với dữ liệu cập nhật
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault(); // Ngăn chặn reload trang
+        onUpdate(formData);
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Overlay */}
-            <div className="absolute inset-0 " onClick={onClose} />
+            {/* Overlay - thêm pointer-events-auto */}
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-            {/* Update Form */}
-            <div className="bg-white p-6 rounded-lg shadow-md w-[400px]">
+            {/* Update Form - chuyển thành form thực sự */}
+            <form
+                onSubmit={handleSubmit}
+                className="relative bg-white p-6 rounded-lg shadow-md w-[400px] z-10"
+                onClick={(e) => e.stopPropagation()} // Ngăn sự kiện click lan ra overlay
+            >
                 <h2 className="text-xl font-bold mb-4">Update Account</h2>
                 <div className="space-y-4">
                     <input
                         type="text"
-                        value={formData.fullName}
+                        value={formData.fullName || ''}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         placeholder="Full Name"
                         className="w-full border rounded px-3 py-2"
+                        required
                     />
                     <input
                         type="email"
-                        value={formData.email}
+                        value={formData.email || ''}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="Email"
                         className="w-full border rounded px-3 py-2"
+                        required
                     />
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         <label
                             htmlFor="role-select"
                             className="block text-sm font-medium text-gray-700"
@@ -59,7 +66,7 @@ export default function UpdateUser({
                         </label>
                         <select
                             id="role-select"
-                            value={formData.role}
+                            value={formData.role || 'customer'}
                             onChange={(e) =>
                                 setFormData({
                                     ...formData,
@@ -67,6 +74,7 @@ export default function UpdateUser({
                                 })
                             }
                             className="w-full border rounded px-3 py-2"
+                            required
                         >
                             <option value="mentor">Mentor</option>
                             <option value="customer">Customer</option>
@@ -75,14 +83,14 @@ export default function UpdateUser({
                     </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-6">
-                    <Button variant="outline" onClick={onClose}>
+                    <Button type="button" variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button className="bg-blue-500 text-white" onClick={handleSubmit}>
+                    <Button type="submit" className="bg-blue-500 text-white">
                         Update
                     </Button>
                 </div>
-            </div>
+            </form>
         </div>
     );
 }
