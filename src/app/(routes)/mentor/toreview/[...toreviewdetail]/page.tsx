@@ -5,9 +5,13 @@ import { Star } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function ToReviewDetail() {
-    const { toreviewdetail: courseId } = useParams(); // Lấy tham số từ URL
+    const { toreviewdetail } = useParams(); // Lấy tham số từ URL
+    const courseId = Array.isArray(toreviewdetail) ? toreviewdetail[0] : toreviewdetail;
 
-    const courseDetails = {
+    const courseDetails: Record<
+        string,
+        { title: string; code: string; trainer: string; image: string }
+    > = {
         react: {
             title: 'React JS',
             code: 'REACTJS - 312',
@@ -58,7 +62,10 @@ export default function ToReviewDetail() {
         },
     ];
 
-    const course = courseDetails[courseId] || {};
+    const course =
+        courseId && courseId in courseDetails
+            ? courseDetails[courseId]
+            : { title: '', code: '', trainer: '', image: '' };
 
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">

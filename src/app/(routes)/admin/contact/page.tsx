@@ -93,11 +93,13 @@ export default function ContactPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     className="max-w-sm"
                 />
-                <Select className="border rounded-md px-3 py-2 text-sm">
-                    <option value="all">Sort by All</option>
-                    <option value="name">Name</option>
-                    <option value="hours">Hours Worked</option>
-                </Select>
+                <div className="border rounded-md px-3 py-2 text-sm">
+                    <Select>
+                        <option value="all">Sort by All</option>
+                        <option value="name">Name</option>
+                        <option value="hours">Hours Worked</option>
+                    </Select>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

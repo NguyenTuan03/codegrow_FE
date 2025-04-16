@@ -18,7 +18,6 @@ import { forgotPassword } from '@/lib/services/auth/ForgotPassword';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { handleErrorApi } from '@/lib/utils';
 
 const forgotPasswordSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -44,10 +43,11 @@ const PasswordPage = () => {
                 className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
             });
         } catch (error) {
-            handleErrorApi({
-                error,
-                setError: forgotPasswordForm.setError,
-                duration: 3000,
+            console.error('Error sending reset link:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to send reset link. Please try again.',
+                className: 'bg-red-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
             });
         } finally {
             setLoading(false);

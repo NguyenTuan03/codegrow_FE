@@ -4,7 +4,6 @@ import * as React from 'react';
 import ProfileForm from '@/components/profile-form';
 import { useToast } from '@/components/ui/use-toast';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function ProfileAdmin() {
     const { toast } = useToast();
@@ -75,83 +74,6 @@ export default function ProfileAdmin() {
                 </div>
             ) : (
                 <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-300 hover:shadow-3xl">
-                    {/* Header Section */}
-                    <div className="flex flex-col sm:flex-row items-center gap-6 mb-10">
-                        <div className="relative">
-                            <Avatar className="w-28 h-28 border-4 border-gold-400 shadow-md">
-                                <AvatarImage
-                                    src={profileData.imgUrl || '/default-avatar.png'}
-                                    alt="Admin Avatar"
-                                />
-                                <AvatarFallback className="bg-gold-400 text-white font-bold">
-                                    {profileData.fullName?.charAt(0) || 'A'}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                        <div className="text-center sm:text-left">
-                            <h1 className="text-3xl font-bold text-navy-800">
-                                {profileData.fullName || 'Administrator'}
-                            </h1>
-                            <p className="text-gold-600 font-medium mt-1">
-                                {profileData.role || 'System Administrator'}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Profile Information */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                        <div className="bg-navy-50 p-6 rounded-lg shadow-sm">
-                            <h2 className="text-lg font-semibold text-navy-700 flex items-center gap-2">
-                                <svg
-                                    className="w-5 h-5 text-gold-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M3 8l9-6 9 6v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"
-                                    />
-                                </svg>
-                                Contact Information
-                            </h2>
-                            <p className="text-navy-600 mt-3">
-                                <strong>Email:</strong> {profileData.email || 'N/A'}
-                            </p>
-                            <p className="text-navy-600 mt-2">
-                                <strong>Phone:</strong> {profileData.phone || 'N/A'}
-                            </p>
-                        </div>
-                        <div className="bg-navy-50 p-6 rounded-lg shadow-sm">
-                            <h2 className="text-lg font-semibold text-navy-700 flex items-center gap-2">
-                                <svg
-                                    className="w-5 h-5 text-gold-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2"
-                                    />
-                                </svg>
-                                Account Details
-                            </h2>
-                            <p className="text-navy-600 mt-3">
-                                <strong>Role:</strong> {profileData.role || 'N/A'}
-                            </p>
-                            <p className="text-navy-600 mt-2">
-                                <strong>Status:</strong> {profileData.status || 'Active'}
-                            </p>
-                        </div>
-                    </div>
-
                     {/* Profile Form */}
                     <div>
                         <h2 className="text-lg font-semibold text-navy-700 mb-4 flex items-center gap-2">

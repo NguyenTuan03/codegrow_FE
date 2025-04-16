@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { handleErrorApi } from '@/lib/utils';
 import { CreateClass } from '@/lib/services/mentor/createclass';
 import { CreateClassBody, CreateClassBodyType } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
@@ -113,10 +112,11 @@ export default function CreateClassForm() {
 
             router.refresh();
         } catch (error) {
-            handleErrorApi({
-                error,
-                setError: form.setError,
-                duration: 5000,
+            console.error('Error creating class:', error);
+            toast({
+                title: 'Lỗi',
+                description: 'Đã xảy ra lỗi khi tạo lớp học. Vui lòng thử lại.',
+                variant: 'destructive',
             });
         } finally {
             setLoading(false);
