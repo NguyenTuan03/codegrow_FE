@@ -1,19 +1,19 @@
-import httpRequest from '../HttpRequest';
+import httpRequest from '@/lib/util/HttpRequest';
 
-export const UpdateUser = async (
+export const UpdateAccount = async (
     token: string,
     id: string,
     fullName: string,
-    password: string,
-    confirmPassword: string,
+    email: string,
+    role: string,
 ) => {
     try {
         const response = await httpRequest.put(
-            `/admin/user/${id}`,
+            `/users/${id}`,
             {
                 fullName,
-                password,
-                confirmPassword,
+                email,
+                role,
             },
             {
                 headers: { Authorization: `Bearer ${token}` },

@@ -29,7 +29,15 @@ type FormValues = {
     password: string;
 };
 
-export default function CreateUser({ onClose }: { onClose: () => void }) {
+export default function CreateNewUser({
+    onClose,
+    onCreate,
+}: {
+    onClose: () => void;
+    onCreate: (
+        newData: Partial<{ fullName: string; email: string; role: string; password: string }>,
+    ) => void;
+}) {
     const form = useForm<FormValues>({
         defaultValues: {
             fullName: '',
@@ -38,13 +46,7 @@ export default function CreateUser({ onClose }: { onClose: () => void }) {
             password: '',
         },
     });
-
     const [showPassword, setShowPassword] = useState(false);
-
-    const onSubmit = (data: FormValues) => {
-        console.log('Form Data:', data);
-        onClose();
-    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -58,7 +60,7 @@ export default function CreateUser({ onClose }: { onClose: () => void }) {
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
-                        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+                        <form className="space-y-4" onSubmit={form.handleSubmit(onCreate)}>
                             {/* Name Field */}
                             <FormField
                                 control={form.control}

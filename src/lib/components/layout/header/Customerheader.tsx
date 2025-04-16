@@ -75,7 +75,7 @@ const Customerheader = () => {
                             Upgrade
                         </Button>
                         <div className="flex items-center gap-3">
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <div className="relative">
                                         <Bell className="w-5 h-5 cursor-pointer" />
@@ -112,7 +112,7 @@ const Customerheader = () => {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
                                 <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
                                     <AvatarImage src="/path-to-user-image.jpg" alt="User Avatar" />

@@ -19,6 +19,7 @@ import { handleErrorApi } from '@/lib/utils';
 import { CreateClass } from '@/lib/services/mentor/createclass';
 import { CreateClassBody, CreateClassBodyType } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/components/ui/use-toast';
 
 const backgroundColors = [
     'bg-blue-500',
@@ -57,23 +58,59 @@ export default function CreateClassForm() {
             form.setValue('image', file.name); // Lưu tên tệp vào form
         }
     };
+    const uploadImage = async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('image', file);
 
+        const response = await fetch('http://localhost:5000/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to upload image');
+        }
+
+        const data = await response.json();
+        return data.imageUrl; // URL của hình ảnh
+    };
     const handleSubmit = async (data: CreateClassBodyType) => {
         setLoading(true);
         try {
+            if (coverImage) {
+                const formData = new FormData();
+                formData.append('file', coverImage as Blob);
+                const imageUrl = await uploadImage(coverImage); // Upload hình ảnh và lấy URL
+                data = {
+                    ...data,
+                    image: imageUrl, // Thay đổi tên trường nếu cần thiết
+                };
+            }
+
             const response = await CreateClass({
                 className: data.className,
                 subject: data.subject || '',
                 topic: data.topic || '',
                 section: data.section || '',
                 room: data.room || '',
-                coverImage,
+                image: data.image, // Lưu URL hình ảnh vào database
                 bgColor,
             });
 
             console.log('API Response:', response);
+            toast({
+                title: 'Tạo lớp học thành công',
+                description: 'Lớp học đã được tạo thành công!',
+                action: (
+                    <button
+                        onClick={() => router.push('/classes')}
+                        className="text-blue-500 hover:underline"
+                    >
+                        Xem lớp học
+                    </button>
+                ),
+            });
 
-            router.push('/classes');
             router.refresh();
         } catch (error) {
             handleErrorApi({
@@ -239,14 +276,16 @@ export default function CreateClassForm() {
             <div className="flex items-center justify-center">
                 <Card className="w-full max-w-md shadow-lg overflow-hidden">
                     <div className={`h-36 ${bgColor} relative`}>
-                        {imagePreview && (
+                        {imagePreview ? (
                             <Image
                                 src={imagePreview}
                                 alt="Cover"
-                                width={500} // Thêm thuộc tính width
-                                height={200} // Thêm thuộc tính height
+                                width={500}
+                                height={200}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
+                        ) : (
+                            <p className="text-center text-white">No image selected</p>
                         )}
                     </div>
                     <CardContent className="space-y-1 py-4">

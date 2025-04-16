@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -170,7 +171,7 @@ export const AdminHeader = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
                                 <AvatarImage src="/path-to-user-image.jpg" alt="User Avatar" />
@@ -194,7 +195,7 @@ export const AdminHeader = () => {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <Bell className="h-5 w-5" />
@@ -231,7 +232,7 @@ export const AdminHeader = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <Settings className="h-5 w-5" />
@@ -254,6 +255,7 @@ export const AdminHeader = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+                <ModeToggle />
             </div>
         </header>
     );

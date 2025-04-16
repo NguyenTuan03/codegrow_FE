@@ -28,13 +28,13 @@ export const setupAxiosInterceptor = () => {
                     );
 
                     const newAccessToken = res.data.accessToken;
-                    localStorage.setItem('token',JSON.stringify(newAccessToken));
+                    localStorage.setItem('token', JSON.stringify(newAccessToken));
 
                     originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     return httpRequest(originalRequest);
                 } catch (err) {
                     localStorage.clear();
-                    window.location.href = '/customer';
+                    // window.location.href = '/login'; // nếu như để customer thì login failed là bay về home
                     return Promise.reject(err);
                 }
             }

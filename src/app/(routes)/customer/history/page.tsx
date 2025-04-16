@@ -224,7 +224,7 @@ export default function TransactionHistory() {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <h1 className="text-2xl font-bold text-gray-900">Transaction History</h1>
                         <div className="flex gap-2">
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="text-sm gap-2">
                                         <Calendar className="h-4 w-4" />
@@ -239,7 +239,7 @@ export default function TransactionHistory() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="text-sm gap-2">
                                         <Filter className="h-4 w-4" />

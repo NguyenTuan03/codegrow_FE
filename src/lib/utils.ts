@@ -55,7 +55,7 @@ export const handleErrorApi = <TFieldValues extends FieldValues>({
     } else if (error instanceof HttpError) {
         toast({
             title: 'Error',
-            description: error.payload.message ?? 'An unknown error occurred',
+            description: error.message ?? 'An unknown error occurred',
             variant: 'destructive',
             duration: duration ?? 5000,
             className: 'bg-red-500 text-white font-semibold p-4 rounded-lg shadow-lg',

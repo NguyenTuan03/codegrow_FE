@@ -1,20 +1,20 @@
-import httpRequest from '../HttpRequest';
+import httpRequest from '@/lib/util/HttpRequest';
 
 export const CreateUser = async (
     token: string,
     fullName: string,
     email: string,
     password: string,
-    confirmPassword: string,
+    role: string,
 ) => {
     try {
         const response = await httpRequest.post(
-            '/admin/user',
+            '/users',
             {
                 fullName,
                 email,
                 password,
-                confirmPassword,
+                role,
             },
             {
                 headers: { Authorization: `Bearer ${token}` },
@@ -24,7 +24,7 @@ export const CreateUser = async (
         console.log('✅ API Response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('❌ Error from signUp API:', error);
+        console.error('❌ Error from CreateUser API:', error);
         throw error;
     }
 };
