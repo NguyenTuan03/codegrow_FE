@@ -20,7 +20,6 @@ import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { signUp } from '@/lib/services/auth/SignUp';
-import { handleErrorApi } from '@/lib/utils';
 
 const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
@@ -74,10 +73,11 @@ const RegisterForm = () => {
 
             router.push('/register/verify');
         } catch (error) {
-            handleErrorApi({
-                error,
-                setError: form.setError,
-                duration: 5000,
+            console.error('❌ Registration error:', error);
+
+            toast({
+                description: 'Registration failed. Please try again.',
+                className: 'bg-red-500 text-black',
             });
         } finally {
             setLoading(false);

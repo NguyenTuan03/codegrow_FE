@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { handleErrorApi } from '@/lib/utils';
 import { useState } from 'react';
 import { ProfileResType, UpdateMeBody, UpdateMeBodyType } from '@/schemaValidations/profile.schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -66,9 +65,10 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
             router.refresh();
         } catch (error) {
             console.error('Lỗi từ API:', error);
-            handleErrorApi({
-                error,
-                setError: form.setError,
+            toast({
+                title: '❌ Cập nhật thất bại',
+                description: 'Có lỗi xảy ra trong quá trình cập nhật thông tin.',
+                className: 'bg-red-500 text-white',
             });
         } finally {
             setLoading(false);
