@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import {
     LineChart,
@@ -10,16 +8,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import {
-    Calendar,
-    Clock,
-    ChevronRight,
-    ChevronLeft,
-    Star,
-    Users,
-    ArrowUpRight,
-    ArrowDownRight,
-} from 'lucide-react';
+
 import Link from 'next/link';
 
 // Import shadcn/ui components
@@ -37,6 +26,24 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import dynamic from 'next/dynamic';
+// Dynamically import Lucide icons
+const Calendar = dynamic(() => import('lucide-react').then((mod) => mod.Calendar), { ssr: false });
+const Clock = dynamic(() => import('lucide-react').then((mod) => mod.Clock), { ssr: false });
+const ChevronRight = dynamic(() => import('lucide-react').then((mod) => mod.ChevronRight), {
+    ssr: false,
+});
+const ChevronLeft = dynamic(() => import('lucide-react').then((mod) => mod.ChevronLeft), {
+    ssr: false,
+});
+const Star = dynamic(() => import('lucide-react').then((mod) => mod.Star), { ssr: false });
+const Users = dynamic(() => import('lucide-react').then((mod) => mod.Users), { ssr: false });
+const ArrowUpRight = dynamic(() => import('lucide-react').then((mod) => mod.ArrowUpRight), {
+    ssr: false,
+});
+const ArrowDownRight = dynamic(() => import('lucide-react').then((mod) => mod.ArrowDownRight), {
+    ssr: false,
+});
 
 // Sample data for statistics
 const revenueData = [
@@ -206,7 +213,7 @@ const engineeringCourses = [
     },
 ];
 
-export default function Courses() {
+const Courses: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50">
             {/* Stats Cards */}
@@ -486,7 +493,10 @@ export default function Courses() {
                                         href={`/admin/report/courses/${course.id}`}
                                         passHref
                                     >
-                                        <div className="flex items-start p-2 hover:bg-gray-50 rounded-lg">
+                                        <div
+                                            key={course.id}
+                                            className="flex items-start p-2 hover:bg-gray-50 rounded-lg"
+                                        >
                                             <div className="w-12 h-12 bg-gray-200 rounded-md mr-3 flex items-center justify-center">
                                                 <span className="text-xs">{course.category}</span>
                                             </div>
@@ -547,7 +557,7 @@ export default function Courses() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {latestCourses.map((course) => (
                         <Link key={course.id} href={`/admin/report/courses/${course.id}`} passHref>
-                            <Card className="overflow-hidden">
+                            <Card key={course.id} className="overflow-hidden">
                                 <div className="h-36 bg-gray-200 flex items-center justify-center">
                                     <span>{course.category}</span>
                                 </div>
@@ -592,7 +602,11 @@ export default function Courses() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {engineeringCourses.map((course) => (
                                 <Card key={course.id}>
-                                    <Link href={`/admin/report/courses/${course.id}`} passHref>
+                                    <Link
+                                        key={course.id}
+                                        href={`/admin/report/courses/${course.id}`}
+                                        passHref
+                                    >
                                         <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
                                             <div className="text-center">
                                                 <h3 className="text-xl font-bold mb-2">
@@ -637,4 +651,6 @@ export default function Courses() {
             </div>
         </div>
     );
-}
+};
+
+export default Courses;

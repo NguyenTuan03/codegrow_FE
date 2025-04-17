@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,9 +23,8 @@ const resetPasswordSchema = z.object({
     newpass: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
     const searchParams = useSearchParams();
-
     const { toast } = useToast();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -34,7 +33,9 @@ export default function ResetPasswordPage() {
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: { newpass: '' },
     });
+
     const token = searchParams.get('token');
+
     const handleResetPassword = async (data: { newpass: string }) => {
         setLoading(true);
         try {
@@ -47,7 +48,7 @@ export default function ResetPasswordPage() {
 
             toast({
                 description: response?.message || 'Password reset successfully!',
-                className: 'bg-[#5AD3AF] text-black font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
+                className: 'bg-[#5AD3AF] text-black font-medium p-4 rounded-lg shadow-md',
             });
             router.push('/login'); // Redirect to login page
         } catch (error) {
@@ -62,6 +63,7 @@ export default function ResetPasswordPage() {
             setLoading(false);
         }
     };
+
     return (
         <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
             <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
@@ -83,6 +85,7 @@ export default function ResetPasswordPage() {
                                         {...field}
                                         type="password"
                                         placeholder="Enter new password"
+                                        aria-label="New Password"
                                         className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
                                     />
                                 </FormControl>
@@ -93,6 +96,7 @@ export default function ResetPasswordPage() {
                     <Button
                         type="submit"
                         disabled={loading}
+                        aria-label="Reset Password"
                         className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg py-2"
                     >
                         {loading ? 'Resetting...' : 'Reset Password'}
@@ -100,10 +104,21 @@ export default function ResetPasswordPage() {
                 </form>
             </Form>
             <p className="text-sm text-center mt-4">
-                <a href="/login" className="text-[#657ED4] underline hover:text-[#7696ff]">
+                <button
+                    onClick={() => router.push('/login')}
+                    className="text-[#657ED4] underline hover:text-[#7696ff]"
+                >
                     Back to Login
-                </a>
+                </button>
             </p>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }
