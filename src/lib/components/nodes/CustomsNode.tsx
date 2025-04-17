@@ -1,6 +1,10 @@
 import { Handle, Position, NodeProps } from '@xyflow/react';
+import { ComponentType } from 'react';
+type CustomNodeData = {
+    label: string;
+  };
 
-const CustomNode = ({ data }: NodeProps) => {
+const CustomNode = ({ data }: NodeProps<Partial<CustomNodeData>>) => {
     return (
         <div
             style={{
@@ -26,12 +30,11 @@ const CustomNode = ({ data }: NodeProps) => {
                 id="right"
                 style={{ background: '#000', borderRadius: '50%', width: '8px', height: '8px' }}
             />
-            {data.label}
+            {data?.label}
         </div>
     );
 };
 
-// Map the custom node type
-export const nodeTypes = {
-    custom: CustomNode,
-};
+export const nodeTypes: { [key: string]: ComponentType<NodeProps> } = {
+    custom: CustomNode as ComponentType<NodeProps>,
+  };
