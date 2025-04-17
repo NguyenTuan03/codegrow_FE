@@ -1,7 +1,9 @@
 import { Edge, Node } from "@xyflow/react";
-
+type CustomNodeData = {
+  label: string;
+};
 // Nodes for the flowchart
-export const FEnodes: Node[] = [
+export const FEnodes: Node<Partial<CustomNodeData>>[] = [
   // Internet Node (Central Node)
   {
     id: "internet",
