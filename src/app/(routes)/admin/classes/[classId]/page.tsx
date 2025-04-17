@@ -19,7 +19,7 @@ export default function ClassPage() {
             setTab('stream');
         }
     }, [pathname, classId]);
-    //
+
     if (!classId) {
         return <div>Error: Class ID is missing. Please provide a valid class ID in the URL.</div>;
     }

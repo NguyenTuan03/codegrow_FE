@@ -9,7 +9,6 @@ import {
     Mail,
     HelpCircle,
     ClipboardList,
-    Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -23,7 +22,6 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
     SidebarMenuBadge,
-    SidebarMenuAction,
 } from '@/components/ui/sidebar';
 
 export default function MentorSidebar() {
@@ -84,11 +82,6 @@ export default function MentorSidebar() {
                         <Link href="/mentor/classes">
                             <span className="cursor-pointer hover:text-indigo-600">Classes</span>
                         </Link>
-                        <SidebarMenuAction className="ml-2 mt-2 mr-2">
-                            <Link href="/mentor/classes/create">
-                                <Plus className="h-4 w-4 text-gray-500 hover:text-indigo-600" />
-                            </Link>
-                        </SidebarMenuAction>
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>

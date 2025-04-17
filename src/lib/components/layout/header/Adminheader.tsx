@@ -26,20 +26,18 @@ export const AdminHeader = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
     const userAuth = useContext(Auth);
-    // Kiểm tra trạng thái đăng nhập từ localStorage
+
     useEffect(() => {
         const user = localStorage.getItem('user');
         if (!user) {
-            // Nếu không có user, chuyển hướng đến trang đăng nhập
             router.push('/login');
         }
     }, [router]);
 
     const handleLogout = () => {
         if (userAuth) {
-            userAuth.logoutUser(); // Gọi hàm logout từ AuthContext
-            console.log('User logged out');
-            router.push('/'); // Chuyển hướng đến trang đăng nhập
+            userAuth.logoutUser();
+            router.push('/');
         }
     };
 
@@ -64,11 +62,16 @@ export const AdminHeader = () => {
     ];
 
     return (
-        <header className="sticky w-full top-0 z-50 bg-white shadow-sm border-b">
+        <header
+            className="sticky w-full top-0 z-50 shadow-sm border-b"
+            style={{
+                backgroundColor: 'var(--sidebar-background)',
+                color: 'var(--sidebar-foreground)',
+            }}
+        >
             <div className="container flex h-16 items-center justify-between px-4">
                 {/* Left side - Logo and Dropdowns */}
                 <div className="flex items-center gap-6">
-                    {/* Report và Menu ngang hàng */}
                     <div className="flex items-center gap-4">
                         {/* Report Dropdown */}
                         <Accordion type="single" collapsible className="w-auto">
@@ -78,15 +81,17 @@ export const AdminHeader = () => {
                                         Report{' '}
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
                                     <div className="py-1">
                                         {reportItems.map((item) => (
                                             <a
                                                 key={item.name}
                                                 href={`/admin/report/${item.name.toLowerCase()}`}
-                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                                             >
-                                                {item.icon}
+                                                <span className="text-gray-700 dark:text-gray-300">
+                                                    {item.icon}
+                                                </span>
                                                 {item.name}
                                             </a>
                                         ))}
@@ -103,15 +108,17 @@ export const AdminHeader = () => {
                                         Menu{' '}
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
                                     <div className="py-1">
                                         {menuItems.map((item) => (
                                             <Link
                                                 key={item.name}
                                                 href={`/admin/report/${item.name.toLowerCase()}`}
-                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                                             >
-                                                {item.icon}
+                                                <span className="text-gray-700 dark:text-gray-300">
+                                                    {item.icon}
+                                                </span>
                                                 {item.name}
                                             </Link>
                                         ))}
@@ -125,11 +132,11 @@ export const AdminHeader = () => {
                 {/* Search Bar */}
                 <div className="relative flex-1 max-w-xl mx-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <input
                             type="text"
                             placeholder="Search in font"
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                             value={searchQuery}
@@ -139,7 +146,7 @@ export const AdminHeader = () => {
 
                     {/* Search Results */}
                     {isSearchFocused && (
-                        <div className="absolute mt-1 w-full bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                        <div className="absolute mt-1 w-full bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
                             {searchResults
                                 .filter(
                                     (item) =>
@@ -153,14 +160,16 @@ export const AdminHeader = () => {
                                 .map((item) => (
                                     <div
                                         key={item.id}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                     >
-                                        <div className="text-gray-500">{item.icon}</div>
+                                        <div className="text-gray-500 dark:text-gray-300">
+                                            {item.icon}
+                                        </div>
                                         <div className="flex flex-col">
                                             <span className="text-sm font-medium">
                                                 {item.title}
                                             </span>
-                                            <span className="text-xs text-gray-500">
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
                                                 {item.category}
                                             </span>
                                         </div>
@@ -179,7 +188,7 @@ export const AdminHeader = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-48 bg-gray-100 border border-gray-300 rounded-md shadow-lg"
+                            className="w-48 bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
                             align="end"
                         >
                             <DropdownMenuItem>
@@ -189,7 +198,7 @@ export const AdminHeader = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleLogout}>
                                 <div className="flex items-center gap-2">
-                                    <LogOut className="h-4 w-4" />
+                                    <LogOut className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                                     Logout
                                 </div>
                             </DropdownMenuItem>
@@ -198,35 +207,41 @@ export const AdminHeader = () => {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                                <Bell className="h-5 w-5" />
+                                <Bell className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-72 bg-white border border-gray-300 rounded-md shadow-lg"
+                            className="w-72 bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
                             align="end"
                         >
-                            <div className="px-4 py-2 text-sm font-semibold text-gray-700">
+                            <div className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
                                 Notifications
                             </div>
                             <DropdownMenuItem>
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="font-medium">New user registered</span>
-                                    <span className="text-xs text-gray-500">2 minutes ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        2 minutes ago
+                                    </span>
                                 </div>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="font-medium">System update completed</span>
-                                    <span className="text-xs text-gray-500">10 minutes ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        10 minutes ago
+                                    </span>
                                 </div>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="font-medium">You have 3 unread messages</span>
-                                    <span className="text-xs text-gray-500">30 minutes ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        30 minutes ago
+                                    </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="justify-center text-blue-600 hover:text-blue-800">
+                            <DropdownMenuItem className="justify-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500">
                                 <a href="#">View all</a>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -235,11 +250,11 @@ export const AdminHeader = () => {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                                <Settings className="h-5 w-5" />
+                                <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-48 bg-gray-100 border border-gray-300 rounded-md shadow-lg"
+                            className="w-48 bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
                             align="end"
                         >
                             <DropdownMenuItem>

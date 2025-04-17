@@ -77,21 +77,21 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
 
     return (
         <div className="max-w-3xl mx-auto p-6">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                {/* Header với avatar */}
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 flex items-center space-x-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                {/* Header with avatar */}
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-6 flex items-center space-x-6">
                     <div className="relative">
-                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                        <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-700 shadow-lg">
                             <AvatarImage src={profile.imgUrl || '/default-avatar.png'} />
-                            <AvatarFallback className="text-2xl font-semibold">
+                            <AvatarFallback className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                                 {profile.fullName?.charAt(0) || 'U'}
                             </AvatarFallback>
                         </Avatar>
                         {isEditing && (
-                            <div className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md">
+                            <div className="absolute bottom-0 right-0 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 text-blue-600"
+                                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
                                 >
@@ -102,7 +102,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">{profile.fullName}</h1>
-                        <p className="text-blue-100">{profile.role}</p>
+                        <p className="text-blue-100 dark:text-blue-200">{profile.role}</p>
                     </div>
                 </div>
 
@@ -120,14 +120,18 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
+                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                             Email
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 disabled={!isEditing}
-                                                className={`rounded-lg ${!isEditing ? 'bg-gray-50 text-gray-600' : 'bg-white border-gray-300'}`}
+                                                className={`rounded-lg ${
+                                                    !isEditing
+                                                        ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                                                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                                                }`}
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-500 text-sm" />
@@ -141,14 +145,18 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
+                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                             Họ và tên
                                         </FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 disabled={!isEditing}
-                                                className={`rounded-lg ${!isEditing ? 'bg-gray-50 text-gray-600' : 'bg-white border-gray-300'}`}
+                                                className={`rounded-lg ${
+                                                    !isEditing
+                                                        ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                                                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                                                }`}
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-500 text-sm" />
@@ -162,7 +170,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
+                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                             Vai trò
                                         </FormLabel>
                                         <FormControl>
@@ -170,7 +178,11 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                 readOnly
                                                 {...field}
                                                 disabled={!isEditing}
-                                                className={`rounded-lg ${!isEditing ? 'bg-gray-50 text-gray-600' : 'bg-white border-gray-300'}`}
+                                                className={`rounded-lg ${
+                                                    !isEditing
+                                                        ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                                                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                                                }`}
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-500 text-sm" />
@@ -180,7 +192,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
 
                             {/* Wallet */}
                             <FormItem>
-                                <FormLabel className="text-gray-700 font-medium">
+                                <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                     Số dư ví
                                 </FormLabel>
                                 <FormControl>
@@ -188,16 +200,18 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                         <Input
                                             value={profile.wallet}
                                             readOnly
-                                            className="bg-gray-50 text-gray-600 rounded-lg"
+                                            className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg"
                                         />
-                                        <span className="text-gray-500">VNĐ</span>
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            VNĐ
+                                        </span>
                                     </div>
                                 </FormControl>
                             </FormItem>
                         </div>
 
                         {/* Action buttons */}
-                        <div className="pt-6 border-t border-gray-200">
+                        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                             {!isEditing ? (
                                 <div className="flex justify-end">
                                     <Button
@@ -221,7 +235,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     <Button
                                         type="button"
                                         onClick={() => setIsEditing(false)}
-                                        className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm"
+                                        className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
                                     >
                                         Hủy bỏ
                                     </Button>

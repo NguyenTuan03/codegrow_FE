@@ -22,16 +22,20 @@ export default function ConfirmForm({ formData, onBack }: ConfirmFormProps) {
             {/* Header */}
             <div className="text-center space-y-2">
                 <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
-                <h2 className="text-2xl font-bold text-gray-800">Review User Details</h2>
-                <p className="text-gray-500">Please confirm the information before submitting</p>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                    Review User Details
+                </h2>
+                <p className="text-gray-500 dark:text-gray-400">
+                    Please confirm the information before submitting
+                </p>
             </div>
 
             <CardContent className="p-6 space-y-6">
                 {/* User Summary Card */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
                     {/* Avatar and Name */}
                     <div className="flex items-center gap-4 mb-6">
-                        <Avatar className="h-16 w-16 border-2 border-indigo-100">
+                        <Avatar className="h-16 w-16 border-2 border-indigo-100 dark:border-indigo-500">
                             <AvatarImage src={formData?.avatar || ''} />
                             <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl font-medium">
                                 {formData?.firstName?.charAt(0)}
@@ -39,10 +43,10 @@ export default function ConfirmForm({ formData, onBack }: ConfirmFormProps) {
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <h3 className="text-xl font-semibold text-gray-800">
+                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                                 {formData?.firstName} {formData?.lastName}
                             </h3>
-                            <p className="text-indigo-600 font-medium capitalize">
+                            <p className="text-indigo-600 dark:text-indigo-400 font-medium capitalize">
                                 {formData?.accountType}
                             </p>
                         </div>
@@ -52,40 +56,50 @@ export default function ConfirmForm({ formData, onBack }: ConfirmFormProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Email */}
                         <div className="space-y-1">
-                            <p className="text-sm font-medium text-gray-500">Email</p>
-                            <p className="text-gray-800">{formData?.email}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Email
+                            </p>
+                            <p className="text-gray-800 dark:text-gray-100">{formData?.email}</p>
                         </div>
 
                         {/* Phone */}
                         {formData?.phone && (
                             <div className="space-y-1">
-                                <p className="text-sm font-medium text-gray-500">
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                     Phone {formData?.phoneType && `(${formData.phoneType})`}
                                 </p>
-                                <p className="text-gray-800">{formData.phone}</p>
+                                <p className="text-gray-800 dark:text-gray-100">{formData.phone}</p>
                             </div>
                         )}
 
                         {/* Organization */}
                         <div className="space-y-1">
-                            <p className="text-sm font-medium text-gray-500">Organization</p>
-                            <p className="text-gray-800">{formData?.organization}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Organization
+                            </p>
+                            <p className="text-gray-800 dark:text-gray-100">
+                                {formData?.organization}
+                            </p>
                         </div>
 
                         {/* Department */}
                         <div className="space-y-1">
-                            <p className="text-sm font-medium text-gray-500">Department</p>
-                            <p className="text-gray-800">{formData?.department}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Department
+                            </p>
+                            <p className="text-gray-800 dark:text-gray-100">
+                                {formData?.department}
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Verification Note */}
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg border border-blue-100 dark:border-blue-700">
                     <div className="flex items-start gap-3">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0"
+                            className="h-5 w-5 text-blue-500 dark:text-blue-300 mt-0.5 flex-shrink-0"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                         >
@@ -95,7 +109,7 @@ export default function ConfirmForm({ formData, onBack }: ConfirmFormProps) {
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
                             By confirming, you agree that all provided information is accurate and
                             complete. This action will create a new user account in the system.
                         </p>
@@ -107,7 +121,7 @@ export default function ConfirmForm({ formData, onBack }: ConfirmFormProps) {
                 <Button
                     type="button"
                     variant="outline"
-                    className="h-12 px-6 w-full sm:w-auto border-gray-300 text-gray-600 hover:bg-gray-50"
+                    className="h-12 px-6 w-full sm:w-auto border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                     onClick={onBack}
                 >
                     <svg

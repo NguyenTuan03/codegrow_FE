@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from 'next-themes';
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,40 +19,37 @@ import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Customerheader = () => {
+    const { resolvedTheme } = useTheme(); // Use resolvedTheme for SSR-safe theme
     const userAuth = useContext(Auth);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
+
     useEffect(() => {
         const user = localStorage.getItem('user');
         if (user) {
             try {
                 const parsedUser = JSON.parse(user);
-                console.log('Parsed User:', parsedUser);
-
                 if (parsedUser.id) {
                     setIsLoggedIn(true);
-                    console.log('User:', parsedUser.id);
                 } else {
                     setIsLoggedIn(false);
-                    console.log('User data is invalid:', parsedUser);
                 }
             } catch (error) {
-                console.error('Error parsing user data:', error);
                 setIsLoggedIn(false);
+                console.log('Error parsing user data from localStorage:', error);
             }
         } else {
             setIsLoggedIn(false);
-            console.log('No user data found in localStorage');
         }
     }, []);
 
     const handleLogout = () => {
         if (userAuth) {
-            userAuth.logoutUser(); // Gọi hàm logout từ AuthContext
-            console.log('User logged out');
-            router.push('/'); // Chuyển hướng đến trang đăng nhập
+            userAuth.logoutUser();
+            router.push('/');
         }
     };
+
     const [notifications] = useState([
         { id: 1, message: 'You have a new message!', link: '/messages' },
         { id: 2, message: 'Your subscription is about to expire.', link: '/subscription' },
@@ -63,7 +61,11 @@ const Customerheader = () => {
     ]);
 
     return (
-        <div className="flex w-full h-[80px] px-4 items-center border-b shadow-sm bg-[#EEF1EF]">
+        <div
+            className={`flex w-full h-[80px] px-4 items-center border-b shadow-sm ${
+                resolvedTheme === 'dark' ? 'bg-gray-800 text-white' : 'bg-[#EEF1EF] text-black'
+            }`}
+        >
             {/* Logo */}
             <Image src="/Logo.png" alt="Logo" width={60} height={60} />
 
@@ -71,7 +73,7 @@ const Customerheader = () => {
             <div className="flex flex-1 gap-6 ml-6">
                 {CUSTOMER_HEADER.map((item, index) => (
                     <Link href={item.href} key={index}>
-                        <div className="font-medium hover:underline cursor-pointer text-sm text-[#000000]">
+                        <div className="font-medium hover:underline cursor-pointer text-sm">
                             {item.name}
                         </div>
                     </Link>
@@ -104,12 +106,9 @@ const Customerheader = () => {
                                         notifications.map((notification) => (
                                             <DropdownMenuItem
                                                 key={notification.id}
-                                                className="px-4 py-2 text-[#000000] hover:bg-[#657ED4] hover:text-white rounded-md"
+                                                className="px-4 py-2 hover:bg-[#657ED4] hover:text-white rounded-md"
                                             >
-                                                <a
-                                                    href={notification.link}
-                                                    className="block w-full"
-                                                >
+                                                <a href={notification.link}>
                                                     {notification.message}
                                                 </a>
                                             </DropdownMenuItem>
@@ -135,21 +134,21 @@ const Customerheader = () => {
                             >
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/history')}
-                                    className="flex items-center gap-2 px-3 py-2 text-[#000000] hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
                                 >
                                     <History className="w-4 h-4 text-[#657ED4]" />
                                     <span className="text-sm font-medium">History Transaction</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
-                                    className="flex items-center gap-2 px-3 py-2 text-[#000000] hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
                                 >
                                     <User2 className="w-4 h-4 text-[#657ED4]" />
                                     <span className="text-sm font-medium">Profile</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 px-3 py-2 text-[#000000] hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
                                 >
                                     <LogOut className="w-4 h-4 text-[#657ED4]" />
                                     <span className="text-sm font-medium">Logout</span>

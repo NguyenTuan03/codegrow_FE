@@ -51,10 +51,13 @@ export default function CreateNewUser({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Overlay with blur effect */}
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+            <div
+                className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+            />
 
             {/* Form Card */}
-            <Card className="w-[500px] bg-gray-200 relative z-10 gap-10 pointer-events-auto">
+            <Card className="w-[500px] bg-gray-200 dark:bg-gray-800 dark:text-white relative z-10 gap-10 pointer-events-auto rounded-lg shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-xl font-bold">Create Account</CardTitle>
                 </CardHeader>
@@ -69,7 +72,11 @@ export default function CreateNewUser({
                                     <FormItem>
                                         <FormLabel>Full Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter full name" {...field} />
+                                            <Input
+                                                placeholder="Enter full name"
+                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -87,6 +94,7 @@ export default function CreateNewUser({
                                             <Input
                                                 placeholder="Enter email"
                                                 type="email"
+                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -107,12 +115,13 @@ export default function CreateNewUser({
                                                 <Input
                                                     type={showPassword ? 'text' : 'password'}
                                                     placeholder="Enter password"
+                                                    className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                                                     {...field}
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword((prev) => !prev)}
-                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500"
+                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-400"
                                                     tabIndex={-1}
                                                 >
                                                     {showPassword ? (
@@ -127,6 +136,8 @@ export default function CreateNewUser({
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Role Field */}
                             <FormField
                                 control={form.control}
                                 name="role"
@@ -138,25 +149,25 @@ export default function CreateNewUser({
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                             >
-                                                <SelectTrigger className="bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-blue-500 rounded-lg">
+                                                <SelectTrigger className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 rounded-lg">
                                                     <SelectValue placeholder="Select a role" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-white shadow-lg rounded-lg">
+                                                <SelectContent className="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg">
                                                     <SelectItem
                                                         value="mentor"
-                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
                                                     >
                                                         Mentor
                                                     </SelectItem>
                                                     <SelectItem
                                                         value="customer"
-                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
                                                     >
                                                         Customer
                                                     </SelectItem>
                                                     <SelectItem
                                                         value="qaqc"
-                                                        className="hover:bg-blue-100 focus:bg-blue-200"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
                                                     >
                                                         QAQC
                                                     </SelectItem>
@@ -170,12 +181,17 @@ export default function CreateNewUser({
 
                             {/* Action Buttons */}
                             <div className="flex justify-end gap-2 mt-6">
-                                <Button variant="outline" type="button" onClick={onClose}>
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    className="bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+                                    onClick={onClose}
+                                >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="bg-blue-500 text-white hover:bg-blue-600"
+                                    className="bg-blue-500 dark:bg-blue-700 text-white hover:bg-blue-600 dark:hover:bg-blue-600"
                                 >
                                     Create
                                 </Button>

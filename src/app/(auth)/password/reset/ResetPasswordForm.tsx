@@ -68,8 +68,8 @@ export default function ResetPasswordForm() {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
-            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
+        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF] dark:bg-gray-800">
+            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000] dark:text-gray-100">
                 Reset Password
             </h1>
             <Form {...resetPasswordForm}>
@@ -82,14 +82,16 @@ export default function ResetPasswordForm() {
                         name="newpass"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-[#000000]">New Password</FormLabel>
+                                <FormLabel className="text-[#000000] dark:text-gray-300">
+                                    New Password
+                                </FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         type="password"
                                         placeholder="Enter new password"
                                         aria-label="New Password"
-                                        className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
+                                        className="border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -109,7 +111,7 @@ export default function ResetPasswordForm() {
             <p className="text-sm text-center mt-4">
                 <button
                     onClick={() => router.push('/login')}
-                    className="text-[#657ED4] underline hover:text-[#7696ff]"
+                    className="text-[#657ED4] dark:text-[#7696ff] underline hover:text-[#7696ff] dark:hover:text-[#657ED4]"
                 >
                     Back to Login
                 </button>

@@ -82,8 +82,10 @@ export default function ContactPage() {
     return (
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Contacts</h1>
-                <Button variant="default">+ Add New</Button>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Contacts</h1>
+                <Button variant="default" className="bg-blue-600 hover:bg-blue-700 text-white">
+                    + Add New
+                </Button>
             </div>
 
             <div className="flex gap-4">
@@ -91,9 +93,9 @@ export default function ContactPage() {
                     placeholder="Search..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="max-w-sm"
+                    className="max-w-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                 />
-                <div className="border rounded-md px-3 py-2 text-sm">
+                <div className="border rounded-md px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
                     <Select>
                         <option value="all">Sort by All</option>
                         <option value="name">Name</option>
@@ -104,33 +106,54 @@ export default function ContactPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredUsers.map((user, idx) => (
-                    <Card key={idx} className="shadow-md rounded-xl">
+                    <Card
+                        key={idx}
+                        className="shadow-md rounded-xl dark:bg-gray-800 dark:border-gray-700"
+                    >
                         <CardContent className="p-6 text-center">
                             <Avatar className="mx-auto mb-4 w-16 h-16">
                                 <AvatarImage src={user.avatar} />
-                                <AvatarFallback>{user.name[0]}</AvatarFallback>
+                                <AvatarFallback className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                                    {user.name[0]}
+                                </AvatarFallback>
                             </Avatar>
-                            <h3 className="font-semibold text-lg">{user.name}</h3>
-                            <p className="text-muted-foreground text-sm">{user.location}</p>
-                            <p className="text-muted-foreground text-sm">{user.role}</p>
+                            <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-100">
+                                {user.name}
+                            </h3>
+                            <p className="text-muted-foreground text-sm dark:text-gray-400">
+                                {user.location}
+                            </p>
+                            <p className="text-muted-foreground text-sm dark:text-gray-400">
+                                {user.role}
+                            </p>
                             <div className="my-2 space-x-1">
                                 {user.skills.map((skill, i) => (
-                                    <Badge key={i} variant="outline" className="capitalize">
+                                    <Badge
+                                        key={i}
+                                        variant="outline"
+                                        className="capitalize dark:border-gray-600 dark:text-gray-100"
+                                    >
                                         {skill}
                                     </Badge>
                                 ))}
                             </div>
-                            <div className="flex justify-between mt-4 text-sm text-muted-foreground">
+                            <div className="flex justify-between mt-4 text-sm text-muted-foreground dark:text-gray-400">
                                 <div>
-                                    <p className="font-semibold">{user.jobSuccess}</p>
+                                    <p className="font-semibold text-gray-800 dark:text-gray-100">
+                                        {user.jobSuccess}
+                                    </p>
                                     <p>Job Success</p>
                                 </div>
                                 <div>
-                                    <p className="font-semibold">{user.earned}</p>
+                                    <p className="font-semibold text-gray-800 dark:text-gray-100">
+                                        {user.earned}
+                                    </p>
                                     <p>Total Earned</p>
                                 </div>
                                 <div>
-                                    <p className="font-semibold">{user.hours}</p>
+                                    <p className="font-semibold text-gray-800 dark:text-gray-100">
+                                        {user.hours}
+                                    </p>
                                     <p>Hours Worked</p>
                                 </div>
                             </div>
@@ -143,7 +166,11 @@ export default function ContactPage() {
                 <PaginationContent className="justify-center">
                     {[1, 2, 3, 4, 5].map((page) => (
                         <PaginationItem key={page}>
-                            <Button variant="ghost" size="sm">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="dark:text-gray-100 dark:hover:bg-gray-700"
+                            >
                                 {page}
                             </Button>
                         </PaginationItem>

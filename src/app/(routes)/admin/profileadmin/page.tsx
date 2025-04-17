@@ -19,7 +19,9 @@ export default function ProfileAdmin() {
                 }
 
                 const user = JSON.parse(userData);
-                const id = user._id;
+                console.log('User data:', user);
+
+                const id = user.id;
 
                 const userDetail = await getUserDetail(id);
                 console.log(`User detail for ID ${id}:`, userDetail);
@@ -36,7 +38,7 @@ export default function ProfileAdmin() {
         }
 
         fetchProfile();
-    }, [toast]);
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-700 p-6 flex items-center justify-center">
@@ -46,9 +48,9 @@ export default function ProfileAdmin() {
                     <p className="mt-4 text-gold-200 font-medium">Loading admin profile...</p>
                 </div>
             ) : !profileData ? (
-                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 max-w-md w-full">
                     <svg
-                        className="w-16 h-16 text-red-500 mb-4"
+                        className="w-16 h-16 text-red-500 dark:text-red-400 mb-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -62,23 +64,23 @@ export default function ProfileAdmin() {
                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                     </svg>
-                    <p className="text-gray-700 text-lg font-medium text-center">
+                    <p className="text-gray-700 dark:text-gray-300 text-lg font-medium text-center">
                         Failed to load admin profile. Please try again later.
                     </p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-6 py-2 bg-navy-600 text-white rounded-lg hover:bg-navy-700 transition-colors"
+                        className="mt-6 px-6 py-2 bg-navy-600 dark:bg-navy-500 text-white rounded-lg hover:bg-navy-700 dark:hover:bg-navy-600 transition-colors"
                     >
                         Retry
                     </button>
                 </div>
             ) : (
-                <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-300 hover:shadow-3xl">
+                <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 transform transition-all duration-300 hover:shadow-3xl">
                     {/* Profile Form */}
                     <div>
-                        <h2 className="text-lg font-semibold text-navy-700 mb-4 flex items-center gap-2">
+                        <h2 className="text-lg font-semibold text-navy-700 dark:text-navy-300 mb-4 flex items-center gap-2">
                             <svg
-                                className="w-5 h-5 text-gold-500"
+                                className="w-5 h-5 text-gold-500 dark:text-gold-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"

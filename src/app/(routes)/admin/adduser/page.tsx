@@ -20,27 +20,37 @@ export default function UserProfile() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8">
             {/* Header Section */}
             <div className="max-w-7xl mx-auto">
                 {/* Breadcrumb Navigation */}
-                <nav className="flex items-center mb-6 text-sm text-gray-500">
-                    <a href="#" className="hover:text-indigo-600 transition-colors">
+                <nav className="flex items-center mb-6 text-sm text-gray-500 dark:text-gray-400">
+                    <a
+                        href="#"
+                        className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    >
                         Pages
                     </a>
                     <span className="mx-2">/</span>
-                    <a href="#" className="hover:text-indigo-600 transition-colors">
+                    <a
+                        href="#"
+                        className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    >
                         Users
                     </a>
                     <span className="mx-2">/</span>
-                    <span className="text-indigo-600 font-medium">Add User</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-medium">
+                        Add User
+                    </span>
                 </nav>
 
                 {/* Page Title and Actions */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Add New User</h1>
-                        <p className="text-gray-500 mt-1">
+                        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                            Add New User
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">
                             {step === 1
                                 ? 'Fill in the user details'
                                 : 'Review and confirm the information'}
@@ -49,26 +59,26 @@ export default function UserProfile() {
                 </div>
 
                 {/* Main Content Card */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     {/* Step Indicators */}
-                    <div className="flex items-center justify-center p-6 border-b border-gray-100">
+                    <div className="flex items-center justify-center p-6 border-b border-gray-100 dark:border-gray-700">
                         <div className="flex items-center w-full max-w-md">
                             {/* Step 1 Indicator */}
                             <div className="flex items-center flex-1">
                                 <div
                                     className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center 
-                                    ${step === 1 ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'} 
-                                    transition-colors duration-300`}
+                                ${step === 1 ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'} 
+                                transition-colors duration-300`}
                                 >
                                     <span className="font-medium text-sm">1</span>
                                 </div>
                                 <div
-                                    className={`ml-2 text-sm font-medium ${step === 1 ? 'text-indigo-600' : 'text-gray-500'}`}
+                                    className={`ml-2 text-sm font-medium ${step === 1 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}
                                 >
                                     Profile
                                 </div>
                                 <div
-                                    className={`flex-1 h-px mx-4 ${step === 2 ? 'bg-indigo-600' : 'bg-gray-200'} transition-colors duration-300`}
+                                    className={`flex-1 h-px mx-4 ${step === 2 ? 'bg-indigo-600 dark:bg-indigo-400' : 'bg-gray-200 dark:bg-gray-600'} transition-colors duration-300`}
                                 ></div>
                             </div>
 
@@ -76,13 +86,13 @@ export default function UserProfile() {
                             <div className="flex items-center flex-shrink-0">
                                 <div
                                     className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center 
-                                    ${step === 2 ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'} 
-                                    transition-colors duration-300`}
+                                ${step === 2 ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'} 
+                                transition-colors duration-300`}
                                 >
                                     <span className="font-medium text-sm">2</span>
                                 </div>
                                 <div
-                                    className={`ml-2 text-sm font-medium ${step === 2 ? 'text-indigo-600' : 'text-gray-500'}`}
+                                    className={`ml-2 text-sm font-medium ${step === 2 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}
                                 >
                                     Confirmation
                                 </div>
@@ -101,7 +111,7 @@ export default function UserProfile() {
                 </div>
 
                 {/* Footer Note */}
-                <p className="text-center text-gray-400 text-xs mt-6">
+                <p className="text-center text-gray-400 dark:text-gray-500 text-xs mt-6">
                     All user information will be securely stored and processed according to our
                     privacy policy.
                 </p>

@@ -81,7 +81,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                 <CardContent className="space-y-6 p-6">
                     {/* Avatar Section */}
                     <div className="flex flex-col items-center gap-4 mb-6">
-                        <Avatar className="h-24 w-24 border-2 border-indigo-100">
+                        <Avatar className="h-24 w-24 border-2 border-indigo-100 dark:border-indigo-500">
                             <AvatarImage src="" />
                             <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-2xl font-medium">
                                 CB
@@ -92,7 +92,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+                                className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-600 dark:hover:text-white"
                             >
                                 Change Avatar
                             </Button>
@@ -100,7 +100,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             >
                                 Remove
                             </Button>
@@ -115,13 +115,13 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="firstName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         First name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                             placeholder="Enter first name"
                                         />
                                     </FormControl>
@@ -136,13 +136,13 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="lastName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         Last name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                             placeholder="Enter last name"
                                         />
                                     </FormControl>
@@ -157,13 +157,13 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="md:col-span-2">
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         Email
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                             placeholder="Enter email"
                                         />
                                     </FormControl>
@@ -174,7 +174,9 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
 
                         {/* Phone */}
                         <div className="md:col-span-2 space-y-2">
-                            <label className="text-gray-700 font-medium">Phone (optional)</label>
+                            <label className="text-gray-700 dark:text-gray-300 font-medium">
+                                Phone (optional)
+                            </label>
                             <div className="flex gap-3">
                                 <FormField
                                     control={form.control}
@@ -184,7 +186,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                             <FormControl>
                                                 <Input
                                                     {...field}
-                                                    className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                                    className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                                     placeholder="+x(xxx)xxx-xx-xx"
                                                 />
                                             </FormControl>
@@ -202,7 +204,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                                 defaultValue={field.value}
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger className="h-12 focus:ring-2 focus:ring-indigo-500">
+                                                    <SelectTrigger className="h-12 focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100">
                                                         <SelectValue placeholder="Type" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -219,7 +221,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             <Button
                                 type="button"
                                 variant="link"
-                                className="h-auto p-0 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                                className="h-auto p-0 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 text-sm font-medium"
                             >
                                 + Add another phone
                             </Button>
@@ -231,13 +233,13 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="organization"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         Organization
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                             placeholder="Enter organization"
                                         />
                                     </FormControl>
@@ -252,13 +254,13 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="department"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         Department
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            className="h-12 focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
                                             placeholder="Enter department"
                                         />
                                     </FormControl>
@@ -273,7 +275,7 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                             name="accountType"
                             render={({ field }) => (
                                 <FormItem className="space-y-3 md:col-span-2">
-                                    <FormLabel className="text-gray-700 font-medium">
+                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                                         Account Type
                                     </FormLabel>
                                     <FormControl>
@@ -286,10 +288,10 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                                 <FormControl>
                                                     <RadioGroupItem
                                                         value="customer"
-                                                        className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                                        className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 dark:border-gray-600 dark:focus:ring-indigo-400"
                                                     />
                                                 </FormControl>
-                                                <FormLabel className="font-medium text-gray-700">
+                                                <FormLabel className="font-medium text-gray-700 dark:text-gray-300">
                                                     Customer
                                                 </FormLabel>
                                             </FormItem>
@@ -297,10 +299,10 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                                                 <FormControl>
                                                     <RadioGroupItem
                                                         value="mentor"
-                                                        className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                                        className="h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500 dark:border-gray-600 dark:focus:ring-indigo-400"
                                                     />
                                                 </FormControl>
-                                                <FormLabel className="font-medium text-gray-700">
+                                                <FormLabel className="font-medium text-gray-700 dark:text-gray-300">
                                                     Mentor
                                                 </FormLabel>
                                             </FormItem>
@@ -313,10 +315,10 @@ export default function AddUserForm({ onNext }: AddUserFormProps) {
                     </div>
                 </CardContent>
 
-                <CardFooter className="flex justify-end px-6 pb-6 pt-4 border-t border-gray-100">
+                <CardFooter className="flex justify-end px-6 pb-6 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <Button
                         type="submit"
-                        className="h-12 px-8 text-base font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-sm"
+                        className="h-12 px-8 text-base font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-sm dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600"
                     >
                         Continue to Confirmation
                         <svg
