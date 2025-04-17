@@ -5,6 +5,7 @@ import AuthContext from '@/lib/components/context/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Suspense } from 'react';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -39,8 +40,7 @@ export default function RootLayout({
                     <AuthContext>
                         <SidebarProvider>
                             {/* ThemeProvider nên chỉ nên hydrate trên client */}
-
-                            {children}
+                            <Suspense>{children}</Suspense>
                         </SidebarProvider>
                     </AuthContext>
                 </ThemeProvider>
