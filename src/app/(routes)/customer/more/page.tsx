@@ -8,7 +8,7 @@ import ContactForm from '@/app/(routes)/customer/more/contact-form';
 
 export default function MentorCourses() {
     return (
-        <div className="space-y-16 px-6 py-10 md:px-16">
+        <div className="space-y-16 px-6 py-10 bg-gradient-to-r from-blue-50 md:px-16">
             {/* Hero Section */}
             <div className="text-center space-y-4">
                 <h1 className="text-3xl font-bold">

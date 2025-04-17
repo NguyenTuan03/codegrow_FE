@@ -8,16 +8,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import {
-    Calendar,
-    Clock,
-    ChevronRight,
-    ChevronLeft,
-    Star,
-    Users,
-    ArrowUpRight,
-    ArrowDownRight,
-} from 'lucide-react';
+
 import Link from 'next/link';
 
 // Import shadcn/ui components
@@ -35,6 +26,24 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import dynamic from 'next/dynamic';
+// Dynamically import Lucide icons
+const Calendar = dynamic(() => import('lucide-react').then((mod) => mod.Calendar), { ssr: false });
+const Clock = dynamic(() => import('lucide-react').then((mod) => mod.Clock), { ssr: false });
+const ChevronRight = dynamic(() => import('lucide-react').then((mod) => mod.ChevronRight), {
+    ssr: false,
+});
+const ChevronLeft = dynamic(() => import('lucide-react').then((mod) => mod.ChevronLeft), {
+    ssr: false,
+});
+const Star = dynamic(() => import('lucide-react').then((mod) => mod.Star), { ssr: false });
+const Users = dynamic(() => import('lucide-react').then((mod) => mod.Users), { ssr: false });
+const ArrowUpRight = dynamic(() => import('lucide-react').then((mod) => mod.ArrowUpRight), {
+    ssr: false,
+});
+const ArrowDownRight = dynamic(() => import('lucide-react').then((mod) => mod.ArrowDownRight), {
+    ssr: false,
+});
 
 // Sample data for statistics
 const revenueData = [
@@ -204,7 +213,7 @@ const engineeringCourses = [
     },
 ];
 
-const DashboardMainContent: React.FC = () => {
+const Courses: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50">
             {/* Stats Cards */}
@@ -644,4 +653,4 @@ const DashboardMainContent: React.FC = () => {
     );
 };
 
-export default DashboardMainContent;
+export default Courses;

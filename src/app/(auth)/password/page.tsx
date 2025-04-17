@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -25,7 +26,7 @@ const forgotPasswordSchema = z.object({
 
 const PasswordPage = () => {
     const { toast } = useToast();
-
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const forgotPasswordForm = useForm({
@@ -39,15 +40,16 @@ const PasswordPage = () => {
             const response = await forgotPassword(data.email);
             console.log('Forgot password response:', response);
             toast({
-                description: response?.message || 'Send reset link successfully!',
-                className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
+                description: response?.message || 'Reset link sent successfully!',
+                className: 'bg-green-500 text-white font-medium p-4 rounded-lg shadow-md',
             });
+            router.push('/login'); // Redirect to login page
         } catch (error) {
             console.error('Error sending reset link:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to send reset link. Please try again.',
-                className: 'bg-red-500 text-white font-medium p-4 rounded-lg shadow-md', // TailwindCSS styles
+                className: 'bg-red-500 text-white font-medium p-4 rounded-lg shadow-md',
             });
         } finally {
             setLoading(false);
@@ -56,47 +58,50 @@ const PasswordPage = () => {
 
     return (
         <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
-            <>
-                <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
-                    Forgot Password
-                </h1>
-                <Form {...forgotPasswordForm}>
-                    <form
-                        onSubmit={forgotPasswordForm.handleSubmit(handleForgetPassword)}
-                        className="space-y-4"
+            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
+                Forgot Password
+            </h1>
+            <Form {...forgotPasswordForm}>
+                <form
+                    onSubmit={forgotPasswordForm.handleSubmit(handleForgetPassword)}
+                    className="space-y-4"
+                >
+                    <FormField
+                        control={forgotPasswordForm.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-[#000000]">Email</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter your email"
+                                        aria-label="Email"
+                                        className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        aria-label="Send Reset Link"
+                        className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg py-2"
                     >
-                        <FormField
-                            control={forgotPasswordForm.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-[#000000]">Email</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="Enter your email"
-                                            className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg py-2"
-                        >
-                            {loading ? 'Sending...' : 'Send Reset Link'}
-                        </Button>
-                    </form>
-                </Form>
-                <p className="text-sm text-center mt-4">
-                    <a href="/login" className="text-[#657ED4]  hover:text-[#7696ff]">
-                        {'<---'} Back to Login
-                    </a>
-                </p>
-            </>
+                        {loading ? 'Sending...' : 'Send Reset Link'}
+                    </Button>
+                </form>
+            </Form>
+            <p className="text-sm text-center mt-4">
+                <button
+                    onClick={() => router.push('/login')}
+                    className="text-[#657ED4] underline hover:text-[#7696ff]"
+                >
+                    {'<---'} Back to Login
+                </button>
+            </p>
         </div>
     );
 };
