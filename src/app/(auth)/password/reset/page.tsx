@@ -1,8 +1,6 @@
 // app/password/reset/page.tsx
-'use client';
+import ResetPasswordForm from './ResetPasswordForm';
 
-import ResetPasswordForm from '@/app/(auth)/password/reset/ResetPasswordForm';
-
-export default function Page() {
-    return <ResetPasswordForm />;
+export default function Page({ searchParams }: { searchParams: { token?: string } }) {
+    return <ResetPasswordForm token={searchParams.token} />;
 }
