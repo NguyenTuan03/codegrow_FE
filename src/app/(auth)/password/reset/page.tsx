@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,7 +23,7 @@ const resetPasswordSchema = z.object({
     newpass: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-function ResetPasswordForm() {
+export default function ResetPasswordPage() {
     const searchParams = useSearchParams();
     const { toast } = useToast();
     const router = useRouter();
@@ -34,7 +34,7 @@ function ResetPasswordForm() {
         defaultValues: { newpass: '' },
     });
 
-    const token = searchParams.get('token');
+    const token = searchParams.get('token'); // Retrieve the token from query parameters
 
     const handleResetPassword = async (data: { newpass: string }) => {
         setLoading(true);
@@ -58,7 +58,7 @@ function ResetPasswordForm() {
                 variant: 'destructive',
                 duration: 1000,
             });
-            console.log('Login error:', error);
+            console.log('Reset password error:', error);
         } finally {
             setLoading(false);
         }
@@ -112,13 +112,5 @@ function ResetPasswordForm() {
                 </button>
             </p>
         </div>
-    );
-}
-
-export default function ResetPasswordPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <ResetPasswordForm />
-        </Suspense>
     );
 }
