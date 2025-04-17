@@ -204,7 +204,7 @@ const engineeringCourses = [
     },
 ];
 
-const DashboardMainContent: React.FC = () => {
+const Courses: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50">
             {/* Stats Cards */}
@@ -644,4 +644,4 @@ const DashboardMainContent: React.FC = () => {
     );
 };
 
-export default DashboardMainContent;
+export default Courses;
