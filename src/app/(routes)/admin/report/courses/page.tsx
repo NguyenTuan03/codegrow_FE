@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
     LineChart,
@@ -204,7 +206,7 @@ const engineeringCourses = [
     },
 ];
 
-const Courses: React.FC = () => {
+export default function Courses() {
     return (
         <div className="p-6 bg-gray-50">
             {/* Stats Cards */}
@@ -484,10 +486,7 @@ const Courses: React.FC = () => {
                                         href={`/admin/report/courses/${course.id}`}
                                         passHref
                                     >
-                                        <div
-                                            key={course.id}
-                                            className="flex items-start p-2 hover:bg-gray-50 rounded-lg"
-                                        >
+                                        <div className="flex items-start p-2 hover:bg-gray-50 rounded-lg">
                                             <div className="w-12 h-12 bg-gray-200 rounded-md mr-3 flex items-center justify-center">
                                                 <span className="text-xs">{course.category}</span>
                                             </div>
@@ -548,7 +547,7 @@ const Courses: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {latestCourses.map((course) => (
                         <Link key={course.id} href={`/admin/report/courses/${course.id}`} passHref>
-                            <Card key={course.id} className="overflow-hidden">
+                            <Card className="overflow-hidden">
                                 <div className="h-36 bg-gray-200 flex items-center justify-center">
                                     <span>{course.category}</span>
                                 </div>
@@ -593,11 +592,7 @@ const Courses: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {engineeringCourses.map((course) => (
                                 <Card key={course.id}>
-                                    <Link
-                                        key={course.id}
-                                        href={`/admin/report/courses/${course.id}`}
-                                        passHref
-                                    >
+                                    <Link href={`/admin/report/courses/${course.id}`} passHref>
                                         <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
                                             <div className="text-center">
                                                 <h3 className="text-xl font-bold mb-2">
@@ -642,6 +637,4 @@ const Courses: React.FC = () => {
             </div>
         </div>
     );
-};
-
-export default Courses;
+}
