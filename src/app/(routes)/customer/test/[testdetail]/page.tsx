@@ -110,7 +110,7 @@ export default function TestDetail() {
     const currentTests = testOptions.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-gradient-to-r from-blue-50">
             {/* Banner */}
             <div className="w-full relative h-[300px] md:h-[400px] overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-100 z-0" />
@@ -123,13 +123,13 @@ export default function TestDetail() {
                     />
                 </div>
                 <div className="absolute bottom-6 left-6 md:left-20 z-10">
-                    <Badge className="bg-[#ef476f] text-white px-5 py-2 rounded-lg text-sm shadow-md">
+                    <Badge className="bg-[#657ed4] text-white px-5 py-2 rounded-lg text-sm shadow-md">
                         Bài Test Online
                     </Badge>
                 </div>
                 <div className="relative z-10 h-full flex items-center px-6 md:px-20 md:w-1/2">
                     <div className="space-y-2">
-                        <h1 className="text-3xl md:text-4xl font-bold text-blue-900">
+                        <h1 className="text-3xl md:text-4xl font-bold text-[#657ed4]">
                             Bài Test Online
                         </h1>
                         <p className="text-muted-foreground">
@@ -241,15 +241,17 @@ export default function TestDetail() {
                                         {test.title}
                                     </Label>
                                     {test.isPremium && (
-                                        <Badge className="ml-2 bg-rose-500 text-white text-xs">
+                                        <Badge className="ml-2 bg-yellow-600 text-white text-xs">
                                             PREMIUM
                                         </Badge>
                                     )}
                                 </div>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <Badge className="bg-blue-100 text-blue-800">{test.language}</Badge>
-                                <Badge className="bg-blue-100 text-blue-800">
+                                <Badge className="bg-blue-100 text-[#657ED4]">
+                                    {test.language}
+                                </Badge>
+                                <Badge className="bg-blue-100 text-[#657ED4]">
                                     {test.difficulty}
                                 </Badge>
                             </div>
@@ -297,7 +299,7 @@ export default function TestDetail() {
                 {selectedTest && (
                     <div className="mt-8 flex justify-center">
                         <Button
-                            className="bg-[#ef476f] hover:bg-[#e63956] text-white px-6 py-3 rounded-lg font-medium"
+                            className="bg-[#5AD3AF] hover:bg-[#68c8ab] text-white px-6 py-3 rounded-lg font-medium"
                             onClick={handleStartTest}
                         >
                             Bắt đầu làm bài

@@ -9,7 +9,7 @@ import { User, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Process = () => {
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto bg-gradient-to-r from-blue-50 px-4 py-8">
             {/* Main Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Content Area */}
@@ -64,7 +64,7 @@ const Process = () => {
                                             </div>
                                         </div>
 
-                                        <Button className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs">
+                                        <Button className="bg-[#5ad3af] hover:bg-emerald-600 text-white text-xs">
                                             Keep Making Process
                                         </Button>
                                     </div>
@@ -115,7 +115,7 @@ const Process = () => {
                                             </div>
                                         </div>
 
-                                        <Button className="bg-blue-500 hover:bg-blue-600 text-white text-xs">
+                                        <Button className="bg-[#657ed4] hover:bg-blue-600 text-white text-xs">
                                             Go To Course
                                         </Button>
                                     </div>
@@ -128,7 +128,7 @@ const Process = () => {
                     <section>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold">Upcoming Assignment</h2>
-                            <Button variant="link" className="text-blue-500 text-xs p-0">
+                            <Button variant="link" className="text-[#657ed4] text-xs p-0">
                                 View All
                             </Button>
                         </div>
@@ -151,7 +151,7 @@ const Process = () => {
                                     <div className="text-xs text-gray-500 mb-2">
                                         WEDNESDAY, 10:00 AM
                                     </div>
-                                    <Button className="text-xs bg-blue-500 hover:bg-blue-600 text-white w-full">
+                                    <Button className="text-xs bg-[#657ed4] hover:bg-blue-600 text-white w-full">
                                         15min
                                     </Button>
                                 </CardContent>
@@ -174,7 +174,7 @@ const Process = () => {
                                     <div className="text-xs text-gray-500 mb-2">
                                         WEDNESDAY, 01:00 PM
                                     </div>
-                                    <Button className="text-xs bg-blue-500 hover:bg-blue-600 text-white w-full">
+                                    <Button className="text-xs bg-[#657ed4] hover:bg-blue-600 text-white w-full">
                                         15min
                                     </Button>
                                 </CardContent>
@@ -197,7 +197,7 @@ const Process = () => {
                                     <div className="text-xs text-gray-500 mb-2">
                                         WEDNESDAY, 12:30 PM
                                     </div>
-                                    <Button className="text-xs bg-blue-500 hover:bg-blue-600 text-white w-full">
+                                    <Button className="text-xs bg-[#657ed4] hover:bg-blue-600 text-white w-full">
                                         30min
                                     </Button>
                                 </CardContent>

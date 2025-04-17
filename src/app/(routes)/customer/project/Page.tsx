@@ -151,9 +151,10 @@ export default function ProjectPage() {
         router.push(`/customer/project/${projects[projectIndex].title}`);
     };
     return (
-        <section className="px-6 md:px-16 py-12">
+        <section className="px-6 md:px-16 py-12 bg-gradient-to-r from-blue-50 to-purple-50">
+            {/* Section Header */}
             <div className="text-center space-y-2 mb-10">
-                <h2 className="text-xl md:text-2xl font-semibold italic">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 italic">
                     Projects help you build your tech portfolio
                 </h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -163,29 +164,30 @@ export default function ProjectPage() {
                 </p>
             </div>
 
-            <div className="grid h-auto sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Project Cards */}
+            <div className="grid h-auto sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 {paginatedProjects.map((project, index) => (
                     <Card
                         key={index}
-                        className="relative transition shadow-md hover:shadow-lg flex flex-col justify-between"
+                        className="relative transition-all border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-xl flex flex-col justify-between bg-white"
                     >
                         {project.isPremium && (
                             <div className="absolute top-3 right-3 z-10">
                                 <Badge
                                     variant="secondary"
-                                    className="text-yellow-600 bg-yellow-100 flex items-center gap-1"
+                                    className="text-yellow-600 bg-yellow-100 border border-yellow-200 flex items-center gap-1"
                                 >
                                     <Crown className="w-4 h-4" /> Premium
                                 </Badge>
                             </div>
                         )}
-                        <CardHeader className="pb-0">
+                        <CardHeader className="pb-2">
                             <p className="text-sm text-muted-foreground">
                                 <Badge variant="outline" className="text-xs font-normal">
                                     {project.category}
                                 </Badge>
                             </p>
-                            <h3 className="text-lg font-semibold text-blue-800 leading-snug mt-2">
+                            <h3 className="text-lg font-semibold text-blue-800 mt-2 leading-snug">
                                 {project.title}
                             </h3>
                         </CardHeader>
@@ -195,11 +197,11 @@ export default function ProjectPage() {
                         <CardFooter>
                             <Button
                                 onClick={() => handleProjectClick(index, project.isPremium)}
-                                className={`w-full ${
+                                className={`w-full rounded-full py-2 text-sm font-semibold flex items-center justify-center gap-2 ${
                                     project.isPremium
-                                        ? 'bg-pink-500 hover:bg-pink-600'
-                                        : 'bg-green-500 hover:bg-green-600'
-                                } text-white rounded-lg py-2 flex items-center justify-center gap-2`}
+                                        ? 'bg-[#f76f8e] hover:bg-rose-500'
+                                        : 'bg-[#5ad3af] hover:bg-green-200'
+                                } text-white`}
                             >
                                 {project.isPremium ? (
                                     <>
@@ -218,8 +220,8 @@ export default function ProjectPage() {
                 ))}
             </div>
 
-            {/* Pagination using shadcn UI components */}
-            <div className="flex justify-center mt-8">
+            {/* Pagination Controls */}
+            <div className="flex justify-center mt-10">
                 <Pagination>
                     <PaginationContent>
                         <PaginationItem>
@@ -267,11 +269,13 @@ export default function ProjectPage() {
                     </PaginationContent>
                 </Pagination>
             </div>
+
+            {/* Bottom CTA */}
             <div className="flex flex-col items-center mt-12 gap-4">
-                <Button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 text-sm">
+                <Button className="bg-[#5ad3af] hover:bg-green-200 text-white px-6 py-3 text-sm font-semibold rounded-full">
                     Developing
                 </Button>
-                <a href="#" className="text-sm underline text-blue-500">
+                <a href="#" className="text-sm underline text-[#657ed4] hover:text-blue-600">
                     Explore all projects
                 </a>
             </div>

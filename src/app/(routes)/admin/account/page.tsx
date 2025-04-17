@@ -25,7 +25,7 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { RemoveUser } from '@/lib/services/admin/removeuser';
 
 import { useRouter } from 'next/navigation';
-import { CreateUser } from '@/lib/services/admin/createuser'; // Import API
+import { CreateAccount } from '@/lib/services/admin/createuser'; // Import API
 import CreateNewUser from '@/app/(routes)/admin/account/CreateNewUser';
 import { UpdateAccount } from '@/lib/services/admin/updateaccount'; // Import API
 import { toast } from '@/components/ui/use-toast';
@@ -174,7 +174,7 @@ export default function Account() {
             const token = localStorage.getItem('token') || ''; // Lấy token từ localStorage
 
             // Gọi API CreateUser
-            const response = await CreateUser(
+            const response = await CreateAccount(
                 token,
                 newData.fullName,
                 newData.email,

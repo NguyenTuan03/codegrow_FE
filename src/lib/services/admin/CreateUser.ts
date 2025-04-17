@@ -1,6 +1,6 @@
 import httpRequest from '@/lib/util/HttpRequest';
 
-export const CreateUser = async (
+export const CreateAccount = async (
     token: string,
     fullName: string,
     email: string,

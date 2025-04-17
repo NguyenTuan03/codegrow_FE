@@ -39,7 +39,7 @@ export default function ContactForm() {
         'rounded-full bg-[#6ee7b7] placeholder-white text-white font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80]';
 
     return (
-        <div className="bg-[#f8fafc] p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10">
+        <div className="bg-[#EEF1EF] p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10">
             <Image
                 src="/image 14.png"
                 alt="contact"
@@ -53,7 +53,7 @@ export default function ContactForm() {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6 w-full max-w-md mx-auto"
                 >
-                    <h3 className="text-xl font-bold text-[#6366f1] text-center uppercase">
+                    <h3 className="text-xl font-bold text-[#657ED4] text-center uppercase">
                         Đăng ký tư vấn và nhận chương trình chi tiết
                     </h3>
 
@@ -123,7 +123,7 @@ export default function ContactForm() {
 
                     <Button
                         type="submit"
-                        className="rounded-full bg-[#fb7185] hover:bg-[#f43f5e] text-white w-full px-4 py-2 text-sm font-semibold"
+                        className="rounded-full bg-[#f76f8e] hover:bg-[#fc8498] text-white w-full px-4 py-2 text-sm font-semibold"
                     >
                         Register
                     </Button>
