@@ -1,10 +1,13 @@
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { ComponentType } from 'react';
 type CustomNodeData = {
-    label: string;
+    id: string;
+    position: { x: number; y: number };
+    data: Record<string, unknown>;
+    label: React.ReactNode;
   };
 
-const CustomNode = ({ data }: NodeProps<Partial<CustomNodeData>>) => {
+const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
     return (
         <div
             style={{
@@ -30,7 +33,7 @@ const CustomNode = ({ data }: NodeProps<Partial<CustomNodeData>>) => {
                 id="right"
                 style={{ background: '#000', borderRadius: '50%', width: '8px', height: '8px' }}
             />
-            {data?.label}
+            {data?.label as React.ReactNode}
         </div>
     );
 };
