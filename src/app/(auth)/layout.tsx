@@ -6,17 +6,10 @@ import { Button } from '@/components/ui/button';
 
 const layout = ({ children }: { children: ReactNode }) => {
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                width: '100vw',
-                background: 'linear-gradient(90deg, #7ECFAF 0%, #C7E6D7 32%, #6C7ED0 100%)',
-            }}
-            className="relative flex items-center justify-center"
-        >
-            {/* Nút ở góc trên trái */}
+        <div className="relative flex items-center justify-center min-h-screen w-full bg-gradient-to-r from-[#7ECFAF] via-[#C7E6D7] to-[#6C7ED0] dark:from-gray-700 dark:via-gray-700 dark:to-gray-900 transition-colors duration-300">
+            {/* Button in the top-left corner */}
             <Link href="/" passHref>
-                <Button className="absolute top-4 left-4 bg-[#657ED4] text-white hover:bg-[#7696ff] rounded-full shadow-lg px-4 py-2">
+                <Button className="absolute top-4 left-4 bg-[#657ED4] text-white hover:bg-[#7696ff] dark:bg-gray-800 dark:hover:bg-gray-600 rounded-full shadow-lg px-4 py-2 transition-colors duration-300">
                     ← Back to Homepage
                 </Button>
             </Link>

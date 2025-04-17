@@ -57,8 +57,8 @@ const PasswordPage = () => {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF]">
-            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000]">
+        <div className="w-full max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md bg-[#EEF1EF] dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <h1 className="text-2xl font-semibold text-center mb-4 text-[#000000] dark:text-gray-100">
                 Forgot Password
             </h1>
             <Form {...forgotPasswordForm}>
@@ -71,13 +71,15 @@ const PasswordPage = () => {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-[#000000]">Email</FormLabel>
+                                <FormLabel className="text-[#000000] dark:text-gray-300">
+                                    Email
+                                </FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         placeholder="Enter your email"
                                         aria-label="Email"
-                                        className="border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
+                                        className="border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -97,7 +99,7 @@ const PasswordPage = () => {
             <p className="text-sm text-center mt-4">
                 <button
                     onClick={() => router.push('/login')}
-                    className="text-[#657ED4] underline hover:text-[#7696ff]"
+                    className="text-[#657ED4] dark:text-[#7696ff] underline hover:text-[#7696ff] dark:hover:text-[#657ED4]"
                 >
                     {'<---'} Back to Login
                 </button>

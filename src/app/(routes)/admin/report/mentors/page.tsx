@@ -82,9 +82,9 @@ interface CandidateStatProps {
 
 export default function DashboardPage() {
     return (
-        <div className="p-6 bg-gray-50">
+        <div className="p-6 bg-gray-50 dark:bg-gray-900">
             {/* Breadcrumb */}
-            <div className="flex items-center text-sm mb-6 text-gray-500">
+            <div className="flex items-center text-sm mb-6 text-gray-500 dark:text-gray-400">
                 <span>Report</span>
                 <ChevronRight className="w-4 h-4 mx-1" />
                 <span>Mentors</span>
@@ -125,38 +125,56 @@ export default function DashboardPage() {
             </div>
 
             {/* Teachers Table */}
-            <Card className="mb-8">
+            <Card className="mb-8 dark:bg-gray-800 dark:border-gray-700">
                 <CardHeader className="py-4 px-6 flex flex-row items-center justify-between">
-                    <CardTitle className="text-lg font-medium">Teachers List</CardTitle>
-                    <Button variant="ghost" size="sm" className="text-xs gap-1">
+                    <CardTitle className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        Teachers List
+                    </CardTitle>
+                    <Button variant="ghost" size="sm" className="text-xs gap-1 dark:text-gray-400">
                         View All <ChevronRight className="w-3 h-3" />
                     </Button>
                 </CardHeader>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[250px]">Teacher</TableHead>
-                            <TableHead>Qualification</TableHead>
-                            <TableHead>Subject</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
+                            <TableHead className="w-[250px] text-gray-600 dark:text-gray-400">
+                                Teacher
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Qualification
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Subject
+                            </TableHead>
+                            <TableHead className="text-right text-gray-600 dark:text-gray-400">
+                                Action
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {teachers.map((teacher) => (
-                            <TableRow key={teacher.id}>
-                                <TableCell className="flex items-center gap-2">
+                            <TableRow key={teacher.id} className="dark:border-gray-700">
+                                <TableCell className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={teacher.avatar} alt={teacher.name} />
-                                        <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                                            {teacher.name.charAt(0)}
+                                        </AvatarFallback>
                                     </Avatar>
                                     <span>{teacher.name}</span>
                                 </TableCell>
-                                <TableCell>{teacher.qualification}</TableCell>
+                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                    {teacher.qualification}
+                                </TableCell>
                                 <TableCell>
                                     <span className={teacher.subjectColor}>{teacher.subject}</span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="dark:text-gray-400"
+                                    >
                                         <ChevronRight className="w-4 h-4" />
                                     </Button>
                                 </TableCell>
@@ -168,10 +186,16 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Activity Feed */}
-                <Card className="lg:col-span-1">
+                <Card className="lg:col-span-1 dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader className="py-4 px-6 flex flex-row items-center justify-between">
-                        <CardTitle className="text-lg font-medium">Activity</CardTitle>
-                        <Button variant="ghost" size="sm" className="text-xs gap-1">
+                        <CardTitle className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Activity
+                        </CardTitle>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs gap-1 dark:text-gray-400"
+                        >
                             View All <ChevronRight className="w-3 h-3" />
                         </Button>
                     </CardHeader>
@@ -181,27 +205,29 @@ export default function DashboardPage() {
                                 <div key={index} className="flex items-start gap-3">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={activity.avatar} alt={activity.user} />
-                                        <AvatarFallback>{activity.user.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                                            {activity.user.charAt(0)}
+                                        </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1">
                                         <div className="flex justify-between">
-                                            <span className="font-medium text-sm">
+                                            <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
                                                 {activity.user}
                                             </span>
-                                            <span className="text-xs text-gray-500">
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
                                                 {activity.time}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-600 mt-1">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                             {activity.action}{' '}
                                             {activity.link && (
-                                                <span className="text-blue-500">
+                                                <span className="text-blue-500 dark:text-blue-400">
                                                     {activity.link}
                                                 </span>
                                             )}
                                         </p>
                                         {activity.note && (
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                 {activity.note}
                                             </p>
                                         )}
@@ -213,28 +239,48 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Recent Applicants */}
-                <Card className="lg:col-span-2">
+                <Card className="lg:col-span-2 dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader className="py-4 px-6">
-                        <CardTitle className="text-lg font-medium">Recent Applicants</CardTitle>
+                        <CardTitle className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Recent Applicants
+                        </CardTitle>
                     </CardHeader>
                     <div className="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-12">#</TableHead>
-                                    <TableHead>Candidate</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Designation</TableHead>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead className="text-right">Action</TableHead>
+                                    <TableHead className="w-12 text-gray-600 dark:text-gray-400">
+                                        #
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Candidate
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Category
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Designation
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Location
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Date
+                                    </TableHead>
+                                    <TableHead className="text-gray-600 dark:text-gray-400">
+                                        Type
+                                    </TableHead>
+                                    <TableHead className="text-right text-gray-600 dark:text-gray-400">
+                                        Action
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {applicants.map((applicant) => (
-                                    <TableRow key={applicant.id}>
-                                        <TableCell>{applicant.id}</TableCell>
+                                    <TableRow key={applicant.id} className="dark:border-gray-700">
+                                        <TableCell className="text-gray-900 dark:text-gray-100">
+                                            {applicant.id}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-8 w-8">
@@ -242,35 +288,43 @@ export default function DashboardPage() {
                                                         src={applicant.avatar}
                                                         alt={applicant.name}
                                                     />
-                                                    <AvatarFallback>
+                                                    <AvatarFallback className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
                                                         {applicant.name.charAt(0)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span>{applicant.name}</span>
+                                                <span className="text-gray-900 dark:text-gray-100">
+                                                    {applicant.name}
+                                                </span>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{applicant.category}</TableCell>
+                                        <TableCell className="text-gray-900 dark:text-gray-100">
+                                            {applicant.category}
+                                        </TableCell>
                                         <TableCell>
-                                            <span className="text-blue-500">
+                                            <span className="text-blue-500 dark:text-blue-400">
                                                 {applicant.designation}
                                             </span>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-1">
-                                                <Flag className="w-3 h-3" />
-                                                <span>{applicant.location}</span>
+                                                <Flag className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+                                                <span className="text-gray-900 dark:text-gray-100">
+                                                    {applicant.location}
+                                                </span>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{applicant.date}</TableCell>
+                                        <TableCell className="text-gray-900 dark:text-gray-100">
+                                            {applicant.date}
+                                        </TableCell>
                                         <TableCell>
                                             <Badge
                                                 variant="outline"
                                                 className={
                                                     applicant.type === 'Full-time'
-                                                        ? 'text-blue-500 border-blue-200 bg-blue-50'
+                                                        ? 'text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-400 bg-blue-50 dark:bg-blue-900'
                                                         : applicant.type === 'Freelance'
-                                                          ? 'text-green-500 border-green-200 bg-green-50'
-                                                          : 'text-red-500 border-red-200 bg-red-50'
+                                                          ? 'text-green-500 dark:text-green-400 border-green-200 dark:border-green-400 bg-green-50 dark:bg-green-900'
+                                                          : 'text-red-500 dark:text-red-400 border-red-200 dark:border-red-400 bg-red-50 dark:bg-red-900'
                                                 }
                                             >
                                                 {applicant.type}
@@ -281,14 +335,14 @@ export default function DashboardPage() {
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 w-8 p-0"
+                                                    className="h-8 w-8 p-0 dark:text-gray-400"
                                                 >
                                                     <Edit className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="h-8 w-8 p-0"
+                                                    className="h-8 w-8 p-0 dark:text-gray-400"
                                                 >
                                                     <FileText className="h-4 w-4" />
                                                 </Button>
@@ -299,14 +353,18 @@ export default function DashboardPage() {
                             </TableBody>
                         </Table>
                     </div>
-                    <div className="flex justify-between items-center p-4 border-t">
-                        <div className="text-sm text-gray-500">
+                    <div className="flex justify-between items-center p-4 border-t dark:border-gray-700">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                             Showing 5 Entries <ChevronRight className="w-3 h-3 inline ml-1" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">Previous</span>
-                            <Badge className="bg-blue-500 hover:bg-blue-600">1</Badge>
-                            <span className="text-sm">next</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                                Previous
+                            </span>
+                            <Badge className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-400 dark:hover:bg-blue-500">
+                                1
+                            </Badge>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">Next</span>
                         </div>
                     </div>
                 </Card>
@@ -315,9 +373,11 @@ export default function DashboardPage() {
             {/* Bottom Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                 {/* Gender Chart */}
-                <Card>
+                <Card className="dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader className="py-4 px-6">
-                        <CardTitle className="text-lg font-medium">Candidates By Gender</CardTitle>
+                        <CardTitle className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Candidates By Gender
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4 pt-0">
                         <div className="flex justify-center mb-6">
@@ -336,6 +396,7 @@ export default function DashboardPage() {
                                         textAnchor="middle"
                                         fontSize="8"
                                         fontWeight="medium"
+                                        className="text-gray-900 dark:text-gray-100"
                                     >
                                         Total
                                     </text>
@@ -345,6 +406,7 @@ export default function DashboardPage() {
                                         textAnchor="middle"
                                         fontSize="10"
                                         fontWeight="bold"
+                                        className="text-gray-900 dark:text-gray-100"
                                     >
                                         2288
                                     </text>
@@ -376,10 +438,16 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Need To Hire */}
-                <Card>
+                <Card className="dark:bg-gray-800 dark:border-gray-700">
                     <CardHeader className="py-4 px-6 flex flex-row items-center justify-between">
-                        <CardTitle className="text-lg font-medium">Need To Hire</CardTitle>
-                        <Button variant="ghost" size="sm" className="text-xs gap-1">
+                        <CardTitle className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Need To Hire
+                        </CardTitle>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs gap-1 dark:text-gray-400"
+                        >
                             View All <ChevronRight className="w-3 h-3" />
                         </Button>
                     </CardHeader>
@@ -388,7 +456,7 @@ export default function DashboardPage() {
                             {positions.map((position) => (
                                 <div
                                     key={position.id}
-                                    className="flex items-center gap-4 p-3 bg-gray-50 rounded-md"
+                                    className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md"
                                 >
                                     <div
                                         className={`w-10 h-10 flex items-center justify-center rounded-md text-white ${position.bgColor}`}
@@ -398,18 +466,18 @@ export default function DashboardPage() {
                                     <div className="flex-1">
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <h4 className="font-medium text-sm">
+                                                <h4 className="font-medium text-sm text-gray-900 dark:text-gray-100">
                                                     {position.title}
                                                 </h4>
-                                                <div className="text-xs text-gray-500 mt-1">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                     Status: {position.completion} completed
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-xs text-gray-500">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
                                                     Candidates
                                                 </div>
-                                                <div className="font-medium">
+                                                <div className="font-medium text-gray-900 dark:text-gray-100">
                                                     {position.candidates}
                                                 </div>
                                             </div>

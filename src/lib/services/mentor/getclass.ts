@@ -1,13 +1,13 @@
-import httpRequest from '@/lib/util/HttpRequest';
+import { get } from '@/lib/util/HttpRequest';
 
 export const GetClass = async () => {
     try {
-        const res = await httpRequest.get('mentor/getClass', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        });
-        return res.data;
+        const res = await get('/classrooms');
+        if (!res || !res.metadata) {
+            throw new Error('Invalid API response format');
+        }
+
+        return res;
     } catch (error) {
         console.log(error);
     }

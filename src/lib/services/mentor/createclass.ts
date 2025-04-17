@@ -2,30 +2,26 @@ import httpRequest from '@/lib/util/HttpRequest';
 import { CreateClassBodyType } from '@/schemaValidations/class.schema';
 
 export const CreateClass = async ({
-    className,
-    subject,
-    topic,
-    section,
-    room,
-    coverImage,
-    bgColor,
+    token,
+    courseId,
+    title,
+    description,
+    maxStudents,
+    schedule,
 }: CreateClassBodyType) => {
     try {
         const formData = new FormData();
-        formData.append('className', className);
-        formData.append('subject', subject || '');
-        formData.append('topic', topic || '');
-        formData.append('section', section || '');
-        formData.append('room', room || '');
-        formData.append('bgColor', bgColor || ''); // Thêm màu nền vào formData
-        if (coverImage) {
-            formData.append('coverImage', coverImage); // Gửi tệp hình ảnh
-        }
+        formData.append('title', title);
+        formData.append('courseId', courseId || '');
+        formData.append('description', description || '');
+        formData.append('maxStudents', maxStudents.toString());
+        formData.append('schedule[startDate]', schedule.startDate);
+        formData.append('schedule[endDate]', schedule.endDate);
+        formData.append('schedule[daysOfWeek]', schedule.daysOfWeek.join(','));
+        formData.append('schedule[time]', schedule.time);
 
-        const response = await httpRequest.post('mentor/classes/create', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        const response = await httpRequest.post('/classrooms', formData, {
+            headers: { Authorization: `Bearer ${token}` },
         });
 
         console.log('✅ API Response:', response.data);

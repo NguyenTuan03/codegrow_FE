@@ -100,39 +100,48 @@ export default function ProjectsOverview() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
             {/* Breadcrumb */}
-            <nav className="mb-4 text-base text-gray-600">
+            <nav className="mb-4 text-base text-gray-600 dark:text-gray-400">
                 <span>Pages / Projects / </span>
-                <span className="font-semibold text-gray-900">Overview</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">Overview</span>
             </nav>
 
-            <h1 className="text-4xl font-bold mb-8 text-gray-900">Overview</h1>
+            <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100">Overview</h1>
 
             {/* Summary */}
             <div className="mb-8">
                 <div className="flex items-center space-x-4">
-                    <h2 className="text-3xl font-bold text-gray-900">24</h2>
+                    <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">24</h2>
                     <span className="text-sm text-red-500">2 late in due</span>
                 </div>
                 <div className="flex items-center space-x-4 mt-2">
                     <div className="flex items-center">
-                        <span className="text-sm text-gray-600 mr-2">In progress (10)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">
+                            In progress (10)
+                        </span>
                         <Progress
                             value={41.67}
-                            className="w-24 h-2 bg-blue-200 [&>div]:bg-blue-500"
+                            className="w-24 h-2 bg-blue-200 dark:bg-blue-900 [&>div]:bg-blue-500 dark:[&>div]:bg-blue-400"
                         />
                     </div>
                     <div className="flex items-center">
-                        <span className="text-sm text-gray-600 mr-2">Completed (8)</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">
+                            Completed (8)
+                        </span>
                         <Progress
                             value={33.33}
-                            className="w-24 h-2 bg-green-200 [&>div]:bg-green-500"
+                            className="w-24 h-2 bg-green-200 dark:bg-green-900 [&>div]:bg-green-500 dark:[&>div]:bg-green-400"
                         />
                     </div>
                     <div className="flex items-center">
-                        <span className="text-sm text-gray-600 mr-2">To do (6)</span>
-                        <Progress value={25} className="w-24 h-2 bg-gray-200 [&>div]:bg-gray-400" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">
+                            To do (6)
+                        </span>
+                        <Progress
+                            value={25}
+                            className="w-24 h-2 bg-gray-200 dark:bg-gray-800 [&>div]:bg-gray-400 dark:[&>div]:bg-gray-600"
+                        />
                     </div>
                 </div>
             </div>
@@ -141,33 +150,45 @@ export default function ProjectsOverview() {
             <div className="flex justify-between items-center mb-6">
                 <Input
                     placeholder="Search users"
-                    className="w-1/3 h-12 text-base rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    className="w-1/3 h-12 text-base rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 />
                 <div className="flex space-x-3">
-                    <Button className="h-12 px-6 text-base rounded-lg bg-blue-600 hover:bg-blue-700">
+                    <Button className="h-12 px-6 text-base rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
                         Export
                     </Button>
                     <Button
                         variant="outline"
-                        className="h-12 px-6 text-base rounded-lg border-gray-300 hover:bg-gray-100"
+                        className="h-12 px-6 text-base rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                         <Filter className="h-5 w-5 mr-2" /> Filter{' '}
-                        <span className="ml-2 text-gray-500">(2)</span>
+                        <span className="ml-2 text-gray-500 dark:text-gray-400">(2)</span>
                     </Button>
                 </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
                 <Table>
                     <TableHeader>
-                        <TableRow className="border-b border-gray-200">
-                            <TableHead>Project</TableHead>
-                            <TableHead>Tasks</TableHead>
-                            <TableHead>Members</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Completion</TableHead>
-                            <TableHead>Due date</TableHead>
+                        <TableRow className="border-b border-gray-200 dark:border-gray-700">
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Project
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Tasks
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Members
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Status
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Completion
+                            </TableHead>
+                            <TableHead className="text-gray-600 dark:text-gray-400">
+                                Due date
+                            </TableHead>
                             <TableHead />
                         </TableRow>
                     </TableHeader>
@@ -176,31 +197,37 @@ export default function ProjectsOverview() {
                             <TableRow key={index}>
                                 <TableCell>
                                     <div className="flex items-center">
-                                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-3 text-lg font-medium text-purple-700">
+                                        <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3 text-lg font-medium text-purple-700 dark:text-purple-400">
                                             {project.name.charAt(0)}
                                         </div>
                                         <div>
-                                            <p className="font-medium">{project.name}</p>
-                                            <span className="text-sm text-gray-500">
+                                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                                                {project.name}
+                                            </p>
+                                            <span className="text-sm text-gray-500 dark:text-gray-400">
                                                 Updated {project.updated}
                                             </span>
                                         </div>
                                     </div>
                                 </TableCell>
-                                <TableCell>{project.tasks}</TableCell>
+                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                    {project.tasks}
+                                </TableCell>
                                 <TableCell>
                                     <div className="flex -space-x-2">
                                         {project.members.length > 0 ? (
                                             project.members.map((member, i) => (
                                                 <Avatar
                                                     key={i}
-                                                    className="h-8 w-8 border-2 border-white"
+                                                    className="h-8 w-8 border-2 border-white dark:border-gray-800"
                                                 >
-                                                    <AvatarFallback>{member}</AvatarFallback>
+                                                    <AvatarFallback className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+                                                        {member}
+                                                    </AvatarFallback>
                                                 </Avatar>
                                             ))
                                         ) : (
-                                            <span className="text-sm text-gray-700">
+                                            <span className="text-sm text-gray-700 dark:text-gray-400">
                                                 No assignee
                                             </span>
                                         )}
@@ -210,10 +237,10 @@ export default function ProjectsOverview() {
                                     <span
                                         className={`font-medium ${
                                             project.status === 'In progress'
-                                                ? 'text-blue-500'
+                                                ? 'text-blue-500 dark:text-blue-400'
                                                 : project.status === 'Completed'
-                                                  ? 'text-green-500'
-                                                  : 'text-gray-500'
+                                                  ? 'text-green-500 dark:text-green-400'
+                                                  : 'text-gray-500 dark:text-gray-400'
                                         }`}
                                     >
                                         {project.status}
@@ -225,22 +252,26 @@ export default function ProjectsOverview() {
                                             value={project.completion}
                                             className={`w-24 h-2 ${
                                                 project.status === 'In progress'
-                                                    ? 'bg-blue-200 [&>div]:bg-blue-500'
+                                                    ? 'bg-blue-200 dark:bg-blue-900 [&>div]:bg-blue-500 dark:[&>div]:bg-blue-400'
                                                     : project.status === 'Completed'
-                                                      ? 'bg-green-200 [&>div]:bg-green-500'
-                                                      : 'bg-gray-200 [&>div]:bg-gray-400'
+                                                      ? 'bg-green-200 dark:bg-green-900 [&>div]:bg-green-500 dark:[&>div]:bg-green-400'
+                                                      : 'bg-gray-200 dark:bg-gray-800 [&>div]:bg-gray-400 dark:[&>div]:bg-gray-600'
                                             }`}
                                         />
-                                        <span className="text-sm">{project.completion}%</span>
+                                        <span className="text-sm text-gray-900 dark:text-gray-100">
+                                            {project.completion}%
+                                        </span>
                                     </div>
                                 </TableCell>
-                                <TableCell>{project.dueDate}</TableCell>
+                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                    {project.dueDate}
+                                </TableCell>
                                 <TableCell>
                                     <Button
                                         variant="ghost"
-                                        className="p-2 hover:bg-gray-200 rounded-full"
+                                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"
                                     >
-                                        <MoreVertical className="h-5 w-5 text-gray-600" />
+                                        <MoreVertical className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -265,6 +296,7 @@ export default function ProjectsOverview() {
                                     href="#"
                                     isActive={i + 1 === currentPage}
                                     onClick={() => setCurrentPage(i + 1)}
+                                    className="dark:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     {i + 1}
                                 </PaginationLink>

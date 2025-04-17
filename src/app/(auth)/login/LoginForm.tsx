@@ -102,12 +102,14 @@ const LoginForm = () => {
     return (
         <div
             style={{ padding: '30px' }}
-            className="w-full max-w-lg rounded-[1.5rem] shadow-lg bg-[#EEF1EF] border border-gray-200"
+            className="w-full max-w-lg rounded-[1.5rem] shadow-lg bg-[#EEF1EF] dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
         >
             {/* Header */}
             <div className="text-center mb-6">
-                <h1 className="text-3xl font-bold text-[#5AD3AF]">Welcome Back</h1>
-                <p className="text-sm text-[#000000]">Log in to your account</p>
+                <h1 className="text-3xl font-bold text-[#5AD3AF] dark:text-[#5AD3AF]">
+                    Welcome Back
+                </h1>
+                <p className="text-sm text-[#000000] dark:text-gray-300">Log in to your account</p>
             </div>
 
             {/* Form */}
@@ -120,7 +122,7 @@ const LoginForm = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-[#000000]">
+                                    <FormLabel className="text-sm font-medium text-[#000000] dark:text-gray-300">
                                         Email Address
                                     </FormLabel>
                                     <FormControl>
@@ -128,7 +130,7 @@ const LoginForm = () => {
                                             {...field}
                                             placeholder="Enter your email"
                                             type="email"
-                                            className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF]"
+                                            className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         />
                                     </FormControl>
                                     <FormMessage className="text-sm text-red-500" />
@@ -142,7 +144,7 @@ const LoginForm = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-[#000000]">
+                                    <FormLabel className="text-sm font-medium text-[#000000] dark:text-gray-300">
                                         Password
                                     </FormLabel>
                                     <FormControl>
@@ -151,11 +153,11 @@ const LoginForm = () => {
                                                 {...field}
                                                 placeholder="Enter your password"
                                                 type={showPassword ? 'text' : 'password'}
-                                                className="mt-1 border-gray-300 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] pr-10"
+                                                className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             />
                                             <div
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400"
                                             >
                                                 {showPassword ? (
                                                     <EyeOffIcon size={18} />
@@ -183,19 +185,19 @@ const LoginForm = () => {
 
                 {/* Links */}
                 <div className="flex justify-between items-center mt-4">
-                    <p className="text-sm">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                         Don’t have an account?{' '}
                         <Link
                             href={Routes.register}
-                            className="text-[#657ED4] font-medium hover:text-[#485b99]  transition-colors duration-200 underline"
+                            className="text-[#657ED4] dark:text-[#7696ff] font-medium hover:text-[#485b99] dark:hover:text-[#657ED4] transition-colors duration-200 underline"
                         >
                             Sign up
                         </Link>
                     </p>
-                    <p className="text-sm">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                         <Link
                             href="/password"
-                            className="text-[#657ED4] underline font-medium hover:text-[#7696ff]"
+                            className="text-[#657ED4] dark:text-[#7696ff] underline font-medium hover:text-[#485b99] dark:hover:text-[#657ED4]"
                         >
                             Forget your password?
                         </Link>
@@ -205,9 +207,9 @@ const LoginForm = () => {
 
             {/* Divider */}
             <div className="flex items-center w-full px-6 gap-4 mt-6">
-                <div className="border-t border-gray-300 flex-grow" />
-                <span className="text-sm text-gray-500">or</span>
-                <div className="border-t border-gray-300 flex-grow" />
+                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow" />
+                <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
+                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow" />
             </div>
 
             {/* Google Login */}

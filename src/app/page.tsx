@@ -60,9 +60,14 @@ export default function Page() {
                 break;
         }
     }, [auth?.userAuth, router]);
-
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#EEF1EF] p-4">
+        <div
+            className="min-h-screen w-full flex flex-col items-center justify-center p-4"
+            style={{
+                backgroundColor: 'var(--sidebar-background)',
+                color: 'var(--sidebar-foreground)',
+            }}
+        >
             <div className="text-center space-y-6 max-w-md">
                 {/* Animated spinner */}
                 <div className="relative inline-block">

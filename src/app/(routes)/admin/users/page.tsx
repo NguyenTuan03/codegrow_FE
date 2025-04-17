@@ -33,8 +33,8 @@ const chartConfig = {
 
 export default function UsersPage() {
     return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-bold">Users</h1>
+        <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Users</h1>
 
             {/* Row 1: Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -44,14 +44,16 @@ export default function UsersPage() {
                     { title: 'Payouts', value: '$8947', progress: 18 },
                     { title: 'Available Stores', value: '178', progress: 74 },
                 ].map((item, index) => (
-                    <Card key={index}>
+                    <Card key={index} className="bg-white dark:bg-gray-800">
                         <CardHeader>
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
+                            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
                                 {item.title}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{item.value}</div>
+                            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {item.value}
+                            </div>
                             <Progress value={item.progress} className="mt-2" />
                         </CardContent>
                     </Card>
@@ -66,17 +68,23 @@ export default function UsersPage() {
                     { name: 'Stillnotdavid', email: 'coderthemes@gmail.com' },
                     { name: 'Tomaslau', email: 'coderthemes@gmail.com' },
                 ].map((user, index) => (
-                    <Card key={index}>
+                    <Card key={index} className="bg-white dark:bg-gray-800">
                         <CardContent className="flex items-center gap-4 p-4">
                             <Avatar>
                                 <AvatarImage
                                     src={`https://randomuser.me/api/portraits/men/${index + 10}.jpg`}
                                 />
-                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="text-gray-900 dark:text-gray-100">
+                                    {user.name.charAt(0)}
+                                </AvatarFallback>
                             </Avatar>
                             <div>
-                                <p className="font-semibold">{user.name}</p>
-                                <p className="text-sm text-muted-foreground">{user.email}</p>
+                                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                                    {user.name}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {user.email}
+                                </p>
                             </div>
                         </CardContent>
                     </Card>
@@ -91,14 +99,23 @@ export default function UsersPage() {
                     { title: 'Sales Analytics', value: '925', badge: '??' },
                     { title: 'Daily Sales', value: '3541', badge: '2%' },
                 ].map((item, index) => (
-                    <Card key={index}>
+                    <Card key={index} className="bg-white dark:bg-gray-800">
                         <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-muted-foreground text-sm">{item.title}</p>
-                                    <p className="text-xl font-bold">{item.value}</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        {item.title}
+                                    </p>
+                                    <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                        {item.value}
+                                    </p>
                                 </div>
-                                <Badge variant="outline">{item.badge}</Badge>
+                                <Badge
+                                    variant="outline"
+                                    className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                                >
+                                    {item.badge}
+                                </Badge>
                             </div>
                         </CardContent>
                     </Card>
@@ -108,26 +125,37 @@ export default function UsersPage() {
             {/* Row 4: Bottom Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Earnings report */}
-                <Card className="col-span-2">
+                <Card className="col-span-2 bg-white dark:bg-gray-800">
                     <CardHeader>
-                        <CardTitle>Earning Reports</CardTitle>
-                        <CardDescription>1 Mar - 31 Mar Reporting Data</CardDescription>
+                        <CardTitle className="text-gray-900 dark:text-gray-100">
+                            Earning Reports
+                        </CardTitle>
+                        <CardDescription className="text-gray-500 dark:text-gray-400">
+                            1 Mar - 31 Mar Reporting Data
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex justify-between mb-4">
                             <div>
-                                <p className="text-muted-foreground">This Month</p>
-                                <p className="text-lg font-bold">$120,254</p>
+                                <p className="text-gray-500 dark:text-gray-400">This Month</p>
+                                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                    $120,254
+                                </p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground">Last Month</p>
-                                <p className="text-lg font-bold">$98,741</p>
+                                <p className="text-gray-500 dark:text-gray-400">Last Month</p>
+                                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                    $98,741
+                                </p>
                             </div>
                         </div>
                         <div className="h-[200px]">
                             <ChartContainer config={chartConfig} className="h-full w-full">
                                 <RechartsPrimitive.BarChart data={earningsData}>
-                                    <RechartsPrimitive.XAxis dataKey="name" />
+                                    <RechartsPrimitive.XAxis
+                                        dataKey="name"
+                                        tick={{ fill: 'var(--color-text)' }}
+                                    />
                                     <ChartTooltip content={<ChartTooltipContent />} />
                                     <RechartsPrimitive.Bar
                                         dataKey="value"
@@ -141,22 +169,28 @@ export default function UsersPage() {
                 </Card>
 
                 {/* Activity feed */}
-                <Card>
+                <Card className="bg-white dark:bg-gray-800">
                     <CardHeader>
-                        <CardTitle>Recent Activities</CardTitle>
+                        <CardTitle className="text-gray-900 dark:text-gray-100">
+                            Recent Activities
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-1">
-                            <p>You sold an item</p>
-                            <p className="text-sm text-muted-foreground">2 hours ago</p>
+                            <p className="text-gray-900 dark:text-gray-100">You sold an item</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">2 hours ago</p>
                         </div>
                         <div className="space-y-1">
-                            <p>Robert Delivery: `Are you there?`</p>
-                            <p className="text-sm text-muted-foreground">2 hours ago</p>
+                            <p className="text-gray-900 dark:text-gray-100">
+                                Robert Delivery: `Are you there?`
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">2 hours ago</p>
                         </div>
                         <div className="space-y-1">
-                            <p>Audrey Tobey uploaded a photo</p>
-                            <p className="text-sm text-muted-foreground">15 hours ago</p>
+                            <p className="text-gray-900 dark:text-gray-100">
+                                Audrey Tobey uploaded a photo
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">15 hours ago</p>
                         </div>
                     </CardContent>
                 </Card>

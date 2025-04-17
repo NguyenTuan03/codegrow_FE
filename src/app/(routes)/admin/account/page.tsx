@@ -199,19 +199,21 @@ export default function Account() {
         }
     };
     return (
-        <div className="p-6 md:p-10 bg-gray-50 min-h-screen">
+        <div className="p-6 md:p-10 min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-600">Account Management</h1>
+                    <h1 className="text-2xl font-bold text-gray-600 dark:text-gray-100">
+                        Account Management
+                    </h1>
                     <Button
-                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white"
+                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white dark:bg-blue-700 dark:hover:bg-blue-600"
                         onClick={() => setModal('create')}
                     >
                         Create Account
                     </Button>
                 </div>
 
-                <Table className="bg-white rounded-lg shadow-md">
+                <Table className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-md">
                     <TableHeader>
                         <TableRow>
                             <TableHead>Full Name</TableHead>
@@ -229,10 +231,10 @@ export default function Account() {
                                     <span
                                         className={`px-2 py-1 rounded-full text-sm ${
                                             account.role === 'mentor'
-                                                ? 'bg-[#657ED4] text-[#ffffff]'
+                                                ? 'bg-[#657ED4] text-[#ffffff] dark:bg-blue-700 dark:text-white'
                                                 : account.role === 'customer'
-                                                  ? 'bg-[#5AD3AF] text-[#FFFFFF]'
-                                                  : 'bg-[#F76F8E] text-[#FFFFFF]'
+                                                  ? 'bg-[#5AD3AF] text-[#FFFFFF] dark:bg-green-700 dark:text-white'
+                                                  : 'bg-[#F76F8E] text-[#FFFFFF] dark:bg-red-700 dark:text-white'
                                         }`}
                                     >
                                         {account.role}
@@ -241,16 +243,19 @@ export default function Account() {
                                 <TableCell className="text-right">
                                     <DropdownMenu modal={false}>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                            <Button
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 dark:text-gray-300"
+                                            >
                                                 <MoreHorizontal className="h-4 w-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent
                                             align="end"
-                                            className="bg-white border border-blue-200 shadow-md"
+                                            className="bg-white dark:bg-gray-800 dark:text-gray-100 border border-blue-200 dark:border-gray-700 shadow-md"
                                         >
                                             <DropdownMenuItem
-                                                onClick={() => fetchUserDetail(account._id)} // Gọi API lấy chi tiết người dùng
+                                                onClick={() => fetchUserDetail(account._id)}
                                             >
                                                 View Details
                                             </DropdownMenuItem>
@@ -268,7 +273,7 @@ export default function Account() {
                                                     setSelectedAccount(account);
                                                     setModal('delete');
                                                 }}
-                                                className="text-red-500"
+                                                className="text-red-500 dark:text-red-400"
                                             >
                                                 Delete
                                             </DropdownMenuItem>
@@ -283,16 +288,15 @@ export default function Account() {
             {modal === 'create' && (
                 <CreateNewUser
                     onCreate={(newData) => {
-                        // Ensure all required fields are provided
                         const safeData = {
                             fullName: newData.fullName || '',
                             email: newData.email || '',
                             password: newData.password || '',
-                            role: newData.role || 'customer', // Default role if not provided
+                            role: newData.role || 'customer',
                         };
-                        handleCreate(safeData); // Pass the safe data to handleCreate
+                        handleCreate(safeData);
                     }}
-                    onClose={() => setModal('')} // Close modal when "Cancel" is clicked
+                    onClose={() => setModal('')}
                 />
             )}
             {modal === 'view' && selectedAccount && (
@@ -304,19 +308,16 @@ export default function Account() {
                         id: selectedAccount._id,
                         name: selectedAccount.fullName,
                     }}
-                    onDelete={() => handleDelete(selectedAccount._id)} // Gọi hàm handleDelete từ trang chính
-                    onClose={() => setModal('')} // Đóng modal khi nhấn "Cancel"
+                    onDelete={() => handleDelete(selectedAccount._id)}
+                    onClose={() => setModal('')}
                 />
             )}
             {modal === 'update' && selectedAccount && (
-                <>
-                    {console.log('Modal state:', modal)}
-                    <UpdateUser
-                        account={selectedAccount}
-                        onUpdate={(updatedData) => handleUpdate(selectedAccount._id, updatedData)}
-                        onClose={() => setModal('')}
-                    />
-                </>
+                <UpdateUser
+                    account={selectedAccount}
+                    onUpdate={(updatedData) => handleUpdate(selectedAccount._id, updatedData)}
+                    onClose={() => setModal('')}
+                />
             )}
         </div>
     );

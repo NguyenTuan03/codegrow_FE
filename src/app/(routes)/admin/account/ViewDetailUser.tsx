@@ -24,10 +24,13 @@ export default function ViewDetailUser({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+            <div
+                className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+            />
 
             {/* Detail Card */}
-            <Card className="w-[400px] bg-white relative z-10 pointer-events-auto">
+            <Card className="w-[400px] bg-white dark:bg-gray-800 dark:text-white relative z-10 pointer-events-auto rounded-lg shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-xl font-bold">Account Details</CardTitle>
                 </CardHeader>
@@ -46,28 +49,36 @@ export default function ViewDetailUser({
 
                         {/* Full Name */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Name</p>
-                            <p className="text-base font-semibold text-gray-800">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Name
+                            </p>
+                            <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
                                 {account.fullName}
                             </p>
                         </div>
 
                         {/* Email */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Email</p>
-                            <p className="text-base font-semibold text-gray-800">{account.email}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Email
+                            </p>
+                            <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
+                                {account.email}
+                            </p>
                         </div>
 
                         {/* Role */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Role</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Role
+                            </p>
                             <p
                                 className={`text-base font-semibold ${
                                     account.role === 'mentor'
-                                        ? 'text-blue-800'
+                                        ? 'text-blue-800 dark:text-blue-400'
                                         : account.role === 'customer'
-                                          ? 'text-green-800'
-                                          : 'text-yellow-800'
+                                          ? 'text-green-800 dark:text-green-400'
+                                          : 'text-yellow-800 dark:text-yellow-400'
                                 }`}
                             >
                                 {account.role}
@@ -76,24 +87,30 @@ export default function ViewDetailUser({
 
                         {/* Wallet */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Wallet</p>
-                            <p className="text-base font-semibold text-gray-800">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Wallet
+                            </p>
+                            <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
                                 ${account.wallet}
                             </p>
                         </div>
 
                         {/* Created At */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Created At</p>
-                            <p className="text-base font-semibold text-gray-800">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Created At
+                            </p>
+                            <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
                                 {new Date(account.createdAt).toLocaleString()}
                             </p>
                         </div>
 
                         {/* Updated At */}
                         <div>
-                            <p className="text-sm font-medium text-gray-500">Updated At</p>
-                            <p className="text-base font-semibold text-gray-800">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                Updated At
+                            </p>
+                            <p className="text-base font-semibold text-gray-800 dark:text-gray-100">
                                 {new Date(account.updatedAt).toLocaleString()}
                             </p>
                         </div>
@@ -101,7 +118,11 @@ export default function ViewDetailUser({
 
                     {/* Close Button */}
                     <div className="flex justify-end gap-2 mt-6">
-                        <Button variant="outline" onClick={onClose}>
+                        <Button
+                            variant="outline"
+                            className="bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+                            onClick={onClose}
+                        >
                             Close
                         </Button>
                     </div>
