@@ -1,3 +1,4 @@
+// @/lib/services/class/createclass.ts
 import httpRequest from '@/lib/util/HttpRequest';
 import { CreateClassBodyType } from '@/schemaValidations/class.schema';
 
@@ -24,10 +25,13 @@ export const CreateClass = async ({
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log('✅ API Response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('❌ Error from CreateClass API:', error);
+        console.error('CreateClass service: Error occurred:', {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         throw error;
     }
 };
