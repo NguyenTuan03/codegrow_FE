@@ -9,12 +9,20 @@ import { FaArrowRight } from 'react-icons/fa';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { toast } from '@/components/ui/use-toast';
 import { useEffect, useState } from 'react';
+import { EnrollCourse } from '@/lib/services/course/enrollcourse';
+import { useRouter } from 'next/navigation';
 
 // Define interfaces for type safety
 interface Course {
     _id: string;
     title: string;
     description: string;
+    price: number;
+    author: string;
+    category: string;
+    createdAt: string;
+    enrolledCount: number;
+    isEnrolled: boolean;
 }
 
 interface ApiResponse {
@@ -31,6 +39,7 @@ export default function CoursesPage() {
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<Course[]>([]);
 
+    const router = useRouter();
     const fetchCourse = async () => {
         try {
             const data: ApiResponse = await GetCourses();
@@ -58,6 +67,44 @@ export default function CoursesPage() {
     useEffect(() => {
         fetchCourse();
     }, []);
+
+    const handleEnroll = async (courseId: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Error',
+                    description: 'You need to log in to enroll in a course',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            setLoading(true);
+
+            const response = await EnrollCourse({ courseId, token });
+            if (!response.ok) {
+                throw new Error('Failed to enroll in the course');
+            }
+
+            toast({
+                title: 'Success',
+                description: 'You have successfully enrolled in the course!',
+                variant: 'default',
+            });
+
+            router.push(`/customer/courses/${courseId}`);
+        } catch (error) {
+            console.error('Error enrolling in course:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'An unknown error occurred',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -122,19 +169,46 @@ export default function CoursesPage() {
                                 </CardHeader>
 
                                 <CardContent className="space-y-4">
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                        <strong>Price:</strong> {course.price} VND
+                                    </p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                        <strong>Author:</strong> {course.author}
+                                    </p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                        <strong>Category:</strong> {course.category}
+                                    </p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                        <strong>Created At:</strong>{' '}
+                                        {new Date(course.createdAt).toLocaleDateString()}
+                                    </p>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                        <strong>Enrolled Count:</strong> {course.enrolledCount}
+                                    </p>
                                     <div className="flex items-center justify-between">
-                                        <Link
-                                            href={`/customer/courses/${course._id}`}
-                                            className="w-full max-w-[150px]"
-                                        >
+                                        {course.isEnrolled ? (
+                                            <Link
+                                                href={`/customer/courses/${course._id}`}
+                                                className="w-full max-w-[150px]"
+                                            >
+                                                <Button
+                                                    className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-300 flex items-center gap-2"
+                                                    size="lg"
+                                                >
+                                                    View Detail
+                                                    <FaArrowRight className="text-sm" />
+                                                </Button>
+                                            </Link>
+                                        ) : (
                                             <Button
+                                                onClick={() => handleEnroll(course._id)}
                                                 className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-300 flex items-center gap-2"
                                                 size="lg"
                                             >
-                                                Vào học ngay
+                                                Enroll
                                                 <FaArrowRight className="text-sm" />
                                             </Button>
-                                        </Link>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>

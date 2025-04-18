@@ -1,4 +1,3 @@
-// @/lib/services/class/createclass.ts
 import httpRequest from '@/lib/util/HttpRequest';
 import { CreateClassBodyType } from '@/schemaValidations/class.schema';
 
@@ -11,18 +10,24 @@ export const CreateClass = async ({
     schedule,
 }: CreateClassBodyType) => {
     try {
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('courseId', courseId || '');
-        formData.append('description', description || '');
-        formData.append('maxStudents', maxStudents.toString());
-        formData.append('schedule[startDate]', schedule.startDate);
-        formData.append('schedule[endDate]', schedule.endDate);
-        formData.append('schedule[daysOfWeek]', schedule.daysOfWeek.join(','));
-        formData.append('schedule[time]', schedule.time);
+        const payload = {
+            title,
+            courseId,
+            description,
+            maxStudents,
+            schedule: {
+                startDate: schedule.startDate,
+                endDate: schedule.endDate,
+                daysOfWeek: schedule.daysOfWeek,
+                time: schedule.time,
+            },
+        };
 
-        const response = await httpRequest.post('/classrooms', formData, {
-            headers: { Authorization: `Bearer ${token}` },
+        const response = await httpRequest.post('/classrooms', payload, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
 
         return response.data;

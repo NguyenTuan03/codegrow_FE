@@ -93,7 +93,7 @@ const Customerheader = () => {
                             <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <div className="relative">
-                                        <Bell className="w-5 h-5 cursor-pointer text-[#657ED4]" />
+                                        <Bell className="w-5 h-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
                                         {notifications.length > 0 && (
                                             <span className="absolute -top-1 -right-1 bg-[#5AD3AF] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                                                 {notifications.length}
@@ -101,20 +101,23 @@ const Customerheader = () => {
                                         )}
                                     </div>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="bg-[#EEF1EF] border border-gray-200 shadow-lg rounded-lg p-2 w-64">
+                                <DropdownMenuContent className="bg-[#EEF1EF] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg p-2 w-64">
                                     {notifications.length > 0 ? (
                                         notifications.map((notification) => (
                                             <DropdownMenuItem
                                                 key={notification.id}
-                                                className="px-4 py-2 hover:bg-[#657ED4] hover:text-white rounded-md"
+                                                className="px-4 py-2 hover:bg-[#657ED4] hover:text-white dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                             >
-                                                <a href={notification.link}>
+                                                <a
+                                                    href={notification.link}
+                                                    className="text-gray-800 dark:text-gray-200"
+                                                >
                                                     {notification.message}
                                                 </a>
                                             </DropdownMenuItem>
                                         ))
                                     ) : (
-                                        <div className="px-4 py-2 text-gray-500 text-sm">
+                                        <div className="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm">
                                             No new notifications.
                                         </div>
                                     )}
@@ -133,27 +136,27 @@ const Customerheader = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="end"
-                                className="w-56 rounded-lg bg-[#EEF1EF] border border-gray-200 shadow-lg p-1"
+                                className="w-56 rounded-lg bg-[#EEF1EF] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg p-1"
                             >
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/history')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <History className="w-4 h-4 text-[#657ED4]" />
+                                    <History className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-sm font-medium">History Transaction</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <User2 className="w-4 h-4 text-[#657ED4]" />
+                                    <User2 className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-sm font-medium">Profile</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <LogOut className="w-4 h-4 text-[#657ED4]" />
+                                    <LogOut className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-sm font-medium">Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

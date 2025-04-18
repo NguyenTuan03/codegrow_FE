@@ -3,48 +3,73 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { viewDetail } from '@/lib/services/class/viewdetail';
-import { Pencil, Trash2, Save, X, UserPlus } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { DeleteClass } from '@/lib/services/class/deleteclass';
 import { UpdateClass } from '@/lib/services/class/updateclass';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { AssignStudent } from '@/lib/services/class/assignstudent';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetCourses } from '@/lib/services/course/getcourse';
+import { Pencil, Save, Trash2, X } from 'lucide-react';
+import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
+import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
 
 interface Schedule {
     startDate: string;
     endDate: string;
-    time: string;
     daysOfWeek: string[];
+    time: string;
 }
+
 interface Course {
     _id: string;
     title: string;
     description: string;
+    price: number;
+    category: string;
+    createdAt: string;
+    author: string;
 }
+
+interface User {
+    _id: string;
+    email: string;
+    role: string;
+    fullName: string;
+}
+
+interface Mentor {
+    _id: string;
+    fullName: string;
+    email: string;
+    role: string;
+}
+
 interface ClassItem {
+    _id: string;
     title: string;
-    course: string;
-    mentor: string;
+    course: Course;
     description: string;
-    maxStudents: number;
+    mentor: User;
     status: string;
+    maxStudents: number;
+    students: User[];
     schedule: Schedule;
-    students: string[];
+    isDeleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
 }
 
 interface Student {
     _id: string;
     fullName: string;
+}
+
+// Interface for raw user data from getUser API
+interface RawUser {
+    _id: string;
+    fullName: string;
+    role: string;
+    email?: string;
 }
 
 export default function ClassDetailPage() {
@@ -58,11 +83,11 @@ export default function ClassDetailPage() {
     const [studentsLoading, setStudentsLoading] = useState(false);
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
-
+    const [mentors, setMentors] = useState<Mentor[]>([]);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const fetchCourse = async () => {
         try {
             const data = await GetCourses();
-
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 setCourses(data.metadata.courses);
             } else {
@@ -81,52 +106,135 @@ export default function ClassDetailPage() {
         }
     };
 
-    useEffect(() => {
-        fetchCourse();
-    }, []);
-    useEffect(() => {
-        const fetchClassDetail = async () => {
-            if (!classId) {
-                toast({
-                    title: 'Error',
-                    description: 'Invalid class ID',
-                    variant: 'destructive',
-                });
-                setLoading(false);
-                return;
+    const fetchMentors = async () => {
+        try {
+            setStudentsLoading(true);
+            const response = await getUser();
+            console.log('getUser Response:', JSON.stringify(response.metadata.users, null, 2));
+
+            if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
+                throw new Error('Invalid or missing users data');
             }
 
+            const mentors = response.metadata.users
+                .filter((user: RawUser) => user.role === 'mentor')
+                .map((user: RawUser) => {
+                    if (!user._id || !user.fullName) {
+                        console.warn('Invalid user data:', user);
+                        return null;
+                    }
+                    return {
+                        _id: user._id,
+                        fullName: user.fullName,
+                        email: user.email || '',
+                        role: user.role,
+                    };
+                })
+                .filter((mentor: Mentor | null): mentor is Mentor => mentor !== null);
+
+            setMentors(mentors);
+            console.log('Filtered mentors:', JSON.stringify(mentors, null, 2));
+        } catch (error) {
+            console.error('Failed to fetch mentors:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to load mentor list.',
+                variant: 'destructive',
+            });
+            setMentors([]);
+        } finally {
+            setStudentsLoading(false);
+        }
+    };
+
+    const fetchStudents = async () => {
+        try {
+            setStudentsLoading(true);
+            const response = await getUser();
+            console.log('getUser Response:', JSON.stringify(response.metadata.users, null, 2));
+
+            if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
+                throw new Error('Invalid or missing users data');
+            }
+
+            const customers = response.metadata.users
+                .filter((user: RawUser) => user.role === 'customer')
+                .map((user: RawUser) => {
+                    if (!user._id || !user.fullName) {
+                        console.warn('Invalid user data:', user);
+                        return null;
+                    }
+                    return {
+                        _id: user._id,
+                        fullName: user.fullName,
+                    };
+                })
+                .filter((user: Student | null): user is Student => user !== null);
+
+            setStudents(customers);
+            console.log('Filtered students:', JSON.stringify(customers, null, 2));
+        } catch (error) {
+            console.error('Failed to fetch students:', error);
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error ? error.message : 'Failed to load student list.',
+                variant: 'destructive',
+            });
+            setStudents([]);
+        } finally {
+            setStudentsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCourse();
+        fetchMentors();
+    }, []);
+
+    useEffect(() => {
+        const fetchClassDetail = async () => {
             try {
                 setLoading(true);
-                const data = await viewDetail(classId);
-                console.log('API Response detail:', data);
-                if (data?.metadata) {
-                    const metadata: ClassItem = {
-                        title: data.metadata.title,
-                        course: data.metadata.course,
-                        mentor: data.metadata.mentor,
-                        description: data.metadata.description,
-                        maxStudents: data.metadata.maxStudents,
-                        status: data.metadata.status,
-                        schedule: data.metadata.schedule,
-                        students: data.metadata.students,
-                    };
-                    if (
-                        !metadata.title ||
-                        !metadata.course ||
-                        !metadata.mentor ||
-                        !metadata.schedule
-                    ) {
-                        throw new Error(
-                            'Missing essential class data (title, course, mentor, or schedule)',
-                        );
-                    }
-                    setClassData(metadata);
-                    setFormData(metadata);
-                } else {
+                const { metadata } = await viewDetail(classId);
+                console.log('API Response detail:', JSON.stringify(metadata, null, 2));
+
+                if (!metadata) {
                     throw new Error('Invalid class data');
                 }
-            } catch (error: unknown) {
+
+                const students = Array.isArray(metadata.students)
+                    ? metadata.students.map((student: User) => ({
+                          _id: student._id || '',
+                          fullName: student.fullName || 'Unknown',
+                          email: student.email || '',
+                          role: student.role || 'customer',
+                      }))
+                    : [];
+
+                const normalizedData: ClassItem = {
+                    ...metadata,
+                    students,
+                    course: metadata.course || {
+                        _id: '',
+                        title: 'N/A',
+                        description: '',
+                        price: 0,
+                        category: '',
+                        createdAt: '',
+                        author: '',
+                    },
+                    mentor: metadata.mentor || {
+                        _id: '',
+                        fullName: 'N/A',
+                        email: '',
+                        role: '',
+                    },
+                };
+
+                setClassData(normalizedData);
+                setFormData(normalizedData);
+            } catch (error) {
                 console.error('Failed to fetch class details:', error);
                 toast({
                     title: 'Error',
@@ -134,8 +242,6 @@ export default function ClassDetailPage() {
                         error instanceof Error ? error.message : 'Failed to load class details',
                     variant: 'destructive',
                 });
-                setClassData(null);
-                setFormData(null);
             } finally {
                 setLoading(false);
             }
@@ -143,38 +249,6 @@ export default function ClassDetailPage() {
 
         fetchClassDetail();
     }, [classId]);
-
-    const fetchStudents = async () => {
-        try {
-            setStudentsLoading(true);
-
-            const response = await getUser();
-            console.log('getUser Response:', response.metadata.users);
-
-            const customers = response.metadata.users
-                .filter((user: { role: string }) => user.role === 'customer')
-                .map((user: { _id: string; fullName: string; role: string }) => ({
-                    _id: user._id,
-                    fullName: user.fullName,
-                }));
-            setStudents(customers);
-            console.log('Filtered students:', customers);
-            // Lưu danh sách người dùng vào state
-        } catch (error) {
-            console.error('Failed to fetch students:', error);
-            toast({
-                title: 'Error',
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : 'Failed to load student list. Please try again.',
-                variant: 'destructive',
-            });
-            setStudents([]); // Đặt danh sách người dùng thành rỗng nếu có lỗi
-        } finally {
-            setStudentsLoading(false);
-        }
-    };
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -198,8 +272,8 @@ export default function ClassDetailPage() {
         const { title, course, mentor, description, maxStudents, status, schedule } = formData;
         if (
             !title ||
-            !course ||
-            !mentor ||
+            !course._id ||
+            !mentor._id ||
             maxStudents < 1 ||
             maxStudents > 30 ||
             !status ||
@@ -232,8 +306,8 @@ export default function ClassDetailPage() {
                 token,
                 classId,
                 title,
-                course,
-                mentor,
+                course._id,
+                mentor._id,
                 description,
                 maxStudents,
                 status,
@@ -246,6 +320,7 @@ export default function ClassDetailPage() {
                 title: 'Success',
                 description: 'Class updated successfully',
                 variant: 'default',
+                className: 'bg-[#5AD3AF] text-black',
             });
             router.refresh();
         } catch (error: unknown) {
@@ -257,7 +332,13 @@ export default function ClassDetailPage() {
             });
         }
     };
+    const handleDeleteClick = () => {
+        setIsDeleteModalOpen(true);
+    };
 
+    const handleCancelDelete = () => {
+        setIsDeleteModalOpen(false);
+    };
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -270,8 +351,10 @@ export default function ClassDetailPage() {
                 title: 'Success',
                 description: 'Class deleted successfully',
                 variant: 'default',
+                className: 'bg-[#5AD3AF] text-black',
             });
-            router.push('/classes');
+            setIsDeleteModalOpen(false); // Đóng modal sau khi xóa thành công
+            router.push('/admin/classes');
         } catch (error) {
             console.error('Failed to delete class:', error);
             toast({
@@ -281,7 +364,6 @@ export default function ClassDetailPage() {
             });
         }
     };
-
     const handleAddStudent = async (_id: string, fullName: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -291,18 +373,30 @@ export default function ClassDetailPage() {
             }
             const response = await AssignStudent(token, classId, _id);
             if (response.status === 'success') {
+                const newStudent: User = {
+                    _id,
+                    fullName,
+                    email: '',
+                    role: 'customer',
+                };
                 setClassData((prev) =>
-                    prev ? { ...prev, students: [...prev.students, fullName] } : prev,
+                    prev ? { ...prev, students: [...prev.students, newStudent] } : prev,
                 );
                 setFormData((prev) =>
-                    prev ? { ...prev, students: [...prev.students, fullName] } : prev,
+                    prev ? { ...prev, students: [...prev.students, newStudent] } : prev,
                 );
-                setIsModalOpen(false);
                 toast({
                     title: 'Success',
+                    className: 'bg-[#5AD3AF] text-black',
                     description: 'Student added successfully',
                     variant: 'default',
                 });
+
+                // Tắt modal sau 2 giây và làm mới trang
+                setTimeout(() => {
+                    setIsModalOpen(false);
+                    router.refresh();
+                }, 2000);
             } else {
                 throw new Error(response.message || 'Failed to add student');
             }
@@ -354,12 +448,14 @@ export default function ClassDetailPage() {
 
     const handleDayChange = (day: string) => {
         if (!formData?.schedule) return;
-        const days = formData.schedule.daysOfWeek.includes(day)
-            ? formData.schedule.daysOfWeek.filter((d) => d !== day)
-            : [...formData.schedule.daysOfWeek, day];
+
+        const updatedDays = formData.schedule.daysOfWeek.includes(day)
+            ? formData.schedule.daysOfWeek.filter((d) => d !== day) // Xóa ngày nếu đã tồn tại
+            : [...formData.schedule.daysOfWeek, day]; // Thêm ngày nếu chưa tồn tại
+
         setFormData({
             ...formData,
-            schedule: { ...formData.schedule, daysOfWeek: days },
+            schedule: { ...formData.schedule, daysOfWeek: updatedDays },
         });
     };
 
@@ -379,20 +475,9 @@ export default function ClassDetailPage() {
         );
     }
 
-    const daysOfWeekOptions = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday',
-    ];
-
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto p-6 sm:p-8">
-                {/* Header with Buttons */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     {isEditing ? (
                         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
@@ -434,7 +519,7 @@ export default function ClassDetailPage() {
                                     Update
                                 </button>
                                 <button
-                                    onClick={handleDelete}
+                                    onClick={handleDeleteClick}
                                     className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
                                     aria-label="Delete class"
                                 >
@@ -446,465 +531,52 @@ export default function ClassDetailPage() {
                     </div>
                 </div>
 
-                {/* Main Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Class Information */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                                Class Information
-                            </h2>
-                            {isEditing ? (
-                                <>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="title"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Title
-                                        </label>
-                                        <Input
-                                            id="title"
-                                            type="text"
-                                            value={formData?.title || ''}
-                                            onChange={(e) => handleInputChange(e, 'title')}
-                                            className="w-full"
-                                            placeholder="Enter class title"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="course"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Course
-                                        </label>
-
-                                        <select
-                                            id="course"
-                                            value={formData?.course || ''}
-                                            onChange={(e) =>
-                                                setFormData({
-                                                    ...formData!,
-                                                    course: e.target.value,
-                                                })
-                                            }
-                                            className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        >
-                                            <option value="" disabled>
-                                                Select a course
-                                            </option>
-                                            {courses.map((course) => (
-                                                <option key={course._id} value={course._id}>
-                                                    {course.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="mentor"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Mentor
-                                        </label>
-                                        <Input
-                                            id="mentor"
-                                            type="text"
-                                            value={formData?.mentor || ''}
-                                            onChange={(e) => handleInputChange(e, 'mentor')}
-                                            className="w-full"
-                                            placeholder="Enter mentor name"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="description"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Description
-                                        </label>
-                                        <Textarea
-                                            id="description"
-                                            value={formData?.description || ''}
-                                            onChange={(e) => handleInputChange(e, 'description')}
-                                            className="w-full"
-                                            rows={4}
-                                            placeholder="Enter class description"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="maxStudents"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Max Students
-                                        </label>
-                                        <Input
-                                            id="maxStudents"
-                                            type="number"
-                                            value={formData?.maxStudents || 0}
-                                            onChange={(e) => handleInputChange(e, 'maxStudents')}
-                                            className="w-full"
-                                            placeholder="Enter maximum number of students"
-                                            min="1"
-                                            max="30"
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="status"
-                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                        >
-                                            Status
-                                        </label>
-                                        <select
-                                            id="status"
-                                            value={formData?.status || ''}
-                                            onChange={(e) =>
-                                                setFormData({
-                                                    ...formData!,
-                                                    status: e.target.value,
-                                                })
-                                            }
-                                            className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        >
-                                            <option value="open">Open</option>
-                                            <option value="closed">Closed</option>
-                                            <option value="in-progress">In Progress</option>
-                                        </select>
-                                    </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label
-                                                htmlFor="startDate"
-                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                            >
-                                                Start Date
-                                            </label>
-                                            <Input
-                                                id="startDate"
-                                                type="date"
-                                                value={
-                                                    formData?.schedule?.startDate?.split('T')[0] ||
-                                                    ''
-                                                }
-                                                onChange={(e) => handleInputChange(e, 'startDate')}
-                                                className="w-full"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="endDate"
-                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                            >
-                                                End Date
-                                            </label>
-                                            <Input
-                                                id="endDate"
-                                                type="date"
-                                                value={
-                                                    formData?.schedule?.endDate?.split('T')[0] || ''
-                                                }
-                                                onChange={(e) => handleInputChange(e, 'endDate')}
-                                                className="w-full"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="time"
-                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
-                                            >
-                                                Class Time
-                                            </label>
-                                            <Select
-                                                value={formData?.schedule?.time || '19:00-21:00'}
-                                                onValueChange={(value) => {
-                                                    if (formData) {
-                                                        setFormData({
-                                                            ...formData,
-                                                            schedule: {
-                                                                ...formData.schedule,
-                                                                time: value,
-                                                            },
-                                                        });
-                                                    }
-                                                }}
-                                            >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select time" />
-                                                </SelectTrigger>
-                                                <SelectContent className="bg-white dark:bg-gray-800">
-                                                    {[
-                                                        {
-                                                            value: '07:00-09:00',
-                                                            label: '7:00 - 9:00',
-                                                        },
-                                                        {
-                                                            value: '09:00-11:00',
-                                                            label: '9:00 - 11:00',
-                                                        },
-                                                        {
-                                                            value: '11:00-13:00',
-                                                            label: '11:00 - 13:00',
-                                                        },
-                                                        {
-                                                            value: '13:00-15:00',
-                                                            label: '13:00 - 15:00',
-                                                        },
-                                                        {
-                                                            value: '15:00-17:00',
-                                                            label: '15:00 - 17:00',
-                                                        },
-                                                        {
-                                                            value: '17:00-19:00',
-                                                            label: '17:00 - 19:00',
-                                                        },
-                                                        {
-                                                            value: '19:00-21:00',
-                                                            label: '19:00 - 21:00',
-                                                        },
-                                                    ].map((time) => (
-                                                        <SelectItem
-                                                            key={time.value}
-                                                            value={time.value}
-                                                        >
-                                                            {time.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <fieldset>
-                                                <legend className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
-                                                    Class Days
-                                                </legend>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {daysOfWeekOptions.map((day) => (
-                                                        <label
-                                                            key={day}
-                                                            htmlFor={`day-${day.toLowerCase()}`}
-                                                            className="flex items-center gap-1"
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`day-${day.toLowerCase()}`}
-                                                                checked={
-                                                                    formData?.schedule?.daysOfWeek.includes(
-                                                                        day,
-                                                                    ) || false
-                                                                }
-                                                                onChange={() =>
-                                                                    handleDayChange(day)
-                                                                }
-                                                                className="h-4 w-4 text-blue-600 dark:text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-                                                            />
-                                                            <span className="text-gray-700 dark:text-gray-200">
-                                                                {day}
-                                                            </span>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                        {classData.description}
-                                    </p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Course
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.course || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Mentor
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.mentor || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Max Students
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.maxStudents || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Status
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.status || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Start Date
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.schedule.startDate
-                                                    ? new Date(
-                                                          classData.schedule.startDate,
-                                                      ).toLocaleDateString()
-                                                    : 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                End Date
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.schedule.endDate
-                                                    ? new Date(
-                                                          classData.schedule.endDate,
-                                                      ).toLocaleDateString()
-                                                    : 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Class Time
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.schedule.time || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Class Days
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {classData.schedule.daysOfWeek?.join(', ') || 'N/A'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Students */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                            Students
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">
-                            Total: {classData.students.length} students
-                        </p>
-                        <div className="space-y-3">
-                            {classData.students.map((student: string | Student, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                                >
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center mr-3">
-                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {typeof student === 'string'
-                                                ? student.charAt(0).toUpperCase()
-                                                : student.fullName.charAt(0).toUpperCase()}
-                                        </span>
-                                    </div>
-                                    <span className="text-gray-900 dark:text-gray-100">
-                                        {typeof student === 'string' ? student : student.fullName}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-6">
-                            <Button
-                                onClick={handleOpenModal}
-                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 w-full"
-                            >
-                                <UserPlus className="h-5 w-5 mr-2" />
-                                Add Student
-                            </Button>
-                        </div>
-                    </div>
+                    <ClassInfo
+                        classData={classData}
+                        formData={formData}
+                        isEditing={isEditing}
+                        courses={courses}
+                        mentors={mentors}
+                        handleInputChange={handleInputChange}
+                        handleDayChange={handleDayChange}
+                        setFormData={setFormData}
+                    />
+                    <StudentsPanel
+                        classData={classData}
+                        students={students}
+                        studentsLoading={isModalOpen && studentsLoading}
+                        isModalOpen={isModalOpen}
+                        handleOpenModal={handleOpenModal}
+                        handleCloseModal={handleCloseModal}
+                        handleAddStudent={handleAddStudent}
+                    />
                 </div>
-
-                {/* Modal for Student Selection */}
-
-                {isModalOpen && (
-                    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 flex items-center justify-center z-50">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                                    Select Student
-                                </h2>
+                {/* Delete Confirmation Modal */}
+                {isDeleteModalOpen && (
+                    <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
+                            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                                Confirm Deletion
+                            </h2>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                Are you sure you want to delete this class? This action cannot be
+                                undone.
+                            </p>
+                            <div className="flex justify-end gap-3">
                                 <button
-                                    onClick={handleCloseModal}
-                                    className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
-                                    title="Close Modal"
+                                    onClick={handleCancelDelete}
+                                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                                 >
-                                    <X className="h-6 w-6" />
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
+                                >
+                                    Delete
                                 </button>
                             </div>
-                            {studentsLoading ? (
-                                <div className="flex justify-center items-center h-32">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
-                                </div>
-                            ) : students.length === 0 ? (
-                                <p className="text-gray-600 dark:text-gray-300 text-center">
-                                    No students available
-                                </p>
-                            ) : (
-                                <div className="max-h-96 overflow-y-auto">
-                                    <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
-                                        <thead>
-                                            <tr className="bg-gray-100 dark:bg-gray-700">
-                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
-                                                    Full Name
-                                                </th>
-                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
-                                                    Role
-                                                </th>
-                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center text-gray-800 dark:text-gray-100">
-                                                    Action
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {students.map((student) => (
-                                                <tr
-                                                    key={student._id}
-                                                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                                                >
-                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
-                                                        {student.fullName}
-                                                    </td>
-                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
-                                                        Customer
-                                                    </td>
-                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center">
-                                                        <button
-                                                            onClick={() =>
-                                                                handleAddStudent(
-                                                                    student._id,
-                                                                    student.fullName,
-                                                                )
-                                                            }
-                                                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
-                                                        >
-                                                            Add
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}
