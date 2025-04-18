@@ -60,7 +60,13 @@ export const AdminHeader = () => {
         { name: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4 mr-2" /> },
         { name: 'Settings', icon: <Settings className="h-4 w-4 mr-2" /> },
     ];
-
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+    const [isClient, setIsClient] = useState(false);
+    if (!isClient) {
+        return null; // Tránh render trên server
+    }
     return (
         <header
             className="sticky w-full top-0 z-50 shadow-sm border-b"

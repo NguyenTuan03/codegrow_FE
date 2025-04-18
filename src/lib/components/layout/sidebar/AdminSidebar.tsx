@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import {
     LayoutDashboard,
     Users,
@@ -31,6 +32,15 @@ import {
 } from '@/components/ui/accordion';
 
 export const AdminSidebar = () => {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true); // Đảm bảo chỉ render trên client
+    }, []);
+
+    if (!isClient) {
+        return null; // Tránh render trên server
+    }
     return (
         <Sidebar className="h-screen pt-5 border-r bg-muted/40 dark:bg-gray-900 dark:border-gray-700">
             <SidebarContent>
@@ -163,6 +173,43 @@ export const AdminSidebar = () => {
                                                             >
                                                                 <Book className="h-5 w-5" />
                                                                 List Classes
+                                                            </Link>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                </SidebarMenu>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                        {/* Courses Section */}
+                                        <AccordionItem value="Courses" className="border-b-0">
+                                            <AccordionTrigger className="py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                                                <div className="flex w-full items-center justify-between">
+                                                    <div className="flex items-center gap-2 text-base dark:text-gray-300 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400">
+                                                        <Book className="h-4 w-4" />
+                                                        Courses
+                                                    </div>
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="pb-0 pl-6">
+                                                <SidebarMenu>
+                                                    <SidebarMenuItem>
+                                                        <SidebarMenuButton asChild>
+                                                            <Link
+                                                                href="/admin/courses/create"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+                                                            >
+                                                                <Users className="h-5 w-5" />
+                                                                Add Courses
+                                                            </Link>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                    <SidebarMenuItem>
+                                                        <SidebarMenuButton asChild>
+                                                            <Link
+                                                                href="/admin/courses"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+                                                            >
+                                                                <Book className="h-5 w-5" />
+                                                                List Courses
                                                             </Link>
                                                         </SidebarMenuButton>
                                                     </SidebarMenuItem>

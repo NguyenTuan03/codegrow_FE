@@ -111,7 +111,10 @@ export default function CreateClassForm() {
                 throw new Error('Authentication token is missing. Please log in.');
             }
 
-            // Format schedule dates to ISO strings
+            if (data.maxStudents < 1 || data.maxStudents > 30) {
+                throw new Error('Max students must be between 1 and 30.');
+            }
+
             const formattedSchedule = {
                 ...data.schedule,
                 startDate: data.schedule.startDate
@@ -120,7 +123,6 @@ export default function CreateClassForm() {
                 endDate: data.schedule.endDate ? new Date(data.schedule.endDate).toISOString() : '',
             };
 
-            // Log the exact payload being sent to CreateClass
             const payload = {
                 token,
                 title: data.title,
@@ -130,19 +132,18 @@ export default function CreateClassForm() {
                 schedule: formattedSchedule,
             };
 
+            console.log('Payload being sent to CreateClass:', payload);
+
             const response = await CreateClass(payload);
+            console.log('Response from CreateClass:', response);
+            toast({
+                description: 'Create Classes successful!',
+                className: 'bg-[#5AD3AF] text-black',
+                duration: 1000,
+            });
 
-            if (response?.status === 'success') {
-                toast({
-                    title: 'Class Created Successfully',
-                    description: 'The class has been created successfully!',
-                    variant: 'default',
-                });
-
-                router.push('/admin/classes');
-            } else {
-                throw new Error(response?.message || 'Failed to create class: Invalid response');
-            }
+            router.push('/admin/classes');
+            router.refresh();
         } catch (error: unknown) {
             console.error('Detailed error creating class:', {
                 error,
@@ -152,17 +153,14 @@ export default function CreateClassForm() {
 
             toast({
                 title: 'Error',
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : 'An error occurred while creating the class. Please try again.',
+                className: 'bg-[#F76F8E] text-black',
+                description: error instanceof Error ? error.message : 'An unknown error occurred',
                 variant: 'destructive',
             });
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className="max-w-4xl mx-auto p-6">
             <Card className="border-0 shadow-lg">
