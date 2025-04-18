@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { GetClass } from '@/lib/services/mentor/getclass';
+import { GetClass } from '@/lib/services/class/getclass';
 import { format } from 'date-fns'; // Import date-fns for consistent date formatting
 
 export default function Classes() {

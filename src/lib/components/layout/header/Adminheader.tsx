@@ -183,7 +183,7 @@ export const AdminHeader = () => {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
-                                <AvatarImage src="/path-to-user-image.jpg" alt="User Avatar" />
+                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                                 <AvatarFallback>A</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>

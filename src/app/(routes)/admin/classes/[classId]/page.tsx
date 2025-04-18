@@ -1,741 +1,914 @@
 'use client';
-import { useParams, usePathname } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { MoreVertical, Mail } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
+import { viewDetail } from '@/lib/services/class/viewdetail';
+import { Pencil, Trash2, Save, X, UserPlus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { DeleteClass } from '@/lib/services/class/deleteclass';
+import { UpdateClass } from '@/lib/services/class/updateclass';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { AssignStudent } from '@/lib/services/class/assignstudent';
+import { getUser } from '@/lib/services/admin/getuser';
+import { GetCourses } from '@/lib/services/course/getcourse';
 
-export default function ClassPage() {
+interface Schedule {
+    startDate: string;
+    endDate: string;
+    time: string;
+    daysOfWeek: string[];
+}
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+}
+interface ClassItem {
+    title: string;
+    course: string;
+    mentor: string;
+    description: string;
+    maxStudents: number;
+    status: string;
+    schedule: Schedule;
+    students: string[];
+}
+
+interface Student {
+    _id: string;
+    fullName: string;
+}
+
+export default function ClassDetailPage() {
     const { classId } = useParams<{ classId: string }>();
-    const pathname = usePathname();
-    const [tab, setTab] = useState('stream'); // Default tab is "stream"
+    const [classData, setClassData] = useState<ClassItem | null>(null);
+    const [formData, setFormData] = useState<ClassItem | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [students, setStudents] = useState<Student[]>([]);
+    const [studentsLoading, setStudentsLoading] = useState(false);
+    const router = useRouter();
+    const [courses, setCourses] = useState<Course[]>([]);
 
-    // Debug: Log the classId and pathname to ensure they are correct
-    console.log('classId:', classId);
-    console.log('pathname:', pathname);
+    const fetchCourse = async () => {
+        try {
+            const data = await GetCourses();
 
-    // Set the default tab to "stream" if the user lands on /mentor/classes/[classId]
-    useEffect(() => {
-        if (pathname === `/mentor/classes/${classId}`) {
-            setTab('stream');
+            if (data?.metadata?.courses && data.metadata.courses.length > 0) {
+                setCourses(data.metadata.courses);
+            } else {
+                throw new Error(
+                    'No courses found. Please check your connection or try again later.',
+                );
+            }
+        } catch (error: unknown) {
+            console.error('Failed to fetch courses:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to fetch courses',
+                variant: 'destructive',
+            });
+            setCourses([]);
         }
-    }, [pathname, classId]);
+    };
 
-    if (!classId) {
-        return <div>Error: Class ID is missing. Please provide a valid class ID in the URL.</div>;
+    useEffect(() => {
+        fetchCourse();
+    }, []);
+    useEffect(() => {
+        const fetchClassDetail = async () => {
+            if (!classId) {
+                toast({
+                    title: 'Error',
+                    description: 'Invalid class ID',
+                    variant: 'destructive',
+                });
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const data = await viewDetail(classId);
+                console.log('API Response detail:', data);
+                if (data?.metadata) {
+                    const metadata: ClassItem = {
+                        title: data.metadata.title,
+                        course: data.metadata.course,
+                        mentor: data.metadata.mentor,
+                        description: data.metadata.description,
+                        maxStudents: data.metadata.maxStudents,
+                        status: data.metadata.status,
+                        schedule: data.metadata.schedule,
+                        students: data.metadata.students,
+                    };
+                    if (
+                        !metadata.title ||
+                        !metadata.course ||
+                        !metadata.mentor ||
+                        !metadata.schedule
+                    ) {
+                        throw new Error(
+                            'Missing essential class data (title, course, mentor, or schedule)',
+                        );
+                    }
+                    setClassData(metadata);
+                    setFormData(metadata);
+                } else {
+                    throw new Error('Invalid class data');
+                }
+            } catch (error: unknown) {
+                console.error('Failed to fetch class details:', error);
+                toast({
+                    title: 'Error',
+                    description:
+                        error instanceof Error ? error.message : 'Failed to load class details',
+                    variant: 'destructive',
+                });
+                setClassData(null);
+                setFormData(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchClassDetail();
+    }, [classId]);
+
+    const fetchStudents = async () => {
+        try {
+            setStudentsLoading(true);
+
+            const response = await getUser();
+            console.log('getUser Response:', response.metadata.users);
+
+            const customers = response.metadata.users
+                .filter((user: { role: string }) => user.role === 'customer')
+                .map((user: { _id: string; fullName: string; role: string }) => ({
+                    _id: user._id,
+                    fullName: user.fullName,
+                }));
+            setStudents(customers);
+            console.log('Filtered students:', customers);
+            // Lưu danh sách người dùng vào state
+        } catch (error) {
+            console.error('Failed to fetch students:', error);
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : 'Failed to load student list. Please try again.',
+                variant: 'destructive',
+            });
+            setStudents([]); // Đặt danh sách người dùng thành rỗng nếu có lỗi
+        } finally {
+            setStudentsLoading(false);
+        }
+    };
+
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setFormData(classData);
+    };
+
+    const handleSave = async () => {
+        if (!formData || !classId) {
+            toast({
+                title: 'Error',
+                description: 'Class data or ID is missing',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        const { title, course, mentor, description, maxStudents, status, schedule } = formData;
+        if (
+            !title ||
+            !course ||
+            !mentor ||
+            maxStudents < 1 ||
+            maxStudents > 30 ||
+            !status ||
+            !schedule.startDate ||
+            !schedule.endDate ||
+            !schedule.time ||
+            !schedule.daysOfWeek.length
+        ) {
+            toast({
+                title: 'Error',
+                description: 'Please fill in all required fields correctly',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication token is missing');
+            }
+
+            const formattedSchedule = {
+                ...schedule,
+                startDate: new Date(schedule.startDate).toISOString(),
+                endDate: new Date(schedule.endDate).toISOString(),
+            };
+
+            await UpdateClass(
+                token,
+                classId,
+                title,
+                course,
+                mentor,
+                description,
+                maxStudents,
+                status,
+                formattedSchedule,
+            );
+
+            setClassData({ ...formData, schedule: formattedSchedule });
+            setIsEditing(false);
+            toast({
+                title: 'Success',
+                description: 'Class updated successfully',
+                variant: 'default',
+            });
+            router.refresh();
+        } catch (error: unknown) {
+            console.error('Failed to update class:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to update class',
+                variant: 'destructive',
+            });
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication token is missing');
+            }
+
+            await DeleteClass(classId, token);
+            toast({
+                title: 'Success',
+                description: 'Class deleted successfully',
+                variant: 'default',
+            });
+            router.push('/classes');
+        } catch (error) {
+            console.error('Failed to delete class:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to delete class',
+                variant: 'destructive',
+            });
+        }
+    };
+
+    const handleAddStudent = async (_id: string, fullName: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            console.log('Token:', token);
+            if (!token) {
+                throw new Error('Authentication token is missing');
+            }
+            const response = await AssignStudent(token, classId, _id);
+            if (response.status === 'success') {
+                setClassData((prev) =>
+                    prev ? { ...prev, students: [...prev.students, fullName] } : prev,
+                );
+                setFormData((prev) =>
+                    prev ? { ...prev, students: [...prev.students, fullName] } : prev,
+                );
+                setIsModalOpen(false);
+                toast({
+                    title: 'Success',
+                    description: 'Student added successfully',
+                    variant: 'default',
+                });
+            } else {
+                throw new Error(response.message || 'Failed to add student');
+            }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast({
+                    title: 'Error',
+                    description: error.message || 'Failed to add student. Please try again.',
+                    variant: 'destructive',
+                });
+            } else {
+                toast({
+                    title: 'Error',
+                    description: 'An unknown error occurred. Please try again.',
+                    variant: 'destructive',
+                });
+            }
+        }
+    };
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+        fetchStudents();
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setStudents([]);
+    };
+
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        field: keyof ClassItem | keyof Schedule,
+    ) => {
+        if (!formData) return;
+
+        if (field in formData) {
+            setFormData({
+                ...formData,
+                [field]: field === 'maxStudents' ? parseInt(e.target.value) || 0 : e.target.value,
+            });
+        } else if (formData.schedule) {
+            setFormData({
+                ...formData,
+                schedule: { ...formData.schedule, [field]: e.target.value },
+            });
+        }
+    };
+
+    const handleDayChange = (day: string) => {
+        if (!formData?.schedule) return;
+        const days = formData.schedule.daysOfWeek.includes(day)
+            ? formData.schedule.daysOfWeek.filter((d) => d !== day)
+            : [...formData.schedule.daysOfWeek, day];
+        setFormData({
+            ...formData,
+            schedule: { ...formData.schedule, daysOfWeek: days },
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 transition-opacity duration-300"></div>
+            </div>
+        );
     }
 
-    // Mock data for shared header info - replace with API call in a real app
-    const classData = {
-        title: classId.toUpperCase(),
-        code: '312',
-        instructor: 'Nguyen Thuong Huyen',
-        assignments: [
-            {
-                id: 1,
-                title: 'Học từ vựng Bài 4-5 và làm bài tập ngữ pháp',
-                date: '1 Jan 2024',
-                dueDate: null, // No due date
-                edited: '2 Jan 2024',
-                type: 'assignment',
-            },
-            {
-                id: 2,
-                title: 'Làm bài tập chương 4 - Từ vựng, ngữ pháp',
-                date: '20 Dec 2023',
-                dueDate: '2023-12-22T23:59:00Z', // Due 22 Dec 2023, 23:59
-                type: 'assignment',
-            },
-            {
-                id: 3,
-                title: 'Chia tính từ sang thì và thể khác nhau',
-                date: '16 Dec 2023',
-                dueDate: '2023-12-19T23:59:00Z', // Due 19 Dec 2023
-                edited: '19 Dec 2023',
-                type: 'assignment',
-            },
-            {
-                id: 4,
-                title: 'Quiz',
-                date: '28 Nov 2023',
-                dueDate: '2023-11-28T23:59:00Z', // Due 28 Nov 2023
-                type: 'quiz',
-            },
-        ],
-        resources: [
-            {
-                id: 1,
-                title: 'YouTube Playlist',
-                url: 'https://youtube.com/playlist?list=',
-                type: 'link',
-            },
-            {
-                id: 2,
-                title: 'JPD123 | Quizlet',
-                url: 'https://quizlet.com/class/26388',
-                type: 'link',
-            },
-            {
-                id: 3,
-                title: 'JPD123 SP24 - Google Sheets',
-                url: '',
-                type: 'sheet',
-            },
-        ],
-        teachers: [
-            {
-                name: 'Nguyen Thuong Huyen',
-                classCode: 'K16, HCM',
-            },
-        ],
-        classmates: [
-            { name: 'Nguyen Manh Tien', classCode: '' },
-            { name: 'Tran Huy Hoang', classCode: '' },
-            { name: 'Phan Nguyen Doan Vu', classCode: 'K16, HCM' },
-            { name: 'Nguyen Le Viet Huy', classCode: 'K17 DN' },
-            { name: 'Bui Viet Quy', classCode: 'K17 HCM' },
-            { name: 'Chau Duc Thien', classCode: 'K17 HCM' },
-            { name: 'Duong Ngoc Quynh Khu', classCode: 'K17 HCM' },
-            { name: 'Hoang Van An', classCode: 'K17 HCM' },
-            { name: 'Mai That Tan', classCode: 'K17 HCM' },
-            { name: 'Nguyen Phuong My Thuan', classCode: 'K17 HCM' },
-            { name: 'Nguyen Quoc Khanh', classCode: 'K18L' },
-            { name: 'Pham Thanh Long', classCode: 'K18 HL' },
-            { name: 'Trieu Nghia Hieu', classCode: 'K18 HL' },
-            { name: 'Trinh Minh Chau', classCode: 'K18 HL' },
-            { name: 'Quang Trung Do', classCode: '' },
-            { name: 'Nguyen Xuan Loc', classCode: 'K17 HL' },
-            { name: 'Nguyen Quang Hiy', classCode: 'K17 HL' },
-            { name: 'Guyet Minh', classCode: '' },
-            { name: 'Phung Ngoc Son', classCode: '' },
-            { name: 'Hoang Viet Nguyen', classCode: '' },
-        ],
-        performance: {
-            average: 90,
-            breakdown: [
-                { range: '90 - 100', count: 70, color: 'bg-green-500' },
-                { range: '75 - 89', count: 30, color: 'bg-yellow-500' },
-                { range: '60 - 74', count: 15, color: 'bg-orange-500' },
-                { range: 'Less 60', count: 5, color: 'bg-red-500' },
-            ],
-        },
-        attendance: {
-            average: 90,
-        },
-        toDo: [
-            { task: 'To upload marks', completed: false },
-            { task: 'To upload learning materials', completed: false },
-            { task: 'To check homework', completed: false },
-            { task: 'To conduct additional classes', completed: false },
-        ],
-        hometasks: [
-            {
-                name: 'Pythagorean theorem',
-                subject: 'Geometry',
-                grade: '8th',
-                group: 'C',
-                count: 30,
-                deadline: '30 Apr',
-                status: 'Ready to check',
-                progress: 80,
-            },
-            {
-                name: 'Matrices',
-                subject: 'Linear Algebra',
-                grade: '11th',
-                group: 'B',
-                count: 20,
-                deadline: '30 Apr',
-                status: 'In progress',
-                progress: 50,
-            },
-            {
-                name: 'Fractions',
-                subject: 'Mathematics',
-                grade: '6th',
-                group: 'A',
-                count: 15,
-                deadline: '30 Apr',
-                status: 'In progress',
-                progress: 30,
-            },
-        ],
-    };
-
-    // Function to determine if a tab is active
-    const isActive = (tabName: string) => tab === tabName;
-
-    // Function to get initials from a name
-    const getInitials = (name: string) => {
-        const nameParts = name.split(' ');
-        if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+    if (!classData || !classData.schedule) {
         return (
-            nameParts[0].charAt(0).toUpperCase() +
-            nameParts[nameParts.length - 1].charAt(0).toUpperCase()
-        );
-    };
-
-    // Function to get a random background color for the avatar
-    const getRandomColor = () => {
-        const colors = [
-            'bg-red-500',
-            'bg-blue-500',
-            'bg-green-500',
-            'bg-purple-500',
-            'bg-orange-500',
-            'bg-teal-500',
-            'bg-pink-500',
-            'bg-indigo-500',
-        ];
-        return colors[Math.floor(Math.random() * colors.length)];
-    };
-
-    // Stream Tab Content
-    const StreamTab = () => (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column */}
-            <div className="lg:col-span-2 space-y-6">
-                {/* Meet Section */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Meet</h2>
-                    <div className="flex items-center mb-4">
-                        <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                            <span className="text-sm">JH</span>
-                        </div>
-                        <span className="font-medium">{classData.instructor}</span>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                        <h3 className="font-medium text-blue-800">Upcoming</h3>
-                        <p className="text-gray-600">Nothing due soon!</p>
-                    </div>
-                    <Button
-                        variant="link"
-                        className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium p-0"
-                        aria-label="View all upcoming assignments"
-                    >
-                        View all
-                    </Button>
-                </div>
-
-                {/* Assignments Section */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Assignments</h2>
-                    <div className="space-y-4">
-                        {classData.assignments.map((assignment) => (
-                            <div key={assignment.id} className="border-b pb-4 last:border-0">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-medium">
-                                            {classData.instructor} posted a new {assignment.type}:{' '}
-                                            {assignment.title}
-                                        </h3>
-                                        <p className="text-sm text-gray-500">
-                                            {assignment.date}
-                                            {assignment.edited && (
-                                                <span className="ml-2">
-                                                    (Edited {assignment.edited})
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-                                    {assignment.type === 'quiz' && (
-                                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                            Quiz
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-6">
-                {/* Resources Section */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Class Resources</h2>
-                    <div className="space-y-3">
-                        {classData.resources.map((resource) => (
-                            <div key={resource.id} className="flex items-center">
-                                <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                                    {resource.type === 'link' && (
-                                        <svg
-                                            className="h-4 w-4 text-gray-500"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    )}
-                                    {resource.type === 'sheet' && (
-                                        <svg
-                                            className="h-4 w-4 text-gray-500"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    )}
-                                </div>
-                                <a
-                                    href={resource.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    {resource.title}
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Add Comment Section */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <textarea
-                        placeholder="Add class comment..."
-                        className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                        rows={3}
-                        aria-label="Class comment input"
-                    />
-                    <div className="flex justify-end mt-2">
-                        <Button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                            Post
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    // Classwork Tab Content
-    const ClassworkTab = () => {
-        // Function to format the due date
-        const formatDueDate = (dueDate: string | null) => {
-            if (!dueDate) return 'No due date';
-            const date = new Date(dueDate);
-            const options: Intl.DateTimeFormatOptions = {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-            };
-            const formattedDate = date.toLocaleDateString('en-US', options);
-            const formattedTime = date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            });
-            return `Due ${formattedDate}${formattedTime !== '00:00' ? `, ${formattedTime}` : ''}`;
-        };
-
-        // Function to determine if the assignment is past due
-        const isPastDue = (dueDate: string | null) => {
-            if (!dueDate) return false; // No due date means not past due
-            const now = new Date();
-            const due = new Date(dueDate);
-            return now > due;
-        };
-
-        return (
-            <div>
-                {/* View Your Work Button */}
-                <div className="mb-4">
-                    <Button
-                        variant="link"
-                        onClick={() => alert('Implement "View your work" functionality')}
-                        className="text-blue-600 hover:underline flex items-center text-sm font-medium p-0"
-                        aria-label="View your work"
-                    >
-                        <svg
-                            className="h-4 w-4 mr-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            aria-hidden="true"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                        </svg>
-                        View your work
-                    </Button>
-                </div>
-
-                {/* Assignments List */}
-                <div className="space-y-4">
-                    {classData.assignments.map((assignment) => {
-                        const pastDue = isPastDue(assignment.dueDate);
-                        return (
-                            <div
-                                key={assignment.id}
-                                className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm hover:bg-gray-50"
-                            >
-                                <div className="flex items-center">
-                                    {/* Status Indicator */}
-                                    <div
-                                        className={`h-8 w-8 rounded-full flex items-center justify-center mr-3 ${
-                                            pastDue ? 'bg-gray-200' : 'bg-blue-100'
-                                        }`}
-                                    >
-                                        <svg
-                                            className={`h-4 w-4 ${
-                                                pastDue ? 'text-gray-500' : 'text-blue-600'
-                                            }`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="2"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                            />
-                                        </svg>
-                                    </div>
-                                    {/* Assignment Details */}
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-900">
-                                            {assignment.title}
-                                        </h3>
-                                        <p className="text-xs text-gray-500">
-                                            {formatDueDate(assignment.dueDate)}
-                                        </p>
-                                    </div>
-                                </div>
-                                {/* More Button */}
-                                <Button
-                                    variant="ghost"
-                                    className="text-gray-500 hover:text-gray-700"
-                                    aria-label={`More options for ${assignment.title}`}
-                                    title={`More options for ${assignment.title}`}
-                                >
-                                    <MoreVertical className="h-5 w-5" aria-hidden="true" />
-                                </Button>
-                            </div>
-                        );
-                    })}
-                </div>
+            <div className="text-center text-gray-600 dark:text-gray-300 p-6">
+                Class not found or invalid data
             </div>
         );
-    };
+    }
 
-    // People Tab Content
-    const PeopleTab = () => (
-        <div>
-            {/* Teachers Section */}
-            <div className="mb-6">
-                <h2 className="text-lg font-semibold mb-4">Teachers</h2>
-                {classData.teachers.map((teacher, index) => (
-                    <div
-                        key={index}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50"
-                    >
-                        <div className="flex items-center">
-                            <div
-                                className={`h-10 w-10 rounded-full ${getRandomColor()} flex items-center justify-center mr-3 text-white font-medium`}
-                            >
-                                <span>{getInitials(teacher.name)}</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">{teacher.name}</p>
-                                {teacher.classCode && (
-                                    <p className="text-xs text-gray-500">{teacher.classCode}</p>
-                                )}
-                            </div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            onClick={() => alert(`Email ${teacher.name}`)}
-                            className="text-gray-500 hover:text-gray-700"
-                            aria-label={`Email ${teacher.name}`}
-                            title={`Email ${teacher.name}`}
-                        >
-                            <Mail className="h-5 w-5" aria-hidden="true" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-
-            {/* Classmates Section */}
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Classmates</h2>
-                    <p className="text-sm text-gray-500">{classData.classmates.length} students</p>
-                </div>
-                {classData.classmates.map((classmate, index) => (
-                    <div
-                        key={index}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50"
-                    >
-                        <div className="flex items-center">
-                            <div
-                                className={`h-10 w-10 rounded-full ${getRandomColor()} flex items-center justify-center mr-3 text-white font-medium`}
-                            >
-                                <span>{getInitials(classmate.name)}</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">{classmate.name}</p>
-                                {classmate.classCode && (
-                                    <p className="text-xs text-gray-500">{classmate.classCode}</p>
-                                )}
-                            </div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            onClick={() => alert(`Email ${classmate.name}`)}
-                            className="text-gray-500 hover:text-gray-700"
-                            aria-label={`Email ${classmate.name}`}
-                            title={`Email ${classmate.name}`}
-                        >
-                            <Mail className="h-5 w-5" aria-hidden="true" />
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    // Marks Tab Content
-    const MarksTab = () => {
-        // Mock data for marks
-        const marksData = [
-            {
-                id: 1,
-                name: 'Nguyen Manh Tien',
-                scores: [
-                    { test: 'Quiz 1', score: 85, status: 'Completed' },
-                    { test: 'Assignment 1', score: 90, status: 'Completed' },
-                    { test: 'Quiz 2', score: null, status: 'Not Submitted' },
-                ],
-            },
-            {
-                id: 2,
-                name: 'Tran Huy Hoang',
-                scores: [
-                    { test: 'Quiz 1', score: 70, status: 'Completed' },
-                    { test: 'Assignment 1', score: null, status: 'Not Submitted' },
-                    { test: 'Quiz 2', score: 80, status: 'Completed' },
-                ],
-            },
-            {
-                id: 3,
-                name: 'Phan Nguyen Doan Vu',
-                scores: [
-                    { test: 'Quiz 1', score: 95, status: 'Completed' },
-                    { test: 'Assignment 1', score: 88, status: 'Completed' },
-                    { test: 'Quiz 2', score: 92, status: 'Completed' },
-                ],
-            },
-        ];
-
-        // Extract unique test names
-        const testNames = Array.from(
-            new Set(marksData.flatMap((student) => student.scores.map((score) => score.test))),
-        );
-
-        return (
-            <div>
-                {/* Header */}
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold">Marks Overview</h2>
-                    <p className="text-gray-600">
-                        Detailed scores and submission status for each student.
-                    </p>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto bg-white p-4 rounded-lg shadow">
-                    <table className="min-w-full text-left text-sm">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="p-3">Student Name</th>
-                                {testNames.map((test, index) => (
-                                    <th key={index} className="p-3">
-                                        {test}
-                                    </th>
-                                ))}
-                                <th className="p-3">Completed</th>
-                                <th className="p-3">Not Submitted</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {marksData.map((student) => {
-                                const completedCount = student.scores.filter(
-                                    (score) => score.status === 'Completed',
-                                ).length;
-                                const notSubmittedCount = student.scores.filter(
-                                    (score) => score.status === 'Not Submitted',
-                                ).length;
-
-                                return (
-                                    <tr key={student.id} className="border-b hover:bg-gray-50">
-                                        <td className="p-3 font-medium">{student.name}</td>
-                                        {student.scores.map((score, index) => (
-                                            <td
-                                                key={index}
-                                                className={`p-3 ${
-                                                    score.status === 'Completed'
-                                                        ? 'text-green-600'
-                                                        : 'text-red-600'
-                                                }`}
-                                            >
-                                                {score.score !== null
-                                                    ? `${score.score}/100`
-                                                    : score.status}
-                                            </td>
-                                        ))}
-                                        <td className="p-3 text-green-600">{completedCount}</td>
-                                        <td className="p-3 text-red-600">{notSubmittedCount}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Summary Section */}
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Total Submissions */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h3 className="text-lg font-semibold mb-2">Total Submissions</h3>
-                        <p className="text-gray-600">
-                            {marksData.reduce(
-                                (total, student) =>
-                                    total +
-                                    student.scores.filter((score) => score.status === 'Completed')
-                                        .length,
-                                0,
-                            )}{' '}
-                            completed submissions out of {marksData.length * testNames.length}.
-                        </p>
-                    </div>
-
-                    {/* Not Submitted */}
-                    <div className="bg-white p-4 rounded-lg shadow">
-                        <h3 className="text-lg font-semibold mb-2">Not Submitted</h3>
-                        <p className="text-gray-600">
-                            {marksData.reduce(
-                                (total, student) =>
-                                    total +
-                                    student.scores.filter(
-                                        (score) => score.status === 'Not Submitted',
-                                    ).length,
-                                0,
-                            )}{' '}
-                            submissions are still pending.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-    // Array of tabs for better management
-    const tabs = [
-        { id: 'stream', label: 'Stream', content: <StreamTab /> },
-        { id: 'classwork', label: 'Classwork', content: <ClassworkTab /> },
-        { id: 'people', label: 'People', content: <PeopleTab /> },
-        { id: 'marks', label: 'Marks', content: <MarksTab /> },
+    const daysOfWeekOptions = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
     ];
 
-    // // Handle keyboard navigation for tabs
-    // const handleKeyDown = (e: React.KeyboardEvent, tabId: string) => {
-    //     const currentIndex = tabs.findIndex((t) => t.id === tabId);
-    //     let newIndex = currentIndex;
-
-    //     if (e.key === 'ArrowRight') {
-    //         newIndex = (currentIndex + 1) % tabs.length;
-    //     } else if (e.key === 'ArrowLeft') {
-    //         newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-    //     } else if (e.key === 'Enter' || e.key === ' ') {
-    //         e.preventDefault();
-    //         setTab(tabId);
-    //         return;
-    //     } else {
-    //         return;
-    //     }
-
-    //     setTab(tabs[newIndex].id);
-    //     const nextTab = document.getElementById(`${tabs[newIndex].id}-tab-button`);
-    //     if (nextTab) nextTab.focus();
-    // };
-
     return (
-        <div className="flex-1 p-6">
-            {/* Header Section */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold">
-                    CODEGROW {'>'} {classData.title}
-                </h1>
-                <div className="flex items-center mt-2">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="px-4 py-2 border rounded-lg w-full max-w-md"
-                        aria-label="Search classes"
-                    />
-                    <span className="ml-4 text-gray-600">
-                        {classData.title} - {classData.code}
-                    </span>
-                </div>
-            </div>
-
-            {/* Navigation Tabs - Accessible Version */}
-            {/* <div className="mb-6">
-                <div className="border-b">
-                    <div role="tablist" className="flex space-x-4">
-                        {tabs.map((tabItem) => (
-                            <button
-                                key={tabItem.id}
-                                role="tab"
-                                aria-selected={isActive(tabItem.id) ? 'true' : 'false'} // Fix invalid ARIA value
-                                aria-controls={`${tabItem.id}-panel`}
-                                id={`${tabItem.id}-tab`}
-                                tabIndex={isActive(tabItem.id) ? 0 : -1}
-                                onClick={() => setTab(tabItem.id)}
-                                onKeyDown={(e) => handleKeyDown(e, tabItem.id)}
-                                type="button" // Add type attribute to button
-                                className={`px-3 py-2 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                                    isActive(tabItem.id)
-                                        ? 'text-blue-600 border-b-2 border-blue-600'
-                                        : 'text-gray-600 hover:text-blue-600'
-                                }`}
-                            >
-                                {tabItem.label}
-                            </button>
-                        ))}
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto p-6 sm:p-8">
+                {/* Header with Buttons */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    {isEditing ? (
+                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                            Editing {classData.title}
+                        </h1>
+                    ) : (
+                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                            {classData.title}
+                        </h1>
+                    )}
+                    <div className="flex gap-3">
+                        {isEditing ? (
+                            <>
+                                <button
+                                    onClick={handleSave}
+                                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200"
+                                    aria-label="Save changes"
+                                >
+                                    <Save className="h-5 w-5 mr-2" />
+                                    Save
+                                </button>
+                                <button
+                                    onClick={handleCancel}
+                                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
+                                    aria-label="Cancel editing"
+                                >
+                                    <X className="h-5 w-5 mr-2" />
+                                    Cancel
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={handleEdit}
+                                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+                                    aria-label="Edit class"
+                                >
+                                    <Pencil className="h-5 w-5 mr-2" />
+                                    Update
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
+                                    aria-label="Delete class"
+                                >
+                                    <Trash2 className="h-5 w-5 mr-2" />
+                                    Delete
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
-            </div> */}
 
-            {/* Tab Content */}
-            {tabs.map((tabItem) => (
-                <div
-                    key={tabItem.id}
-                    id={`${tabItem.id}-panel`}
-                    role="tabpanel"
-                    aria-labelledby={`${tabItem.id}-tab`}
-                    hidden={!isActive(tabItem.id)}
-                >
-                    {/* Nội dung của tab */}
-                    {tabItem.content}
+                {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Class Information */}
+                    <div className="lg:col-span-2">
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                                Class Information
+                            </h2>
+                            {isEditing ? (
+                                <>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="title"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Title
+                                        </label>
+                                        <Input
+                                            id="title"
+                                            type="text"
+                                            value={formData?.title || ''}
+                                            onChange={(e) => handleInputChange(e, 'title')}
+                                            className="w-full"
+                                            placeholder="Enter class title"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="course"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Course
+                                        </label>
+
+                                        <select
+                                            id="course"
+                                            value={formData?.course || ''}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData!,
+                                                    course: e.target.value,
+                                                })
+                                            }
+                                            className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="" disabled>
+                                                Select a course
+                                            </option>
+                                            {courses.map((course) => (
+                                                <option key={course._id} value={course._id}>
+                                                    {course.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="mentor"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Mentor
+                                        </label>
+                                        <Input
+                                            id="mentor"
+                                            type="text"
+                                            value={formData?.mentor || ''}
+                                            onChange={(e) => handleInputChange(e, 'mentor')}
+                                            className="w-full"
+                                            placeholder="Enter mentor name"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="description"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Description
+                                        </label>
+                                        <Textarea
+                                            id="description"
+                                            value={formData?.description || ''}
+                                            onChange={(e) => handleInputChange(e, 'description')}
+                                            className="w-full"
+                                            rows={4}
+                                            placeholder="Enter class description"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="maxStudents"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Max Students
+                                        </label>
+                                        <Input
+                                            id="maxStudents"
+                                            type="number"
+                                            value={formData?.maxStudents || 0}
+                                            onChange={(e) => handleInputChange(e, 'maxStudents')}
+                                            className="w-full"
+                                            placeholder="Enter maximum number of students"
+                                            min="1"
+                                            max="30"
+                                        />
+                                    </div>
+                                    <div className="mb-4">
+                                        <label
+                                            htmlFor="status"
+                                            className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                        >
+                                            Status
+                                        </label>
+                                        <select
+                                            id="status"
+                                            value={formData?.status || ''}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData!,
+                                                    status: e.target.value,
+                                                })
+                                            }
+                                            className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="open">Open</option>
+                                            <option value="closed">Closed</option>
+                                            <option value="in-progress">In Progress</option>
+                                        </select>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label
+                                                htmlFor="startDate"
+                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                            >
+                                                Start Date
+                                            </label>
+                                            <Input
+                                                id="startDate"
+                                                type="date"
+                                                value={
+                                                    formData?.schedule?.startDate?.split('T')[0] ||
+                                                    ''
+                                                }
+                                                onChange={(e) => handleInputChange(e, 'startDate')}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                htmlFor="endDate"
+                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                            >
+                                                End Date
+                                            </label>
+                                            <Input
+                                                id="endDate"
+                                                type="date"
+                                                value={
+                                                    formData?.schedule?.endDate?.split('T')[0] || ''
+                                                }
+                                                onChange={(e) => handleInputChange(e, 'endDate')}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label
+                                                htmlFor="time"
+                                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                            >
+                                                Class Time
+                                            </label>
+                                            <Select
+                                                value={formData?.schedule?.time || '19:00-21:00'}
+                                                onValueChange={(value) => {
+                                                    if (formData) {
+                                                        setFormData({
+                                                            ...formData,
+                                                            schedule: {
+                                                                ...formData.schedule,
+                                                                time: value,
+                                                            },
+                                                        });
+                                                    }
+                                                }}
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select time" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-white dark:bg-gray-800">
+                                                    {[
+                                                        {
+                                                            value: '07:00-09:00',
+                                                            label: '7:00 - 9:00',
+                                                        },
+                                                        {
+                                                            value: '09:00-11:00',
+                                                            label: '9:00 - 11:00',
+                                                        },
+                                                        {
+                                                            value: '11:00-13:00',
+                                                            label: '11:00 - 13:00',
+                                                        },
+                                                        {
+                                                            value: '13:00-15:00',
+                                                            label: '13:00 - 15:00',
+                                                        },
+                                                        {
+                                                            value: '15:00-17:00',
+                                                            label: '15:00 - 17:00',
+                                                        },
+                                                        {
+                                                            value: '17:00-19:00',
+                                                            label: '17:00 - 19:00',
+                                                        },
+                                                        {
+                                                            value: '19:00-21:00',
+                                                            label: '19:00 - 21:00',
+                                                        },
+                                                    ].map((time) => (
+                                                        <SelectItem
+                                                            key={time.value}
+                                                            value={time.value}
+                                                        >
+                                                            {time.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <fieldset>
+                                                <legend className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+                                                    Class Days
+                                                </legend>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {daysOfWeekOptions.map((day) => (
+                                                        <label
+                                                            key={day}
+                                                            htmlFor={`day-${day.toLowerCase()}`}
+                                                            className="flex items-center gap-1"
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                id={`day-${day.toLowerCase()}`}
+                                                                checked={
+                                                                    formData?.schedule?.daysOfWeek.includes(
+                                                                        day,
+                                                                    ) || false
+                                                                }
+                                                                onChange={() =>
+                                                                    handleDayChange(day)
+                                                                }
+                                                                className="h-4 w-4 text-blue-600 dark:text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+                                                            />
+                                                            <span className="text-gray-700 dark:text-gray-200">
+                                                                {day}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                                        {classData.description}
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Course
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.course || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Mentor
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.mentor || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Max Students
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.maxStudents || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Status
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.status || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Start Date
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.schedule.startDate
+                                                    ? new Date(
+                                                          classData.schedule.startDate,
+                                                      ).toLocaleDateString()
+                                                    : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                End Date
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.schedule.endDate
+                                                    ? new Date(
+                                                          classData.schedule.endDate,
+                                                      ).toLocaleDateString()
+                                                    : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Class Time
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.schedule.time || 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Class Days
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-gray-300">
+                                                {classData.schedule.daysOfWeek?.join(', ') || 'N/A'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Students */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+                        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                            Students
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-300 mb-4">
+                            Total: {classData.students.length} students
+                        </p>
+                        <div className="space-y-3">
+                            {classData.students.map((student: string | Student, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                >
+                                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center mr-3">
+                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            {typeof student === 'string'
+                                                ? student.charAt(0).toUpperCase()
+                                                : student.fullName.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <span className="text-gray-900 dark:text-gray-100">
+                                        {typeof student === 'string' ? student : student.fullName}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-6">
+                            <Button
+                                onClick={handleOpenModal}
+                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 w-full"
+                            >
+                                <UserPlus className="h-5 w-5 mr-2" />
+                                Add Student
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-            ))}
+
+                {/* Modal for Student Selection */}
+
+                {isModalOpen && (
+                    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 flex items-center justify-center z-50">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                                    Select Student
+                                </h2>
+                                <button
+                                    onClick={handleCloseModal}
+                                    className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                                    title="Close Modal"
+                                >
+                                    <X className="h-6 w-6" />
+                                </button>
+                            </div>
+                            {studentsLoading ? (
+                                <div className="flex justify-center items-center h-32">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                                </div>
+                            ) : students.length === 0 ? (
+                                <p className="text-gray-600 dark:text-gray-300 text-center">
+                                    No students available
+                                </p>
+                            ) : (
+                                <div className="max-h-96 overflow-y-auto">
+                                    <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
+                                        <thead>
+                                            <tr className="bg-gray-100 dark:bg-gray-700">
+                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
+                                                    Full Name
+                                                </th>
+                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
+                                                    Role
+                                                </th>
+                                                <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center text-gray-800 dark:text-gray-100">
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {students.map((student) => (
+                                                <tr
+                                                    key={student._id}
+                                                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                                >
+                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                                        {student.fullName}
+                                                    </td>
+                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                                        Customer
+                                                    </td>
+                                                    <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center">
+                                                        <button
+                                                            onClick={() =>
+                                                                handleAddStudent(
+                                                                    student._id,
+                                                                    student.fullName,
+                                                                )
+                                                            }
+                                                            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+                                                        >
+                                                            Add
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
