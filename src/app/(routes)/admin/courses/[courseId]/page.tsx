@@ -22,6 +22,7 @@ interface Course {
         email: string;
     };
     isDeleted?: boolean;
+    enrolledCount?: number;
 }
 
 export default function CourseDetailPage() {
@@ -313,7 +314,7 @@ export default function CourseDetailPage() {
                                         </label>
                                         <Input
                                             type="text"
-                                            value={formData?.author.fullName || ''}
+                                            value={formData?.author?.fullName || ''}
                                             onChange={(e) =>
                                                 setFormData((prev) =>
                                                     prev
@@ -353,6 +354,11 @@ export default function CourseDetailPage() {
                                                 ${courseData.price}
                                             </p>
                                         </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
+                                                Enroll : {courseData.enrolledCount || 0}
+                                            </h3>
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div>
@@ -360,7 +366,7 @@ export default function CourseDetailPage() {
                                                 Author
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-300">
-                                                {courseData.author.fullName}
+                                                {courseData.author?.fullName}
                                             </p>
                                         </div>
                                         <div>
