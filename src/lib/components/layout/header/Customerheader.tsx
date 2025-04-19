@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes';
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bell, History, User2, LogOut } from 'lucide-react';
+import { Bell, History, User2, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -151,6 +151,13 @@ const Customerheader = () => {
                                 >
                                     <User2 className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-sm font-medium">Profile</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => router.push('/customer/changepassword')}
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                >
+                                    <Settings className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                    <span className="text-sm font-medium">Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
