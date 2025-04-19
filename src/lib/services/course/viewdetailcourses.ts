@@ -2,7 +2,7 @@ import httpRequest from '@/lib/util/HttpRequest';
 interface CoursesDetailResponse {
     message: string;
     status: number;
-    metadata: Course | null;
+    metadata: Course;
 }
 
 interface Course {
