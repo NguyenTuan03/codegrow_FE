@@ -1,14 +1,19 @@
 import { get } from '@/lib/util/HttpRequest';
 
-export const GetCourses = async () => {
+export const GetCourses = async (page: number = 1, limit: number = 6) => {
     try {
-        const res = await get('/course');
-        if (!res || !res.metadata) {
-            throw new Error('Invalid API response format');
-        }
+        const token = localStorage.getItem('token');
+        const response = get('/course', {
+            params: { page, limit },
+            headers: {
+                Authorization: token ? `Bearer ${token}` : '',
+            },
+        });
 
-        return res;
+        return response; // Phản hồi: { message: string, status: number, metadata: { courses: Course[], page: number, totalPages: number } }
     } catch (error) {
-        console.log(error);
+        console.error('Lỗi từ API GetCourses:', error);
+
+        throw error;
     }
 };
