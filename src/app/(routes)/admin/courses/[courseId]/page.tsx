@@ -7,6 +7,14 @@ import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
 import { DeleteCourse } from '@/lib/services/course/deletecourse';
 import { UpdateCourse } from '@/lib/services/course/updatecourse';
 import { Input } from '@/components/ui/input';
+import { getUser } from '@/lib/services/admin/getuser';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface Course {
     _id: string;
@@ -24,6 +32,12 @@ interface Course {
     isDeleted?: boolean;
     enrolledCount?: number;
 }
+interface Mentor {
+    _id: string;
+    fullName: string;
+    email: string;
+    role: string;
+}
 
 export default function CourseDetailPage() {
     const { courseId } = useParams<{ courseId: string }>();
@@ -34,6 +48,7 @@ export default function CourseDetailPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const router = useRouter();
 
+    const [author, setAuthors] = useState<Mentor[]>([]);
     const fetchCourseDetail = async () => {
         try {
             setLoading(true);
@@ -68,7 +83,31 @@ export default function CourseDetailPage() {
     useEffect(() => {
         fetchCourseDetail();
     }, [courseId]);
+    // Fetch author from API
+    const fetchAuthor = async () => {
+        try {
+            const response = await getUser();
 
+            if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
+                throw new Error('Invalid or missing users data');
+            }
+
+            const author = response.metadata.users;
+
+            setAuthors(author);
+        } catch (error) {
+            console.error('Failed to fetch authors:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to load author list',
+                variant: 'destructive',
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchAuthor();
+    }, []);
     const handleEdit = () => {
         setIsEditing(true);
     };
@@ -310,26 +349,43 @@ export default function CourseDetailPage() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Author Name
+                                            Author
                                         </label>
-                                        <Input
-                                            type="text"
-                                            value={formData?.author?.fullName || ''}
-                                            onChange={(e) =>
+                                        <Select
+                                            value={formData?.author?._id || ''}
+                                            onValueChange={(value) =>
                                                 setFormData((prev) =>
                                                     prev
                                                         ? {
                                                               ...prev,
                                                               author: {
                                                                   ...prev.author,
-                                                                  fullName: e.target.value, // Update only the fullName field
+                                                                  _id: value, // Update author ID
+                                                                  fullName:
+                                                                      author.find(
+                                                                          (a) => a._id === value,
+                                                                      )?.fullName || '', // Get author name from list
                                                               },
                                                           }
                                                         : prev,
                                                 )
                                             }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        />
+                                        >
+                                            <SelectTrigger className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                                                <SelectValue placeholder="Select an author" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                                                {author.map((mentor) => (
+                                                    <SelectItem
+                                                        key={mentor._id}
+                                                        value={mentor._id}
+                                                        className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                    >
+                                                        {mentor.fullName}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                 </div>
                             ) : (

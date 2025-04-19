@@ -37,14 +37,6 @@ interface Mentor {
     role: string;
 }
 
-// Interface for raw user data from getUser API
-interface RawUser {
-    _id: string;
-    fullName: string;
-    role: string;
-    email?: string;
-}
-
 // Course Schema
 const CourseSchema = z.object({
     title: z
@@ -68,7 +60,7 @@ type CreateCourseFormData = z.infer<typeof CourseSchema>;
 export default function CreateCourseForm() {
     const [loading, setLoading] = useState(false);
     const [mentorsLoading, setMentorsLoading] = useState(true);
-    const [mentors, setMentors] = useState<Mentor[]>([]);
+    const [author, setAuthors] = useState<Mentor[]>([]);
     const router = useRouter();
 
     const form = useForm<CreateCourseFormData>({
@@ -82,8 +74,8 @@ export default function CreateCourseForm() {
         },
     });
 
-    // Fetch mentors from API
-    const fetchMentors = async () => {
+    // Fetch author from API
+    const fetchAuthor = async () => {
         try {
             setMentorsLoading(true);
             const response = await getUser();
@@ -92,21 +84,14 @@ export default function CreateCourseForm() {
                 throw new Error('Invalid or missing users data');
             }
 
-            const mentors = response.metadata.users
-                .filter((user: RawUser) => user.role === 'mentor')
-                .map((user: RawUser) => ({
-                    _id: user._id,
-                    fullName: user.fullName,
-                    email: user.email || '',
-                    role: user.role,
-                }));
+            const author = response.metadata.users;
 
-            setMentors(mentors);
+            setAuthors(author);
         } catch (error) {
-            console.error('Failed to fetch mentors:', error);
+            console.error('Failed to fetch authors:', error);
             toast({
                 title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to load mentor list',
+                description: error instanceof Error ? error.message : 'Failed to load author list',
                 variant: 'destructive',
             });
         } finally {
@@ -115,7 +100,7 @@ export default function CreateCourseForm() {
     };
 
     useEffect(() => {
-        fetchMentors();
+        fetchAuthor();
     }, []);
 
     const handleSubmit = async (data: CreateCourseFormData) => {
@@ -275,7 +260,7 @@ export default function CreateCourseForm() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {mentors.map((mentor) => (
+                                                    {author.map((mentor) => (
                                                         <SelectItem
                                                             key={mentor._id}
                                                             value={mentor._id}

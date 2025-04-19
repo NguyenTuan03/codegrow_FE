@@ -9,11 +9,7 @@ export const EnrollCourse = async ({ courseId, token }: { courseId: string; toke
             { headers: { Authorization: `Bearer ${token}` } },
         );
 
-        return {
-            success: true,
-            course: response.data.course, // Giả sử API trả về thông tin course đã enroll
-            message: response.data.message || 'Enrolled successfully',
-        };
+        return response;
     } catch (error) {
         console.error('Error from EnrollCourse API:', error);
         throw error;
