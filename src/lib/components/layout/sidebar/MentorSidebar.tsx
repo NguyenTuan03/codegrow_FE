@@ -47,10 +47,10 @@ export default function MentorSidebar() {
     ];
 
     return (
-        <Sidebar className="w-64 pt-5 bg-gray-50 border-r shadow-md">
+        <Sidebar className="w-64 pt-5 bg-gray-50 dark:bg-gray-900 border-r shadow-md">
             <SidebarContent>
                 {/* Logo Section */}
-                <div className="flex items-center gap-x-3 px-12  text-black">
+                <div className="flex items-center gap-x-3 px-12 text-black dark:text-white">
                     <h1 className="text-2xl font-bold">CODEGROW</h1>
                 </div>
 
@@ -63,11 +63,13 @@ export default function MentorSidebar() {
                                     <SidebarMenuButton
                                         asChild
                                         isActive={pathname === item.href}
-                                        className="hover:bg-indigo-100"
+                                        className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
                                     >
                                         <Link href={item.href}>
-                                            <item.icon className="h-5 w-5 mr-3 text-indigo-600" />
-                                            <span className="text-gray-800">{item.label}</span>
+                                            <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />
+                                            <span className="text-gray-800 dark:text-gray-200">
+                                                {item.label}
+                                            </span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -78,9 +80,11 @@ export default function MentorSidebar() {
 
                 {/* Classes Section */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 uppercase flex items-center justify-between">
+                    <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase flex items-center justify-between">
                         <Link href="/mentor/classes">
-                            <span className="cursor-pointer hover:text-indigo-600">Classes</span>
+                            <span className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Classes
+                            </span>
                         </Link>
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -93,11 +97,13 @@ export default function MentorSidebar() {
                                         <SidebarMenuButton
                                             asChild
                                             isActive={isActive}
-                                            className="hover:bg-indigo-100"
+                                            className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
                                         >
                                             <Link href={href}>
-                                                <item.icon className="h-5 w-5 mr-3 text-indigo-600" />
-                                                <span className="text-gray-800">{item.label}</span>
+                                                <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />
+                                                <span className="text-gray-800 dark:text-gray-200">
+                                                    {item.label}
+                                                </span>
                                             </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -109,7 +115,7 @@ export default function MentorSidebar() {
 
                 {/* Other Navigation */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 uppercase">
+                    <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                         Other
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -119,13 +125,15 @@ export default function MentorSidebar() {
                                     <SidebarMenuButton
                                         asChild
                                         isActive={pathname === item.href}
-                                        className="hover:bg-indigo-100"
+                                        className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
                                     >
                                         <Link href={item.href}>
-                                            <item.icon className="h-5 w-5 mr-3 text-indigo-600" />
-                                            <span className="text-gray-800">{item.label}</span>
+                                            <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />
+                                            <span className="text-gray-800 dark:text-gray-200">
+                                                {item.label}
+                                            </span>
                                             {item.badge && (
-                                                <SidebarMenuBadge className="ml-auto bg-indigo-100 text-indigo-800">
+                                                <SidebarMenuBadge className="ml-auto bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200">
                                                     {item.badge}
                                                 </SidebarMenuBadge>
                                             )}

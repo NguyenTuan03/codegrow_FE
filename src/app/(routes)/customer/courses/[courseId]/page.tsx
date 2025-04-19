@@ -1,35 +1,14 @@
-// 'use client';
-
-// import { useParams, useRouter } from 'next/navigation';
-// import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-// import { Button } from '@/components/ui/button';
-// import { CheckCircle2, PlayCircle, BookOpen, Code } from 'lucide-react';
-// import { Separator } from '@/components/ui/separator';
-// import { Progress } from '@/components/ui/progress';
-// import { useState, useEffect } from 'react';
-// import { toast } from '@/components/ui/use-toast';
-// import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
-// import { EnrollCourse } from '@/lib/services/course/enrollcourse';
-// import { CalendarDays, Users, Tag } from 'lucide-react';
-// interface Course {
-//     _id: string;
-//     title: string;
-//     description: string;
-//     price: number;
-//     enrolledCount: number;
-//     author: {
-//         fullName: string;
-//     };
-//     category: string;
-//     createdAt: string;
-// }
-
-// interface Module {
-//     id: string;
-//     title: string;
-//     type: 'video' | 'reading' | 'practice';
-//     completed: boolean;
-// }
+'use client';
+import { useParams, useRouter } from 'next/navigation';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, PlayCircle, BookOpen, Code, Video } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
+import { useEffect, useState } from 'react';
+import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
+import { toast } from '@/components/ui/use-toast';
+import Link from 'next/link';
 
 // interface EnrollmentMetadata {
 //     user: string;
@@ -41,367 +20,19 @@
 //     enrolledAt: string;
 //     __v: number;
 // }
-
-// export default function CourseLearningPage() {
-//     const router = useRouter();
-//     const { courseId } = useParams<{ courseId: string }>();
-//     const [course, setCourse] = useState<Course | null>(null);
-//     const [isEnrolled, setIsEnrolled] = useState(false);
-//     const [loading, setLoading] = useState(true);
-//     const [isEnrolling, setIsEnrolling] = useState(false);
-//     const [enroll, setEnroll] = useState<EnrollmentMetadata | null>(null);
-
-//     const [modules] = useState<Module[]>([
-//         { id: 'module-1', title: 'Introduction to TDD', type: 'video', completed: false },
-//         { id: 'module-2', title: 'TDD Principles', type: 'reading', completed: false },
-//         { id: 'module-3', title: 'TDD Basics Reading', type: 'reading', completed: false },
-//         {
-//             id: 'module-4',
-//             title: 'Video Tutorial: TDD in Practice',
-//             type: 'video',
-//             completed: false,
-//         },
-//         {
-//             id: 'module-5',
-//             title: 'Hands-on Practice: Write TDD Tests',
-//             type: 'practice',
-//             completed: false,
-//         },
-//     ]);
-
-//     const fetchCourseData = async () => {
-//         try {
-//             setLoading(true);
-
-//             // Fetch course details
-//             const courseRes = await viewDetailCourses(courseId);
-//             if (!courseRes || courseRes.status !== 200) {
-//                 throw new Error(courseRes?.message || 'Không thể tải thông tin khóa học');
-//             }
-//             setCourse(courseRes.metadata);
-
-//             // Check if user is already enrolled
-//             const token = localStorage.getItem('token');
-//             if (!token) {
-//                 setIsEnrolled(false);
-//                 return;
-//             }
-//         } catch (error) {
-//             console.error('Lỗi khi tải dữ liệu khóa học:', error);
-//             toast({
-//                 title: 'Lỗi',
-//                 description:
-//                     error instanceof Error ? error.message : 'Không thể tải dữ liệu khóa học',
-//                 variant: 'destructive',
-//             });
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const handleEnroll = async () => {
-//         try {
-//             setIsEnrolling(true);
-//             const token = localStorage.getItem('token');
-//             if (!token) {
-//                 toast({
-//                     title: 'Lỗi',
-//                     description: 'Bạn cần đăng nhập để đăng ký khóa học này',
-//                     variant: 'destructive',
-//                 });
-//                 router.push('/login');
-//                 return;
-//             }
-
-//             const enrollmentRes = await EnrollCourse({ courseId, token });
-//             if (enrollmentRes && enrollmentRes.success) {
-//                 setIsEnrolled(true);
-//                 setEnroll(enrollmentRes.metadata);
-//                 toast({
-//                     title: 'Thành công',
-//                     description: 'Bạn đã đăng ký khóa học thành công!',
-//                     variant: 'default',
-//                 });
-//             } else {
-//                 throw new Error(enrollmentRes?.message || 'Không thể đăng ký khóa học');
-//             }
-//         } catch (error) {
-//             console.error('Lỗi khi đăng ký khóa học:', error);
-//             toast({
-//                 title: 'Lỗi',
-//                 description: error instanceof Error ? error.message : 'Không thể đăng ký khóa học',
-//                 variant: 'destructive',
-//             });
-//         } finally {
-//             setIsEnrolling(false);
-//         }
-//     };
-
-//     useEffect(() => {
-//         fetchCourseData();
-//     }, [courseId]);
-
-//     if (loading) {
-//         return (
-//             <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex justify-center items-center">
-//                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-//             </div>
-//         );
-//     }
-
-//     if (!course) {
-//         return (
-//             <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 flex justify-center items-center">
-//                 <p className="text-gray-600">Không tìm thấy khóa học</p>
-//             </div>
-//         );
-//     }
-
-//     const progressPercentage = (modules.filter((m) => m.completed).length / modules.length) * 100;
-
-//     return (
-//         <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-12 md:px-24 lg:px-32 space-y-8">
-//             {/* Breadcrumbs */}
-//             <div className="text-sm text-gray-500 space-x-2">
-//                 <span
-//                     className="hover:text-gray-700 transition-colors cursor-pointer"
-//                     onClick={() => router.push('/customer/courses')}
-//                 >
-//                     Khóa học
-//                 </span>
-//                 <span>{'>'}</span>
-//                 <span className="hover:text-gray-700 transition-colors cursor-pointer">
-//                     {course.category}
-//                 </span>
-//                 <span>{'>'}</span>
-//                 <span className="text-blue-600 font-medium hover:underline cursor-pointer">
-//                     {course.title}
-//                 </span>
-//             </div>
-
-//             {/* Course Header */}
-//             <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-//                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-//                     <div>
-//                         <h1 className="text-3xl font-bold text-gray-900">{course.title}</h1>
-//                         <p className="text-gray-600">Bởi {course.author.fullName}</p>
-//                     </div>
-//                     {!isEnrolled && (
-//                         <Button
-//                             onClick={handleEnroll}
-//                             disabled={isEnrolling}
-//                             className="md:self-start bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white px-6 py-2"
-//                         >
-//                             {isEnrolling ? 'Đang đăng ký...' : 'Đăng ký ngay'}
-//                         </Button>
-//                     )}
-//                 </div>
-
-//                 <p className="text-gray-600">{course.description}</p>
-
-//                 <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-//                     <div className="flex items-center gap-1">
-//                         <CalendarDays className="w-4 h-4" />
-//                         <span>Tạo: {new Date(course.createdAt).toLocaleDateString()}</span>
-//                     </div>
-//                     <div className="flex items-center gap-1">
-//                         <Users className="w-4 h-4" />
-//                         <span>{course.enrolledCount} học viên</span>
-//                     </div>
-//                     <div className="flex items-center gap-1">
-//                         <Tag className="w-4 h-4" />
-//                         <span>{course.category}</span>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Enrollment Information */}
-//             {isEnrolled && enroll && (
-//                 <div className="bg-white rounded-xl shadow-md overflow-hidden">
-//                     <div className="bg-[#657ED4] px-6 py-3">
-//                         <h3 className="text-lg font-semibold text-white">Thông tin đăng ký</h3>
-//                     </div>
-//                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-//                         <div className="space-y-2">
-//                             <p className="text-gray-600">
-//                                 <span className="font-medium text-gray-800">
-//                                     Thời gian đăng ký:
-//                                 </span>{' '}
-//                                 {new Date(enroll.enrolledAt).toLocaleString()}
-//                             </p>
-//                             <p className="text-gray-600">
-//                                 <span className="font-medium text-gray-800">Tiến độ:</span>
-//                                 <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-//                                     {enroll.progress}%
-//                                 </span>
-//                             </p>
-//                             <p className="text-gray-600">
-//                                 <span className="font-medium text-gray-800">Trạng thái:</span>
-//                                 <span
-//                                     className={`ml-2 px-2 py-1 rounded-full text-sm ${
-//                                         enroll.completed
-//                                             ? 'bg-green-100 text-green-800'
-//                                             : 'bg-yellow-100 text-yellow-800'
-//                                     }`}
-//                                 >
-//                                     {enroll.completed ? 'Đã hoàn thành' : 'Đang học'}
-//                                 </span>
-//                             </p>
-//                         </div>
-//                         <div className="space-y-2">
-//                             <p className="text-gray-600">
-//                                 <span className="font-medium text-gray-800">ID đăng ký:</span>
-//                                 <span className="ml-2 px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-mono">
-//                                     {enroll._id.substring(0, 8)}...
-//                                 </span>
-//                             </p>
-//                             <p className="text-gray-600">
-//                                 <span className="font-medium text-gray-800">Ngày bắt đầu:</span>{' '}
-//                                 {new Date(enroll.enrolledAt).toLocaleDateString()}
-//                             </p>
-//                         </div>
-//                     </div>
-//                 </div>
-//             )}
-
-//             {/* Tabs Section */}
-//             {isEnrolled && (
-//                 <div className="bg-white rounded-xl shadow-md overflow-hidden">
-//                     <Tabs defaultValue="overview" className="w-full">
-//                         <TabsList className="flex flex-wrap bg-transparent border-b border-gray-200 px-6">
-//                             {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
-//                                 <TabsTrigger
-//                                     key={i}
-//                                     value={['overview', 'grades', 'notes', 'messages'][i]}
-//                                     className="py-4 px-6 text-sm font-medium text-gray-700 rounded-t-lg transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-100"
-//                                 >
-//                                     {tab}
-//                                 </TabsTrigger>
-//                             ))}
-//                         </TabsList>
-
-//                         {/* Overview Tab */}
-//                         <TabsContent value="overview" className="p-6">
-//                             <div className="space-y-8">
-//                                 <div>
-//                                     <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-//                                         Tiến độ khóa học
-//                                     </h3>
-//                                     <div className="flex items-center gap-4">
-//                                         <Progress
-//                                             value={progressPercentage}
-//                                             className="h-3 w-full"
-//                                         />
-//                                         <span className="text-sm font-medium text-gray-700 min-w-[60px]">
-//                                             {Math.round(progressPercentage)}%
-//                                         </span>
-//                                     </div>
-//                                 </div>
-
-//                                 <Separator className="bg-gray-200" />
-
-//                                 {/* Module List */}
-//                                 <div className="space-y-4">
-//                                     <h4 className="text-xl font-semibold text-gray-800">
-//                                         Nội dung khóa học
-//                                     </h4>
-//                                     {modules.map((module) => (
-//                                         <div
-//                                             key={module.id}
-//                                             className={`group p-6 rounded-lg transition-all ${
-//                                                 module.completed
-//                                                     ? 'bg-green-50 border-l-4 border-green-500'
-//                                                     : 'bg-white hover:bg-gray-50 border-l-4 border-blue-500'
-//                                             } shadow-sm`}
-//                                         >
-//                                             <div className="flex items-center justify-between">
-//                                                 <div className="flex items-center gap-4">
-//                                                     <div
-//                                                         className={`p-3 rounded-full ${
-//                                                             module.completed
-//                                                                 ? 'bg-green-100 text-green-600'
-//                                                                 : 'bg-blue-100 text-blue-600'
-//                                                         }`}
-//                                                     >
-//                                                         {module.completed ? (
-//                                                             <CheckCircle2 className="w-5 h-5" />
-//                                                         ) : module.type === 'video' ? (
-//                                                             <PlayCircle className="w-5 h-5" />
-//                                                         ) : module.type === 'reading' ? (
-//                                                             <BookOpen className="w-5 h-5" />
-//                                                         ) : (
-//                                                             <Code className="w-5 h-5" />
-//                                                         )}
-//                                                     </div>
-//                                                     <div>
-//                                                         <h4 className="font-medium text-gray-800">
-//                                                             {module.title}
-//                                                         </h4>
-//                                                         <p className="text-sm text-gray-500">
-//                                                             {module.type === 'video'
-//                                                                 ? 'Video bài giảng'
-//                                                                 : module.type === 'reading'
-//                                                                   ? 'Tài liệu đọc'
-//                                                                   : 'Bài tập thực hành'}
-//                                                         </p>
-//                                                     </div>
-//                                                 </div>
-//                                                 <Button
-//                                                     onClick={() =>
-//                                                         router.push(
-//                                                             `/customer/courses/${courseId}/${module.type}/${module.id}`,
-//                                                         )
-//                                                     }
-//                                                     variant={
-//                                                         module.completed ? 'outline' : 'default'
-//                                                     }
-//                                                     className={`flex items-center gap-2 ${
-//                                                         module.completed
-//                                                             ? 'border-green-500 text-green-600 hover:bg-green-50'
-//                                                             : 'bg-[#657ED4] hover:bg-[#354065] text-white'
-//                                                     }`}
-//                                                 >
-//                                                     {module.type === 'video' && (
-//                                                         <>
-//                                                             <PlayCircle className="w-4 h-4" /> Xem
-//                                                         </>
-//                                                     )}
-//                                                     {module.type === 'reading' && (
-//                                                         <>
-//                                                             <BookOpen className="w-4 h-4" /> Đọc
-//                                                         </>
-//                                                     )}
-//                                                     {module.type === 'practice' && (
-//                                                         <>
-//                                                             <Code className="w-4 h-4" /> Thực hành
-//                                                         </>
-//                                                     )}
-//                                                 </Button>
-//                                             </div>
-//                                         </div>
-//                                     ))}
-//                                 </div>
-//                             </div>
-//                         </TabsContent>
-//                     </Tabs>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// }
-
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2, PlayCircle, BookOpen, Code, Video } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
-import { useState } from 'react';
-
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    enrolledCount: number;
+    author: {
+        fullName: string;
+    };
+    category: string;
+    createdAt: string;
+}
 const CourseLearningPage = () => {
-    const router = useRouter();
     const [completedModules] = useState({
         'module-1': false,
         'module-2': false,
@@ -409,6 +40,10 @@ const CourseLearningPage = () => {
         'module-4': false,
         'module-5': false,
     });
+    const router = useRouter();
+    const { courseId } = useParams<{ courseId: string }>();
+    const [course, setCourse] = useState<Course | null>(null);
+    const [loading, setLoading] = useState(true);
 
     // Calculate progress percentage
     const progressPercentage =
@@ -419,71 +54,150 @@ const CourseLearningPage = () => {
     const handleNavigation = (path: string) => {
         router.push(path);
     };
+    const fetchCourseData = async () => {
+        try {
+            setLoading(true);
 
+            // Fetch course details
+            const courseRes = await viewDetailCourses(courseId);
+            console.log('Course data:', courseRes);
+            setCourse(courseRes.metadata);
+            if (courseRes.status === 200) {
+                toast({
+                    title: 'Thành công',
+                    description: 'Tải dữ liệu khóa học thành công',
+                    variant: 'default',
+                });
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải dữ liệu khóa học:', error);
+            toast({
+                title: 'Lỗi',
+                description:
+                    error instanceof Error ? error.message : 'Không thể tải dữ liệu khóa học',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCourseData();
+    }, [courseId]);
+    if (loading) {
+    }
     return (
-        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-12 md:px-24 lg:px-32 space-y-8">
+        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 px-6 py-12 md:px-24 lg:px-32 space-y-8">
             {/* Breadcrumbs */}
-            <div className="text-sm text-gray-500 space-x-2">
-                <span className="hover:text-gray-700 transition-colors cursor-pointer">
-                    Courses
-                </span>
+            <div className="text-sm text-gray-500 dark:text-gray-400 space-x-2">
+                <Link href="/customer/courses">
+                    <span className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer">
+                        Courses
+                    </span>
+                </Link>
+
                 <span>{'>'}</span>
-                <span className="hover:text-gray-700 transition-colors cursor-pointer">
-                    Programming
-                </span>
+                <Link href={`/customer/courses/${courseId}`}>
+                    <span className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer">
+                        {course?.category}
+                    </span>
+                </Link>
+
                 <span>{'>'}</span>
-                <span className="text-blue-600 font-medium hover:underline cursor-pointer">
-                    Introduction to Test and Behavior Driven Development
-                </span>
+                <Link href={`/customer/courses/${courseId}`}>
+                    <span className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer">
+                        {course?.title}
+                    </span>
+                </Link>
             </div>
 
-            {/* Title & Description */}
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold text-gray-900">
-                    Introduction to Test and Behavior Driven Development
-                </h1>
-                <p className="text-gray-600">by IBM</p>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-6 gap-6">
+                {/* Title & Description */}
+                <div className="space-y-2">
+                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
+                        {course?.title}
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                        By{' '}
+                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                            {course?.author?.fullName}
+                        </span>
+                    </p>
+                </div>
+
+                {/* Course Stats */}
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        Total Students:{' '}
+                        <span className="text-blue-600 dark:text-blue-400">
+                            {course?.enrolledCount}
+                        </span>
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400">
+                        Created At:{' '}
+                        <span className="font-medium">
+                            {course?.createdAt
+                                ? new Date(course.createdAt).toLocaleDateString()
+                                : 'N/A'}
+                        </span>
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">
+                        Price:{' '}
+                        <span className="font-medium text-green-600 dark:text-green-400">
+                            {course?.price} VND
+                        </span>
+                    </p>
+                </div>
             </div>
 
             {/* Tabs Section */}
             <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="flex flex-wrap gap-2 mb-8 bg-transparent border-b border-gray-200">
+                <TabsList className="flex flex-wrap gap-2 mb-8 bg-transparent border-b border-gray-200 dark:border-gray-700">
                     {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                         <TabsTrigger
                             key={i}
                             value={['overview', 'grades', 'notes', 'messages'][i]}
-                            className="py-3 px-6 text-sm font-medium text-gray-700 rounded-t-lg transition-all data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-100"
+                            className="py-3 px-6 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-t-lg transition-all data-[state=active]:bg-white data-[state=active]:dark:bg-gray-800 data-[state=active]:text-blue-600 data-[state=active]:dark:text-blue-400 data-[state=active]:shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             {tab}
                         </TabsTrigger>
                     ))}
                 </TabsList>
                 <TabsContent value="grades">
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                             Điểm số của bạn
                         </h3>
 
                         <div className="space-y-6">
                             {/* Grades Summary */}
-                            <div className="border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-medium text-gray-800 mb-3">
+                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3">
                                     Tổng quan điểm số
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="bg-blue-50 p-3 rounded-lg">
-                                        <p className="text-sm text-gray-600">Điểm trung bình</p>
-                                        <p className="text-2xl font-bold text-blue-600">8.5</p>
+                                    <div className="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Điểm trung bình
+                                        </p>
+                                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                            8.5
+                                        </p>
                                     </div>
-                                    <div className="bg-green-50 p-3 rounded-lg">
-                                        <p className="text-sm text-gray-600">
+                                    <div className="bg-green-50 dark:bg-green-900 p-3 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
                                             Bài tập đã hoàn thành
                                         </p>
-                                        <p className="text-2xl font-bold text-green-600">3/5</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                            3/5
+                                        </p>
                                     </div>
-                                    <div className="bg-purple-50 p-3 rounded-lg">
-                                        <p className="text-sm text-gray-600">Xếp hạng</p>
-                                        <p className="text-2xl font-bold text-purple-600">
+                                    <div className="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Xếp hạng
+                                        </p>
+                                        <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                                             Top 20%
                                         </p>
                                     </div>
@@ -492,90 +206,45 @@ const CourseLearningPage = () => {
 
                             {/* Detailed Grades */}
                             <div>
-                                <h4 className="font-medium text-gray-800 mb-3">Chi tiết điểm số</h4>
+                                <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3">
+                                    Chi tiết điểm số
+                                </h4>
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     Bài học
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     Loại
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     Điểm
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                     Trạng thái
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             <tr>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     Bài kiểm tra 1
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                     Trắc nghiệm
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                     9.0
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400">
                                                         Hoàn thành
                                                     </span>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    Bài thực hành 1
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    Thực hành
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    8.5
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Hoàn thành
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    Bài kiểm tra 2
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    Trắc nghiệm
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    -
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                        Chưa làm
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    Dự án cuối khóa
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    Dự án
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    -
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                        Chưa nộp
-                                                    </span>
-                                                </td>
-                                            </tr>
+                                            {/* Add more rows as needed */}
                                         </tbody>
                                     </table>
                                 </div>
