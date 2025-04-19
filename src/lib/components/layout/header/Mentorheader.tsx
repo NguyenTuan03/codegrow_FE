@@ -69,6 +69,11 @@ export default function MentorHeader() {
                                     Profile Settings
                                 </Link>
                             </DropdownMenuItem>
+                            <DropdownMenuItem className="w-full text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                                <Link href="/mentor/changepassword" className="w-full">
+                                    Change Password
+                                </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={handleLogout}
                                 className="w-full text-sm mt-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
