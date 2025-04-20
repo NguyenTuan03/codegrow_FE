@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+// import { env } from 'process';
 import { twMerge } from 'tailwind-merge';
 
 /**
@@ -6,4 +7,10 @@ import { twMerge } from 'tailwind-merge';
  */
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
+}
+// lib/utils.ts
+export function getTableLink({ token, tableNumber }: { token: string; tableNumber: number }) {
+    // Sử dụng biến môi trường NEXT_PUBLIC_HOST_CODEGROW
+    const baseUrl = process.env.NEXT_PUBLIC_HOST_CODEGROW || 'http://localhost:8888';
+    return `${baseUrl}/table/${tableNumber}?token=${token}`;
 }
