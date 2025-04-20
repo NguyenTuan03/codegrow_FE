@@ -1,3 +1,4 @@
+// @/app/(routes)/customer/project/page.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ import { Auth } from '@/lib/components/context/AuthContext';
 
 const projects = [
     {
+        id: '1',
         title: 'Build a routing program to help Vancouver commuters',
         description:
             'Use Python data structures and algorithms to help people navigate around Vancouver.',
@@ -25,6 +27,7 @@ const projects = [
         category: 'Python',
     },
     {
+        id: '2',
         title: 'Decrypt Secret Messages',
         description:
             'Practice decrypting intercepted data using the command line to thwart Evil Corp.',
@@ -32,6 +35,7 @@ const projects = [
         category: 'Cybersecurity',
     },
     {
+        id: '3',
         title: 'Analyze and Visualize Netflix Stock Data',
         description:
             'Act as a "Yahoo Finance" data analyst to generate a stock profile for Netflix.',
@@ -39,12 +43,14 @@ const projects = [
         category: 'Data Analysis',
     },
     {
+        id: '4',
         title: 'Analyze Hacker News Trends',
         description: 'Query Hacker News data using SQL to discover trends.',
         isPremium: false,
         category: 'SQL',
     },
     {
+        id: '5',
         title: 'Create a E-Commerce App (Part Two)',
         description:
             'Make a full-stack e-commerce app that lets users register accounts, browse products, and make purchases.',
@@ -52,12 +58,14 @@ const projects = [
         category: 'Web Development',
     },
     {
+        id: '6',
         title: 'Predict Baseball Strike Zones With Machine Learning',
         description: 'Calculate and visualize MLB player strike zones based on their real data.',
         isPremium: false,
         category: 'Machine Learning',
     },
     {
+        id: '7',
         title: 'Build a Social Media Dashboard',
         description:
             'Create a responsive dashboard to track and analyze social media metrics across platforms.',
@@ -65,6 +73,7 @@ const projects = [
         category: 'Frontend',
     },
     {
+        id: '8',
         title: 'Develop a Weather Forecast App',
         description:
             'Build a weather application that fetches real-time data from APIs and displays forecasts.',
@@ -72,6 +81,7 @@ const projects = [
         category: 'API Integration',
     },
     {
+        id: '9',
         title: 'Create a Task Management System',
         description:
             'Design and implement a full-featured task management system with user authentication.',
@@ -79,6 +89,7 @@ const projects = [
         category: 'Full Stack',
     },
     {
+        id: '10',
         title: 'Build a Recipe Finder App',
         description:
             'Develop an application that helps users find recipes based on available ingredients.',
@@ -86,6 +97,7 @@ const projects = [
         category: 'Mobile Development',
     },
     {
+        id: '11',
         title: 'Design a Personal Finance Tracker',
         description:
             'Create a secure application for tracking expenses, income, and financial goals.',
@@ -93,6 +105,7 @@ const projects = [
         category: 'Financial Tech',
     },
     {
+        id: '12',
         title: 'Develop a Language Learning Game',
         description:
             'Build an interactive game that helps users learn vocabulary in a new language.',
@@ -147,7 +160,9 @@ export default function ProjectPage() {
             return;
         }
 
-        router.push(`/customer/project/${projects[projectIndex].title}`);
+        // Pass the project ID as a query parameter
+        const projectId = projects[projectIndex].id;
+        router.push(`/customer/project/detail?id=${projectId}`);
     };
 
     return (

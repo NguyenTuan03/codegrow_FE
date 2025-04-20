@@ -25,8 +25,8 @@ export default function CoursesPage() {
         description: string;
         price: number;
         enrolledCount: number;
-        author: string;
-        category: string;
+        author: { _id: string; fullName: string; email: string; role: string };
+        category: { _id: string; name: string };
         createdAt: string;
     }
 
@@ -44,17 +44,30 @@ export default function CoursesPage() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 8; // Số khóa học mỗi trang
+    const limit = 8; // Number of courses per page
     const router = useRouter();
 
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
-            const data: ApiResponse = await GetCourses(page, limit); // Gửi page và limit
-            console.log('Dữ liệu API:', data);
+            const data: ApiResponse = await GetCourses(page, limit);
+            console.log('API Data:', data);
 
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                setCourses(data.metadata.courses);
+                // Parse category and author fields if they are strings
+                const parsedCourses = data.metadata.courses.map((course: Course) => ({
+                    ...course,
+                    author:
+                        typeof course.author === 'string'
+                            ? JSON.parse(course.author)
+                            : course.author,
+                    category:
+                        typeof course.category === 'string'
+                            ? JSON.parse(course.category)
+                            : course.category,
+                }));
+
+                setCourses(parsedCourses);
                 setCurrentPage(data.metadata.page);
                 setTotalPages(data.metadata.totalPages);
             } else {
@@ -86,7 +99,7 @@ export default function CoursesPage() {
     };
 
     return (
-        <div className="container mx-auto py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="p-10 py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Courses</h1>
                 <Button
@@ -99,7 +112,9 @@ export default function CoursesPage() {
             </div>
 
             {loading ? (
-                <div className="text-center text-gray-600 dark:text-gray-400">Loading...</div>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                </div>
             ) : (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -117,7 +132,7 @@ export default function CoursesPage() {
                                     <Card className="hover:shadow-lg transition-shadow overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                                         <div className="h-36 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                             <span className="text-gray-700 dark:text-gray-300">
-                                                {course.category}
+                                                {course.category?.name || 'Uncategorized'}
                                             </span>
                                         </div>
                                         <CardContent className="p-4">
@@ -147,9 +162,10 @@ export default function CoursesPage() {
                                                 variant="outline"
                                                 size="sm"
                                                 className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                                onClick={() =>
-                                                    router.push(`/admin/courses/${course._id}`)
-                                                }
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    router.push(`/admin/courses/${course._id}`);
+                                                }}
                                             >
                                                 View Details
                                             </Button>
@@ -176,7 +192,7 @@ export default function CoursesPage() {
                                         />
                                     </PaginationItem>
 
-                                    {/* Hiển thị số trang */}
+                                    {/* Display page numbers */}
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                                         (page) => (
                                             <PaginationItem key={page}>

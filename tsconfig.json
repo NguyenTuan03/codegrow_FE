@@ -28,7 +28,8 @@
         "**/*.tsx",
         ".next/types/**/*.ts",
         "tailwind.config.ts",
-        "src/lib/services/api/index.ts"
+        "src/lib/services/api/index.ts",
+        ".next/types/app/(routes)/qaqc/feedbacks/page.tsx"
     ],
     "exclude": ["node_modules"]
 }

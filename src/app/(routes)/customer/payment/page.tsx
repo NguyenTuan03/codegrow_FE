@@ -14,35 +14,49 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import QRCodeTable from '@/components/ui/qrcode-table';
-import { CreditCard, GraduationCap, Scan, X, CheckCircle } from 'lucide-react'; // Added icons
+import { CreditCard, GraduationCap, CheckCircle } from 'lucide-react';
+import axios from 'axios';
 
 export default function PaymentPage() {
     const [paymentMethod, setPaymentMethod] = useState('card');
-    const [showQR, setShowQR] = useState(false);
-    const [qrData, setQrData] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const generateQRCode = () => {
-        // Generate payment data for demo
-        const paymentData = {
-            amount: '500,000 VND',
-            merchant: 'EduTech Platform',
-            account: '1234567890',
-            timestamp: new Date().toISOString(),
-        };
-        const dataString = JSON.stringify(paymentData);
-        setQrData(dataString);
-        setShowQR(true);
-    };
+    const handleContinue = async () => {
+        setLoading(true);
+        try {
+            if (paymentMethod === 'card') {
+                // Process card payment (implement your card payment logic here)
+                alert('Card payment processed!');
+            } else if (paymentMethod === 'vnpay' || paymentMethod === 'momo') {
+                const orderId = Date.now().toString();
+                const amount = 500000; // Example amount (500,000 VND)
+                const orderInfo = 'Thanh toan khoa hoc EduTech';
 
-    const handleContinue = () => {
-        if (paymentMethod === 'card') {
-            // Process card payment normally
-            alert('Card payment processed!');
-        } else {
-            // Show QR for other payment methods
-            generateQRCode();
+                const endpoint =
+                    paymentMethod === 'vnpay' ? '/api/payment/vnpay' : '/api/payment/momo';
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}${endpoint}`,
+                    {
+                        amount,
+                        orderId,
+                        orderInfo,
+                    },
+                );
+
+                const { paymentUrl } = response.data;
+                if (paymentUrl) {
+                    window.location.href = paymentUrl;
+                } else {
+                    throw new Error('Failed to get payment URL');
+                }
+            } else {
+                alert('Payment method not supported yet.');
+            }
+        } catch (error) {
+            console.error('Payment Error:', error);
+            alert('Failed to initiate payment. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -280,54 +294,20 @@ export default function PaymentPage() {
                         <Button
                             className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white w-full mt-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2"
                             onClick={handleContinue}
+                            disabled={loading}
                         >
-                            <Scan className="w-5 h-5" />
-                            Continue to Payment
+                            {loading ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                            ) : (
+                                <>
+                                    <CheckCircle className="w-5 h-5" />
+                                    Continue to Payment
+                                </>
+                            )}
                         </Button>
                     </CardContent>
                 </Card>
             </div>
-
-            {/* QR Code Dialog */}
-            <Dialog open={showQR} onOpenChange={setShowQR}>
-                <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-indigo-200 dark:border-indigo-700">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-center text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-2">
-                            <Scan className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                            Scan QR Code to Pay
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-col items-center space-y-6 p-4">
-                        <div className="relative">
-                            <QRCodeTable
-                                data={qrData}
-                                title="Payment QR Code"
-                                subtitle="Scan to Pay"
-                                width={250}
-                            />
-                            <div className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                                Scan Now!
-                            </div>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center italic">
-                            Use your mobile banking app to scan and complete the payment
-                        </p>
-                        <div className="flex gap-3 w-full">
-                            <Button
-                                variant="outline"
-                                className=" border-indigo-300 dark:border-gray-600 text-indigo-700 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center gap-2"
-                                onClick={() => setShowQR(false)}
-                            >
-                                <X className="w-5 h-5" />
-                                Cancel
-                            </Button>
-                            <Button className=" ml-35 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg shadow-md flex items-center justify-center gap-2">
-                                <CheckCircle className="w-5 h-5" />I have Paid
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }

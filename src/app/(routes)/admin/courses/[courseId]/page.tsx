@@ -1,4 +1,3 @@
-// @/app/(routes)/admin/courses/[courseId]/page.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -15,6 +14,7 @@ import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import StudentList from '@/app/(routes)/admin/courses/[courseId]/StudentList';
 import CourseInformation from '@/app/(routes)/admin/courses/[courseId]/CourseInformation';
 import DeleteConfirmationModal from '@/app/(routes)/admin/courses/[courseId]/DeleteModal';
+import LessonList from '@/app/(routes)/admin/courses/[courseId]/LessonList'; // Import the new component
 
 interface Course {
     _id: string;
@@ -327,6 +327,11 @@ export default function CourseDetailPage() {
                     <div>
                         <StudentList students={listStudents} />
                     </div>
+                </div>
+
+                {/* Add the LessonList component below */}
+                <div className="mt-6">
+                    <LessonList courseId={courseId} />
                 </div>
 
                 <DeleteConfirmationModal
