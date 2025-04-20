@@ -90,3 +90,161 @@ const Page = () => {
 };
 
 export default Page;
+
+// 'use client';
+
+// import { useState, useEffect } from 'react';
+// import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+// import {
+//     Table,
+//     TableBody,
+//     TableCell,
+//     TableHead,
+//     TableHeader,
+//     TableRow,
+// } from '@/components/ui/table';
+// import { Button } from '@/components/ui/button';
+// import {
+//     Dialog,
+//     DialogContent,
+//     DialogHeader,
+//     DialogTitle,
+//     DialogTrigger,
+// } from '@/components/ui/dialog';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+// import { Loader2, Check, X, Edit } from 'lucide-react';
+// import FeedbackForm from '@/app/(routes)/qaqc/feedbacks/Feedbacks-form';
+// import { GetLesson } from '@/lib/services/lessons/getAllLessons';
+// import { UpdateLesson } from '@/lib/services/lessons/updateLessonFeedback';
+
+// export default function LessonsPage() {
+//     const [lessons, setLessons] = useState<Lesson[]>([]);
+//     const [loading, setLoading] = useState(true);
+//     const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+//     const [dialogOpen, setDialogOpen] = useState(false);
+
+//     // Fetch lessons on mount
+//     useEffect(() => {
+//         const loadLessons = async () => {
+//             try {
+//                 const data = await GetLesson();
+//                 setLessons(data);
+//             } catch (error) {
+//                 console.error('Failed to fetch lessons:', error);
+//             } finally {
+//                 setLoading(false);
+//             }
+//         };
+//         loadLessons();
+//     }, []);
+
+//     // Handle feedback form submission
+//     const handleFeedbackSubmit = async (data: {
+//         name: string;
+//         email: string;
+//         rating: number;
+//         comments: string;
+//     }) => {
+//         if (selectedLesson) {
+//             try {
+//                 await UpdateLesson(selectedLesson.id, data);
+//                 setLessons((prev) =>
+//                     prev.map((lesson) =>
+//                         lesson.id === selectedLesson.id ? { ...lesson, feedback: data } : lesson,
+//                     ),
+//                 );
+//                 setDialogOpen(false);
+//                 setSelectedLesson(null);
+//             } catch (error) {
+//                 console.error('Failed to update feedback:', error);
+//             }
+//         }
+//     };
+
+//     return (
+//         <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+//             <Card className="w-full max-w-4xl mx-auto shadow-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+//                 <CardHeader>
+//                     <CardTitle>Lessons Management</CardTitle>
+//                 </CardHeader>
+//                 <CardContent>
+//                     {loading ? (
+//                         <div className="flex justify-center">
+//                             <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+//                         </div>
+//                     ) : (
+//                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+//                             <Table>
+//                                 <TableHeader>
+//                                     {table.getHeaderGroups().map((headerGroup) => (
+//                                         <TableRow key={headerGroup.id}>
+//                                             {headerGroup.headers.map((header) => (
+//                                                 <TableHead key={header.id}>
+//                                                     {header.isPlaceholder
+//                                                         ? null
+//                                                         : flexRender(
+//                                                               header.column.columnDef.header,
+//                                                               header.getContext(),
+//                                                           )}
+//                                                 </TableHead>
+//                                             ))}
+//                                         </TableRow>
+//                                     ))}
+//                                 </TableHeader>
+//                                 <TableBody>
+//                                     {table.getRowModel().rows.map((row) => (
+//                                         <TableRow key={row.id}>
+//                                             {row.getVisibleCells().map((cell) => (
+//                                                 <TableCell key={cell.id}>
+//                                                     {cell.column.id === 'actions' ? (
+//                                                         <DialogTrigger asChild>
+//                                                             <div
+//                                                                 onClick={() =>
+//                                                                     setSelectedLesson(row.original)
+//                                                                 }
+//                                                             >
+//                                                                 {flexRender(
+//                                                                     cell.column.columnDef.cell,
+//                                                                     cell.getContext(),
+//                                                                 )}
+//                                                             </div>
+//                                                         </DialogTrigger>
+//                                                     ) : (
+//                                                         flexRender(
+//                                                             cell.column.columnDef.cell,
+//                                                             cell.getContext(),
+//                                                         )
+//                                                     )}
+//                                                 </TableCell>
+//                                             ))}
+//                                         </TableRow>
+//                                     ))}
+//                                 </TableBody>
+//                             </Table>
+//                             <DialogContent className="sm:max-w-md">
+//                                 <DialogHeader>
+//                                     <DialogTitle>
+//                                         {selectedLesson?.feedback
+//                                             ? 'Edit Feedback'
+//                                             : 'Add Feedback'}
+//                                     </DialogTitle>
+//                                 </DialogHeader>
+//                                 {selectedLesson && (
+//                                     <FeedbackForm
+//                                         initialData={selectedLesson.feedback}
+//                                         onSubmit={handleFeedbackSubmit}
+//                                         onCancel={() => {
+//                                             setDialogOpen(false);
+//                                             setSelectedLesson(null);
+//                                         }}
+//                                     />
+//                                 )}
+//                             </DialogContent>
+//                         </Dialog>
+//                     )}
+//                 </CardContent>
+//             </Card>
+//         </div>
+//     );
+// }
