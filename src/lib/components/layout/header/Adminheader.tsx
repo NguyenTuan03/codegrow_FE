@@ -202,6 +202,11 @@ export const AdminHeader = () => {
                                     Profile
                                 </a>
                             </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <a href="/admin/changepassword" className="w-full">
+                                    Change Password{' '}
+                                </a>
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleLogout}>
                                 <div className="flex items-center gap-2">
                                     <LogOut className="h-4 w-4 text-gray-700 dark:text-gray-300" />

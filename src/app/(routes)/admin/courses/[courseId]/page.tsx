@@ -15,13 +15,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { GetListStudents } from '@/lib/services/course/getliststudents';
 
+import StudentList from '@/app/(routes)/admin/courses/[courseId]/StudentList';
+import { GetAllCategory } from '@/lib/services/category/getallcategory';
 interface Course {
     _id: string;
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string }; // Đảm bảo category là một đối tượng
     createdAt: string;
     author: {
         _id: string;
@@ -38,6 +41,16 @@ interface Mentor {
     email: string;
     role: string;
 }
+interface Students {
+    _id: string;
+    fullName: string;
+    email: string;
+    role: string;
+}
+interface Category {
+    _id: string;
+    name: string;
+}
 
 export default function CourseDetailPage() {
     const { courseId } = useParams<{ courseId: string }>();
@@ -47,8 +60,9 @@ export default function CourseDetailPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const router = useRouter();
-
+    const [listStudents, setListStudents] = useState<Students[]>([]);
     const [author, setAuthors] = useState<Mentor[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]); // Danh sách danh mục
     const fetchCourseDetail = async () => {
         try {
             setLoading(true);
@@ -63,10 +77,52 @@ export default function CourseDetailPage() {
                     typeof res.metadata.author === 'string'
                         ? JSON.parse(res.metadata.author)
                         : res.metadata.author,
+                category:
+                    typeof res.metadata.category === 'string'
+                        ? JSON.parse(res.metadata.category)
+                        : res.metadata.category,
             };
 
+            console.log('Course data:', course); // Debug log
             setCourseData(course);
             setFormData(course);
+        } catch (error) {
+            console.error('Failed to fetch course details:', error);
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error ? error.message : 'Failed to load course details',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+    const fetchCategories = async () => {
+        try {
+            const data = await GetAllCategory();
+            console.log('Dữ liệu danh mục:', data);
+
+            const catogory = data.metadata.categories;
+            setCategories(catogory);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
+    useEffect(() => {
+        fetchCategories();
+        fetchCourseDetail();
+        fetchListStudents();
+    }, [courseId]);
+    const fetchListStudents = async () => {
+        try {
+            setLoading(true);
+            const res = await GetListStudents(courseId);
+            if (!res || res.status !== 200) {
+                throw new Error('Invalid course data');
+            }
+            setListStudents(res.metadata);
+            console.log('List of students:', res.metadata);
         } catch (error) {
             console.error('Failed to fetch course details:', error);
             toast({
@@ -82,6 +138,7 @@ export default function CourseDetailPage() {
 
     useEffect(() => {
         fetchCourseDetail();
+        fetchListStudents();
     }, [courseId]);
     // Fetch author from API
     const fetchAuthor = async () => {
@@ -107,6 +164,7 @@ export default function CourseDetailPage() {
 
     useEffect(() => {
         fetchAuthor();
+        fetchCategories();
     }, []);
     const handleEdit = () => {
         setIsEditing(true);
@@ -140,7 +198,7 @@ export default function CourseDetailPage() {
                 formData.description,
                 formData.price.toString(),
                 formData.author._id,
-                formData.category,
+                formData.category._id,
             );
 
             setCourseData(formData);
@@ -330,22 +388,47 @@ export default function CourseDetailPage() {
                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                         />
                                     </div>
+
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                                             Category
                                         </label>
-                                        <Input
-                                            type="text"
-                                            value={formData?.category || ''}
-                                            onChange={(e) =>
+                                        <Select
+                                            value={formData?.category?._id || ''}
+                                            onValueChange={(value) =>
                                                 setFormData((prev) =>
                                                     prev
-                                                        ? { ...prev, category: e.target.value }
+                                                        ? {
+                                                              ...prev,
+                                                              category: {
+                                                                  ...prev.category,
+                                                                  _id: value, // Update category ID
+                                                                  name:
+                                                                      categories.find(
+                                                                          (c) => c._id === value,
+                                                                      )?.name || '', // Get category name from list
+                                                              },
+                                                          }
                                                         : prev,
                                                 )
                                             }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        />
+                                        >
+                                            <SelectTrigger className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                                                <SelectValue placeholder="Select a category" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                                                {categories &&
+                                                    categories.map((category) => (
+                                                        <SelectItem
+                                                            key={category._id}
+                                                            value={category._id}
+                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                        >
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -399,7 +482,7 @@ export default function CourseDetailPage() {
                                                 Category
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-300">
-                                                {courseData.category}
+                                                {courseData.category.name}
                                             </p>
                                         </div>
                                         <div>
@@ -409,11 +492,6 @@ export default function CourseDetailPage() {
                                             <p className="text-gray-600 dark:text-gray-300">
                                                 ${courseData.price}
                                             </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Enroll : {courseData.enrolledCount || 0}
-                                            </h3>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -439,6 +517,9 @@ export default function CourseDetailPage() {
                                 </>
                             )}
                         </div>
+                    </div>
+                    <div>
+                        <StudentList students={listStudents} />
                     </div>
                 </div>
 

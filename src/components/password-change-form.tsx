@@ -16,10 +16,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { useState } from 'react';
 import { z } from 'zod';
 import { ChangePassword } from '@/lib/services/auth/changePassword';
+import { useRouter } from 'next/navigation';
 
 const ChangePasswordSchema = z
     .object({
-        currentPassword: z.string().min(6, 'Current password must be at least 6 characters'),
+        oldPassword: z.string().min(6, 'Current password must be at least 6 characters'),
         newPassword: z.string().min(6, 'New password must be at least 6 characters'),
         confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters'),
     })
@@ -32,8 +33,9 @@ type ChangePasswordFormValues = z.infer<typeof ChangePasswordSchema>;
 
 const ChangePasswordForm = () => {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState({
-        currentPassword: false,
+        oldPassword: false,
         newPassword: false,
         confirmPassword: false,
     });
@@ -42,7 +44,7 @@ const ChangePasswordForm = () => {
     const form = useForm<ChangePasswordFormValues>({
         resolver: zodResolver(ChangePasswordSchema),
         defaultValues: {
-            currentPassword: '',
+            oldPassword: '',
             newPassword: '',
             confirmPassword: '',
         },
@@ -54,7 +56,7 @@ const ChangePasswordForm = () => {
 
         try {
             const token = localStorage.getItem('token') || '';
-            const result = await ChangePassword(token, values.newPassword);
+            const result = await ChangePassword(token, values.oldPassword, values.newPassword);
 
             toast({
                 title: '🎉 Password changed successfully',
@@ -63,6 +65,7 @@ const ChangePasswordForm = () => {
             });
 
             form.reset();
+            router.refresh(); // Refresh the page to reflect changes
         } catch (error) {
             console.error('Error changing password:', error);
             toast({
@@ -94,31 +97,29 @@ const ChangePasswordForm = () => {
                         {/* Current Password */}
                         <FormField
                             control={form.control}
-                            name="currentPassword"
+                            name="oldPassword"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
-                                        Current Password
+                                        Old Password
                                     </FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input
                                                 {...field}
                                                 type={
-                                                    showPassword.currentPassword
-                                                        ? 'text'
-                                                        : 'password'
+                                                    showPassword.oldPassword ? 'text' : 'password'
                                                 }
                                                 className="rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    togglePasswordVisibility('currentPassword')
+                                                    togglePasswordVisibility('oldPassword')
                                                 }
                                                 className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
                                             >
-                                                {showPassword.currentPassword ? (
+                                                {showPassword.oldPassword ? (
                                                     <svg
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         className="h-5 w-5"
