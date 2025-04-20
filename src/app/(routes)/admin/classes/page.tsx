@@ -30,6 +30,13 @@ export default function Classes() {
         title: string;
         description: string;
         students: string[];
+        mentor: {
+            _id: string;
+            fullName: string;
+            email: string;
+            phone: string;
+            image?: string;
+        };
         schedule: {
             startDate: string;
             endDate: string;
@@ -136,6 +143,10 @@ export default function Classes() {
                                         <Users className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                                         <span className="text-sm text-gray-600 dark:text-gray-400">
                                             {course.students.length} students
+                                        </span>
+
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {course.mentor?.fullName || 'Unknown'}
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-1">

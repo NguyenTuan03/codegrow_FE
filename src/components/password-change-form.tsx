@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { ChangePassword } from '@/lib/services/auth/changePassword';
 import { useRouter } from 'next/navigation';
+import { Lock, Eye, EyeOff } from 'lucide-react';
 
 const ChangePasswordSchema = z
     .object({
@@ -61,17 +62,17 @@ const ChangePasswordForm = () => {
             toast({
                 title: '🎉 Password changed successfully',
                 description: result.message || 'Your password has been updated.',
-                className: 'bg-green-500 text-white',
+                className: 'bg-gradient-to-r from-[#5AD3AF] to-[#657ED4] text-white',
             });
 
             form.reset();
-            router.refresh(); // Refresh the page to reflect changes
+            router.refresh();
         } catch (error) {
             console.error('Error changing password:', error);
             toast({
                 title: '❌ Password change failed',
                 description: 'An error occurred while changing your password.',
-                className: 'bg-red-500 text-white',
+                className: 'bg-gradient-to-r from-[#F76F8E] to-[#E56582] text-white',
             });
         } finally {
             setLoading(false);
@@ -83,15 +84,16 @@ const ChangePasswordForm = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-700 dark:to-blue-800 p-6">
+        <div className="max-w-lg mx-auto p-6 sm:p-8">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-[#EEF1EF] dark:border-[#657ED4]/30">
+                <div className="bg-gradient-to-r from-[#5AD3AF] to-[#657ED4] dark:from-[#4AC2A0] dark:to-[#5A6BBE] p-6 flex items-center gap-3">
+                    <Lock className="w-6 h-6 text-white" />
                     <h1 className="text-2xl font-bold text-white">Change Password</h1>
                 </div>
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="p-8 space-y-6"
+                        className="p-6 sm:p-8 space-y-6"
                         noValidate
                     >
                         {/* Current Password */}
@@ -100,60 +102,40 @@ const ChangePasswordForm = () => {
                             name="oldPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                         Old Password
                                     </FormLabel>
                                     <FormControl>
                                         <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                                             <Input
                                                 {...field}
                                                 type={
                                                     showPassword.oldPassword ? 'text' : 'password'
                                                 }
-                                                className="rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-[#EEF1EF] dark:border-[#657ED4]/30 focus:ring-2 focus:ring-[#5AD3AF] dark:focus:ring-[#657ED4] text-gray-900 dark:text-gray-100"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('oldPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#F76F8E] dark:hover:text-[#F76F8E] transition-colors"
+                                                aria-label={
+                                                    showPassword.oldPassword
+                                                        ? 'Hide password'
+                                                        : 'Show password'
+                                                }
                                             >
                                                 {showPassword.oldPassword ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0 10-4.477 10-10S6.477 0 12 0c1.875 0 3.625.525 5.125 1.425M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                        />
-                                                    </svg>
+                                                    <EyeOff className="w-5 h-5" />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M3.98 8.223A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10s-4.477 10-10 10c-1.875 0-3.625-.525-5.125-1.425M9 12a3 3 0 116 0 3 3 0 01-6 0z"
-                                                        />
-                                                    </svg>
+                                                    <Eye className="w-5 h-5" />
                                                 )}
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
+                                    <FormMessage className="text-[#F76F8E] text-sm" />
                                 </FormItem>
                             )}
                         />
@@ -164,60 +146,40 @@ const ChangePasswordForm = () => {
                             name="newPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                         New Password
                                     </FormLabel>
                                     <FormControl>
                                         <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                                             <Input
                                                 {...field}
                                                 type={
                                                     showPassword.newPassword ? 'text' : 'password'
                                                 }
-                                                className="rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-[#EEF1EF] dark:border-[#657ED4]/30 focus:ring-2 focus:ring-[#5AD3AF] dark:focus:ring-[#657ED4] text-gray-900 dark:text-gray-100"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('newPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#F76F8E] dark:hover:text-[#F76F8E] transition-colors"
+                                                aria-label={
+                                                    showPassword.newPassword
+                                                        ? 'Hide password'
+                                                        : 'Show password'
+                                                }
                                             >
                                                 {showPassword.newPassword ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0 10-4.477 10-10S6.477 0 12 0c1.875 0 3.625.525 5.125 1.425M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                        />
-                                                    </svg>
+                                                    <EyeOff className="w-5 h-5" />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M3.98 8.223A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10s-4.477 10-10 10c-1.875 0-3.625-.525-5.125-1.425M9 12a3 3 0 116 0 3 3 0 01-6 0z"
-                                                        />
-                                                    </svg>
+                                                    <Eye className="w-5 h-5" />
                                                 )}
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
+                                    <FormMessage className="text-[#F76F8E] text-sm" />
                                 </FormItem>
                             )}
                         />
@@ -228,11 +190,12 @@ const ChangePasswordForm = () => {
                             name="confirmPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                         Confirm Password
                                     </FormLabel>
                                     <FormControl>
                                         <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                                             <Input
                                                 {...field}
                                                 type={
@@ -240,61 +203,48 @@ const ChangePasswordForm = () => {
                                                         ? 'text'
                                                         : 'password'
                                                 }
-                                                className="rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-[#EEF1EF] dark:border-[#657ED4]/30 focus:ring-2 focus:ring-[#5AD3AF] dark:focus:ring-[#657ED4] text-gray-900 dark:text-gray-100"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('confirmPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#F76F8E] dark:hover:text-[#F76F8E] transition-colors"
+                                                aria-label={
+                                                    showPassword.confirmPassword
+                                                        ? 'Hide password'
+                                                        : 'Show password'
+                                                }
                                             >
                                                 {showPassword.confirmPassword ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0 10-4.477 10-10S6.477 0 12 0c1.875 0 3.625.525 5.125 1.425M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                        />
-                                                    </svg>
+                                                    <EyeOff className="w-5 h-5" />
                                                 ) : (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M3.98 8.223A10.05 10.05 0 0112 5c5.523 0 10 4.477 10 10s-4.477 10-10 10c-1.875 0-3.625-.525-5.125-1.425M9 12a3 3 0 116 0 3 3 0 01-6 0z"
-                                                        />
-                                                    </svg>
+                                                    <Eye className="w-5 h-5" />
                                                 )}
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
+                                    <FormMessage className="text-[#F76F8E] text-sm" />
                                 </FormItem>
                             )}
                         />
 
                         {/* Action buttons */}
-                        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <div className="flex justify-end">
+                        <div className="pt-6 border-t border-[#EEF1EF] dark:border-[#657ED4]/30">
+                            <div className="flex justify-end gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => router.back()}
+                                    className="px-6 py-3 border-[#EEF1EF] dark:border-[#657ED4]/30 text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#EEF1EF] dark:hover:bg-gray-700 rounded-lg shadow-sm transition-colors"
+                                >
+                                    Cancel
+                                </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="px-6 py-3 bg-[#657ED4] hover:bg-[#5A6BBE] text-white rounded-lg shadow-sm transition-colors disabled:opacity-70"
+                                    className="px-6 py-3 bg-gradient-to-r from-[#5AD3AF] to-[#657ED4] hover:from-[#4AC2A0] hover:to-[#5A6BBE] text-white rounded-lg shadow-md transition-all disabled:opacity-70 flex items-center gap-2"
                                 >
                                     {loading ? (
                                         <span className="flex items-center">
@@ -321,7 +271,10 @@ const ChangePasswordForm = () => {
                                             Saving...
                                         </span>
                                     ) : (
-                                        'Change Password'
+                                        <>
+                                            <Lock className="w-5 h-5" />
+                                            Change Password
+                                        </>
                                     )}
                                 </Button>
                             </div>

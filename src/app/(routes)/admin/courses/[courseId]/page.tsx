@@ -1,4 +1,6 @@
+// @/app/(routes)/admin/courses/[courseId]/page.tsx
 'use client';
+
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
@@ -6,25 +8,20 @@ import { Pencil, Save, Trash2, X } from 'lucide-react';
 import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
 import { DeleteCourse } from '@/lib/services/course/deletecourse';
 import { UpdateCourse } from '@/lib/services/course/updatecourse';
-import { Input } from '@/components/ui/input';
 import { getUser } from '@/lib/services/admin/getuser';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { GetListStudents } from '@/lib/services/course/getliststudents';
+import { GetAllCategory } from '@/lib/services/category/getallcategory';
 
 import StudentList from '@/app/(routes)/admin/courses/[courseId]/StudentList';
-import { GetAllCategory } from '@/lib/services/category/getallcategory';
+import CourseInformation from '@/app/(routes)/admin/courses/[courseId]/CourseInformation';
+import DeleteConfirmationModal from '@/app/(routes)/admin/courses/[courseId]/DeleteModal';
+
 interface Course {
     _id: string;
     title: string;
     description: string;
     price: number;
-    category: { _id: string; name: string }; // Đảm bảo category là một đối tượng
+    category: { _id: string; name: string };
     createdAt: string;
     author: {
         _id: string;
@@ -35,18 +32,21 @@ interface Course {
     isDeleted?: boolean;
     enrolledCount?: number;
 }
+
 interface Mentor {
     _id: string;
     fullName: string;
     email: string;
     role: string;
 }
+
 interface Students {
     _id: string;
     fullName: string;
     email: string;
     role: string;
 }
+
 interface Category {
     _id: string;
     name: string;
@@ -62,7 +62,8 @@ export default function CourseDetailPage() {
     const router = useRouter();
     const [listStudents, setListStudents] = useState<Students[]>([]);
     const [author, setAuthors] = useState<Mentor[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]); // Danh sách danh mục
+    const [categories, setCategories] = useState<Category[]>([]);
+
     const fetchCourseDetail = async () => {
         try {
             setLoading(true);
@@ -83,7 +84,6 @@ export default function CourseDetailPage() {
                         : res.metadata.category,
             };
 
-            console.log('Course data:', course); // Debug log
             setCourseData(course);
             setFormData(course);
         } catch (error) {
@@ -98,22 +98,16 @@ export default function CourseDetailPage() {
             setLoading(false);
         }
     };
+
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory();
-            console.log('Dữ liệu danh mục:', data);
-
-            const catogory = data.metadata.categories;
-            setCategories(catogory);
+            setCategories(data.metadata.categories);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
         }
     };
-    useEffect(() => {
-        fetchCategories();
-        fetchCourseDetail();
-        fetchListStudents();
-    }, [courseId]);
+
     const fetchListStudents = async () => {
         try {
             setLoading(true);
@@ -122,7 +116,6 @@ export default function CourseDetailPage() {
                 throw new Error('Invalid course data');
             }
             setListStudents(res.metadata);
-            console.log('List of students:', res.metadata);
         } catch (error) {
             console.error('Failed to fetch course details:', error);
             toast({
@@ -136,22 +129,13 @@ export default function CourseDetailPage() {
         }
     };
 
-    useEffect(() => {
-        fetchCourseDetail();
-        fetchListStudents();
-    }, [courseId]);
-    // Fetch author from API
     const fetchAuthor = async () => {
         try {
             const response = await getUser();
-
             if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
                 throw new Error('Invalid or missing users data');
             }
-
-            const author = response.metadata.users;
-
-            setAuthors(author);
+            setAuthors(response.metadata.users);
         } catch (error) {
             console.error('Failed to fetch authors:', error);
             toast({
@@ -163,9 +147,12 @@ export default function CourseDetailPage() {
     };
 
     useEffect(() => {
+        fetchCourseDetail();
+        fetchListStudents();
         fetchAuthor();
         fetchCategories();
-    }, []);
+    }, [courseId]);
+
     const handleEdit = () => {
         setIsEditing(true);
     };
@@ -257,29 +244,29 @@ export default function CourseDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 transition-opacity duration-300"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
             </div>
         );
     }
 
     if (!courseData) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-300 p-6">
+            <div className="text-center text-gray-600 dark:text-gray-400 p-6">
                 Course not found or invalid data
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen bg-[#EEF1EF] dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     {isEditing ? (
-                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                        <h1 className="text-3xl sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
                             Editing {formData?.title}
                         </h1>
                     ) : (
-                        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                        <h1 className="text-3xl sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
                             {courseData.title}
                         </h1>
                     )}
@@ -288,7 +275,7 @@ export default function CourseDetailPage() {
                             <>
                                 <button
                                     onClick={handleSave}
-                                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200"
+                                    className="flex items-center px-4 py-2 bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4AC2A0] transition-colors duration-200"
                                     aria-label="Save changes"
                                 >
                                     <Save className="h-5 w-5 mr-2" />
@@ -296,7 +283,7 @@ export default function CourseDetailPage() {
                                 </button>
                                 <button
                                     onClick={handleCancel}
-                                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
+                                    className="flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white dark:text-gray-200 rounded-lg hover:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
                                     aria-label="Cancel editing"
                                 >
                                     <X className="h-5 w-5 mr-2" />
@@ -307,7 +294,7 @@ export default function CourseDetailPage() {
                             <>
                                 <button
                                     onClick={handleEdit}
-                                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+                                    className="flex items-center px-4 py-2 bg-[#657ED4] text-white rounded-lg hover:bg-[#5A6BBE] dark:bg-[#657ED4] dark:hover:bg-[#5A6BBE] transition-colors duration-200"
                                     aria-label="Edit course"
                                 >
                                     <Pencil className="h-5 w-5 mr-2" />
@@ -328,229 +315,25 @@ export default function CourseDetailPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                                Course Information
-                            </h2>
-                            {isEditing ? (
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Title
-                                        </label>
-                                        <Input
-                                            type="text"
-                                            value={formData?.title || ''}
-                                            onChange={(e) =>
-                                                setFormData((prev) =>
-                                                    prev
-                                                        ? { ...prev, title: e.target.value }
-                                                        : prev,
-                                                )
-                                            }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Description
-                                        </label>
-                                        <Input
-                                            type="text"
-                                            value={formData?.description || ''}
-                                            onChange={(e) =>
-                                                setFormData((prev) =>
-                                                    prev
-                                                        ? { ...prev, description: e.target.value }
-                                                        : prev,
-                                                )
-                                            }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Price
-                                        </label>
-                                        <Input
-                                            type="number"
-                                            value={formData?.price || ''}
-                                            onChange={(e) =>
-                                                setFormData((prev) =>
-                                                    prev
-                                                        ? {
-                                                              ...prev,
-                                                              price: parseFloat(e.target.value),
-                                                          }
-                                                        : prev,
-                                                )
-                                            }
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Category
-                                        </label>
-                                        <Select
-                                            value={formData?.category?._id || ''}
-                                            onValueChange={(value) =>
-                                                setFormData((prev) =>
-                                                    prev
-                                                        ? {
-                                                              ...prev,
-                                                              category: {
-                                                                  ...prev.category,
-                                                                  _id: value, // Update category ID
-                                                                  name:
-                                                                      categories.find(
-                                                                          (c) => c._id === value,
-                                                                      )?.name || '', // Get category name from list
-                                                              },
-                                                          }
-                                                        : prev,
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                                                <SelectValue placeholder="Select a category" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                                                {categories &&
-                                                    categories.map((category) => (
-                                                        <SelectItem
-                                                            key={category._id}
-                                                            value={category._id}
-                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                        >
-                                                            {category.name}
-                                                        </SelectItem>
-                                                    ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Author
-                                        </label>
-                                        <Select
-                                            value={formData?.author?._id || ''}
-                                            onValueChange={(value) =>
-                                                setFormData((prev) =>
-                                                    prev
-                                                        ? {
-                                                              ...prev,
-                                                              author: {
-                                                                  ...prev.author,
-                                                                  _id: value, // Update author ID
-                                                                  fullName:
-                                                                      author.find(
-                                                                          (a) => a._id === value,
-                                                                      )?.fullName || '', // Get author name from list
-                                                              },
-                                                          }
-                                                        : prev,
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                                                <SelectValue placeholder="Select an author" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                                                {author.map((mentor) => (
-                                                    <SelectItem
-                                                        key={mentor._id}
-                                                        value={mentor._id}
-                                                        className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                    >
-                                                        {mentor.fullName}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                        {courseData.description}
-                                    </p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Category
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {courseData.category.name}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Price
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                ${courseData.price}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Author
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {courseData.author?.fullName}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                                Created At
-                                            </h3>
-                                            <p className="text-gray-600 dark:text-gray-300">
-                                                {new Date(
-                                                    courseData.createdAt,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                        <CourseInformation
+                            courseData={courseData}
+                            isEditing={isEditing}
+                            formData={formData}
+                            setFormData={setFormData}
+                            categories={categories}
+                            author={author}
+                        />
                     </div>
                     <div>
                         <StudentList students={listStudents} />
                     </div>
                 </div>
 
-                {/* Delete Confirmation Modal */}
-                {isDeleteModalOpen && (
-                    <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-                        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
-                            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
-                                Confirm Deletion
-                            </h2>
-                            <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Are you sure you want to delete this course? This action cannot be
-                                undone.
-                            </p>
-                            <div className="flex justify-end gap-3">
-                                <button
-                                    onClick={handleCancelDelete}
-                                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleDelete}
-                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <DeleteConfirmationModal
+                    isDeleteModalOpen={isDeleteModalOpen}
+                    handleCancelDelete={handleCancelDelete}
+                    handleDelete={handleDelete}
+                />
             </div>
         </div>
     );

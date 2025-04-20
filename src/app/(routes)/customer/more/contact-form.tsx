@@ -11,9 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import Image from 'next/image';
 
 const formSchema = z.object({
-    fullName: z.string().min(1, 'Please enter your full name'),
+    fullName: z.string().min(1, 'Full name is required'),
     email: z.string().email('Invalid email address'),
-    phone: z.string().min(6, 'Invalid phone number'),
+    phone: z.string().min(6, 'Phone number must be at least 6 characters'),
     city: z.string().min(1, 'City is required'),
 });
 
@@ -36,10 +36,10 @@ export default function ContactForm() {
     }
 
     const inputStyle =
-        'rounded-full bg-[#6ee7b7] placeholder-white text-white font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80]';
+        'rounded-full bg-[#6ee7b7] dark:bg-[#657ED4] placeholder-white dark:placeholder-gray-200 text-white dark:text-white font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]';
 
     return (
-        <div className="bg-[#EEF1EF] p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10">
+        <div className="bg-[#EEF1EF] dark:bg-[#1f2937] p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
             <Image
                 src="/image 14.png"
                 alt="contact"
@@ -53,8 +53,8 @@ export default function ContactForm() {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6 w-full max-w-md mx-auto"
                 >
-                    <h3 className="text-xl font-bold text-[#657ED4] text-center uppercase">
-                        Đăng ký tư vấn và nhận chương trình chi tiết
+                    <h3 className="text-xl font-bold text-[#657ED4] dark:text-[#5AD3AF] text-center uppercase">
+                        Register for consultation and receive detailed program
                     </h3>
 
                     <FormField
@@ -65,11 +65,11 @@ export default function ContactForm() {
                                 <FormControl>
                                     <Input
                                         className={inputStyle}
-                                        placeholder="FullName"
+                                        placeholder="Full Name"
                                         {...field}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
                             </FormItem>
                         )}
                     />
@@ -82,7 +82,7 @@ export default function ContactForm() {
                                 <FormControl>
                                     <Input className={inputStyle} placeholder="Email" {...field} />
                                 </FormControl>
-                                <FormMessage className="text-red-500 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
                             </FormItem>
                         )}
                     />
@@ -95,11 +95,11 @@ export default function ContactForm() {
                                 <FormControl>
                                     <Input
                                         className={inputStyle}
-                                        placeholder="Phone number"
+                                        placeholder="Phone Number"
                                         {...field}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
                             </FormItem>
                         )}
                     />
@@ -112,20 +112,20 @@ export default function ContactForm() {
                                 <FormControl>
                                     <Input
                                         className={inputStyle}
-                                        placeholder="Your city"
+                                        placeholder="Your City"
                                         {...field}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
                             </FormItem>
                         )}
                     />
 
                     <Button
                         type="submit"
-                        className="rounded-full bg-[#f76f8e] hover:bg-[#fc8498] text-white w-full px-4 py-2 text-sm font-semibold"
+                        className="rounded-full bg-[#f76f8e] dark:bg-[#5AD3AF] hover:bg-[#fc8498] dark:hover:bg-[#4ac2a0] text-white w-full px-4 py-2 text-sm font-semibold transition-colors duration-300"
                     >
-                        Register
+                        Register Now
                     </Button>
                 </form>
             </Form>
