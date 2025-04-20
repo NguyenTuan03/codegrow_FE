@@ -73,6 +73,9 @@ export default function CoursesList({
 
     return (
         <div className="relative">
+            <h2 className="text-xl text-center sm:text-2xl font-semibold text-[#657ED4] dark:text-[#5AD3AF] mb-6">
+                Available Courses
+            </h2>
             <Carousel className="w-full">
                 <CarouselContent className="-ml-4">
                     {classesItems.map((course) => (
