@@ -41,15 +41,20 @@ const classes = [
         status: 'Active',
     },
 ];
+
 const page = () => {
     return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-bold">Performance Analytics</h1>
+        <div className="p-6 space-y-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                Performance Analytics
+            </h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Card>
+                <Card className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                     <CardContent className="pt-6">
-                        <p className="text-sm text-gray-500">Total working hours</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Total working hours
+                        </p>
                         <p className="text-2xl font-bold">
                             120<span className="text-base font-normal">h</span> 56
                             <span className="text-base font-normal">m</span>
@@ -57,34 +62,38 @@ const page = () => {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                     <CardContent className="pt-6">
                         <div className="flex justify-between items-center">
-                            <p className="text-sm text-gray-500">Total salary</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Total salary</p>
                         </div>
                         <p className="text-2xl font-bold">
                             $12.080{' '}
-                            <span className="text-sm font-normal text-gray-400">/ March</span>
+                            <span className="text-sm font-normal text-gray-400 dark:text-gray-500">
+                                / March
+                            </span>
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                     <CardContent className="pt-6">
-                        <p className="text-sm text-gray-500">Working progress</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Working progress</p>
                         <p className="text-2xl font-bold">
                             82%{' '}
-                            <span className="text-sm font-normal text-gray-400">89h 24m left</span>
+                            <span className="text-sm font-normal text-gray-400 dark:text-gray-500">
+                                89h 24m left
+                            </span>
                         </p>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Line Chart */}
-            <Card>
+            <Card className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                 <CardHeader className="flex flex-row justify-between items-center">
                     <CardTitle>Your performance</CardTitle>
-                    <Button variant="link" className="text-sm">
+                    <Button variant="link" className="text-sm text-blue-600 dark:text-blue-400">
                         See tracker
                     </Button>
                 </CardHeader>
@@ -111,7 +120,7 @@ const page = () => {
             </Card>
 
             {/* Class Table */}
-            <Card>
+            <Card className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                 <CardHeader>
                     <CardTitle>My class</CardTitle>
                 </CardHeader>
@@ -119,7 +128,7 @@ const page = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left">
                             <thead>
-                                <tr className="border-b">
+                                <tr className="border-b dark:border-gray-700">
                                     <th className="py-2">Class</th>
                                     <th>Total time</th>
                                     <th>Time left</th>
@@ -130,7 +139,10 @@ const page = () => {
                             </thead>
                             <tbody>
                                 {classes.map((cls) => (
-                                    <tr key={cls.id} className="border-b hover:bg-gray-50">
+                                    <tr
+                                        key={cls.id}
+                                        className="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    >
                                         <td className="py-3 flex items-center gap-2">
                                             <img src={cls.logo} alt="" className="w-6 h-6" />
                                             {cls.name}
@@ -141,16 +153,16 @@ const page = () => {
                                         <td>
                                             <Badge
                                                 variant="outline"
-                                                className="text-green-600 border-green-600"
+                                                className="text-green-600 border-green-600 dark:text-green-400 dark:border-green-400"
                                             >
                                                 {cls.status}
                                             </Badge>
                                         </td>
                                         <td>
                                             <div className="flex items-center gap-2">
-                                                <Check className="w-4 h-4 text-green-600 cursor-pointer" />
-                                                <Edit2 className="w-4 h-4 text-blue-600 cursor-pointer" />
-                                                <Trash2 className="w-4 h-4 text-red-600 cursor-pointer" />
+                                                <Check className="w-4 h-4 text-green-600 dark:text-green-400 cursor-pointer" />
+                                                <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400 cursor-pointer" />
+                                                <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400 cursor-pointer" />
                                             </div>
                                         </td>
                                     </tr>

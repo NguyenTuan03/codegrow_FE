@@ -16,7 +16,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 
-// Expanded project list with more items
 const projects = [
     {
         title: 'Build a routing program to help Vancouver commuters',
@@ -114,8 +113,8 @@ export default function ProjectPage() {
         currentPage * itemsPerPage,
     );
     const [userRole, setUserRole] = useState<string | null>(null);
+
     useEffect(() => {
-        // Check both localStorage and auth context
         const userFromStorage = localStorage.getItem('user');
         let isAuthenticated = false;
         let role = null;
@@ -135,7 +134,7 @@ export default function ProjectPage() {
 
         setIsLoggedIn(isAuthenticated);
         setUserRole(role);
-    }, [userAuth?.userAuth]); // Only depend on authContext.userAuth
+    }, [userAuth?.userAuth]);
 
     const handleProjectClick = (projectIndex: number, isPremium: boolean) => {
         if (!isLoggedIn) {
@@ -150,58 +149,66 @@ export default function ProjectPage() {
 
         router.push(`/customer/project/${projects[projectIndex].title}`);
     };
+
     return (
-        <section className="px-6 md:px-16 py-12 bg-gradient-to-r from-blue-50 to-purple-50">
-            {/* Section Header */}
-            <div className="text-center space-y-2 mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 italic">
+        <section className="px-6 md:px-16 py-12 bg-gradient-to-br from-[#EEF1EF] to-[#5AD3AF]/20 dark:from-gray-900 dark:to-[#657ED4]/20 transition-colors duration-300">
+            <div className="text-center space-y-3 mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-[#657ED4] dark:text-[#5AD3AF] italic flex items-center justify-center gap-2">
+                    <Crown className="w-6 h-6 text-[#F76F8E] dark:text-[#F76F8E]" />
                     Projects help you build your tech portfolio
                 </h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
                     With a Plus or Pro account, you can work on real-world projects to apply your
                     learning and showcase your skills. Get started with one of our handpicked
                     options.
                 </p>
             </div>
 
-            {/* Project Cards */}
             <div className="grid h-auto sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 {paginatedProjects.map((project, index) => (
                     <Card
                         key={index}
-                        className="relative transition-all border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-xl flex flex-col justify-between bg-white"
+                        className="relative transition-all border border-[#EEF1EF] dark:border-[#657ED4]/30 rounded-2xl p-4 shadow-xl hover:shadow-2xl hover:scale-105 bg-white dark:bg-gray-800 flex flex-col justify-between"
                     >
                         {project.isPremium && (
                             <div className="absolute top-3 right-3 z-10">
                                 <Badge
                                     variant="secondary"
-                                    className="text-yellow-600 bg-yellow-100 border border-yellow-200 flex items-center gap-1"
+                                    className="text-white bg-[#F76F8E] dark:bg-[#F76F8E]/80 border border-[#F76F8E]/50 dark:border-[#F76F8E]/30 flex items-center gap-1"
                                 >
                                     <Crown className="w-4 h-4" /> Premium
                                 </Badge>
                             </div>
                         )}
                         <CardHeader className="pb-2">
-                            <p className="text-sm text-muted-foreground">
-                                <Badge variant="outline" className="text-xs font-normal">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <Badge
+                                    variant="outline"
+                                    className="text-xs font-normal text-[#657ED4] dark:text-[#5AD3AF] border-[#657ED4] dark:border-[#5AD3AF]"
+                                >
                                     {project.category}
                                 </Badge>
                             </p>
-                            <h3 className="text-lg font-semibold text-blue-800 mt-2 leading-snug">
+                            <h3 className="text-lg font-semibold text-[#657ED4] dark:text-[#5AD3AF] mt-2 leading-snug">
                                 {project.title}
                             </h3>
                         </CardHeader>
-                        <CardContent className="text-sm text-gray-600 pt-2 flex-grow">
+                        <CardContent className="text-sm text-gray-700 dark:text-gray-300 pt-2 flex-grow">
                             {project.description}
                         </CardContent>
                         <CardFooter>
                             <Button
-                                onClick={() => handleProjectClick(index, project.isPremium)}
+                                onClick={() =>
+                                    handleProjectClick(
+                                        (currentPage - 1) * itemsPerPage + index,
+                                        project.isPremium,
+                                    )
+                                }
                                 className={`w-full rounded-full py-2 text-sm font-semibold flex items-center justify-center gap-2 ${
                                     project.isPremium
-                                        ? 'bg-[#f76f8e] hover:bg-rose-500'
-                                        : 'bg-[#5ad3af] hover:bg-green-200'
-                                } text-white`}
+                                        ? 'bg-gradient-to-r from-[#657ED4] to-[#F76F8E] hover:from-[#5A6BBE] hover:to-[#E56582]'
+                                        : 'bg-gradient-to-r from-[#5AD3AF] to-[#657ED4] hover:from-[#4AC2A0] hover:to-[#5A6BBE]'
+                                } text-white transition-all duration-300`}
                             >
                                 {project.isPremium ? (
                                     <>
@@ -220,7 +227,6 @@ export default function ProjectPage() {
                 ))}
             </div>
 
-            {/* Pagination Controls */}
             <div className="flex justify-center mt-10">
                 <Pagination>
                     <PaginationContent>
@@ -232,7 +238,9 @@ export default function ProjectPage() {
                                     if (currentPage > 1) setCurrentPage(currentPage - 1);
                                 }}
                                 className={
-                                    currentPage === 1 ? 'pointer-events-none opacity-50' : ''
+                                    currentPage === 1
+                                        ? 'pointer-events-none opacity-50'
+                                        : 'text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#EEF1EF] dark:hover:bg-gray-700'
                                 }
                             />
                         </PaginationItem>
@@ -246,6 +254,11 @@ export default function ProjectPage() {
                                         setCurrentPage(index + 1);
                                     }}
                                     isActive={currentPage === index + 1}
+                                    className={
+                                        currentPage === index + 1
+                                            ? 'bg-[#5AD3AF] text-white dark:bg-[#657ED4] dark:text-white'
+                                            : 'text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#EEF1EF] dark:hover:bg-gray-700'
+                                    }
                                 >
                                     {index + 1}
                                 </PaginationLink>
@@ -262,7 +275,7 @@ export default function ProjectPage() {
                                 className={
                                     currentPage === totalPages
                                         ? 'pointer-events-none opacity-50'
-                                        : ''
+                                        : 'text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#EEF1EF] dark:hover:bg-gray-700'
                                 }
                             />
                         </PaginationItem>
@@ -270,12 +283,14 @@ export default function ProjectPage() {
                 </Pagination>
             </div>
 
-            {/* Bottom CTA */}
             <div className="flex flex-col items-center mt-12 gap-4">
-                <Button className="bg-[#5ad3af] hover:bg-green-200 text-white px-6 py-3 text-sm font-semibold rounded-full">
+                <Button className="bg-gradient-to-r from-[#5AD3AF] to-[#657ED4] hover:from-[#4AC2A0] hover:to-[#5A6BBE] text-white px-6 py-3 text-sm font-semibold rounded-full transition-all duration-300">
                     Developing
                 </Button>
-                <a href="#" className="text-sm underline text-[#657ed4] hover:text-blue-600">
+                <a
+                    href="#"
+                    className="text-sm underline text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#F76F8E] dark:hover:text-[#F76F8E] transition-colors"
+                >
                     Explore all projects
                 </a>
             </div>

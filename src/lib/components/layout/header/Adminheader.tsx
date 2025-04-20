@@ -198,11 +198,13 @@ export const AdminHeader = () => {
                             align="end"
                         >
                             <DropdownMenuItem>
+                                <User className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                                 <a href="/admin/profileadmin" className="w-full">
                                     Profile
                                 </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
+                                <Settings className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                                 <a href="/admin/changepassword" className="w-full">
                                     Change Password{' '}
                                 </a>
@@ -280,8 +282,8 @@ export const AdminHeader = () => {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <ModeToggle />
                 </div>
-                <ModeToggle />
             </div>
         </header>
     );

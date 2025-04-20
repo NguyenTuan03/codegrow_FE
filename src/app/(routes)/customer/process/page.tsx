@@ -1,13 +1,101 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { User, ChevronRight, ChevronLeft } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    author: {
+        fullName: string;
+    };
+    category: string;
+    createdAt: string;
+    enrolledCount: number;
+}
+// interface Class {
+//     _id: string;
+//     title: string;
+//     description: string;
+//     course: Course[];
+//     mentor: Mentor[];
+//     schedule: Schedule[];
+//     status: string;
+//     students: User[];
+//     createdAt: string;
+//     updatedAt: string;
+// }
+// interface Schedule {
+//     startDate: string;
+//     endDate: string;
+//     time: string;
+//     daysofWeek: string[];
+// }
+// interface Mentor {
+//     _id: string;
+//     fullName: string;
+//     email: string;
+//     role: string;
+// }
+interface User {
+    _id: string;
+    fullName: string;
+    role: string;
+    wallet: number;
+    email: string;
+    enrolledCourses: Course[];
+    createdAt: string;
+    updatedAt: string;
+    dailyStreak: number;
+    totalXP: number;
+}
 const Process = () => {
+    // const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
+    const [enrollCourse, setEnrollCourse] = useState<Course[]>([]);
+    // const [classList, setClass] = useState<Class[]>([]);
+    const fetchUserDetail = async () => {
+        try {
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Bạn cần đăng nhập để xem thông tin chi tiết',
+                    variant: 'destructive',
+                });
+                router.push('/login');
+                return;
+            }
+            const user = JSON.parse(userId);
+            const id = user.id; // Lấy ID người dùng từ localStorage
+
+            const userDetail = await getUserDetail(id);
+            setEnrollCourse(userDetail.metadata?.enrolledCourses || []);
+            console.log(`User detail for ID ${id}:`, userDetail);
+
+            setUser(userDetail.metadata);
+        } catch (error) {
+            console.error('❌ Error fetching user details:', error);
+            toast({
+                title: 'Lỗi',
+                description: 'Không thể lấy thông tin người dùng',
+                variant: 'destructive',
+            });
+        }
+    };
+    useEffect(() => {
+        fetchUserDetail(); // Gọi hàm lấy thông tin người dùng khi component mount
+    }, []);
     return (
         <div className="container mx-auto bg-gradient-to-r from-blue-50 px-4 py-8">
             {/* Main Grid Layout */}
@@ -21,106 +109,59 @@ const Process = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {/* First Course Card */}
-                            <Card className="shadow-sm border border-gray-200">
-                                <CardContent className="p-4">
-                                    <div className="flex items-center text-xs text-gray-500 mb-2">
-                                        <span>
-                                            Introduction to Test and Behavior-Driven Development
-                                        </span>
-                                        <Badge variant="outline" className="ml-2 text-gray-500">
-                                            IBM
-                                        </Badge>
-                                    </div>
-
-                                    <div className="flex justify-between items-center my-3">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center">
-                                                <span className="text-xs">✓</span>
-                                            </div>
-                                            <Progress value={25} max={100} className="w-28 h-2" />
-                                        </div>
-                                        <div className="text-xs text-gray-500">Started</div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex items-center space-x-1">
-                                                <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
-                                                    PRACTICE
+                            {enrollCourse.length > 0 ? (
+                                enrollCourse.map((course) => (
+                                    <Card
+                                        key={course._id}
+                                        className="shadow-sm border border-gray-200"
+                                    >
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center text-xs text-gray-500 mb-2">
+                                                <span>{course.title}</span>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="ml-2 text-gray-500"
+                                                >
+                                                    {course.category}
                                                 </Badge>
-                                                <div className="text-xs text-gray-700">
-                                                    Understanding Artificial Intelligence
+                                            </div>
+
+                                            <div className="flex justify-between items-center my-3">
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <span className="text-xs">✓</span>
+                                                    </div>
+                                                    <Progress
+                                                        value={25}
+                                                        max={100}
+                                                        className="w-28 h-2"
+                                                    />
                                                 </div>
+                                                <div className="text-xs text-gray-500">Started</div>
                                             </div>
 
-                                            <div className="flex items-center space-x-1">
-                                                <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
-                                                    APPLY
-                                                </Badge>
-                                                <div className="text-xs text-gray-700">
-                                                    Investigating Netflix Movies
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="flex items-center space-x-1">
+                                                        <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
+                                                            PRACTICE
+                                                        </Badge>
+                                                        <div className="text-xs text-gray-700">
+                                                            {course.description}
+                                                        </div>
+                                                    </div>
                                                 </div>
+
+                                                <Button className="bg-[#5ad3af] hover:bg-emerald-600 text-white text-xs">
+                                                    Go To Course
+                                                </Button>
                                             </div>
-                                        </div>
-
-                                        <Button className="bg-[#5ad3af] hover:bg-emerald-600 text-white text-xs">
-                                            Keep Making Process
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Second Course Card */}
-                            <Card className="shadow-sm border border-gray-200">
-                                <CardContent className="p-4">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-xs text-gray-500">
-                                            You are enrolled in the AI Fundamentals track
-                                        </span>
-                                        <span className="text-xs text-gray-500">In Progress</span>
-                                    </div>
-                                    <div className="font-medium">
-                                        Understanding Artificial Intelligence
-                                    </div>
-
-                                    <div className="flex justify-between items-center my-3">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center">
-                                                <span className="text-xs">✓</span>
-                                            </div>
-                                            <Progress value={25} max={100} className="w-28 h-2" />
-                                        </div>
-                                        <div className="text-xs text-gray-500">Started</div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex items-center space-x-1">
-                                                <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
-                                                    PRACTICE
-                                                </Badge>
-                                                <div className="text-xs text-gray-700">
-                                                    Understanding Artificial Intelligence
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center space-x-1">
-                                                <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
-                                                    APPLY
-                                                </Badge>
-                                                <div className="text-xs text-gray-700">
-                                                    Investigating Netflix Movies
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <Button className="bg-[#657ed4] hover:bg-blue-600 text-white text-xs">
-                                            Go To Course
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-sm">No courses enrolled yet.</p>
+                            )}
                         </div>
                     </section>
 
@@ -504,17 +545,21 @@ const Process = () => {
                                 </div>
                             </div>
                             <div className="text-center mb-4">
-                                <h3 className="font-medium text-lg">Hey, To Duy Hoang!</h3>
-                                <p className="text-sm text-gray-500">Profile 30% complete</p>
+                                <h3 className="font-medium text-lg">
+                                    Hey, {user?.fullName || 'User'}!
+                                </h3>
+                                <p className="text-sm text-gray-500">Profile % complete</p>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span>Daily Streak</span>
-                                    <span className="font-medium">0 days</span>
+                                    <span className="font-medium">
+                                        {user?.dailyStreak || 0} days
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span>Total XP</span>
-                                    <span className="font-medium">0 XP</span>
+                                    <span className="font-medium">{user?.totalXP || 0} XP</span>
                                 </div>
                             </div>
                         </CardContent>
