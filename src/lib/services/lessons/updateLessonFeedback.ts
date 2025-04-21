@@ -3,21 +3,17 @@ import httpRequest from '@/lib/util/HttpRequest';
 export const UpdateLesson = async (
     token: string,
     id: string,
-    title: string,
-    description: string,
-    price: string,
-    author: string,
-    category: string,
+    status: string,
+    mark: string,
+    note: string, // Đảm bảo note được sử dụng
 ) => {
     try {
         const response = await httpRequest.put(
             `/lesson/${id}`,
             {
-                title,
-                description,
-                price,
-                author,
-                category,
+                status,
+                mark,
+                note, // Thêm note vào payload
             },
             {
                 headers: { Authorization: `Bearer ${token}` },
