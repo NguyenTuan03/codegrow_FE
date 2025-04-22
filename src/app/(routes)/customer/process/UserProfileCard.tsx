@@ -11,9 +11,13 @@ interface Course {
     author: {
         fullName: string;
     };
-    category: string;
+    category: Category[];
     createdAt: string;
     enrolledCount: number;
+}
+interface Category {
+    _id: string;
+    name: string;
 }
 interface User {
     _id: string;

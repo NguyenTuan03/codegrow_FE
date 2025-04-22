@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/courses/[courseId]/page.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -12,6 +11,7 @@ import OverviewTab from '@/app/(routes)/customer/courses/[courseId]/OverviewTab'
 import GradesTab from '@/app/(routes)/customer/courses/[courseId]/GradesTab';
 import NotesTab from '@/app/(routes)/customer/courses/[courseId]/NotesTab';
 import MessagesTab from '@/app/(routes)/customer/courses/[courseId]/MessagesTab';
+import { GetProgress } from '@/lib/services/api/progress';
 
 interface Course {
     _id: string;
@@ -25,7 +25,7 @@ interface Course {
         email: string;
         role: string;
     };
-    category: { _id: string; name: string } | null; // Allow null
+    category: { _id: string; name: string } | null;
     createdAt: string;
 }
 
@@ -34,16 +34,19 @@ export default function CourseLearningPage() {
     const { courseId } = useParams<{ courseId: string }>();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
-    const [completedModules] = useState({
-        '1': false, // Match mock lesson IDs
-        '2': false,
-        '3': false,
-    });
+    // const [completedModules] = useState({
+    //     '1': false,
+    //     '2': false,
+    //     '3': false,
+    //     '4': false,
+    // });
+    const [progressPercentage, setProgressPercentage] = useState(0);
+    const [completedModules, setCompletedModules] = useState<{ [key: string]: boolean }>({});
 
-    const progressPercentage =
-        (Object.values(completedModules).filter(Boolean).length /
-            Object.values(completedModules).length) *
-        100;
+    // const progressPercentage =
+    //     (Object.values(completedModules).filter(Boolean).length /
+    //         Object.values(completedModules).length) *
+    //     100;
 
     const handleNavigation = (path: string) => {
         router.push(path);
@@ -89,9 +92,41 @@ export default function CourseLearningPage() {
             setLoading(false);
         }
     };
+    const handleProcess = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast({
+                title: 'Error',
+                description: 'Token not found. Please log in again.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        try {
+            const progress = await GetProgress(token, courseId);
+            console.log('Progress:', progress);
+
+            if (progress?.percentage !== undefined) {
+                setProgressPercentage(progress.percentage);
+            }
+
+            if (progress?.completedModules) {
+                setCompletedModules(progress.completedModules);
+            }
+        } catch (error) {
+            console.error('Failed to fetch progress:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to load progress data.',
+                variant: 'destructive',
+            });
+        }
+    };
 
     useEffect(() => {
         fetchCourseData();
+        handleProcess();
     }, [courseId]);
 
     if (loading) {

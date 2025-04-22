@@ -2,13 +2,13 @@
 
 import { get } from '@/lib/util/HttpRequest';
 
-export const GetLessons = async (courseId: string) => {
+export const GetQuiz = async (lessonId: string) => {
     try {
-        const response = await get(`/course/${courseId}/lessons`);
+        const response = await get(`/quizzes/${lessonId}/lessons`);
 
         return response;
     } catch (error) {
-        console.error('Error from GetLessons API:', error);
+        console.error('Error from GetQuiz API:', error);
         throw error instanceof Error ? error : new Error('Failed to fetch lessons');
     }
 };

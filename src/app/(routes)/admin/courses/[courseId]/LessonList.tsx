@@ -1,8 +1,17 @@
+// @/app/(routes)/admin/courses/[courseId]/LessonList.tsx
 'use client';
 
 import { useState, useEffect, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'; // Import table components
 import {
     Pagination,
     PaginationContent,
@@ -51,32 +60,35 @@ export default function LessonList({ courseId }: LessonListProps) {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [videoKey, setVideoKey] = useState(localStorage.getItem('videoKey') || '');
+    const [videoUrl, setVideoUrl] = useState(localStorage.getItem('videoUrl') || '');
     const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         content: '',
         order: 0,
-        videoUrl: '',
-        videoKey: '',
+        videoUrl: localStorage.getItem('videoUrl') || '',
+        videoKey: localStorage.getItem('videoKey') || '',
         quiz: [] as string[],
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const limit = 8; // Number of lessons per page
+    const router = useRouter(); // Initialize useRouter for navigation
 
-    // Fetch lessons
-    const loadLessons = async (page: number = 1) => {
+    const loadLessons = async () => {
         try {
             setLoading(true);
-            const data = await GetLessons(courseId, page, limit);
+            const data = await GetLessons(courseId);
             console.log('API Data:', data);
 
-            if (data?.metadata?.lessons && data.metadata.lessons.length > 0) {
+            if (data?.status === 200) {
+                // The metadata is an array of lessons directly
                 setLessons(
-                    data.metadata.lessons.map((lesson: Lesson) => ({
+                    data.metadata.map((lesson: Lesson) => ({
                         _id: lesson._id,
                         title: lesson.title,
                         content: lesson.content,
+                        status: lesson.status,
                         videoUrl: lesson.videoUrl,
                         videoKey: lesson.videoKey,
                         quiz: lesson.quiz,
@@ -85,8 +97,11 @@ export default function LessonList({ courseId }: LessonListProps) {
                         updatedAt: lesson.updatedAt,
                     })),
                 );
-                setCurrentPage(data.metadata.page);
-                setTotalPages(data.metadata.totalPages);
+
+                // If you still need pagination:
+                // These might need to be adjusted if they're provided differently
+                setCurrentPage(1); // Or however the current page is provided in the response
+                setTotalPages(Math.ceil(data.metadata.length / 10)); // Or however your pagination works
             } else {
                 setLessons([]);
             }
@@ -104,23 +119,36 @@ export default function LessonList({ courseId }: LessonListProps) {
     };
 
     useEffect(() => {
-        loadLessons(currentPage);
-    }, [courseId, currentPage]);
+        loadLessons();
+    }, [courseId]);
+
+    // Reset form and upload states when the upload dialog closes
+    useEffect(() => {
+        if (!isUploadDialogOpen) {
+            setSelectedFile(null);
+            setUploadLoading(false);
+        }
+    }, [isUploadDialogOpen]);
+
+    // Reset form when the create dialog closes
+    useEffect(() => {
+        if (!isCreateDialogOpen) {
+            setFormData({
+                title: '',
+                content: '',
+                order: 0,
+                videoUrl: videoUrl,
+                videoKey: videoKey,
+                quiz: [],
+            });
+        }
+    }, [isCreateDialogOpen, videoUrl, videoKey]);
 
     // Handle form input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
-    // Handle quiz input changes (treating quiz as a comma-separated string)
-    // const handleQuizChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const quizItems = e.target.value
-    //         .split(',')
-    //         .map((item) => item.trim())
-    //         .filter(Boolean);
-    //     setFormData((prev) => ({ ...prev, quiz: quizItems }));
-    // };
 
     // Handle file selection
     const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
@@ -153,27 +181,36 @@ export default function LessonList({ courseId }: LessonListProps) {
                 fileName: selectedFile.name,
                 fileType: selectedFile.type,
             });
-            const uploadUrl = uploadData.metadata.uploadUrl;
-            console.log('Upload URL:', uploadUrl);
+            console.log('Upload Data:', uploadData);
 
-            const videoKey = uploadData.metadata.key;
-
-            if (uploadData.status === 201) {
-                const response = await UploadVideo(uploadUrl, selectedFile.type);
-                console.log('Upload Response:', response);
-
-                if (response.status !== 201) {
-                    throw new Error('Failed to upload video');
-                }
+            if (!uploadData || !uploadData.metadata || !uploadData.metadata.uploadUrl) {
+                throw new Error('Failed to generate upload URL');
             }
 
-            // Extract the video URL from the response
-            const baseUrl = uploadUrl.split('?')[0];
+            const uploadUrl = uploadData.metadata.uploadUrl;
+            const videoKey = uploadData.metadata.key;
+            const publicUrl = uploadData.metadata.publicUrl;
+
+            if (uploadData.status === 201) {
+                const response = await UploadVideo(selectedFile.name, uploadUrl);
+                console.log('Upload Response:', response);
+                if (response.status !== 200) {
+                    throw new Error('Failed to upload video');
+                }
+            } else {
+                throw new Error('Failed to generate upload URL with status 201');
+            }
+
+            // Update video URL and key
+            setVideoUrl(publicUrl);
+            setVideoKey(videoKey);
+            localStorage.setItem('videoUrl', publicUrl);
+            localStorage.setItem('videoKey', videoKey);
 
             // Update form data with video URL and key
             setFormData((prev) => ({
                 ...prev,
-                videoUrl: baseUrl,
+                videoUrl: publicUrl,
                 videoKey: videoKey,
             }));
 
@@ -213,8 +250,8 @@ export default function LessonList({ courseId }: LessonListProps) {
                 title: formData.title,
                 content: formData.content,
                 order: formData.order,
-                videoUrl: formData.videoUrl || undefined,
-                videoKey: formData.videoKey || undefined,
+                videoUrl: formData.videoUrl,
+                videoKey: formData.videoKey,
                 quiz: formData.quiz.length > 0 ? formData.quiz : undefined,
             });
 
@@ -225,9 +262,22 @@ export default function LessonList({ courseId }: LessonListProps) {
                 className: 'bg-[#5AD3AF] text-black',
             });
 
-            setFormData({ title: '', content: '', order: 0, videoUrl: '', videoKey: '', quiz: [] });
+            // Clear videoUrl and videoKey after successful lesson creation
+            setVideoUrl('');
+            setVideoKey('');
+            localStorage.removeItem('videoUrl');
+            localStorage.removeItem('videoKey');
+
+            setFormData({
+                title: '',
+                content: '',
+                order: 0,
+                videoUrl: '',
+                videoKey: '',
+                quiz: [],
+            });
             setIsCreateDialogOpen(false);
-            loadLessons(currentPage);
+            loadLessons();
         } catch (error) {
             console.error('Failed to create lesson:', error);
             toast({
@@ -238,166 +288,214 @@ export default function LessonList({ courseId }: LessonListProps) {
         }
     };
 
+    // Handle view details with navigation
+    const handleViewDetails = (lessionid: string) => {
+        console.log('Navigating to lesson details:', lessionid);
+        router.push(`/admin/courses/${courseId}/${lessionid}`);
+    };
+
     return (
         <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
                     Lessons
                 </h2>
-                <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                            Upload Video
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>Upload Video</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                            <div>
-                                <Label htmlFor="video-upload">Select Video</Label>
-                                <Input
-                                    id="video-upload"
-                                    type="file"
-                                    accept="video/*"
-                                    onChange={handleFileSelect}
-                                    className="dark:bg-gray-700 dark:text-gray-200"
-                                />
-                            </div>
-                            <Button
-                                onClick={async () => {
-                                    const success = await handleFileUpload();
-                                    if (success) {
-                                        setIsUploadDialogOpen(false);
-                                        setIsCreateDialogOpen(true);
-                                    }
-                                }}
-                                disabled={!selectedFile || uploadLoading}
-                                className="w-full"
-                            >
-                                {uploadLoading ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                        Uploading...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="h-4 w-4 mr-2" />
-                                        Upload Video
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-
-                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogContent className="max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>Create New Lesson</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                            <div>
-                                <Label htmlFor="title">Title</Label>
-                                <Input
-                                    id="title"
-                                    name="title"
-                                    value={formData.title}
-                                    onChange={handleInputChange}
-                                    placeholder="Lesson title"
-                                    className="dark:bg-gray-700 dark:text-gray-200"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="content">Content</Label>
-                                <Textarea
-                                    id="content"
-                                    name="content"
-                                    value={formData.content}
-                                    onChange={handleInputChange}
-                                    placeholder="Lesson content"
-                                    className="dark:bg-gray-700 dark:text-gray-200"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="order">Order</Label>
-                                <Input
-                                    id="order"
-                                    name="order"
-                                    type="number"
-                                    value={formData.order}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            order: parseInt(e.target.value),
-                                        }))
-                                    }
-                                    placeholder="Lesson order"
-                                    className="dark:bg-gray-700 dark:text-gray-200"
-                                />
-                            </div>
-                            <Button
-                                onClick={handleCreateLesson}
-                                className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                                Create Lesson
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <div className="space-x-2">
+                    {!videoUrl ? (
+                        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                                    Upload Video
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Upload Video</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-4">
+                                    <div>
+                                        <Label htmlFor="video-upload">Select Video</Label>
+                                        <Input
+                                            id="video-upload"
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={handleFileSelect}
+                                            className="dark:bg-gray-700 dark:text-gray-200"
+                                        />
+                                    </div>
+                                    <Button
+                                        onClick={async () => {
+                                            const success = await handleFileUpload();
+                                            if (success) {
+                                                setIsUploadDialogOpen(false);
+                                            }
+                                        }}
+                                        disabled={!selectedFile || uploadLoading}
+                                        className="w-full"
+                                    >
+                                        {uploadLoading ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Uploading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-4 w-4 mr-2" />
+                                                Upload Video
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    ) : (
+                        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                                    Create Lesson
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Create New Lesson</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-4">
+                                    <div>
+                                        <Label htmlFor="title">Title</Label>
+                                        <Input
+                                            id="title"
+                                            name="title"
+                                            value={formData.title}
+                                            onChange={handleInputChange}
+                                            placeholder="Lesson title"
+                                            className="dark:bg-gray-700 dark:text-gray-200"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="content">Content</Label>
+                                        <Textarea
+                                            id="content"
+                                            name="content"
+                                            value={formData.content}
+                                            onChange={handleInputChange}
+                                            placeholder="Lesson content"
+                                            className="dark:bg-gray-700 dark:text-gray-200"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="order">Order</Label>
+                                        <Input
+                                            id="order"
+                                            name="order"
+                                            type="number"
+                                            value={formData.order}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    order: parseInt(e.target.value),
+                                                }))
+                                            }
+                                            placeholder="Lesson order"
+                                            className="dark:bg-gray-700 dark:text-gray-200"
+                                        />
+                                    </div>
+                                    {formData.videoUrl && (
+                                        <div>
+                                            <Label>Video URL</Label>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                {formData.videoUrl}
+                                            </p>
+                                        </div>
+                                    )}
+                                    <Button
+                                        onClick={handleCreateLesson}
+                                        className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                                    >
+                                        Create Lesson
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+                </div>
             </div>
 
             {loading ? (
                 <div className="flex justify-center items-center h-32">
                     <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
                 </div>
-            ) : lessons.length === 0 ? (
+            ) : !lessons ? (
                 <div className="text-center text-gray-600 dark:text-gray-400 p-4">
                     No lessons found for this course.
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {lessons.map((lesson) => (
-                            <Card
-                                key={lesson._id}
-                                className="hover:shadow-lg transition-shadow overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                            >
-                                <div className="h-36 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                    <span className="text-gray-700 dark:text-gray-300">
-                                        Lesson {lesson.order}
-                                    </span>
-                                </div>
-                                <CardContent className="p-4">
-                                    <h4 className="font-medium mb-1 text-gray-900 dark:text-gray-100">
-                                        {lesson.title}
-                                    </h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                        {lesson.content
-                                            ? lesson.content.length > 100
-                                                ? `${lesson.content.substring(0, 100)}...`
-                                                : lesson.content
-                                            : 'No content'}
-                                    </p>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="font-medium text-gray-900 dark:text-gray-100">
-                                            Order: {lesson.order}
-                                        </span>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="flex justify-between p-4">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                    >
-                                        <Eye className="h-4 w-4 mr-1" />
-                                        View
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Title </TableHead>
+                                    <TableHead>Content</TableHead>
+                                    <TableHead>Order</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Video URL</TableHead>
+                                    <TableHead>Created At</TableHead>
+                                    <TableHead>Updated At</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {lessons.map((lesson) => (
+                                    <TableRow key={lesson._id}>
+                                        <TableCell>{lesson.title}</TableCell>
+                                        <TableCell>
+                                            {lesson.content
+                                                ? lesson.content.length > 50
+                                                    ? `${lesson.content.substring(0, 50)}...`
+                                                    : lesson.content
+                                                : 'No content'}
+                                        </TableCell>
+                                        <TableCell>{lesson.order}</TableCell>
+                                        <TableCell>{lesson.status || 'N/A'}</TableCell>
+                                        <TableCell>
+                                            {lesson.videoUrl ? (
+                                                <a
+                                                    href={lesson.videoUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline"
+                                                >
+                                                    View Video
+                                                </a>
+                                            ) : (
+                                                'No video'
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {lesson.createdAt
+                                                ? new Date(lesson.createdAt).toLocaleString()
+                                                : 'N/A'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {lesson.updatedAt
+                                                ? new Date(lesson.updatedAt).toLocaleString()
+                                                : 'N/A'}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleViewDetails(lesson._id)}
+                                                className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                                            >
+                                                <Eye className="h-4 w-4 mr-1" />
+                                                View
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
 
                     {totalPages > 1 && (

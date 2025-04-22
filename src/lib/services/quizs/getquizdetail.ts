@@ -36,10 +36,10 @@ interface ApiResponse {
     metadata: Lesson;
 }
 
-export const viewDetailLesson = async (id: string): Promise<ApiResponse> => {
+export const viewDetaiQuiz = async (id: string): Promise<ApiResponse> => {
     try {
         const token = localStorage.getItem('token');
-        const res = await get(`/lesson/${id}`, {
+        const res = await get(`/quizzes/${id}`, {
             headers: {
                 Authorization: token ? `Bearer ${token}` : '',
             },

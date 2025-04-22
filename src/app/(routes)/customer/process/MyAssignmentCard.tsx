@@ -1,59 +1,167 @@
-// @/components/MyAssignmentCard.tsx
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import { Submissioned } from '@/lib/services/api/submissioned';
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Loader2 } from 'lucide-react';
 
-export default function MyAssignmentCard() {
+interface Props {
+    user: {
+        _id: string;
+    };
+}
+
+interface Submission {
+    _id: string;
+    quiz: string;
+    user: string;
+    isPassed: boolean;
+    results: { questionId: string; answer: string; isCorrect: boolean }[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+
+const QUIZ_NAMES: Record<string, string> = {
+    '6806386a11646d230439c052': 'Targeting Audience',
+    '68063a0111646d230439c062': 'User Persona Research',
+    // Thêm các quiz khác tại đây
+};
+
+export default function MyAssignmentCard({ user }: Props) {
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    const handleSubmission = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token not found');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await Submissioned(token);
+            console.log('Response:', response);
+            const userSubmissions = response.metadata.filter(
+                (submission: Submission) => submission.user === user._id,
+            );
+            setSubmissions(userSubmissions);
+        } catch (error) {
+            console.error('Error fetching submissions:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user?._id) {
+            handleSubmission();
+        }
+    }, [user]);
+
+    // Phân trang
+    const totalPages = Math.ceil(submissions.length / itemsPerPage);
+    const currentItems = submissions.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage,
+    );
+
     return (
-        <Card className="shadow-sm border border-gray-200">
-            <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                        <h3 className="font-medium">My Assignment</h3>
+        <Card className="shadow-sm">
+            <CardHeader>
+                <CardTitle className="text-lg">My Assignments</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                    <div className="flex justify-center items-center h-32">
+                        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                     </div>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm border-b pb-3">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center mr-2 text-xs">
-                                1
-                            </div>
-                            <span>Targeting Audience</span>
+                ) : submissions.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No assignments submitted yet</p>
+                ) : (
+                    <>
+                        <div className="space-y-4">
+                            {currentItems.map((submission) => (
+                                <div
+                                    key={submission._id}
+                                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <h3 className="font-medium">
+                                                {QUIZ_NAMES[submission.quiz] ||
+                                                    `Quiz ${submission.quiz.slice(0, 4)}`}
+                                            </h3>
+                                            <p className="text-sm text-gray-500">
+                                                Submitted on{' '}
+                                                {new Date(
+                                                    submission.createdAt,
+                                                ).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                        <Badge
+                                            variant={
+                                                submission.isPassed ? 'default' : 'destructive'
+                                            }
+                                        >
+                                            {submission.isPassed ? 'Passed' : 'Failed'}
+                                        </Badge>
+                                    </div>
+                                    <div className="mt-2">
+                                        <p className="text-sm">
+                                            Score:{' '}
+                                            {submission.results.filter((r) => r.isCorrect).length}/
+                                            {submission.results.length}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <span className="text-green-500">Completed</span>
-                    </div>
 
-                    <div className="flex items-center justify-between text-sm border-b pb-3">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center mr-2 text-xs">
-                                2
-                            </div>
-                            <span>User Persona Research</span>
-                        </div>
-                        <span className="text-amber-500">Pending</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm border-b pb-3">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center mr-2 text-xs">
-                                3
-                            </div>
-                            <span>User Research & Strategies</span>
-                        </div>
-                        <span className="text-green-500">Completed</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center mr-2 text-xs">
-                                4
-                            </div>
-                            <span>Web User Interface Design</span>
-                        </div>
-                        <span className="text-red-500">Overdue</span>
-                    </div>
-                </div>
+                        {totalPages > 1 && (
+                            <Pagination className="mt-6">
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        {currentPage > 1 && (
+                                            <PaginationPrevious
+                                                onClick={() =>
+                                                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                                                }
+                                            />
+                                        )}
+                                    </PaginationItem>
+                                    <PaginationItem>
+                                        <span className="px-4">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                    </PaginationItem>
+                                    <PaginationItem>
+                                        {currentPage < totalPages && (
+                                            <PaginationNext
+                                                onClick={() =>
+                                                    setCurrentPage((prev) =>
+                                                        Math.min(prev + 1, totalPages),
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        )}
+                    </>
+                )}
             </CardContent>
         </Card>
     );

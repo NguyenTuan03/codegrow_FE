@@ -9,7 +9,7 @@ export const UpdateLesson = async (
 ) => {
     try {
         const response = await httpRequest.put(
-            `/lesson/${id}`,
+            `/lesson/${id}/review`,
             {
                 status,
                 mark,
@@ -21,7 +21,7 @@ export const UpdateLesson = async (
         );
 
         console.log('✅ API Response:', response.data);
-        return response.data;
+        return response;
     } catch (error) {
         console.error('❌ Error from UpdateLesson API:', error);
         throw error;
