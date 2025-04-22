@@ -90,17 +90,7 @@ export const AdminSidebar = () => {
                                                             </Link>
                                                         </SidebarMenuButton>
                                                     </SidebarMenuItem>
-                                                    <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/listcustomer"
-                                                                className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
-                                                            >
-                                                                <Eye className="h-5 w-5" />
-                                                                List Customer
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
+
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
@@ -128,6 +118,17 @@ export const AdminSidebar = () => {
                                             </AccordionTrigger>
                                             <AccordionContent className="pb-0 pl-6">
                                                 <SidebarMenu>
+                                                    <SidebarMenuItem>
+                                                        <SidebarMenuButton asChild>
+                                                            <Link
+                                                                href="/admin/listcustomer"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+                                                            >
+                                                                <Eye className="h-5 w-5" />
+                                                                List Customer
+                                                            </Link>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
