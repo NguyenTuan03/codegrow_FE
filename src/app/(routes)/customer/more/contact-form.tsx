@@ -30,6 +30,7 @@ const formSchema = z.object({
         .max(15, 'Phone number cannot exceed 15 characters')
         .regex(/^[0-9+]+$/, 'Phone number can only contain numbers and +'),
     note: z.string().max(500, 'Note cannot exceed 500 characters').optional(),
+    city: z.string().max(100, 'City cannot exceed 100 characters'),
 });
 
 type ContactFormValues = z.infer<typeof formSchema>;
@@ -43,6 +44,7 @@ export default function ContactForm() {
             fullName: '',
             email: '',
             phone: '',
+            city: '',
             note: '',
         },
     });
@@ -58,14 +60,15 @@ export default function ContactForm() {
                 throw new Error('Authentication required. Please log in.');
             }
 
-            await RegisterClass(
+            const res = await RegisterClass(
                 token,
                 values.fullName.trim(),
                 values.email.trim().toLowerCase(),
                 values.phone.trim(),
+                values.city.trim(),
                 values.note?.trim() || '',
             );
-
+            console.log('Registration response:', res);
             toast({
                 title: 'Success!',
                 description: 'Your registration was submitted successfully',
@@ -161,7 +164,24 @@ export default function ContactForm() {
                             </FormItem>
                         )}
                     />
-
+                    <FormField
+                        control={form.control}
+                        name="city"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="sr-only">City</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className={inputStyle}
+                                        placeholder="City"
+                                        {...field}
+                                        disabled={isSubmitting}
+                                    />
+                                </FormControl>
+                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                            </FormItem>
+                        )}
+                    />
                     <FormField
                         control={form.control}
                         name="note"

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-
 import { toast } from '@/components/ui/use-toast';
 import {
     Loader2,
@@ -66,7 +65,6 @@ export default function LessonDetail() {
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [loading, setLoading] = useState(true);
-
     const [isMarked, setIsMarked] = useState(false);
     const [isMarking, setIsMarking] = useState(false);
     const router = useRouter();
@@ -78,7 +76,6 @@ export default function LessonDetail() {
     const loadLessonDetails = async () => {
         try {
             setLoading(true);
-
             const response = await viewDetailLesson(lessonId);
             console.log('viewDetailLesson response:', response);
 
@@ -94,6 +91,27 @@ export default function LessonDetail() {
             });
         }
     };
+
+    // Load all quizzes for the lesson
+    const loadAllQuiz = async () => {
+        try {
+            const response = await GetQuiz(lessonId);
+            console.log('GetQuiz response:', response);
+
+            const quizData = response.metadata || [];
+            setQuizzes(quizData);
+        } catch (error) {
+            setQuizzes([]);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to load quizzes',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleMarkAsCompleted = async () => {
         try {
             const token = localStorage.getItem('token') || '';
@@ -116,25 +134,6 @@ export default function LessonDetail() {
             setIsMarking(false);
         }
     };
-    // Load all quizzes for the lesson
-    const loadAllQuiz = async () => {
-        try {
-            const response = await GetQuiz(lessonId);
-            console.log('GetQuiz response:', response);
-
-            const quizData = response.metadata || [];
-            setQuizzes(quizData);
-        } catch (error) {
-            setQuizzes([]);
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to load quizzes',
-                variant: 'destructive',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Load lesson and quizzes on mount
     useEffect(() => {
@@ -143,7 +142,7 @@ export default function LessonDetail() {
         const fetchData = async () => {
             await loadLessonDetails();
             await loadAllQuiz();
-            await handleMarkAsCompleted();
+            // Removed handleMarkAsCompleted from here
         };
         fetchData();
     }, [lessonId]);
@@ -173,7 +172,7 @@ export default function LessonDetail() {
                         Lesson Not Found
                     </h3>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                        The lesson you are looking for doesnt seem to exist.
+                        The lesson you are looking for doesn’t seem to exist.
                     </p>
                     <Button
                         onClick={() => router.push(`/customer/courses/${courseId}`)}

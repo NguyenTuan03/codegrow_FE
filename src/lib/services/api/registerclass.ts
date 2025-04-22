@@ -5,6 +5,7 @@ export const RegisterClass = async (
     fullName: string,
     email: string,
     phone: string,
+    city: string,
     note: string,
 ) => {
     try {
@@ -14,6 +15,7 @@ export const RegisterClass = async (
                 fullName,
                 email,
                 phone,
+                city,
                 note,
             },
             {

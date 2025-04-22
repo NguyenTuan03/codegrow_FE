@@ -30,12 +30,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Edit, Trash, Plus, Eye, ListChecks, Code } from 'lucide-react';
+import { Loader2, Edit, Trash, Plus, Eye, ListChecks, Code, ArrowLeft } from 'lucide-react';
 import { viewDetailLesson } from '@/lib/services/lessons/getdetailllesson';
 import { CreateQuiz } from '@/lib/services/quizs/createquiz';
 import { UpdateQuiz } from '@/lib/services/quizs/updatequiz';
 import { DeleteQuiz } from '@/lib/services/quizs/deletequiz';
 import { GetQuiz } from '@/lib/services/quizs/getquiz';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Lesson {
     _id: string;
@@ -425,46 +427,207 @@ export default function LessonDetail() {
     }
 
     return (
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
-                    Lesson Details
-                </h2>
-            </div>
-
-            {/* Lesson Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="container mx-auto px-4 py-8">
+            {/* Header với nút back và tiêu đề */}
+            <div className="flex items-center gap-4 mb-8">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => router.push(`/admin/courses/${courseId}`)}
+                    className="rounded-full"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <div>
-                    <Label className="text-gray-700 dark:text-gray-300">Title</Label>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{lesson.title}</p>
-                </div>
-                <div>
-                    <Label className="text-gray-700 dark:text-gray-300">Order</Label>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{lesson.order}</p>
-                </div>
-                <div>
-                    <Label className="text-gray-700 dark:text-gray-300">Content</Label>
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">
-                        {lesson.content || 'No content'}
-                    </p>
-                </div>
-                <div>
-                    <Label className="text-gray-700 dark:text-gray-300">Video</Label>
-                    {lesson.videoUrl ? (
-                        <a
-                            href={lesson.videoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-1 text-blue-600 hover:underline"
-                        >
-                            View Video
-                        </a>
-                    ) : (
-                        <p className="mt-1 text-gray-900 dark:text-gray-100">No video</p>
-                    )}
+                    <h1 className="text-2xl font-bold tracking-tight">Lesson Management</h1>
+                    <p className="text-muted-foreground">Manage lesson content and quizzes</p>
                 </div>
             </div>
 
+            {/* Tab layout cho bài học và quiz */}
+            <Tabs defaultValue="lesson" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 max-w-xs">
+                    <TabsTrigger value="lesson">Lesson</TabsTrigger>
+                    <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+                </TabsList>
+
+                {/* Tab nội dung bài học */}
+                <TabsContent value="lesson">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Lesson Details</CardTitle>
+                            <CardDescription>View and edit lesson information</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Title</Label>
+                                        <p className="text-sm font-medium">
+                                            {lesson?.title || 'N/A'}
+                                        </p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Order</Label>
+                                        <p className="text-sm font-medium">
+                                            {lesson?.order || 'N/A'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Content</Label>
+                                    <div className="p-4 bg-muted rounded-md">
+                                        <p className="text-sm">
+                                            {lesson?.content || 'No content available'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Video</Label>
+                                    {lesson?.videoUrl ? (
+                                        <Button variant="outline" asChild>
+                                            <a
+                                                href={lesson.videoUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2"
+                                            >
+                                                <Eye className="h-4 w-4" />
+                                                View Video
+                                            </a>
+                                        </Button>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">
+                                            No video available
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Tab quản lý quiz */}
+                <TabsContent value="quizzes">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle>Quizzes</CardTitle>
+                                <CardDescription>
+                                    Manage lesson quizzes and assessments
+                                </CardDescription>
+                            </div>
+                            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button size="sm" className="gap-2">
+                                        <Plus className="h-4 w-4" />
+                                        Add Quiz
+                                    </Button>
+                                </DialogTrigger>
+                                {/* Giữ nguyên dialog tạo quiz */}
+                            </Dialog>
+                        </CardHeader>
+                        <CardContent>
+                            {quizzes.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <div className="text-center space-y-2">
+                                        <Code className="h-8 w-8 mx-auto text-muted-foreground" />
+                                        <h3 className="text-lg font-medium">No quizzes yet</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Start by creating a new quiz
+                                        </p>
+                                        <Button
+                                            className="mt-4"
+                                            onClick={() => setIsCreateDialogOpen(true)}
+                                        >
+                                            Create Quiz
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="border rounded-lg overflow-hidden">
+                                    <Table>
+                                        <TableHeader className="bg-muted/50">
+                                            <TableRow>
+                                                <TableHead className="w-[120px]">Type</TableHead>
+                                                <TableHead>Question</TableHead>
+                                                <TableHead>Details</TableHead>
+                                                <TableHead className="w-[150px]">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {quizzes.map((quiz) => (
+                                                <TableRow key={quiz._id}>
+                                                    <TableCell>
+                                                        <span
+                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                                quiz.type === 'multiple_choice'
+                                                                    ? 'bg-purple-100 text-purple-800'
+                                                                    : 'bg-blue-100 text-blue-800'
+                                                            }`}
+                                                        >
+                                                            {quiz.type === 'multiple_choice'
+                                                                ? 'Multiple Choice'
+                                                                : 'Coding'}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell className="font-medium">
+                                                        <div className="line-clamp-2">
+                                                            {quiz.questionText}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {quiz.type === 'multiple_choice' ? (
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {quiz.options?.length} options
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-sm text-muted-foreground">
+                                                                {quiz.language} •{' '}
+                                                                {quiz.testCases?.length} test cases
+                                                            </div>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => openViewDialog(quiz)}
+                                                            >
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => openEditDialog(quiz)}
+                                                            >
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    openDeleteDialog(quiz._id)
+                                                                }
+                                                                className="text-red-600 hover:text-red-600"
+                                                            >
+                                                                <Trash className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
             {/* Quiz Section */}
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
@@ -740,104 +903,6 @@ export default function LessonDetail() {
                         </div>
                     </DialogContent>
                 </Dialog>
-            </div>
-
-            {/* Quiz Table */}
-            <div className="overflow-x-auto">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Question</TableHead>
-                            <TableHead>Details</TableHead>
-                            <TableHead>Explanation</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {quizzes.length > 0 ? (
-                            quizzes.map((quiz) => (
-                                <TableRow key={quiz._id}>
-                                    <TableCell>
-                                        {quiz.type === 'multiple_choice'
-                                            ? 'Multiple Choice'
-                                            : 'code'}
-                                    </TableCell>
-                                    <TableCell>{quiz.questionText}</TableCell>
-                                    <TableCell>
-                                        {quiz.type === 'multiple_choice' ? (
-                                            <ul className="list-disc pl-4">
-                                                {quiz.options?.map((option, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className={
-                                                            option.isCorrect ? 'text-green-600' : ''
-                                                        }
-                                                    >
-                                                        {option.text}{' '}
-                                                        {option.isCorrect && '(Correct)'}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <div>
-                                                <p>
-                                                    <strong>Language:</strong> {quiz.language}
-                                                </p>
-                                                <p>
-                                                    <strong>Starter Code:</strong>{' '}
-                                                    {quiz.starterCode?.substring(0, 50)}...
-                                                </p>
-                                                <p>
-                                                    <strong>Test Cases:</strong>{' '}
-                                                    {quiz.testCases?.length}
-                                                </p>
-                                            </div>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>{quiz.explanation}</TableCell>
-                                    <TableCell>
-                                        <div className="flex space-x-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => openViewDialog(quiz)}
-                                                className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                            >
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                View
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => openEditDialog(quiz)}
-                                                className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                            >
-                                                <Edit className="h-4 w-4 mr-1" />
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => openDeleteDialog(quiz._id)}
-                                                className="text-red-600 border-red-300 dark:border-red-600 dark:text-red-400"
-                                            >
-                                                <Trash className="h-4 w-4 mr-1" />
-                                                Delete
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={5} className="text-center">
-                                    No quizzes available.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
             </div>
 
             {/* Delete Confirmation Dialog */}

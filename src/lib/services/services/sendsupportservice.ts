@@ -5,6 +5,7 @@ interface SendSupportServiceParams {
     title: string;
     message: string; // Now accepts array of strings
     courseId: string;
+    classId?: string; // Optional classId parameter
 }
 
 export const SendSupportService = async ({
@@ -12,12 +13,13 @@ export const SendSupportService = async ({
     title,
     message,
     courseId,
+    classId,
 }: SendSupportServiceParams) => {
     try {
         console.log('Submitting support ticket with title:', title);
         const response = await httpRequest.post(
             `/services/ticket`,
-            { title, message, courseId }, // Send title, message, and courseId
+            { title, message, courseId, classId }, // Send title, message, courseId, and classId
             {
                 headers: { Authorization: `Bearer ${token}` },
             },

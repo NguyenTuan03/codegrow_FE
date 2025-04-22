@@ -133,7 +133,7 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
             <div className="flex justify-between items-center">
                 <Button
                     variant="outline"
-                    onClick={() => onNavigate(`/customer/courses/${courseId}`)}
+                    onClick={() => onNavigate(`/customer/courses`)}
                     className="text-[#657ED4] border-[#657ED4] hover:bg-[#f0f4ff] dark:hover:bg-[#2c365e]"
                 >
                     ← Back to Course

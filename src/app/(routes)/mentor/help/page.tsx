@@ -36,12 +36,16 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { GetClass } from '@/lib/services/class/getclass';
 
 interface Course {
     _id: string;
     title: string;
 }
-
+interface Class {
+    _id: string;
+    title: string;
+}
 interface ReplyBy {
     _id: string;
     fullName: string;
@@ -64,13 +68,15 @@ interface ServiceTicket {
 const supportSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     message: z.string().min(1, 'Message is required'),
-    courseId: z.string().min(1, 'Please select a course'),
+    courseId: z.string().optional(), // Make courseId truly optional without validation
+    classId: z.string().optional(), // Make classId truly optional without validation
 });
 
 export default function SupportPage() {
     const [tickets, setTickets] = useState<ServiceTicket[]>([]);
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<Course[]>([]);
+    const [classes, setClasses] = useState<Class[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
     const form = useForm<z.infer<typeof supportSchema>>({
@@ -78,7 +84,8 @@ export default function SupportPage() {
         defaultValues: {
             title: '',
             message: '',
-            courseId: '',
+            courseId: '', // Default to empty string
+            classId: '', // Default to empty string
         },
     });
 
@@ -136,6 +143,22 @@ export default function SupportPage() {
             setLoading(false);
         }
     };
+    const handleGetAllClass = async () => {
+        try {
+            const response = await GetClass();
+            console.log('API Response  class:', response);
+            setClasses(response.metadata.classes || []);
+        } catch (error) {
+            console.error('Failed to fetch service tickets:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch your service tickets.',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const onSubmit = async (values: z.infer<typeof supportSchema>) => {
         setIsSubmitting(true);
@@ -149,7 +172,8 @@ export default function SupportPage() {
                 token,
                 title: values.title,
                 message: values.message,
-                courseId: values.courseId,
+                courseId: values.courseId || '', // If courseId is undefined, send an empty string
+                classId: values.classId || '',
             });
             toast({
                 title: 'Success',
@@ -172,6 +196,7 @@ export default function SupportPage() {
     useEffect(() => {
         fetchUserCourses();
         fetchTickets();
+        handleGetAllClass();
     }, []);
 
     if (loading) {
@@ -221,11 +246,11 @@ export default function SupportPage() {
                                         <FormItem>
                                             <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
                                                 <Book className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-                                                Course
+                                                Course (Optional)
                                             </FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
-                                                defaultValue={field.value}
+                                                value={field.value || ''} // Ensure value is controlled
                                                 disabled={isSubmitting || courses.length === 0}
                                             >
                                                 <FormControl>
@@ -246,7 +271,7 @@ export default function SupportPage() {
                                                             placeholder={
                                                                 courses.length === 0
                                                                     ? 'No courses enrolled'
-                                                                    : 'Select a course'
+                                                                    : 'Select a course (optional)'
                                                             }
                                                         />
                                                     </SelectTrigger>
@@ -260,6 +285,72 @@ export default function SupportPage() {
                                                     "
                                                 >
                                                     {courses.map((course) => (
+                                                        <SelectItem
+                                                            key={course._id}
+                                                            value={course._id}
+                                                            className="
+                                                                hover:bg-gray-100 dark:hover:bg-gray-700
+                                                                focus:bg-gray-100 dark:focus:bg-gray-700
+                                                                text-gray-900 dark:text-gray-100
+                                                                transition-colors duration-200
+                                                                py-2 px-4
+                                                            "
+                                                        >
+                                                            {course.title}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage className="text-red-500 dark:text-red-400" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="classId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                                <Book className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                                                Class (Optional)
+                                            </FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={field.value || ''} // Ensure value is controlled
+                                                disabled={isSubmitting || classes.length === 0}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger
+                                                        className={`
+                                                            border border-gray-300 dark:border-gray-600
+                                                            bg-gray-50 dark:bg-gray-700
+                                                            text-gray-900 dark:text-gray-100
+                                                            rounded-lg
+                                                            focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                                                            focus:border-transparent
+                                                            transition-all duration-200
+                                                            ${classes.length === 0 ? 'text-gray-400' : ''}
+                                                            ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
+                                                        `}
+                                                    >
+                                                        <SelectValue
+                                                            placeholder={
+                                                                classes.length === 0
+                                                                    ? 'No class enrolled'
+                                                                    : 'Select a class (optional)'
+                                                            }
+                                                        />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent
+                                                    className="
+                                                        bg-white dark:bg-gray-800
+                                                        border border-gray-300 dark:border-gray-600
+                                                        rounded-lg shadow-lg
+                                                        max-h-60 overflow-y-auto
+                                                    "
+                                                >
+                                                    {classes.map((course) => (
                                                         <SelectItem
                                                             key={course._id}
                                                             value={course._id}

@@ -1,8 +1,7 @@
-// @/app/(routes)/admin/courses/[courseId]/LessonList.tsx
 'use client';
 
 import { useState, useEffect, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -11,7 +10,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table'; // Import table components
+} from '@/components/ui/table';
 import {
     Pagination,
     PaginationContent,
@@ -73,7 +72,7 @@ export default function LessonList({ courseId }: LessonListProps) {
         quiz: [] as string[],
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const router = useRouter(); // Initialize useRouter for navigation
+    const router = useRouter();
 
     const loadLessons = async () => {
         try {
@@ -82,7 +81,6 @@ export default function LessonList({ courseId }: LessonListProps) {
             console.log('API Data:', data);
 
             if (data?.status === 200) {
-                // The metadata is an array of lessons directly
                 setLessons(
                     data.metadata.map((lesson: Lesson) => ({
                         _id: lesson._id,
@@ -97,11 +95,8 @@ export default function LessonList({ courseId }: LessonListProps) {
                         updatedAt: lesson.updatedAt,
                     })),
                 );
-
-                // If you still need pagination:
-                // These might need to be adjusted if they're provided differently
-                setCurrentPage(1); // Or however the current page is provided in the response
-                setTotalPages(Math.ceil(data.metadata.length / 10)); // Or however your pagination works
+                setCurrentPage(1);
+                setTotalPages(Math.ceil(data.metadata.length / 10));
             } else {
                 setLessons([]);
             }
@@ -122,7 +117,6 @@ export default function LessonList({ courseId }: LessonListProps) {
         loadLessons();
     }, [courseId]);
 
-    // Reset form and upload states when the upload dialog closes
     useEffect(() => {
         if (!isUploadDialogOpen) {
             setSelectedFile(null);
@@ -130,7 +124,6 @@ export default function LessonList({ courseId }: LessonListProps) {
         }
     }, [isUploadDialogOpen]);
 
-    // Reset form when the create dialog closes
     useEffect(() => {
         if (!isCreateDialogOpen) {
             setFormData({
@@ -144,20 +137,17 @@ export default function LessonList({ courseId }: LessonListProps) {
         }
     }, [isCreateDialogOpen, videoUrl, videoKey]);
 
-    // Handle form input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Handle file selection
     const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedFile(e.target.files[0]);
         }
     };
 
-    // Handle file upload
     const handleFileUpload = async (): Promise<boolean> => {
         if (!selectedFile) {
             toast({
@@ -175,7 +165,6 @@ export default function LessonList({ courseId }: LessonListProps) {
                 throw new Error('Authentication token is missing');
             }
 
-            // Generate upload URL
             const uploadData = await GenerateUploadUrl({
                 token,
                 fileName: selectedFile.name,
@@ -192,7 +181,7 @@ export default function LessonList({ courseId }: LessonListProps) {
             const publicUrl = uploadData.metadata.publicUrl;
 
             if (uploadData.status === 201) {
-                const response = await UploadVideo(selectedFile.name, uploadUrl);
+                const response = await UploadVideo(selectedFile.type, uploadUrl);
                 console.log('Upload Response:', response);
                 if (response.status !== 200) {
                     throw new Error('Failed to upload video');
@@ -201,13 +190,11 @@ export default function LessonList({ courseId }: LessonListProps) {
                 throw new Error('Failed to generate upload URL with status 201');
             }
 
-            // Update video URL and key
             setVideoUrl(publicUrl);
             setVideoKey(videoKey);
             localStorage.setItem('videoUrl', publicUrl);
             localStorage.setItem('videoKey', videoKey);
 
-            // Update form data with video URL and key
             setFormData((prev) => ({
                 ...prev,
                 videoUrl: publicUrl,
@@ -236,7 +223,6 @@ export default function LessonList({ courseId }: LessonListProps) {
         }
     };
 
-    // Handle create lesson
     const handleCreateLesson = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -262,7 +248,6 @@ export default function LessonList({ courseId }: LessonListProps) {
                 className: 'bg-[#5AD3AF] text-black',
             });
 
-            // Clear videoUrl and videoKey after successful lesson creation
             setVideoUrl('');
             setVideoKey('');
             localStorage.removeItem('videoUrl');
@@ -288,265 +273,550 @@ export default function LessonList({ courseId }: LessonListProps) {
         }
     };
 
-    // Handle view details with navigation
     const handleViewDetails = (lessionid: string) => {
         console.log('Navigating to lesson details:', lessionid);
         router.push(`/admin/courses/${courseId}/${lessionid}`);
     };
 
     return (
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
-                    Lessons
-                </h2>
-                <div className="space-x-2">
-                    {!videoUrl ? (
-                        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                                    Upload Video
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>Upload Video</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 mt-4">
-                                    <div>
-                                        <Label htmlFor="video-upload">Select Video</Label>
-                                        <Input
-                                            id="video-upload"
-                                            type="file"
-                                            accept="video/*"
-                                            onChange={handleFileSelect}
-                                            className="dark:bg-gray-700 dark:text-gray-200"
-                                        />
-                                    </div>
-                                    <Button
-                                        onClick={async () => {
-                                            const success = await handleFileUpload();
-                                            if (success) {
-                                                setIsUploadDialogOpen(false);
-                                            }
-                                        }}
-                                        disabled={!selectedFile || uploadLoading}
-                                        className="w-full"
-                                    >
-                                        {uploadLoading ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                Uploading...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Upload className="h-4 w-4 mr-2" />
-                                                Upload Video
-                                            </>
-                                        )}
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-500 dark:from-indigo-400 dark:to-purple-400">
+                        Lessons
+                    </h1>
+                    <div className="flex gap-3">
+                        {!videoUrl ? (
+                            <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition-all duration-200">
+                                        <Upload className="h-5 w-5" />
+                                        Upload Video
                                     </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    ) : (
-                        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                                    Create Lesson
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>Create New Lesson</DialogTitle>
-                                </DialogHeader>
-                                <div className="space-y-4 mt-4">
-                                    <div>
-                                        <Label htmlFor="title">Title</Label>
-                                        <Input
-                                            id="title"
-                                            name="title"
-                                            value={formData.title}
-                                            onChange={handleInputChange}
-                                            placeholder="Lesson title"
-                                            className="dark:bg-gray-700 dark:text-gray-200"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="content">Content</Label>
-                                        <Textarea
-                                            id="content"
-                                            name="content"
-                                            value={formData.content}
-                                            onChange={handleInputChange}
-                                            placeholder="Lesson content"
-                                            className="dark:bg-gray-700 dark:text-gray-200"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="order">Order</Label>
-                                        <Input
-                                            id="order"
-                                            name="order"
-                                            type="number"
-                                            value={formData.order}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    order: parseInt(e.target.value),
-                                                }))
-                                            }
-                                            placeholder="Lesson order"
-                                            className="dark:bg-gray-700 dark:text-gray-200"
-                                        />
-                                    </div>
-                                    {formData.videoUrl && (
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md bg-white dark:bg-gray-900 rounded-xl p-6">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-2xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6 text-indigo-500"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                                                />
+                                            </svg>
+                                            Upload Video
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="space-y-4 mt-4">
                                         <div>
-                                            <Label>Video URL</Label>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                                {formData.videoUrl}
-                                            </p>
+                                            <Label
+                                                htmlFor="video-upload"
+                                                className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-indigo-500"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-6 0l-4.553 2.276A1 1 0 013 15.382V8.618a1 1 0 011.447-.894L9 10m6 0V6a3 3 0 00-3-3H6a3 3 0 00-3 3v12a3 3 0 003 3h6a3 3 0 003-3v-4"
+                                                    />
+                                                </svg>
+                                                Select Video
+                                            </Label>
+                                            <Input
+                                                id="video-upload"
+                                                type="file"
+                                                accept="video/*"
+                                                onChange={handleFileSelect}
+                                                className="mt-1 bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                                            />
                                         </div>
-                                    )}
-                                    <Button
-                                        onClick={handleCreateLesson}
-                                        className="w-full bg-blue-600 text-white hover:bg-blue-700"
-                                    >
+                                        <Button
+                                            onClick={async () => {
+                                                const success = await handleFileUpload();
+                                                if (success) {
+                                                    setIsUploadDialogOpen(false);
+                                                }
+                                            }}
+                                            disabled={!selectedFile || uploadLoading}
+                                            className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition-all duration-200"
+                                        >
+                                            {uploadLoading ? (
+                                                <>
+                                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                                    Uploading...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Upload className="h-5 w-5" />
+                                                    Upload Video
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        ) : (
+                            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition-all duration-200">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 4v16m8-8H4"
+                                            />
+                                        </svg>
                                         Create Lesson
                                     </Button>
+                                </DialogTrigger>
+                                <DialogContent className="w-[90vw] max-w-md sm:max-w-lg mx-auto bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl overflow-x-hidden">
+                                    <DialogHeader className="relative">
+                                        <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 sm:h-7 w-6 sm:w-7 text-indigo-600 dark:text-indigo-400"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                                />
+                                            </svg>
+                                            Create New Lesson
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            if (!formData.title.trim()) {
+                                                toast({
+                                                    title: 'Error',
+                                                    description: 'Lesson title is required.',
+                                                    variant: 'destructive',
+                                                });
+                                                return;
+                                            }
+                                            if (formData.order < 0) {
+                                                toast({
+                                                    title: 'Error',
+                                                    description:
+                                                        'Lesson order must be a non-negative number.',
+                                                    variant: 'destructive',
+                                                });
+                                                return;
+                                            }
+                                            handleCreateLesson();
+                                        }}
+                                        className="space-y-5 mt-5"
+                                    >
+                                        <div>
+                                            <Label
+                                                htmlFor="title"
+                                                className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                                    />
+                                                </svg>
+                                                Title <span className="text-red-500">*</span>
+                                            </Label>
+                                            <Input
+                                                id="title"
+                                                name="title"
+                                                value={formData.title}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter lesson title..."
+                                                className="mt-2 w-full bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 rounded-lg shadow-sm hover:border-indigo-400"
+                                                required
+                                                aria-required="true"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label
+                                                htmlFor="content"
+                                                className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                                    />
+                                                </svg>
+                                                Content
+                                            </Label>
+                                            <Textarea
+                                                id="content"
+                                                name="content"
+                                                value={formData.content}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter lesson content (optional)..."
+                                                className="mt-2 w-full min-h-[100px] sm:min-h-[120px] bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 rounded-lg shadow-sm hover:border-indigo-400 resize-y"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label
+                                                htmlFor="order"
+                                                className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+                                                    />
+                                                </svg>
+                                                Order <span className="text-red-500">*</span>
+                                            </Label>
+                                            <Input
+                                                id="order"
+                                                name="order"
+                                                type="number"
+                                                value={formData.order}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        order: parseInt(e.target.value) || 0,
+                                                    }))
+                                                }
+                                                placeholder="Enter lesson order..."
+                                                className="mt-2 w-full bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 rounded-lg shadow-sm hover:border-indigo-400"
+                                                required
+                                                aria-required="true"
+                                                min="0"
+                                            />
+                                        </div>
+                                        {formData.videoUrl && (
+                                            <div>
+                                                <Label className="text-sm font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-6 0l-4.553 2.276A1 1 0 013 15.382V8.618a1 1 0 011.447-.894L9 10m6 0V6a3 3 0 00-3-3H6a3 3 0 00-3 3v12a3 3 0 003 3h6a3 3 0 003-3v-4"
+                                                        />
+                                                    </svg>
+                                                    Video URL
+                                                </Label>
+                                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 break-all">
+                                                    <a
+                                                        href={formData.videoUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                                                    >
+                                                        {formData.videoUrl}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-end gap-3 pt-5">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => setIsCreateDialogOpen(false)}
+                                                className="flex items-center gap-2 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-400 px-4 py-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg px-4 py-2 transition-all duration-300 shadow-sm focus:ring-2 focus:ring-indigo-400"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M5 13l4 4L19 7"
+                                                    />
+                                                </svg>
+                                                Create Lesson
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        )}
+                    </div>
+                </div>
+
+                {/* Lessons Table */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-32">
+                            <Loader2 className="h-10 w-10 animate-spin text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                    ) : !lessons || lessons.length === 0 ? (
+                        <div className="text-center text-gray-600 dark:text-gray-400 p-6">
+                            <p className="text-lg">No lessons found for this course.</p>
+                            <p className="mt-2">
+                                Start by uploading a video and creating a new lesson!
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50 dark:bg-gray-700">
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Title
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Content
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Order
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Status
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Video URL
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Created At
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Updated At
+                                            </TableHead>
+                                            <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">
+                                                Actions
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {lessons.map((lesson) => (
+                                            <TableRow
+                                                key={lesson._id}
+                                                className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+                                            >
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.title}
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.content
+                                                        ? lesson.content.length > 50
+                                                            ? `${lesson.content.substring(0, 50)}...`
+                                                            : lesson.content
+                                                        : 'No content'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.order}
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    <span
+                                                        className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                                                            lesson.status === 'active'
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                                                        }`}
+                                                    >
+                                                        {lesson.status || 'N/A'}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.videoUrl ? (
+                                                        <a
+                                                            href={lesson.videoUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-2"
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="h-5 w-5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={2}
+                                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                                />
+                                                            </svg>
+                                                            Watch Video
+                                                        </a>
+                                                    ) : (
+                                                        'No video'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.createdAt
+                                                        ? new Date(
+                                                              lesson.createdAt,
+                                                          ).toLocaleString()
+                                                        : 'N/A'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-900 dark:text-gray-100">
+                                                    {lesson.updatedAt
+                                                        ? new Date(
+                                                              lesson.updatedAt,
+                                                          ).toLocaleString()
+                                                        : 'N/A'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleViewDetails(lesson._id)
+                                                        }
+                                                        className="flex items-center gap-2 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                                                    >
+                                                        <Eye className="h-4 w-4" />
+                                                        View
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {totalPages > 1 && (
+                                <div className="mt-12 flex justify-center">
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={() =>
+                                                        setCurrentPage((prev) => prev - 1)
+                                                    }
+                                                    className={
+                                                        currentPage === 1
+                                                            ? 'pointer-events-none opacity-50'
+                                                            : 'cursor-pointer text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200'
+                                                    }
+                                                />
+                                            </PaginationItem>
+
+                                            {Array.from(
+                                                { length: totalPages },
+                                                (_, i) => i + 1,
+                                            ).map((page) => (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        onClick={() => setCurrentPage(page)}
+                                                        isActive={currentPage === page}
+                                                        className={
+                                                            currentPage === page
+                                                                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                                                : 'text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200'
+                                                        }
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            ))}
+
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    onClick={() =>
+                                                        setCurrentPage((prev) => prev + 1)
+                                                    }
+                                                    className={
+                                                        currentPage === totalPages
+                                                            ? 'pointer-events-none opacity-50'
+                                                            : 'cursor-pointer text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200'
+                                                    }
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
                                 </div>
-                            </DialogContent>
-                        </Dialog>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
-
-            {loading ? (
-                <div className="flex justify-center items-center h-32">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
-                </div>
-            ) : !lessons ? (
-                <div className="text-center text-gray-600 dark:text-gray-400 p-4">
-                    No lessons found for this course.
-                </div>
-            ) : (
-                <>
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Title </TableHead>
-                                    <TableHead>Content</TableHead>
-                                    <TableHead>Order</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Video URL</TableHead>
-                                    <TableHead>Created At</TableHead>
-                                    <TableHead>Updated At</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {lessons.map((lesson) => (
-                                    <TableRow key={lesson._id}>
-                                        <TableCell>{lesson.title}</TableCell>
-                                        <TableCell>
-                                            {lesson.content
-                                                ? lesson.content.length > 50
-                                                    ? `${lesson.content.substring(0, 50)}...`
-                                                    : lesson.content
-                                                : 'No content'}
-                                        </TableCell>
-                                        <TableCell>{lesson.order}</TableCell>
-                                        <TableCell>{lesson.status || 'N/A'}</TableCell>
-                                        <TableCell>
-                                            {lesson.videoUrl ? (
-                                                <a
-                                                    href={lesson.videoUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline"
-                                                >
-                                                    View Video
-                                                </a>
-                                            ) : (
-                                                'No video'
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {lesson.createdAt
-                                                ? new Date(lesson.createdAt).toLocaleString()
-                                                : 'N/A'}
-                                        </TableCell>
-                                        <TableCell>
-                                            {lesson.updatedAt
-                                                ? new Date(lesson.updatedAt).toLocaleString()
-                                                : 'N/A'}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleViewDetails(lesson._id)}
-                                                className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                            >
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                View
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {totalPages > 1 && (
-                        <div className="mt-12 flex justify-center">
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            onClick={() => setCurrentPage((prev) => prev - 1)}
-                                            className={
-                                                currentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                        (page) => (
-                                            <PaginationItem key={page}>
-                                                <PaginationLink
-                                                    onClick={() => setCurrentPage(page)}
-                                                    isActive={currentPage === page}
-                                                    className={
-                                                        currentPage === page
-                                                            ? 'bg-blue-600 text-white'
-                                                            : 'cursor-pointer'
-                                                    }
-                                                >
-                                                    {page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        ),
-                                    )}
-
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            onClick={() => setCurrentPage((prev) => prev + 1)}
-                                            className={
-                                                currentPage === totalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
-                    )}
-                </>
-            )}
         </div>
     );
 }
