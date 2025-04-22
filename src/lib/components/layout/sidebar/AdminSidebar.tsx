@@ -93,6 +93,17 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
+                                                                href="/admin/listcustomer"
+                                                                className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
+                                                            >
+                                                                <Eye className="h-5 w-5" />
+                                                                List Customer
+                                                            </Link>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                    <SidebarMenuItem>
+                                                        <SidebarMenuButton asChild>
+                                                            <Link
                                                                 href="/admin/adduser"
                                                                 className="flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400"
                                                             >
