@@ -289,11 +289,11 @@ export default function SupportPage() {
                                                 <TableCell className="py-4">
                                                     <Badge
                                                         variant={
-                                                            ticket.status === 'open'
-                                                                ? 'default'
+                                                            ticket.status === 'rejected'
+                                                                ? 'secondary'
                                                                 : ticket.status === 'resolved'
-                                                                  ? 'default' // Map "success" to "default"
-                                                                  : 'destructive'
+                                                                  ? 'secondary' // Map "success" to "default"
+                                                                  : 'default'
                                                         }
                                                         className="capitalize"
                                                     >

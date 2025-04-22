@@ -372,7 +372,7 @@ export default function ClassDetailPage() {
                 throw new Error('Authentication token is missing');
             }
             const response = await AssignStudent(token, classId, _id);
-            if (response.status === 'success') {
+            if (response.status === '200') {
                 const newStudent: User = {
                     _id,
                     fullName,

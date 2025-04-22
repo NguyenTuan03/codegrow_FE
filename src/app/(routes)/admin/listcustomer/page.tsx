@@ -19,9 +19,7 @@ interface Enrollment {
     email: string;
     phone: string;
     note?: string;
-    status: 'pending' | 'approved' | 'rejected';
-    createdAt: string;
-    updatedAt: string;
+    isConsulted: boolean;
 }
 export default function PendingEnrollmentsList() {
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -32,8 +30,10 @@ export default function PendingEnrollmentsList() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const { metadata } = await getPendingEnrollments();
-                setEnrollments(metadata.enrollments);
+                const res = await getPendingEnrollments();
+                console.log('Pending enrollments:', res);
+
+                setEnrollments(res.metadata);
             } catch (err) {
                 setError(`Failed to load enrollments: ${err}`);
                 toast({
@@ -74,7 +74,7 @@ export default function PendingEnrollmentsList() {
                         <TableHead>Email</TableHead>
                         <TableHead>Phone</TableHead>
                         <TableHead>Note</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Consult</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -87,8 +87,11 @@ export default function PendingEnrollmentsList() {
                             <TableCell className="max-w-xs truncate">
                                 {enrollment.note || '-'}
                             </TableCell>
-                            {/* <TableCell>{formatDate(enrollment.createdAt)}</TableCell>
-                            <TableCell className="flex gap-2">
+                            <TableCell>{enrollment.isConsulted ? 'Yes' : 'No'}</TableCell>
+                            {/* <TableCell>{formatDate(enrollment.updatedAt)}</TableCell> */}
+                            {/* Uncomment if you want to show the created date */}
+                            {/* <TableCell>{formatDate(enrollment.createdAt)}</TableCell> */}
+                            {/* <TableCell className="flex gap-2">
                                 <Button size="sm" onClick={() => handleApprove(enrollment._id)}>
                                     Approve
                                 </Button>
