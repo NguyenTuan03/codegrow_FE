@@ -95,7 +95,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                     variant="outline"
                     size="sm"
                     className="bg-[#5AD3AF] hover:bg-[#4AC2A0] text-white border-none rounded-lg transition-all duration-300"
-                    onClick={() => router.push(`/customer/more/slug/${course._id}`)}
+                    onClick={() => router.push(`/customer/classes`)}
                 >
                     View Details
                 </Button>

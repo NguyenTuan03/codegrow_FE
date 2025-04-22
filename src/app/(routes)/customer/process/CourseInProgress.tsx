@@ -1,4 +1,3 @@
-// @/components/CourseInProgress.tsx
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,9 +14,14 @@ interface Course {
     author: {
         fullName: string;
     };
-    category: string;
+    category?: Category[] | Category | null; // Make optional and allow single category
     createdAt: string;
     enrolledCount: number;
+}
+
+interface Category {
+    _id: string;
+    name: string;
 }
 
 interface CourseInProgressProps {
@@ -25,6 +29,26 @@ interface CourseInProgressProps {
 }
 
 export default function CourseInProgress({ enrollCourse }: CourseInProgressProps) {
+    const renderCategories = (category: Course['category']) => {
+        if (!category) return null;
+
+        // Handle single category object
+        if (!Array.isArray(category)) {
+            return (
+                <Badge variant="outline" className="ml-2 text-gray-500">
+                    {category.name}
+                </Badge>
+            );
+        }
+
+        // Handle array of categories
+        return category.map((cat) => (
+            <Badge key={cat._id} variant="outline" className="ml-2 text-gray-500">
+                {cat.name}
+            </Badge>
+        ));
+    };
+
     return (
         <section>
             <div className="flex items-center justify-between mb-4">
@@ -38,9 +62,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                             <CardContent className="p-4">
                                 <div className="flex items-center text-xs text-gray-500 mb-2">
                                     <span>{course.title}</span>
-                                    <Badge variant="outline" className="ml-2 text-gray-500">
-                                        {course.category}
-                                    </Badge>
+                                    {renderCategories(course.category)}
                                 </div>
 
                                 <div className="flex justify-between items-center my-3">
@@ -59,7 +81,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                             <Badge className="bg-gray-200 text-gray-700 font-normal hover:bg-gray-300">
                                                 PRACTICE
                                             </Badge>
-                                            <div className="text-xs text-gray-700">
+                                            <div className="text-xs text-gray-700 line-clamp-1">
                                                 {course.description}
                                             </div>
                                         </div>

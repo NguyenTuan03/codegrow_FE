@@ -14,6 +14,11 @@ import LeaderboardCard from '@/app/(routes)/customer/process/LeaderboardCard';
 import UserProfileCard from '@/app/(routes)/customer/process/UserProfileCard';
 import MyAssignmentCard from '@/app/(routes)/customer/process/MyAssignmentCard';
 
+interface Category {
+    _id: string;
+    name: string;
+}
+
 interface Course {
     _id: string;
     title: string;
@@ -22,7 +27,7 @@ interface Course {
     author: {
         fullName: string;
     };
-    category: string;
+    category: Category[];
     createdAt: string;
     enrolledCount: number;
 }
@@ -93,7 +98,7 @@ export default function Process() {
                 <div className="space-y-6">
                     <UserProfileCard user={user} />
                     <LeaderboardCard />
-                    <MyAssignmentCard />
+                    {user && <MyAssignmentCard user={user} />}
                 </div>
             </div>
         </div>

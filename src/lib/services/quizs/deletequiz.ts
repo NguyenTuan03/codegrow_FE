@@ -7,7 +7,7 @@ export const DeleteQuiz = async (token: string, quizId: string) => {
         });
 
         console.log('✅ Quiz deleted successfully:', response.data);
-        return response.data;
+        return response;
     } catch (error) {
         console.error('❌ Error deleting quiz:', error);
         throw error;

@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-export const UploadVideo = async (file: File, uploadUrl: string) => {
+export const UploadVideo = async (uploadUrl: string, file: File) => {
     try {
         const result = await axios.put(uploadUrl, file, {
             headers: {

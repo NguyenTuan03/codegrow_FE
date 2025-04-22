@@ -8,6 +8,7 @@ import {
     ThumbsUp,
     Users,
     ClipboardList,
+    CircleSlash,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -18,6 +19,7 @@ const menuItems = [
     { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
     { label: 'Services', icon: <Users className="w-5 h-5" />, href: '/qaqc/services' },
     { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
+    { label: 'Courses', icon: <CircleSlash className="w-5 h-5" />, href: '/qaqc/courses' },
     { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
 ];
 
