@@ -174,7 +174,7 @@ export default function CourseLearningPage() {
                     <NotesTab />
                 </TabsContent>
                 <TabsContent value="messages">
-                    <MessagesTab />
+                    <MessagesTab courseId={courseId} />
                 </TabsContent>
             </Tabs>
         </div>
