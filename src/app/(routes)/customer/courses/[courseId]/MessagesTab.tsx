@@ -7,19 +7,22 @@ import { CreateComment } from '@/lib/services/course/createComment';
 import { GetComment } from '@/lib/services/course/getComment';
 import Comment from './Comment';
 
+// Define interfaces for better type safety
+interface User {
+    fullName: string;
+    email: string;
+    role: string;
+    id: string;
+}
+
 interface Message {
     id: string;
     content: string;
     rating?: number;
     createdAt: string;
-    parentComment?: string;
-    user?: {
-        // Make user optional to handle missing user data
-        fullName: string;
-        email: string;
-        role: string;
-        id: string;
-    };
+    parentComment?: string | null;
+    user: User;
+    replies?: Message[]; // Add replies field for nested structure
 }
 
 interface MessagesTabProps {
@@ -61,6 +64,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
     const [rating, setRating] = useState(5);
     const [loading, setLoading] = useState(false);
 
+    // Fetch comments from the API
     const fetchMessages = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -83,28 +87,29 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                     rating?: number;
                     createdAt: string;
                     parentComment?: string;
-                    author?: { fullName: string; email: string; role: string; id: string };
-                    user?: { fullName: string; email: string; role: string; id: string };
+                    author?: User;
+                    user?: User;
                 }) => ({
-                    id: comment._id || comment.id,
+                    id: comment._id ?? comment.id ?? '',
                     content: comment.content,
                     rating: comment.rating,
                     createdAt: comment.createdAt,
-                    parentComment: comment.parentComment,
-                    user: comment.author ||
-                        comment.user || {
-                            // Use author if available, fallback to user, or empty object
+                    parentComment: comment.parentComment ?? null,
+                    user: comment.author ??
+                        comment.user ?? {
                             fullName: 'Người dùng ẩn danh',
                             email: '',
                             role: '',
                             id: '',
                         },
+                    replies: [], // Initialize replies array
                 }),
             );
 
-            console.log('Mapped messages:', mappedMessages);
-            setMessages(mappedMessages);
-            console.log('Set messages state:', mappedMessages);
+            // Transform flat messages into a nested structure
+            const nestedMessages = buildCommentTree(mappedMessages);
+            console.log('Nested messages:', nestedMessages);
+            setMessages(nestedMessages);
         } catch (error) {
             console.error('Error fetching messages:', error);
             toast({
@@ -115,9 +120,51 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         }
     };
 
+    // Build a tree structure from flat messages
+    const buildCommentTree = (flatMessages: Message[]): Message[] => {
+        const messageMap: { [key: string]: Message } = {};
+        const tree: Message[] = [];
+
+        // Create a map of messages by ID
+        flatMessages.forEach((message) => {
+            message.replies = []; // Ensure replies array exists
+            messageMap[message.id] = message;
+        });
+
+        // Build the tree by assigning replies to their parent
+        flatMessages.forEach((message) => {
+            if (message.parentComment) {
+                const parent = messageMap[message.parentComment];
+                if (parent) {
+                    parent.replies!.push(message);
+                } else {
+                    // If parent is not found, treat as top-level comment
+                    tree.push(message);
+                }
+            } else {
+                // Top-level comment
+                tree.push(message);
+            }
+        });
+
+        // Sort comments by createdAt (newest first)
+        const sortByDate = (a: Message, b: Message) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
+        tree.sort(sortByDate);
+        tree.forEach((message) => {
+            if (message.replies) {
+                message.replies.sort(sortByDate);
+            }
+        });
+
+        return tree;
+    };
+
+    // Post a new comment or reply
     const postMessage = async (
         isReply: boolean,
-        parentCommentId?: string,
+        parentCommentId: string | null = null,
         replyContent?: string,
         replyRating?: number | null,
     ) => {
@@ -133,7 +180,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             return;
         }
 
-        if (!isReply && !commentRating) {
+        if (!isReply && commentRating === null) {
             toast({
                 title: 'Lỗi',
                 description: 'Vui lòng chọn đánh giá cho bình luận chính',
@@ -152,8 +199,8 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             console.log('📢 postMessage called with:', {
                 isReply,
                 parentCommentId,
-                replyContent: content,
-                replyRating: commentRating,
+                content,
+                rating: commentRating,
             });
 
             await CreateComment({
@@ -161,7 +208,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                 courseId,
                 rating: commentRating ?? 0,
                 comment: content,
-                parentComment: parentCommentId || null,
+                parentComment: parentCommentId,
             });
 
             if (!isReply) {
@@ -176,11 +223,17 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             });
         } catch (error) {
             console.error('Error posting message:', error);
+            toast({
+                title: 'Lỗi',
+                description: 'Không thể gửi bình luận',
+                variant: 'destructive',
+            });
         } finally {
             setLoading(false);
         }
     };
 
+    // Fetch messages on component mount or when courseId changes
     useEffect(() => {
         fetchMessages();
     }, [courseId]);
@@ -218,18 +271,19 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                 </div>
 
                 <div className="space-y-4">
-                    {messages.length === 0 && (
+                    {messages.length === 0 ? (
                         <p className="text-gray-500 dark:text-gray-400">Chưa có bình luận nào.</p>
+                    ) : (
+                        messages.map((msg) => (
+                            <Comment
+                                key={msg.id}
+                                msg={msg}
+                                postMessage={postMessage}
+                                loading={loading}
+                                messages={messages}
+                            />
+                        ))
                     )}
-                    {messages.map((msg) => (
-                        <Comment
-                            key={msg.id}
-                            msg={msg}
-                            postMessage={postMessage}
-                            loading={loading}
-                            messages={messages}
-                        />
-                    ))}
                 </div>
             </div>
         </div>
