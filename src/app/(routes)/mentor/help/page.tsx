@@ -183,11 +183,6 @@ export default function SupportPage() {
             fetchTickets();
         } catch (error) {
             console.error('Failed to submit support request:', error);
-            toast({
-                title: 'Error',
-                description: 'Failed to submit support request',
-                variant: 'destructive',
-            });
         } finally {
             setIsSubmitting(false);
         }

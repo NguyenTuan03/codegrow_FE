@@ -85,7 +85,7 @@ export default function Process() {
     }, []);
 
     return (
-        <div className="container mx-auto bg-[#EEF1EF] dark:bg-gray-900 px-4 py-8 transition-colors duration-300">
+        <div className=" mx-auto bg-[#EEF1EF] dark:bg-gray-900 px-4 py-8 transition-colors duration-300">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2 space-y-8">
                     <CourseInProgress enrollCourse={enrollCourse} />

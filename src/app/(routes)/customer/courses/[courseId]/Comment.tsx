@@ -1,19 +1,25 @@
+'use client';
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+
+// Define interfaces for better type safety
+interface User {
+    fullName: string;
+    email: string;
+    role: string;
+    id: string;
+}
 
 interface Message {
     id: string;
     content: string;
     rating?: number;
     createdAt: string;
-    parentComment?: string;
-    user?: {
-        fullName: string;
-        email: string;
-        role: string;
-        id: string;
-    };
+    parentComment?: string | null;
+    user: User;
+    replies?: Message[]; // Add replies field for nested structure
 }
 
 interface StarRatingProps {
@@ -49,15 +55,16 @@ interface CommentProps {
     msg: Message;
     postMessage: (
         isReply: boolean,
-        parentCommentId?: string,
+        parentCommentId: string | null,
         replyContent?: string,
         replyRating?: number | null,
     ) => Promise<void>;
     loading: boolean;
     messages: Message[];
+    depth?: number; // Add depth to control indentation
 }
 
-export default function Comment({ msg, postMessage, loading, messages }: CommentProps) {
+export default function Comment({ msg, postMessage, loading, messages, depth = 0 }: CommentProps) {
     const [isReplying, setIsReplying] = useState(false);
     const [replyMessage, setReplyMessage] = useState('');
     const [replyRating, setReplyRating] = useState<number | null>(null);
@@ -68,8 +75,6 @@ export default function Comment({ msg, postMessage, loading, messages }: Comment
         .map((word) => word[0])
         .join('')
         .toUpperCase();
-
-    const isReply = msg.parentComment && messages.some((m) => m.id === msg.parentComment);
 
     const handleReply = async () => {
         console.log('📢 Replying to comment with ID:', msg.id);
@@ -90,88 +95,106 @@ export default function Comment({ msg, postMessage, loading, messages }: Comment
     };
 
     return (
-        <div
-            className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${
-                isReply ? 'ml-8' : ''
-            }`}
-        >
-            <div className="flex items-start gap-3">
-                <div className="bg-blue-100 text-blue-800 dark:bg-gray-600 dark:text-white rounded-full w-10 h-10 flex items-center justify-center font-medium">
-                    {initials || 'N/A'}
-                </div>
-                <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200">
-                            {authorName}
-                        </h4>
-                        <span className="text-xs text-gray-400">
-                            {new Date(msg.createdAt).toLocaleString()}
-                        </span>
+        <div className="space-y-4">
+            <div
+                className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${
+                    depth > 0 ? `ml-${depth * 8}` : ''
+                }`}
+            >
+                <div className="flex items-start gap-3">
+                    <div className="bg-blue-100 text-blue-800 dark:bg-gray-600 dark:text-white rounded-full w-10 h-10 flex items-center justify-center font-medium">
+                        {initials || 'N/A'}
                     </div>
-                    {msg.rating && (
-                        <div className="mt-1">
-                            <StarRating rating={msg.rating} editable={false} size={16} />
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                            <h4 className="font-medium text-gray-800 dark:text-gray-200">
+                                {authorName}
+                            </h4>
+                            <span className="text-xs text-gray-400">
+                                {new Date(msg.createdAt).toLocaleString()}
+                            </span>
                         </div>
-                    )}
-                    <p className="mt-1 text-gray-600 dark:text-gray-400">{msg.content}</p>
-                    <div className="mt-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-[#657ED4] hover:text-[#354065]"
-                            onClick={() => {
-                                setIsReplying(!isReplying);
-                                setReplyMessage('');
-                                setReplyRating(null);
-                            }}
-                        >
-                            {isReplying ? 'Hủy phản hồi' : 'Phản hồi'}
-                        </Button>
-                    </div>
-                    {isReplying && (
-                        <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3">
-                            <textarea
-                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-[#657ED4] focus:border-[#657ED4] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                rows={2}
-                                placeholder="Viết phản hồi..."
-                                value={replyMessage}
-                                onChange={(e) => setReplyMessage(e.target.value)}
-                            />
-                            <div className="mt-2 flex items-center gap-4">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Đánh giá (tùy chọn):
-                                </span>
-                                <StarRating
-                                    rating={replyRating || 0}
-                                    setRating={(value) => setReplyRating(value)}
-                                    editable={true}
+                        {msg.rating !== undefined && (
+                            <div className="mt-1">
+                                <StarRating rating={msg.rating} editable={false} size={16} />
+                            </div>
+                        )}
+                        <p className="mt-1 text-gray-600 dark:text-gray-400">{msg.content}</p>
+                        <div className="mt-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-[#657ED4] hover:text-[#354065]"
+                                onClick={() => {
+                                    setIsReplying(!isReplying);
+                                    setReplyMessage('');
+                                    setReplyRating(null);
+                                }}
+                            >
+                                {isReplying ? 'Hủy phản hồi' : 'Phản hồi'}
+                            </Button>
+                        </div>
+                        {isReplying && (
+                            <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                                <textarea
+                                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-[#657ED4] focus:border-[#657ED4] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    rows={2}
+                                    placeholder="Viết phản hồi..."
+                                    value={replyMessage}
+                                    onChange={(e) => setReplyMessage(e.target.value)}
                                 />
+                                <div className="mt-2 flex items-center gap-4">
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Đánh giá (tùy chọn):
+                                    </span>
+                                    <StarRating
+                                        rating={replyRating ?? 0}
+                                        setRating={(value) => setReplyRating(value)}
+                                        editable={true}
+                                    />
+                                </div>
+                                <div className="mt-2 flex justify-end gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            setIsReplying(false);
+                                            setReplyMessage('');
+                                            setReplyRating(null);
+                                        }}
+                                    >
+                                        Hủy
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        className="bg-[#657ED4] hover:bg-[#354065] text-white"
+                                        onClick={handleReply}
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Đang gửi...' : 'Gửi phản hồi'}
+                                    </Button>
+                                </div>
                             </div>
-                            <div className="mt-2 flex justify-end gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setIsReplying(false);
-                                        setReplyMessage('');
-                                        setReplyRating(null);
-                                    }}
-                                >
-                                    Hủy
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    className="bg-[#657ED4] hover:bg-[#354065] text-white"
-                                    onClick={handleReply}
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Đang gửi...' : 'Gửi phản hồi - Đăng phản hồi'}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
+
+            {/* Render nested replies recursively */}
+            {msg.replies && msg.replies.length > 0 && (
+                <div className="space-y-4">
+                    {msg.replies.map((reply) => (
+                        <Comment
+                            key={reply.id}
+                            msg={reply}
+                            postMessage={postMessage}
+                            loading={loading}
+                            messages={messages}
+                            depth={depth + 1}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
