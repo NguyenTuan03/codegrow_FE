@@ -34,14 +34,6 @@ type Review = {
 };
 
 export default function CoursesList() {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-        throw new Error('User data is missing');
-    }
-
-    const user = JSON.parse(userData);
-
-    const mentorId = user.id; // Assuming this is the mentor ID you want to use
     const [allReviews, setAllReviews] = useState<Review[]>([]);
     const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,6 +44,14 @@ export default function CoursesList() {
 
     useEffect(() => {
         const fetchReviews = async () => {
+            const userData = localStorage.getItem('user');
+            if (!userData) {
+                throw new Error('User data is missing');
+            }
+
+            const user = JSON.parse(userData);
+
+            const mentorId = user.id; // Assuming this is the mentor ID you want to use
             if (!mentorId) {
                 setError('Mentor ID not found in local storage');
                 setLoading(false);
@@ -74,7 +74,7 @@ export default function CoursesList() {
         };
 
         fetchReviews();
-    }, [mentorId]);
+    }, []);
 
     useEffect(() => {
         const start = (currentPage - 1) * pageSize;
