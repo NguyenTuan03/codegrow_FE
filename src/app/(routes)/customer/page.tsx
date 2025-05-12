@@ -23,12 +23,20 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    author: {
-        fullName: string;
-    };
-    category: string;
-    createdAt: string;
     enrolledCount: number;
+    author: { _id: string; fullName: string; email: string; role: string };
+    category: { _id: string; name: string };
+    createdAt: string;
+}
+
+interface ApiResponse {
+    message: string;
+    status: number;
+    metadata: {
+        courses: Course[];
+        page: number;
+        totalPages: number;
+    };
 }
 
 const HomePage = () => {
@@ -40,8 +48,9 @@ const HomePage = () => {
     const fetchCourses = async () => {
         try {
             setLoading(true);
-            const limit = 6; // Limit to 6 courses for the carousel
-            const data = await GetCourses(1, limit); // Fetch first page
+            const limit = 10; // Limit to 6 courses for the carousel
+            const data: ApiResponse = await GetCourses(1, limit); // Fetch first page
+            console.log('Fetched courses:', data);
             setCourses(data.metadata.courses);
         } catch (error: unknown) {
             console.error('Lỗi khi lấy khóa học:', error);
@@ -179,11 +188,11 @@ const HomePage = () => {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <div className="text-[#657ED4] dark:text-blue-300 text-2xl flex items-center gap-2">
+                                                <div className=" text-[#5AD3AF] dark:text-green-400 text-2xl flex items-center gap-2">
                                                     <BookOpen className="w-6 h-6" />
                                                     {course.title}
                                                 </div>
-                                                <div className="text-[#5AD3AF] dark:text-green-400 text-sm mt-2">
+                                                <div className=" text-[#657ED4] dark:text-blue-300 text-sm mt-2">
                                                     {course.description}
                                                 </div>
                                             </CardContent>
@@ -199,23 +208,23 @@ const HomePage = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Image
-                                                        src="/module.png"
+                                                        src="/tag.png"
                                                         width={30}
                                                         height={30}
-                                                        alt="Module"
+                                                        alt="Tag"
                                                     />
                                                     {/* Placeholder; update with actual module data if available */}
-                                                    3h12p
+                                                    {course.category?.name || 'Uncategorized'}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Image
-                                                        src="/timer.png"
+                                                        src="/dollar.png"
                                                         width={30}
                                                         height={30}
-                                                        alt="Timer"
+                                                        alt="Dollar"
                                                     />
                                                     {/* Placeholder; update with actual duration if available */}
-                                                    3
+                                                    {course.price}
                                                 </div>
                                             </CardFooter>
                                         </Card>
