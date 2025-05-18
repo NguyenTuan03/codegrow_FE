@@ -1,5 +1,4 @@
 'use client';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -17,7 +16,8 @@ import {
     CarouselPrevious,
     CarouselNext,
 } from '@/components/ui/carousel';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, X } from 'lucide-react'; // Added X icon for closing chat
+import ChatRealtime from './chatrealtime/page';
 
 interface Category {
     _id: string;
@@ -50,6 +50,7 @@ const HomePage = () => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showChat, setShowChat] = useState(false);
 
     // Fetch categories
     const fetchCategories = async () => {
@@ -124,8 +125,20 @@ const HomePage = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    // Toggle chat visibility
+    const toggleChat = () => {
+        setShowChat((prev) => !prev);
+        if (!showChat) {
+            toast({
+                title: 'Chat Opened',
+                description: 'You can now chat with a mentor to apply!',
+                variant: 'default',
+            });
+        }
+    };
+
     return (
-        <div className="px-4 py-8 w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)]">
+        <div className="px-4 py-8 w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                 <div className="md:col-span-8">
                     <h3 className="text-3xl mb-3">Welcome back, customer</h3>
@@ -184,8 +197,11 @@ const HomePage = () => {
                                 students learn and discover the things they don’t know.
                             </p>
                             <div className="flex justify-center gap-4">
-                                <Button className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6">
-                                    Apply
+                                <Button
+                                    className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6"
+                                    onClick={toggleChat}
+                                >
+                                    {showChat ? 'Close Chat' : 'Apply'}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -295,6 +311,26 @@ const HomePage = () => {
                     </Link>
                 </CardFooter>
             </Card>
+
+            {/* Chat Realtime Overlay */}
+            {showChat && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-4 relative">
+                        <Button
+                            variant="ghost"
+                            className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
+                            onClick={toggleChat}
+                        >
+                            <X className="w-6 h-6" />
+                        </Button>
+                        <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
+                            Mentor Application Chat
+                        </h3>
+                        <ChatRealtime />
+                    </div>
+                </div>
+            )}
+
             <div className="mt-8">
                 <h3 className="text-center font-bold text-2xl mb-6">What you get from CODEGROW</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
