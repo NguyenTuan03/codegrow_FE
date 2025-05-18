@@ -7,7 +7,8 @@ import { HOME_INTRODUCTION } from '@/lib/enum/home/Introduction';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { GetCourses } from '@/lib/services/course/getcourse'; // Import API service
+import { GetCourses } from '@/lib/services/course/getcourse';
+import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { toast } from '@/components/ui/use-toast';
 import {
     Carousel,
@@ -15,8 +16,13 @@ import {
     CarouselItem,
     CarouselPrevious,
     CarouselNext,
-} from '@/components/ui/carousel'; // Import Shadcn Carousel
-import { BookOpen } from 'lucide-react'; // Added icon for courses
+} from '@/components/ui/carousel';
+import { BookOpen } from 'lucide-react';
+
+interface Category {
+    _id: string;
+    name: string;
+}
 
 interface Course {
     _id: string;
@@ -25,7 +31,7 @@ interface Course {
     price: number;
     enrolledCount: number;
     author: { _id: string; fullName: string; email: string; role: string };
-    category: { _id: string; name: string };
+    category: string | Category;
     createdAt: string;
 }
 
@@ -42,16 +48,50 @@ interface ApiResponse {
 const HomePage = () => {
     const [progress, setProgress] = useState<number>(13);
     const [courses, setCourses] = useState<Course[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Fetch categories
+    const fetchCategories = async () => {
+        try {
+            const data = await GetAllCategory(1, 100);
+            setCategories(data?.metadata?.categories || []);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch categories',
+                variant: 'destructive',
+            });
+        }
+    };
 
     // Fetch courses using GetCourses API
     const fetchCourses = async () => {
         try {
             setLoading(true);
-            const limit = 10; // Limit to 6 courses for the carousel
+            const limit = 10; // Limit to 10 courses for the carousel
             const data: ApiResponse = await GetCourses(1, limit); // Fetch first page
             console.log('Fetched courses:', data);
-            setCourses(data.metadata.courses);
+
+            if (data?.metadata?.courses && data.metadata.courses.length > 0) {
+                const parsedCourses = data.metadata.courses.map((course: Course) => {
+                    let categoryObj = categories.find((cat) => cat._id === course.category);
+                    if (!categoryObj && typeof course.category === 'object') {
+                        categoryObj = course.category as Category;
+                    }
+                    return {
+                        ...course,
+                        category: categoryObj || { _id: '', name: 'Uncategorized' },
+                    };
+                });
+
+                setCourses(parsedCourses);
+            } else {
+                throw new Error(
+                    'No courses found. Please check your connection or try again later.',
+                );
+            }
         } catch (error: unknown) {
             console.error('Lỗi khi lấy khóa học:', error);
             toast({
@@ -66,10 +106,21 @@ const HomePage = () => {
         }
     };
 
-    // Progress effect for the track section
+    // Fetch categories on mount
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    // Fetch courses only after categories are fetched
+    useEffect(() => {
+        if (categories.length > 0) {
+            fetchCourses();
+        }
+    }, [categories]);
+
+    // Progress effect
     useEffect(() => {
         const timer = setTimeout(() => setProgress(66), 500);
-        fetchCourses(); // Fetch courses on mount
         return () => clearTimeout(timer);
     }, []);
 
@@ -188,11 +239,11 @@ const HomePage = () => {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <div className=" text-[#5AD3AF] dark:text-green-400 text-2xl flex items-center gap-2">
+                                                <div className="text-[#5AD3AF] dark:text-green-400 text-2xl flex items-center gap-2">
                                                     <BookOpen className="w-6 h-6" />
                                                     {course.title}
                                                 </div>
-                                                <div className=" text-[#657ED4] dark:text-blue-300 text-sm mt-2">
+                                                <div className="text-[#657ED4] dark:text-blue-300 text-sm mt-2">
                                                     {course.description}
                                                 </div>
                                             </CardContent>
@@ -213,8 +264,9 @@ const HomePage = () => {
                                                         height={30}
                                                         alt="Tag"
                                                     />
-                                                    {/* Placeholder; update with actual module data if available */}
-                                                    {course.category?.name || 'Uncategorized'}
+                                                    {typeof course.category === 'object'
+                                                        ? course.category.name
+                                                        : 'Uncategorized'}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Image
@@ -223,8 +275,7 @@ const HomePage = () => {
                                                         height={30}
                                                         alt="Dollar"
                                                     />
-                                                    {/* Placeholder; update with actual duration if available */}
-                                                    {course.price}
+                                                    ${course.price.toFixed(2)}
                                                 </div>
                                             </CardFooter>
                                         </Card>
