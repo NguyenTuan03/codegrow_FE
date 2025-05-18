@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+// import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -321,6 +321,7 @@ const resultCodes: ResultCodeInfo[] = [
 export default function MoMoCallbackPage() {
     const searchParams = useSearchParams();
     const [params, setParams] = useState<MoMoCallbackParams | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const parsedParams: MoMoCallbackParams = {
@@ -339,22 +340,21 @@ export default function MoMoCallbackPage() {
             signature: searchParams.get('signature') || '',
         };
         setParams(parsedParams);
+        setIsLoading(false);
     }, [searchParams]);
 
-    if (!params) {
+    if (isLoading || !params) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-                <Card className="w-full max-w-md shadow-lg rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                            Đang xử lý...
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+                <Card className="w-full max-w-md shadow-sm rounded-lg">
+                    <CardHeader className="text-center space-y-4">
+                        <Loader2 className="w-12 h-12 mx-auto text-blue-600 animate-spin" />
+                        <CardTitle className="text-2xl font-semibold">
+                            Đang xử lý thanh toán...
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-col items-center space-y-4">
-                        <Loader2 className="w-12 h-12 text-blue-500 dark:text-blue-400 animate-spin" />
-                        <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
-                            Vui lòng chờ trong khi chúng tôi xử lý yêu cầu của bạn.
-                        </p>
+                    <CardContent className="text-center text-gray-500">
+                        <p>Vui lòng chờ trong khi chúng tôi xác nhận giao dịch của bạn</p>
                     </CardContent>
                 </Card>
             </div>
@@ -373,111 +373,156 @@ export default function MoMoCallbackPage() {
     const isPending = ['1000', '7000', '7002', '9000'].includes(result.code);
     const isError = !isSuccess && !isPending;
 
+    const statusColor = isSuccess
+        ? 'bg-green-100 border-green-500 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+        : isError
+          ? 'bg-red-100 border-red-500 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+          : 'bg-yellow-100 border-yellow-500 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+
+    const statusIcon = isSuccess ? (
+        <CheckCircle2 className="w-6 h-6" />
+    ) : isError ? (
+        <XCircle className="w-6 h-6" />
+    ) : (
+        <AlertCircle className="w-6 h-6" />
+    );
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-900 p-4">
-            <Card className="w-full max-w-lg shadow-lg rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                        Kết quả thanh toán MoMo
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* Status Alert */}
-                    <Alert
-                        variant={isSuccess ? 'default' : isError ? 'destructive' : 'default'}
-                        className={`${
-                            isPending
-                                ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
-                                : isSuccess
-                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-                                  : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'
-                        } flex items-start space-x-3 p-4 rounded-lg`}
-                    >
-                        {isSuccess ? (
-                            <CheckCircle2 className="h-5 w-5 mt-0.5 text-green-600 dark:text-green-400" />
-                        ) : isError ? (
-                            <XCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400" />
-                        ) : (
-                            <AlertCircle className="h-5 w-5 mt-0.5 text-yellow-600 dark:text-yellow-400" />
-                        )}
-                        <div>
-                            <AlertTitle className="text-lg font-semibold">
-                                {isSuccess ? 'Thành công' : isError ? 'Lỗi' : 'Đang xử lý'}
-                            </AlertTitle>
-                            <AlertDescription className="text-sm space-y-1">
-                                <p className="font-medium">{decodeURIComponent(params.message)}</p>
-                                <p>Mã kết quả: {result.code}</p>
-                                <p>Loại lỗi: {result.type}</p>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl mx-auto">
+                <Card className="overflow-hidden shadow-sm">
+                    <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl font-semibold">
+                                Kết quả thanh toán
+                            </CardTitle>
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    Mã giao dịch:
+                                </span>
+                                <span className="text-sm font-mono">{params.transId || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-6 p-6">
+                        {/* Status Section */}
+                        <div className={`flex items-start p-4 rounded-lg border ${statusColor}`}>
+                            <div className="mr-4 mt-0.5">{statusIcon}</div>
+                            <div>
+                                <h3 className="text-lg font-semibold mb-1">
+                                    {isSuccess
+                                        ? 'Thanh toán thành công'
+                                        : isError
+                                          ? 'Thanh toán thất bại'
+                                          : 'Thanh toán đang xử lý'}
+                                </h3>
+                                <p className="text-sm">{decodeURIComponent(params.message)}</p>
                                 {result.recommendedActions && (
-                                    <p>Hành động đề nghị: {result.recommendedActions}</p>
+                                    <div className="mt-2 text-sm">
+                                        <p className="font-medium">Hướng dẫn:</p>
+                                        <p>{result.recommendedActions}</p>
+                                    </div>
                                 )}
-                            </AlertDescription>
+                            </div>
                         </div>
-                    </Alert>
 
-                    {/* Payment Details */}
-                    <div className="space-y-3 rounded-lg bg-gray-50 dark:bg-gray-700 p-4">
-                        <div className="flex items-center space-x-2">
-                            <Package className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Mã đơn hàng:
-                            </span>
-                            <span className="text-gray-600 dark:text-gray-400">
-                                {params.orderId}
-                            </span>
+                        {/* Payment Details */}
+                        <div className="space-y-4">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-300">
+                                Chi tiết giao dịch
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="flex items-center">
+                                    <Package className="w-5 h-5 mr-2 text-gray-400" />
+                                    <div>
+                                        <p className="text-sm text-gray-500">Mã đơn hàng</p>
+                                        <p className="font-medium">{params.orderId}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center">
+                                    <DollarSign className="w-5 h-5 mr-2 text-gray-400" />
+                                    <div>
+                                        <p className="text-sm text-gray-500">Số tiền</p>
+                                        <p className="font-medium">
+                                            {new Intl.NumberFormat('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            }).format(Number(params.amount))}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center">
+                                    <Info className="w-5 h-5 mr-2 text-gray-400" />
+                                    <div>
+                                        <p className="text-sm text-gray-500">Thông tin</p>
+                                        <p className="font-medium">
+                                            {decodeURIComponent(params.orderInfo)}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center">
+                                    <Clock className="w-5 h-5 mr-2 text-gray-400" />
+                                    <div>
+                                        <p className="text-sm text-gray-500">Thời gian</p>
+                                        <p className="font-medium">
+                                            {new Date(Number(params.responseTime)).toLocaleString(
+                                                'vi-VN',
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <DollarSign className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Số tiền:
-                            </span>
-                            <span className="text-gray-600 dark:text-gray-400">
-                                {new Intl.NumberFormat('vi-VN', {
-                                    style: 'currency',
-                                    currency: 'VND',
-                                }).format(Number(params.amount))}
-                            </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Info className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Thông tin đơn hàng:
-                            </span>
-                            <span className="text-gray-600 dark:text-gray-400">
-                                {decodeURIComponent(params.orderInfo)}
-                            </span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Thời gian phản hồi:
-                            </span>
-                            <span className="text-gray-600 dark:text-gray-400">
-                                {new Date(Number(params.responseTime)).toLocaleString('vi-VN')}
-                            </span>
-                        </div>
-                    </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex justify-end space-x-3">
-                        {isError && result.recommendedActions?.includes('thử lại') && (
-                            <Button
-                                variant="outline"
-                                asChild
-                                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                                <Link href="/payment">Thử lại thanh toán</Link>
+                        {/* Technical Details */}
+                        <div className="space-y-2">
+                            <h4 className="font-medium text-gray-700 dark:text-gray-300">
+                                Thông tin kỹ thuật
+                            </h4>
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-gray-500">Mã kết quả</p>
+                                        <p className="font-mono">{result.code}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500">Loại lỗi</p>
+                                        <p>{result.type}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500">Phương thức</p>
+                                        <p>{params.payType || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500">Đối tác</p>
+                                        <p>{params.partnerCode}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                            {isError && (
+                                <Button variant="outline" asChild>
+                                    <Link href="/payment">Thử lại thanh toán</Link>
+                                </Button>
+                            )}
+                            <Button asChild>
+                                <Link href="/">Về trang chủ</Link>
                             </Button>
-                        )}
-                        <Button
-                            asChild
-                            className="bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
-                        >
-                            <Link href="/">Quay về trang chủ</Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Footer Note */}
+                <div className="mt-6 text-center text-sm text-gray-500">
+                    <p>
+                        Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
