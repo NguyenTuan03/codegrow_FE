@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
     Pagination,
@@ -12,8 +12,8 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users } from 'lucide-react';
-
+import { Users, BookOpen, Star } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
@@ -35,6 +35,7 @@ export default function CoursesPage() {
         category: string | Category;
         createdAt: string;
         lessons: number;
+        rating?: number;
     }
 
     interface ApiResponse {
@@ -55,7 +56,6 @@ export default function CoursesPage() {
     const limit = 8;
     const router = useRouter();
 
-    // Fetch all categories once
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
@@ -70,7 +70,6 @@ export default function CoursesPage() {
         }
     };
 
-    // Fetch courses and map category ID to category object
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
@@ -85,6 +84,7 @@ export default function CoursesPage() {
                     return {
                         ...course,
                         category: categoryObj || { _id: '', name: 'Uncategorized' },
+                        rating: Math.floor(Math.random() * 2) + 3 + Math.random(), // Random rating 3-5 for demo
                     };
                 });
 
@@ -127,125 +127,176 @@ export default function CoursesPage() {
     };
 
     return (
-        <div className="p-10 py-8 min-h-screen bg-gradient-to-b from-[#e6fcf6] to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-4xl font-extrabold text-[#5AD3AF] dark:text-[#5AD3AF] tracking-tight">
-                    Courses
-                </h1>
-            </div>
-
-            {loading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
+        <div className="p-4 md:p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white tracking-tight">
+                            Explore Our Courses
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                            Learn new skills with our expert instructors
+                        </p>
+                    </div>
+                    <div className="w-full md:w-auto">
+                        {/* Search or filter can be added here */}
+                    </div>
                 </div>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                {loading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...Array(4)].map((_, i) => (
+                            <Card key={i} className="overflow-hidden">
+                                <Skeleton className="h-40 w-full" />
+                                <CardContent className="p-4 space-y-3">
+                                    <Skeleton className="h-6 w-3/4" />
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </CardContent>
+                                <CardFooter className="p-4">
+                                    <Skeleton className="h-12 w-full rounded-lg" />
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                ) : (
+                    <>
                         {courses.length === 0 ? (
-                            <div className="text-center text-[#657ED4] dark:text-blue-300 col-span-full">
-                                No courses available at the moment.
+                            <div className="text-center py-16">
+                                <div className="mx-auto w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                    <BookOpen className="w-12 h-12 text-gray-400" />
+                                </div>
+                                <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                                    No courses available
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                                    We couldnt find any courses matching your criteria. Please check
+                                    back later.
+                                </p>
                             </div>
                         ) : (
-                            courses.map((course) => (
-                                <Card
-                                    key={course._id}
-                                    className="hover:shadow-xl transition-shadow overflow-hidden bg-white dark:bg-gray-800 border-2 border-[#5AD3AF] dark:border-blue-300 rounded-2xl flex flex-col"
-                                >
-                                    <div className="h-36 bg-[#e6fcf6] dark:bg-gray-700 flex items-center justify-center">
-                                        <Badge className="bg-[#657ED4] text-white dark:bg-blue-300 dark:text-gray-900 px-4 py-2 text-base rounded-full shadow">
-                                            {typeof course.category === 'object'
-                                                ? course.category.name
-                                                : 'Uncategorized'}
-                                        </Badge>
-                                    </div>
-                                    <CardContent className="p-5 flex-1 flex flex-col">
-                                        <h4 className="font-bold mb-2 text-[#5AD3AF] dark:text-[#5AD3AF] text-lg line-clamp-1">
-                                            {course.title}
-                                        </h4>
-                                        <p className="text-sm text-[#657ED4] dark:text-blue-300 mb-4 line-clamp-2">
-                                            {course.description}
-                                        </p>
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className="font-bold text-[#657ED4] dark:text-blue-300 text-lg">
-                                                ${course.price}
-                                            </span>
-                                            <Badge className="bg-[#5AD3AF] text-white dark:bg-blue-300 dark:text-gray-900 px-3 py-1 rounded">
-                                                {new Date(course.createdAt).toLocaleDateString()}
-                                            </Badge>
-                                        </div>
-                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
-                                            <Users className="h-4 w-4 mr-1 text-[#5AD3AF]" />
-                                            <span>{course.enrolledCount} students enrolled</span>
-                                            <span className="mx-2">|</span>
-                                            <span>{course.lessons} lessons</span>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="flex justify-between">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-full border-[#657ED4] text-[#657ED4] dark:text-blue-300 dark:border-blue-300 px-6 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 font-semibold transition-colors"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                router.push(`/customer/courses/${course._id}`);
-                                            }}
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {courses.map((course) => (
+                                        <Card
+                                            key={course._id}
+                                            className="hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col h-full"
                                         >
-                                            View Details
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            ))
-                        )}
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="mt-12 flex justify-center">
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                            className={
-                                                currentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                        (page) => (
-                                            <PaginationItem key={page}>
-                                                <PaginationLink
-                                                    onClick={() => handlePageChange(page)}
-                                                    isActive={currentPage === page}
-                                                    className={
-                                                        currentPage === page
-                                                            ? 'bg-[#5AD3AF] text-white'
-                                                            : 'cursor-pointer text-[#657ED4] dark:text-blue-300'
-                                                    }
+                                            <div className="relative">
+                                                <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                                                    <Badge className="absolute top-2 left-2 bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
+                                                        {typeof course.category === 'object'
+                                                            ? course.category.name
+                                                            : 'Uncategorized'}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                            <CardHeader className="p-4 pb-2">
+                                                <h4 className="font-semibold text-lg line-clamp-2 text-gray-800 dark:text-white">
+                                                    {course.title}
+                                                </h4>
+                                            </CardHeader>
+                                            <CardContent className="p-4 pt-0 flex-1">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                                                    {course.description}
+                                                </p>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="font-bold text-[#657ED4] dark:text-[#657ED4] text-lg">
+                                                        ${course.price.toFixed(2)}
+                                                    </span>
+                                                    <div className="flex items-center space-x-1">
+                                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            {course.rating?.toFixed(1) || '4.5'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                    <div className="flex items-center">
+                                                        <Users className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <span>{course.enrolledCount}</span>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <BookOpen className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <span>{course.lessons} lessons</span>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="p-4 pt-0">
+                                                <Button
+                                                    variant="default"
+                                                    size="lg"
+                                                    className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white dark:bg-[#5AD3AF] dark:hover:bg-[#4ac2a0] text-base py-5 rounded-lg transition-colors duration-200 transform hover:scale-[1.02]"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        router.push(
+                                                            `/customer/courses/${course._id}`,
+                                                        );
+                                                    }}
                                                 >
-                                                    {page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        ),
-                                    )}
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                            className={
-                                                currentPage === totalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
-                    )}
-                </>
-            )}
+                                                    Enroll Now
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </div>
+
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="mt-12 flex justify-center">
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage - 1)
+                                                        }
+                                                        className={
+                                                            currentPage === 1
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }
+                                                    />
+                                                </PaginationItem>
+                                                {Array.from(
+                                                    { length: totalPages },
+                                                    (_, i) => i + 1,
+                                                ).map((page) => (
+                                                    <PaginationItem key={page}>
+                                                        <PaginationLink
+                                                            onClick={() => handlePageChange(page)}
+                                                            isActive={currentPage === page}
+                                                            className={
+                                                                currentPage === page
+                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0]'
+                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                            }
+                                                        >
+                                                            {page}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                ))}
+                                                <PaginationItem>
+                                                    <PaginationNext
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage + 1)
+                                                        }
+                                                        className={
+                                                            currentPage === totalPages
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }
+                                                    />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }

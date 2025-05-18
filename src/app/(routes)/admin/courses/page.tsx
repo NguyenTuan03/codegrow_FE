@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
     Pagination,
@@ -12,14 +12,14 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users } from 'lucide-react';
-import Link from 'next/link';
+import { Users, BookOpen, Star, Edit, Trash2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 
-export default function CoursesPage() {
+export default function AdminCoursesPage() {
     interface Category {
         _id: string;
         name: string;
@@ -35,6 +35,7 @@ export default function CoursesPage() {
         category: string | Category;
         createdAt: string;
         lessons: number;
+        status?: 'published' | 'draft' | 'archived';
     }
 
     interface ApiResponse {
@@ -83,6 +84,9 @@ export default function CoursesPage() {
                     return {
                         ...course,
                         category: categoryObj || { _id: '', name: 'Uncategorized' },
+                        status: ['published', 'draft', 'archived'][
+                            Math.floor(Math.random() * 3)
+                        ] as 'published' | 'draft' | 'archived',
                     };
                 });
 
@@ -123,134 +127,234 @@ export default function CoursesPage() {
             setCurrentPage(page);
         }
     };
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'published':
+                return 'bg-green-500 hover:bg-green-600 text-white';
+            case 'draft':
+                return 'bg-yellow-500 hover:bg-yellow-600 text-white';
+            case 'archived':
+                return 'bg-gray-500 hover:bg-gray-600 text-white';
+            default:
+                return 'bg-blue-500 hover:bg-blue-600 text-white';
+        }
+    };
+
     return (
-        <div className="px-6 py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+        <div className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold text-[#5AD3AF] dark:text-[#5AD3AF]">
-                        Explore Courses
-                    </h1>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                            Course Management
+                        </h1>
+                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                            Manage and organize all courses in your platform
+                        </p>
+                    </div>
                     <Button
                         onClick={() => router.push('/admin/courses/create')}
-                        className="bg-[#5AD3AF] hover:bg-[#4ABF9B] text-white font-semibold px-6 py-2 rounded-full transition-colors"
+                        className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
                     >
-                        Create Course
+                        Create New Course
                     </Button>
                 </div>
 
                 {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...Array(4)].map((_, i) => (
+                            <Card key={i} className="overflow-hidden">
+                                <Skeleton className="h-40 w-full" />
+                                <CardContent className="p-4 space-y-3">
+                                    <Skeleton className="h-6 w-3/4" />
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </CardContent>
+                                <CardFooter className="p-4 space-x-2">
+                                    <Skeleton className="h-10 w-1/2 rounded-lg" />
+                                    <Skeleton className="h-10 w-1/2 rounded-lg" />
+                                </CardFooter>
+                            </Card>
+                        ))}
                     </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {courses.length === 0 ? (
-                                <div className="text-center text-[#657ED4] dark:text-blue-300 col-span-full text-lg">
-                                    No courses available at the moment.
+                        {courses.length === 0 ? (
+                            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-lg">
+                                <div className="mx-auto w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                    <BookOpen className="w-12 h-12 text-gray-400" />
                                 </div>
-                            ) : (
-                                courses.map((course) => (
-                                    <Link
-                                        key={course._id}
-                                        href={`/admin/courses/${course._id}`}
-                                        passHref
-                                    >
-                                        <Card className="group relative overflow-hidden bg-white dark:bg-gray-800 border-2 border-[#5AD3AF] dark:border-blue-300 rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col">
-                                            <div className="h-36 bg-[#e6fcf6] dark:bg-gray-700 flex items-center justify-center">
-                                                <Badge className="bg-[#657ED4] text-white dark:bg-blue-300 dark:text-gray-900 px-4 py-2 text-base rounded-full shadow">
-                                                    {typeof course.category === 'object'
-                                                        ? course.category.name
-                                                        : 'Uncategorized'}
-                                                </Badge>
+                                <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                                    No courses available
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
+                                    Create your first course to get started
+                                </p>
+                                <Button
+                                    onClick={() => router.push('/admin/courses/create')}
+                                    className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                >
+                                    Create Course
+                                </Button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {courses.map((course) => (
+                                        <Card
+                                            key={course._id}
+                                            className="hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col h-full"
+                                        >
+                                            <div className="relative">
+                                                <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                                                    <div className="absolute top-2 left-2 space-x-2">
+                                                        <Badge
+                                                            className={`${getStatusBadge(course.status || 'published')} px-3 py-1 text-sm rounded-md shadow-sm`}
+                                                        >
+                                                            {course.status || 'published'}
+                                                        </Badge>
+                                                        <Badge className="bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
+                                                            {typeof course.category === 'object'
+                                                                ? course.category.name
+                                                                : 'Uncategorized'}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <CardContent className="p-5 flex-1 flex flex-col">
-                                                <h4 className="font-bold mb-2 text-[#5AD3AF] dark:text-[#5AD3AF] text-lg line-clamp-1">
+                                            <CardHeader className="p-4 pb-2">
+                                                <h4 className="font-semibold text-lg line-clamp-2 text-gray-800 dark:text-white">
                                                     {course.title}
                                                 </h4>
-                                                <p className="text-sm text-[#657ED4] dark:text-blue-300 mb-4 line-clamp-2">
+                                            </CardHeader>
+                                            <CardContent className="p-4 pt-0 flex-1">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                                                     {course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-[#657ED4] dark:text-blue-300 text-lg">
-                                                        ${course.price}
+                                                    <span className="font-bold text-[#657ED4] dark:text-[#657ED4] text-lg">
+                                                        ${course.price.toFixed(2)}
                                                     </span>
-                                                    <Badge className="bg-[#5AD3AF] text-white dark:bg-blue-300 dark:text-gray-900 px-3 py-1 rounded">
-                                                        {new Date(
-                                                            course.createdAt,
-                                                        ).toLocaleDateString()}
-                                                    </Badge>
+                                                    <div className="flex items-center space-x-1">
+                                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            4.5
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
-                                                    <Users className="h-4 w-4 mr-1 text-[#5AD3AF]" />
-                                                    <span>{course.enrolledCount} enrolled</span>
-                                                    <span className="mx-2">|</span>
-                                                    <span>{course.lessons} lessons</span>
+                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                    <div className="flex items-center">
+                                                        <Users className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <span>{course.enrolledCount} enrolled</span>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <BookOpen className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <span>{course.lessons} lessons</span>
+                                                    </div>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter className="flex justify-between">
+                                            <CardFooter className="p-4 pt-0 flex space-x-2">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="w-full border-[#657ED4] text-[#657ED4] dark:text-blue-300 dark:border-blue-300 px-6 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 font-semibold transition-colors"
+                                                    className="flex-1 border-[#5AD3AF] text-[#5AD3AF] hover:bg-[#5AD3AF]/10 dark:border-[#5AD3AF] dark:text-[#5AD3AF] dark:hover:bg-[#5AD3AF]/20"
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        router.push(`/admin/courses/${course._id}`);
+                                                        router.push(
+                                                            `/admin/courses/${course._id}/edit`,
+                                                        );
                                                     }}
                                                 >
-                                                    View Details
+                                                    <Edit className="w-4 h-4 mr-2" />
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    className="flex-1"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        // Add delete confirmation logic here
+                                                        toast({
+                                                            title: 'Delete Course',
+                                                            description: `Are you sure you want to delete "${course.title}"?`,
+                                                            action: (
+                                                                <Button
+                                                                    variant="destructive"
+                                                                    onClick={() => {
+                                                                        // Add delete logic here
+                                                                        toast({
+                                                                            title: 'Deleted',
+                                                                            description: `Course "${course.title}" has been deleted`,
+                                                                        });
+                                                                    }}
+                                                                >
+                                                                    Confirm
+                                                                </Button>
+                                                            ),
+                                                        });
+                                                    }}
+                                                >
+                                                    <Trash2 className="w-4 h-4 mr-2" />
+                                                    Delete
                                                 </Button>
                                             </CardFooter>
                                         </Card>
-                                    </Link>
-                                ))
-                            )}
-                        </div>
+                                    ))}
+                                </div>
 
-                        {totalPages > 1 && (
-                            <div className="mt-12 flex justify-center">
-                                <Pagination>
-                                    <PaginationContent>
-                                        <PaginationItem>
-                                            <PaginationPrevious
-                                                onClick={() => handlePageChange(currentPage - 1)}
-                                                className={`${
-                                                    currentPage === 1
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer'
-                                                } border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 rounded-full`}
-                                            />
-                                        </PaginationItem>
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                            (page) => (
-                                                <PaginationItem key={page}>
-                                                    <PaginationLink
-                                                        onClick={() => handlePageChange(page)}
-                                                        isActive={currentPage === page}
-                                                        className={`${
-                                                            currentPage === page
-                                                                ? 'bg-[#5AD3AF] text-white border-[#5AD3AF]'
-                                                                : 'border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600'
-                                                        } rounded-full transition-colors`}
-                                                    >
-                                                        {page}
-                                                    </PaginationLink>
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="mt-12 flex justify-center">
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage - 1)
+                                                        }
+                                                        className={
+                                                            currentPage === 1
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }
+                                                    />
                                                 </PaginationItem>
-                                            ),
-                                        )}
-                                        <PaginationItem>
-                                            <PaginationNext
-                                                onClick={() => handlePageChange(currentPage + 1)}
-                                                className={`${
-                                                    currentPage === totalPages
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer'
-                                                } border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 rounded-full`}
-                                            />
-                                        </PaginationItem>
-                                    </PaginationContent>
-                                </Pagination>
-                            </div>
+                                                {Array.from(
+                                                    { length: totalPages },
+                                                    (_, i) => i + 1,
+                                                ).map((page) => (
+                                                    <PaginationItem key={page}>
+                                                        <PaginationLink
+                                                            onClick={() => handlePageChange(page)}
+                                                            isActive={currentPage === page}
+                                                            className={
+                                                                currentPage === page
+                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0]'
+                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                            }
+                                                        >
+                                                            {page}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                ))}
+                                                <PaginationItem>
+                                                    <PaginationNext
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage + 1)
+                                                        }
+                                                        className={
+                                                            currentPage === totalPages
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }
+                                                    />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </>
                 )}
