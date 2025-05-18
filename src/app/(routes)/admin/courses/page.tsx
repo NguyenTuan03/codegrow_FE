@@ -17,8 +17,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
+import { GetAllCategory } from '@/lib/services/category/getallcategory';
 
 export default function CoursesPage() {
+    interface Category {
+        _id: string;
+        name: string;
+    }
+
     interface Course {
         _id: string;
         title: string;
@@ -26,8 +32,9 @@ export default function CoursesPage() {
         price: number;
         enrolledCount: number;
         author: { _id: string; fullName: string; email: string; role: string };
-        category: { _id: string; name: string };
+        category: string | Category;
         createdAt: string;
+        lessons: number;
     }
 
     interface ApiResponse {
@@ -41,31 +48,43 @@ export default function CoursesPage() {
     }
 
     const [courses, setCourses] = useState<Course[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 8; // Number of courses per page
+    const limit = 8;
     const router = useRouter();
+
+    const fetchCategories = async () => {
+        try {
+            const data = await GetAllCategory(1, 100);
+            setCategories(data?.metadata?.categories || []);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch categories',
+                variant: 'destructive',
+            });
+        }
+    };
 
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-            console.log('API Data:', data);
 
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                // Parse category and author fields if they are strings
-                const parsedCourses = data.metadata.courses.map((course: Course) => ({
-                    ...course,
-                    author:
-                        typeof course.author === 'string'
-                            ? JSON.parse(course.author)
-                            : course.author,
-                    category:
-                        typeof course.category === 'string'
-                            ? JSON.parse(course.category)
-                            : course.category,
-                }));
+                const parsedCourses = data.metadata.courses.map((course: Course) => {
+                    let categoryObj = categories.find((cat) => cat._id === course.category);
+                    if (!categoryObj && typeof course.category === 'object') {
+                        categoryObj = course.category as Category;
+                    }
+                    return {
+                        ...course,
+                        category: categoryObj || { _id: '', name: 'Uncategorized' },
+                    };
+                });
 
                 setCourses(parsedCourses);
                 setCurrentPage(data.metadata.page);
@@ -89,144 +108,153 @@ export default function CoursesPage() {
     };
 
     useEffect(() => {
-        fetchCourses(currentPage);
-    }, [currentPage]);
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        if (categories.length > 0) {
+            fetchCourses(currentPage);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, categories]);
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
         }
     };
-
     return (
-        <div className="p-10 py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Courses</h1>
-                <Button
-                    variant="default"
-                    onClick={() => router.push('/admin/courses/create')}
-                    className="bg-blue-600 text-white hover:bg-blue-700"
-                >
-                    Create Course
-                </Button>
-            </div>
-
-            {loading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="px-6 py-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-4xl font-bold text-[#5AD3AF] dark:text-[#5AD3AF]">
+                        Explore Courses
+                    </h1>
+                    <Button
+                        onClick={() => router.push('/admin/courses/create')}
+                        className="bg-[#5AD3AF] hover:bg-[#4ABF9B] text-white font-semibold px-6 py-2 rounded-full transition-colors"
+                    >
+                        Create Course
+                    </Button>
                 </div>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {courses.length === 0 ? (
-                            <div className="text-center text-gray-600 dark:text-gray-400 col-span-full">
-                                No courses available at the moment.
-                            </div>
-                        ) : (
-                            courses.map((course) => (
-                                <Link
-                                    key={course._id}
-                                    href={`/admin/courses/${course._id}`}
-                                    passHref
-                                >
-                                    <Card className="hover:shadow-lg transition-shadow overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                        <div className="h-36 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                            <span className="text-gray-700 dark:text-gray-300">
-                                                {course.category?.name || 'Uncategorized'}
-                                            </span>
-                                        </div>
-                                        <CardContent className="p-4">
-                                            <h4 className="font-medium mb-1 text-gray-900 dark:text-gray-100">
-                                                {course.title}
-                                            </h4>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                                {course.description}
-                                            </p>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="font-medium text-gray-900 dark:text-gray-100">
-                                                    ${course.price}
-                                                </span>
-                                                <Badge variant="secondary">
-                                                    {new Date(
-                                                        course.createdAt,
-                                                    ).toLocaleDateString()}
+
+                {loading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {courses.length === 0 ? (
+                                <div className="text-center text-[#657ED4] dark:text-blue-300 col-span-full text-lg">
+                                    No courses available at the moment.
+                                </div>
+                            ) : (
+                                courses.map((course) => (
+                                    <Link
+                                        key={course._id}
+                                        href={`/admin/courses/${course._id}`}
+                                        passHref
+                                    >
+                                        <Card className="group relative overflow-hidden bg-white dark:bg-gray-800 border-2 border-[#5AD3AF] dark:border-blue-300 rounded-2xl hover:shadow-xl transition-all duration-300 flex flex-col">
+                                            <div className="h-36 bg-[#e6fcf6] dark:bg-gray-700 flex items-center justify-center">
+                                                <Badge className="bg-[#657ED4] text-white dark:bg-blue-300 dark:text-gray-900 px-4 py-2 text-base rounded-full shadow">
+                                                    {typeof course.category === 'object'
+                                                        ? course.category.name
+                                                        : 'Uncategorized'}
                                                 </Badge>
                                             </div>
-                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                                <Users className="h-3 w-3 mr-1" />
-                                                <span>{course.enrolledCount} students</span>
-                                            </div>
-                                        </CardContent>
-                                        <CardFooter className="flex justify-between">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    router.push(`/admin/courses/${course._id}`);
-                                                }}
-                                            >
-                                                View Details
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </Link>
-                            ))
-                        )}
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="mt-12 flex justify-center">
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                            className={
-                                                currentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-
-                                    {/* Display page numbers */}
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                        (page) => (
-                                            <PaginationItem key={page}>
-                                                <PaginationLink
-                                                    onClick={() => handlePageChange(page)}
-                                                    isActive={currentPage === page}
-                                                    className={
-                                                        currentPage === page
-                                                            ? 'bg-blue-600 text-white'
-                                                            : 'cursor-pointer'
-                                                    }
+                                            <CardContent className="p-5 flex-1 flex flex-col">
+                                                <h4 className="font-bold mb-2 text-[#5AD3AF] dark:text-[#5AD3AF] text-lg line-clamp-1">
+                                                    {course.title}
+                                                </h4>
+                                                <p className="text-sm text-[#657ED4] dark:text-blue-300 mb-4 line-clamp-2">
+                                                    {course.description}
+                                                </p>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="font-bold text-[#657ED4] dark:text-blue-300 text-lg">
+                                                        ${course.price}
+                                                    </span>
+                                                    <Badge className="bg-[#5AD3AF] text-white dark:bg-blue-300 dark:text-gray-900 px-3 py-1 rounded">
+                                                        {new Date(
+                                                            course.createdAt,
+                                                        ).toLocaleDateString()}
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
+                                                    <Users className="h-4 w-4 mr-1 text-[#5AD3AF]" />
+                                                    <span>{course.enrolledCount} enrolled</span>
+                                                    <span className="mx-2">|</span>
+                                                    <span>{course.lessons} lessons</span>
+                                                </div>
+                                            </CardContent>
+                                            <CardFooter className="flex justify-between">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full border-[#657ED4] text-[#657ED4] dark:text-blue-300 dark:border-blue-300 px-6 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 font-semibold transition-colors"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        router.push(`/admin/courses/${course._id}`);
+                                                    }}
                                                 >
-                                                    {page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        ),
-                                    )}
-
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                            className={
-                                                currentPage === totalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer'
-                                            }
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
+                                                    View Details
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    </Link>
+                                ))
+                            )}
                         </div>
-                    )}
-                </>
-            )}
+
+                        {totalPages > 1 && (
+                            <div className="mt-12 flex justify-center">
+                                <Pagination>
+                                    <PaginationContent>
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                onClick={() => handlePageChange(currentPage - 1)}
+                                                className={`${
+                                                    currentPage === 1
+                                                        ? 'pointer-events-none opacity-50'
+                                                        : 'cursor-pointer'
+                                                } border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 rounded-full`}
+                                            />
+                                        </PaginationItem>
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                                            (page) => (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        onClick={() => handlePageChange(page)}
+                                                        isActive={currentPage === page}
+                                                        className={`${
+                                                            currentPage === page
+                                                                ? 'bg-[#5AD3AF] text-white border-[#5AD3AF]'
+                                                                : 'border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600'
+                                                        } rounded-full transition-colors`}
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            ),
+                                        )}
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                onClick={() => handlePageChange(currentPage + 1)}
+                                                className={`${
+                                                    currentPage === totalPages
+                                                        ? 'pointer-events-none opacity-50'
+                                                        : 'cursor-pointer'
+                                                } border-[#657ED4] text-[#657ED4] dark:border-blue-300 dark:text-blue-300 hover:bg-[#EEF1EF] dark:hover:bg-gray-600 rounded-full`}
+                                            />
+                                        </PaginationItem>
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }
