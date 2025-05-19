@@ -5,7 +5,13 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
-const Room = ({ params }: { params: { roomid: string } }) => {
+// Define the props type explicitly
+interface RoomPageProps {
+    params: { roomid: string };
+    searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+const Room = ({ params }: RoomPageProps) => {
     const { fullName } = useUser();
     const roomID = params.roomid;
 
