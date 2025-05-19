@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 
 interface BreadcrumbsProps {
     courseId: string;
@@ -8,19 +9,25 @@ interface BreadcrumbsProps {
 
 export default function Breadcrumbs({ courseId, category, title }: BreadcrumbsProps) {
     return (
-        <nav className="text-sm text-gray-600 dark:text-gray-400">
-            <Link href="/customer/courses" className="hover:underline">
+        <nav className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-2">
+            <Link
+                href="/customer/courses"
+                className="hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+            >
                 Courses
             </Link>
-
-            <span className="mx-2">/</span>
-            <Link href={`/customer/courses?category=${category}`} className="hover:underline">
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <Link
+                href={`/customer/courses?category=${category}`}
+                className="hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+            >
                 {category}
             </Link>
-            <span className="mx-2">/</span>
-
-            <span className="text-gray-900 dark:text-gray-100">{title}</span>
-            <h2 className="text-lg font-semibold hidden">{courseId}</h2>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-900 dark:text-gray-100 font-medium truncate max-w-xs">
+                {title}
+            </span>
+            <h2 className="hidden">{courseId}</h2>
         </nav>
     );
 }

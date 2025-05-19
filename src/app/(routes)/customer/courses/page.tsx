@@ -12,12 +12,20 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users, BookOpen, Star } from 'lucide-react';
+import { Users, BookOpen, Star, Search, Filter } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 export default function CoursesPage() {
     interface Category {
@@ -36,6 +44,7 @@ export default function CoursesPage() {
         createdAt: string;
         lessons: number;
         rating?: number;
+        image?: string; // Added for course image
     }
 
     interface ApiResponse {
@@ -49,10 +58,14 @@ export default function CoursesPage() {
     }
 
     const [courses, setCourses] = useState<Course[]>([]);
+    const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [sortOption, setSortOption] = useState('default');
     const limit = 8;
     const router = useRouter();
 
@@ -84,11 +97,13 @@ export default function CoursesPage() {
                     return {
                         ...course,
                         category: categoryObj || { _id: '', name: 'Uncategorized' },
-                        rating: Math.floor(Math.random() * 2) + 3 + Math.random(), // Random rating 3-5 for demo
+                        rating: Math.floor(Math.random() * 2) + 3 + Math.random(), // Random rating 3-5
+                        image: `/course-${Math.floor(Math.random() * 5) + 1}.jpg`, // Placeholder image
                     };
                 });
 
                 setCourses(parsedCourses);
+                setFilteredCourses(parsedCourses);
                 setCurrentPage(data.metadata.page);
                 setTotalPages(data.metadata.totalPages);
             } else {
@@ -104,6 +119,7 @@ export default function CoursesPage() {
                 variant: 'destructive',
             });
             setCourses([]);
+            setFilteredCourses([]);
         } finally {
             setLoading(false);
         }
@@ -120,88 +136,192 @@ export default function CoursesPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, categories]);
 
+    // Filter and sort courses based on search, category, and sort option
+    useEffect(() => {
+        let filtered = [...courses];
+
+        // Filter by search query
+        if (searchQuery) {
+            filtered = filtered.filter(
+                (course) =>
+                    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    course.description.toLowerCase().includes(searchQuery.toLowerCase()),
+            );
+        }
+
+        // Filter by category
+        if (selectedCategory !== 'all') {
+            filtered = filtered.filter((course) =>
+                typeof course.category === 'object'
+                    ? course.category._id === selectedCategory
+                    : course.category === selectedCategory,
+            );
+        }
+
+        // Sort courses
+        if (sortOption === 'price-asc') {
+            filtered.sort((a, b) => a.price - b.price);
+        } else if (sortOption === 'price-desc') {
+            filtered.sort((a, b) => b.price - a.price);
+        } else if (sortOption === 'rating-desc') {
+            filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        } else if (sortOption === 'enrolled-desc') {
+            filtered.sort((a, b) => b.enrolledCount - a.enrolledCount);
+        }
+
+        setFilteredCourses(filtered);
+    }, [searchQuery, selectedCategory, sortOption, courses]);
+
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
     return (
-        <div className="p-4 md:p-8 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white tracking-tight">
-                            Explore Our Courses
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
-                            Learn new skills with our expert instructors
-                        </p>
+                {/* Header Section */}
+                <div className="mb-10">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                        Discover Amazing Courses
+                    </h1>
+                    <p className="mt-3 text-lg text-gray-600 dark:text-gray-300">
+                        Learn from the best instructors and enhance your skills with our curated
+                        courses.
+                    </p>
+                </div>
+
+                {/* Search and Filter Section */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+                    <div className="relative w-full sm:w-1/2 lg:w-1/3">
+                        <Input
+                            type="text"
+                            placeholder="Search courses..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-300 shadow-sm"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
-                    <div className="w-full md:w-auto">
-                        {/* Search or filter can be added here */}
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                                <SelectTrigger className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] transition-all">
+                                    <SelectValue placeholder="Filter by Category" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-lg">
+                                    <SelectItem value="all" className="rounded-md">
+                                        All Categories
+                                    </SelectItem>
+                                    {categories.map((category) => (
+                                        <SelectItem
+                                            key={category._id}
+                                            value={category._id}
+                                            className="rounded-md"
+                                        >
+                                            {category.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Select value={sortOption} onValueChange={setSortOption}>
+                            <SelectTrigger className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] transition-all">
+                                <SelectValue placeholder="Sort By" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-lg">
+                                <SelectItem value="default" className="rounded-md">
+                                    Default
+                                </SelectItem>
+                                <SelectItem value="price-asc" className="rounded-md">
+                                    Price: Low to High
+                                </SelectItem>
+                                <SelectItem value="price-desc" className="rounded-md">
+                                    Price: High to Low
+                                </SelectItem>
+                                <SelectItem value="rating-desc" className="rounded-md">
+                                    Rating: High to Low
+                                </SelectItem>
+                                <SelectItem value="enrolled-desc" className="rounded-md">
+                                    Popularity
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
+                {/* Courses Grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[...Array(4)].map((_, i) => (
-                            <Card key={i} className="overflow-hidden">
-                                <Skeleton className="h-40 w-full" />
+                        {[...Array(8)].map((_, i) => (
+                            <Card
+                                key={i}
+                                className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl"
+                            >
+                                <Skeleton className="h-48 w-full rounded-t-xl" />
                                 <CardContent className="p-4 space-y-3">
                                     <Skeleton className="h-6 w-3/4" />
                                     <Skeleton className="h-4 w-full" />
                                     <Skeleton className="h-4 w-1/2" />
                                 </CardContent>
                                 <CardFooter className="p-4">
-                                    <Skeleton className="h-12 w-full rounded-lg" />
+                                    <Skeleton className="h-12 w-full rounded-full" />
                                 </CardFooter>
                             </Card>
                         ))}
                     </div>
                 ) : (
                     <>
-                        {courses.length === 0 ? (
-                            <div className="text-center py-16">
-                                <div className="mx-auto w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                        {filteredCourses.length === 0 ? (
+                            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                                <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                                     <BookOpen className="w-12 h-12 text-gray-400" />
                                 </div>
                                 <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
-                                    No courses available
+                                    No Courses Found
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                                    We couldnt find any courses matching your criteria. Please check
-                                    back later.
+                                    We couldn’t find any courses matching your criteria. Try
+                                    adjusting your search or filters.
                                 </p>
                             </div>
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {courses.map((course) => (
+                                    {filteredCourses.map((course) => (
                                         <Card
                                             key={course._id}
-                                            className="hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col h-full"
+                                            className="group hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
                                         >
-                                            <div className="relative">
-                                                <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                                                    <Badge className="absolute top-2 left-2 bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
-                                                        {typeof course.category === 'object'
-                                                            ? course.category.name
-                                                            : 'Uncategorized'}
-                                                    </Badge>
-                                                </div>
+                                            <div className="relative h-48 overflow-hidden">
+                                                <img
+                                                    src={course.image || '/course-placeholder.jpg'}
+                                                    alt={course.title}
+                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                                <Badge className="absolute top-3 left-3 bg-[#657ED4] text-white dark:bg-[#657ED4] px-3 py-1 text-sm rounded-full shadow-sm">
+                                                    {typeof course.category === 'object'
+                                                        ? course.category.name
+                                                        : 'Uncategorized'}
+                                                </Badge>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
                                                 <h4 className="font-semibold text-lg line-clamp-2 text-gray-800 dark:text-white">
                                                     {course.title}
                                                 </h4>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    by {course.author.fullName}
+                                                </p>
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1">
                                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                                                     {course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-[#657ED4] dark:text-[#657ED4] text-lg">
+                                                    <span className="font-bold text-[#5AD3AF] dark:text-[#5AD3AF] text-xl">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
@@ -214,7 +334,7 @@ export default function CoursesPage() {
                                                 <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                                                     <div className="flex items-center">
                                                         <Users className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
-                                                        <span>{course.enrolledCount}</span>
+                                                        <span>{course.enrolledCount} learners</span>
                                                     </div>
                                                     <div className="flex items-center">
                                                         <BookOpen className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
@@ -226,7 +346,7 @@ export default function CoursesPage() {
                                                 <Button
                                                     variant="default"
                                                     size="lg"
-                                                    className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white dark:bg-[#5AD3AF] dark:hover:bg-[#4ac2a0] text-base py-5 rounded-lg transition-colors duration-200 transform hover:scale-[1.02]"
+                                                    className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white dark:bg-[#5AD3AF] dark:hover:bg-[#4ac2a0] text-base py-5 rounded-full transition-colors duration-200 transform hover:scale-[1.02] shadow-md"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         router.push(
@@ -254,7 +374,7 @@ export default function CoursesPage() {
                                                         className={
                                                             currentPage === 1
                                                                 ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -268,8 +388,8 @@ export default function CoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0]'
-                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0] rounded-full'
+                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-full'
                                                             }
                                                         >
                                                             {page}
@@ -284,7 +404,7 @@ export default function CoursesPage() {
                                                         className={
                                                             currentPage === totalPages
                                                                 ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { CreateComment } from '@/lib/services/course/createComment';
 import { GetComment } from '@/lib/services/course/getComment';
 import Comment from './Comment';
+import { MessageCircle } from 'lucide-react';
 
 // Define interfaces for better type safety
 interface User {
@@ -22,7 +24,7 @@ interface Message {
     createdAt: string;
     parentComment?: string | null;
     user: User;
-    replies?: Message[]; // Add replies field for nested structure
+    replies?: Message[];
 }
 
 interface MessagesTabProps {
@@ -47,7 +49,7 @@ function StarRating({ rating, setRating, editable = false, size = 20 }: StarRati
                         star <= rating
                             ? 'text-yellow-400 fill-yellow-400'
                             : 'text-gray-300 fill-gray-300'
-                    }`}
+                    } ${editable ? 'cursor-pointer' : ''}`}
                     viewBox="0 0 24 24"
                     onClick={() => editable && setRating && setRating(star)}
                 >
@@ -64,7 +66,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
     const [rating, setRating] = useState(5);
     const [loading, setLoading] = useState(false);
 
-    // Fetch comments from the API
     const fetchMessages = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -78,7 +79,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             }
             console.log('Fetched messages (raw):', response.metadata);
 
-            // Map the API response to match the Message interface
             const mappedMessages: Message[] = response.metadata.map(
                 (comment: {
                     _id?: string;
@@ -102,11 +102,10 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                             role: '',
                             id: '',
                         },
-                    replies: [], // Initialize replies array
+                    replies: [],
                 }),
             );
 
-            // Transform flat messages into a nested structure
             const nestedMessages = buildCommentTree(mappedMessages);
             console.log('Nested messages:', nestedMessages);
             setMessages(nestedMessages);
@@ -120,34 +119,28 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         }
     };
 
-    // Build a tree structure from flat messages
     const buildCommentTree = (flatMessages: Message[]): Message[] => {
         const messageMap: { [key: string]: Message } = {};
         const tree: Message[] = [];
 
-        // Create a map of messages by ID
         flatMessages.forEach((message) => {
-            message.replies = []; // Ensure replies array exists
+            message.replies = [];
             messageMap[message.id] = message;
         });
 
-        // Build the tree by assigning replies to their parent
         flatMessages.forEach((message) => {
             if (message.parentComment) {
                 const parent = messageMap[message.parentComment];
                 if (parent) {
                     parent.replies!.push(message);
                 } else {
-                    // If parent is not found, treat as top-level comment
                     tree.push(message);
                 }
             } else {
-                // Top-level comment
                 tree.push(message);
             }
         });
 
-        // Sort comments by createdAt (newest first)
         const sortByDate = (a: Message, b: Message) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 
@@ -161,7 +154,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         return tree;
     };
 
-    // Post a new comment or reply
     const postMessage = async (
         isReply: boolean,
         parentCommentId: string | null = null,
@@ -233,58 +225,60 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         }
     };
 
-    // Fetch messages on component mount or when courseId changes
     useEffect(() => {
         fetchMessages();
     }, [courseId]);
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-[#EEF1EF] dark:border-[#657ED4]/30">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <MessageCircle className="w-6 h-6 text-[#5AD3AF]" />
                 Thảo luận
             </h3>
 
-            <div className="space-y-6">
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <textarea
-                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-[#657ED4] focus:border-[#657ED4] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                        rows={3}
-                        placeholder="Đặt câu hỏi hoặc tham gia thảo luận..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                    />
-                    <div className="mt-3 flex items-center gap-4">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Đánh giá:
-                        </span>
-                        <StarRating rating={rating} setRating={setRating} editable={true} />
-                    </div>
-                    <div className="mt-3 flex justify-end">
-                        <Button
-                            className="bg-[#657ED4] hover:bg-[#354065] text-white"
-                            onClick={() => postMessage(false)}
-                            disabled={loading}
-                        >
-                            {loading ? 'Đang gửi...' : 'Đăng bình luận'}
-                        </Button>
-                    </div>
+            {/* Comment Form */}
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+                <Textarea
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#5AD3AF] focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                    rows={4}
+                    placeholder="Đặt câu hỏi hoặc tham gia thảo luận..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                />
+                <div className="mt-3 flex items-center gap-4">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Đánh giá:
+                    </span>
+                    <StarRating rating={rating} setRating={setRating} editable={true} />
                 </div>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 transition-all duration-200 shadow-sm"
+                        onClick={() => postMessage(false)}
+                        disabled={loading}
+                    >
+                        {loading ? 'Đang gửi...' : 'Đăng bình luận'}
+                    </Button>
+                </div>
+            </div>
 
-                <div className="space-y-4">
-                    {messages.length === 0 ? (
-                        <p className="text-gray-500 dark:text-gray-400">Chưa có bình luận nào.</p>
-                    ) : (
-                        messages.map((msg) => (
-                            <Comment
-                                key={msg.id}
-                                msg={msg}
-                                postMessage={postMessage}
-                                loading={loading}
-                                messages={messages}
-                            />
-                        ))
-                    )}
-                </div>
+            {/* Comments List */}
+            <div className="space-y-6">
+                {messages.length === 0 ? (
+                    <p className="text-gray-500 dark:text-gray-400 text-center">
+                        Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!
+                    </p>
+                ) : (
+                    messages.map((msg) => (
+                        <Comment
+                            key={msg.id}
+                            msg={msg}
+                            postMessage={postMessage}
+                            loading={loading}
+                            messages={messages}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );
