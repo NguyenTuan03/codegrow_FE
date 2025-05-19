@@ -5,7 +5,7 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
-// Define the props type explicitly
+// Explicitly define the props type for a dynamic route page
 interface RoomPageProps {
     params: { roomid: string };
     searchParams?: { [key: string]: string | string[] | undefined };
@@ -17,7 +17,7 @@ const Room = ({ params }: RoomPageProps) => {
 
     const myMeeting = (element: HTMLDivElement | null) => {
         if (!element) return;
-        // generate Kit Token
+        // Generate Kit Token
         const appID = parseInt(process.env.NEXT_PUBLIC_ZEGO_APP_ID!);
         const serverSecret = process.env.NEXT_PUBLIC_ZEGO_SERVER_SECRET!;
         const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
@@ -29,9 +29,9 @@ const Room = ({ params }: RoomPageProps) => {
             720,
         );
 
-        // Create instance object from Kit Token.
+        // Create instance object from Kit Token
         const zp = ZegoUIKitPrebuilt.create(kitToken);
-        // start the call
+        // Start the call
         zp.joinRoom({
             container: element,
             sharedLinks: [
