@@ -5,18 +5,19 @@ import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
-// Explicitly define the props type for a dynamic route page
-interface RoomPageProps {
-    params: { roomid: string };
-    searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-const Room = ({ params }: RoomPageProps) => {
+// Avoid PageProps constraint by defining props directly
+const Room = ({ params }: { params: Promise<{ roomid: string }> }) => {
     const { fullName } = useUser();
-    const roomID = params.roomid;
+
+    // Resolve params in the client component
+    const [roomID, setRoomID] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        params.then((resolved) => setRoomID(resolved.roomid));
+    }, [params]);
 
     const myMeeting = (element: HTMLDivElement | null) => {
-        if (!element) return;
+        if (!element || !roomID) return;
         // Generate Kit Token
         const appID = parseInt(process.env.NEXT_PUBLIC_ZEGO_APP_ID!);
         const serverSecret = process.env.NEXT_PUBLIC_ZEGO_SERVER_SECRET!;
@@ -53,6 +54,7 @@ const Room = ({ params }: RoomPageProps) => {
         });
     };
 
+    if (!roomID) return <div>Loading...</div>;
     return <div className="w-full h-screen" ref={myMeeting}></div>;
 };
 
