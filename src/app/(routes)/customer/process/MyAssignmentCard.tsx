@@ -1,3 +1,4 @@
+// @/app/(routes)/customer/process/MyAssignmentCard.tsx
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import {
 import { Submissioned } from '@/lib/services/api/submissioned';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
 
 interface Props {
     user: {
@@ -33,7 +34,6 @@ interface Submission {
 const QUIZ_NAMES: Record<string, string> = {
     '6806386a11646d230439c052': 'Targeting Audience',
     '68063a0111646d230439c062': 'User Persona Research',
-    // Thêm các quiz khác tại đây
 };
 
 export default function MyAssignmentCard({ user }: Props) {
@@ -70,7 +70,6 @@ export default function MyAssignmentCard({ user }: Props) {
         }
     }, [user]);
 
-    // Phân trang
     const totalPages = Math.ceil(submissions.length / itemsPerPage);
     const currentItems = submissions.slice(
         (currentPage - 1) * itemsPerPage,
@@ -78,32 +77,37 @@ export default function MyAssignmentCard({ user }: Props) {
     );
 
     return (
-        <Card className="shadow-sm">
-            <CardHeader>
-                <CardTitle className="text-lg">My Assignments</CardTitle>
+        <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+            <CardHeader className="p-4">
+                <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-[#AXIS_ADAPTERS]" />
+                    My Assignments
+                </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
                 {loading ? (
                     <div className="flex justify-center items-center h-32">
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
                     </div>
                 ) : submissions.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No assignments submitted yet</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                        No assignments submitted yet
+                    </p>
                 ) : (
                     <>
                         <div className="space-y-4">
                             {currentItems.map((submission) => (
                                 <div
                                     key={submission._id}
-                                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                                    className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
                                 >
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <h3 className="font-medium">
+                                            <h3 className="font-semibold text-gray-800 dark:text-gray-200">
                                                 {QUIZ_NAMES[submission.quiz] ||
                                                     `Quiz ${submission.quiz.slice(0, 4)}`}
                                             </h3>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                                 Submitted on{' '}
                                                 {new Date(
                                                     submission.createdAt,
@@ -114,12 +118,17 @@ export default function MyAssignmentCard({ user }: Props) {
                                             variant={
                                                 submission.isPassed ? 'default' : 'destructive'
                                             }
+                                            className={`rounded-full px-2 py-1 text-xs ${
+                                                submission.isPassed
+                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                                                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                                            }`}
                                         >
                                             {submission.isPassed ? 'Passed' : 'Failed'}
                                         </Badge>
                                     </div>
                                     <div className="mt-2">
-                                        <p className="text-sm">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
                                             Score:{' '}
                                             {submission.results.filter((r) => r.isCorrect).length}/
                                             {submission.results.length}
@@ -138,11 +147,12 @@ export default function MyAssignmentCard({ user }: Props) {
                                                 onClick={() =>
                                                     setCurrentPage((prev) => Math.max(prev - 1, 1))
                                                 }
+                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                                             />
                                         )}
                                     </PaginationItem>
                                     <PaginationItem>
-                                        <span className="px-4">
+                                        <span className="px-4 text-gray-600 dark:text-gray-300">
                                             Page {currentPage} of {totalPages}
                                         </span>
                                     </PaginationItem>
@@ -154,6 +164,7 @@ export default function MyAssignmentCard({ user }: Props) {
                                                         Math.min(prev + 1, totalPages),
                                                     )
                                                 }
+                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                                             />
                                         )}
                                     </PaginationItem>
