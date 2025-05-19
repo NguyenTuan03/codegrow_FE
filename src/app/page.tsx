@@ -1,14 +1,18 @@
 'use client';
+
 import { Auth } from '@/lib/components/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
+// import ChatBox from '@/lib/components/ChatBox';
+
 interface JwtPayload {
     _id: string;
     role: string;
     name: string;
     email: string;
 }
+
 export default function Page() {
     const router = useRouter();
     const auth = useContext(Auth);
@@ -27,15 +31,16 @@ export default function Page() {
             }
         }
 
-        if (jwtdecode) {
-            auth?.loginUser({
+        if (jwtdecode && auth) {
+            auth.loginUser({
                 id: jwtdecode._id,
                 role: jwtdecode.role,
                 fullname: jwtdecode.name,
                 email: jwtdecode.email,
             });
         }
-    }, [searchParams, router]);
+    }, [searchParams, auth]);
+
     useEffect(() => {
         if (!auth || !auth.userAuth) {
             router.replace('/customer');
@@ -59,7 +64,8 @@ export default function Page() {
                 router.replace('/customer');
                 break;
         }
-    }, [auth?.userAuth, router]);
+    }, [auth, router]);
+
     return (
         <div
             className="min-h-screen w-full flex flex-col items-center justify-center p-4"
@@ -84,7 +90,7 @@ export default function Page() {
                             {['L', 'o', 'a', 'd', 'i', 'n', 'g'].map((letter, index) => (
                                 <span
                                     key={index}
-                                    className={`inline-block animate-bounce`}
+                                    className="inline-block animate-bounce"
                                     style={{ animationDelay: `${index * 0.1}s` }}
                                 >
                                     {letter}
@@ -105,12 +111,15 @@ export default function Page() {
                     {[...Array(5)].map((_, i) => (
                         <div
                             key={i}
-                            className={`w-2 h-2 bg-[#657ED4] rounded-full animate-bounce`}
+                            className="w-2 h-2 bg-[#657ED4] rounded-full animate-bounce"
                             style={{ animationDelay: `${i * 0.1}s` }}
                         ></div>
                     ))}
                 </div>
             </div>
+
+            {/* Add the ChatBox component */}
+            {/* <ChatBox apiEndpoint="/api/gemini" /> */}
         </div>
     );
 }

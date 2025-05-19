@@ -13,6 +13,7 @@ import Output from '@/components/output';
 import { submitQuizCode } from '@/lib/services/quizs/sumbitcode';
 import { MarkQuiz } from '@/lib/services/api/markquiz';
 import type { editor } from 'monaco-editor';
+import ChatBox from '@/lib/components/ChatBox';
 
 interface Quiz {
     _id: string;
@@ -110,7 +111,6 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
             const token = localStorage.getItem('token') || '';
             const quizId = quiz._id;
 
-            // Submit code
             const response = await submitQuizCode({
                 token,
                 quizId,
@@ -128,7 +128,6 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                 duration: 3000,
             });
 
-            // Mark quiz as complete if correct
             if (response.isCorrect) {
                 const res = await MarkQuiz({ token, quizId, courseId });
                 console.log('API Response mark quiz:', res);
@@ -238,13 +237,6 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                             <div className="flex justify-end mb-6">
                                 <div className="flex gap-3">
                                     <Button
-                                        variant="outline"
-                                        className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full px-4 py-2 shadow-sm transition-all duration-200"
-                                        aria-label="Ask AI for help"
-                                    >
-                                        Ask AI
-                                    </Button>
-                                    <Button
                                         onClick={handleSubmitCode}
                                         disabled={isSubmitting}
                                         className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -287,6 +279,8 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                     </Card>
                 </div>
             </div>
+            {/* Add ChatBox with apiEndpoint */}
+            <ChatBox apiEndpoint="/api/gemini" />
         </div>
     );
 }
