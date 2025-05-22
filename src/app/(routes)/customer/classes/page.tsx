@@ -54,9 +54,29 @@ export default function Classes() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const limit = 6;
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-    // Mock user enrollment state (replace with real user data in production)
-    const [userEnrollments, setUserEnrollments] = useState<string[]>([]); // List of class IDs the user has joined
+    // Fetch the current user's ID from localStorage (or your auth system)
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            throw new Error('User data is missing');
+        }
+
+        const user = JSON.parse(userData);
+        const id = user.id;
+
+        if (id) {
+            setCurrentUserId(id);
+        } else {
+            console.warn('No user ID found. User might not be logged in.');
+            toast({
+                title: 'Warning',
+                description: 'Please log in to access class features.',
+                variant: 'destructive',
+            });
+        }
+    }, []);
 
     const fetchClasses = async (page: number = 1) => {
         try {
@@ -65,11 +85,6 @@ export default function Classes() {
             setClassesItems(data.metadata.classes);
             setCurrentPage(data.metadata.page);
             setTotalPages(data.metadata.totalPages);
-
-            // Mock fetching user enrollments (replace with API call)
-            // For example: const enrollments = await fetchUserEnrollments(mockUserId);
-            const mockEnrollments = ['class-id-1', 'class-id-2']; // Simulate enrolled class IDs
-            setUserEnrollments(mockEnrollments);
         } catch (error) {
             console.error('Failed to fetch classes:', error);
             toast({
@@ -92,10 +107,8 @@ export default function Classes() {
         }
     };
 
-    const handleClassAction = (classId: string) => {
-        console.log('Handling action for class ID:', classId);
-        // Check if the user is enrolled in the class
-        const isEnrolled = userEnrollments.includes(classId);
+    const handleClassAction = (classId: string, isEnrolled: boolean) => {
+        console.log('Handling action for class ID:', classId, 'Is Enrolled:', isEnrolled);
         if (isEnrolled) {
             router.push(`/customer/classes/${classId}`);
         } else {
@@ -138,7 +151,11 @@ export default function Classes() {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {classesItems.map((course) => {
-                            const isEnrolled = userEnrollments.includes(course._id);
+                            // Check if the current user's ID is in the class's students array
+                            const isEnrolled = currentUserId
+                                ? course.students.includes(currentUserId)
+                                : false;
+
                             return (
                                 <Card
                                     key={course._id}
@@ -211,14 +228,16 @@ export default function Classes() {
                                     </CardContent>
                                     <CardFooter className="flex justify-between">
                                         <Button
-                                            onClick={() => handleClassAction(course._id)}
+                                            onClick={() =>
+                                                handleClassAction(course._id, isEnrolled)
+                                            }
                                             className={`${
                                                 isEnrolled
                                                     ? 'bg-[#5AD3AF] hover:bg-[#4ac2a0]'
                                                     : 'bg-blue-600 hover:bg-blue-700'
                                             } text-white rounded-lg px-4 py-2 transition-colors duration-200`}
                                         >
-                                            {isEnrolled ? 'View Details' : 'Join Now'}
+                                            {isEnrolled ? 'View Details' : 'Enroll'}
                                         </Button>
                                     </CardFooter>
                                 </Card>
