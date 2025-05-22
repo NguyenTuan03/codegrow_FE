@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main Cybersecurity Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'cybersecurity',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'Cybersecurity',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,17 +29,65 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Threat Management
     {
-        id: 'js-roadmap',
+        id: 'threat-management',
         position: { x: 200, y: 150 },
-        data: {
-            label: 'Visit JavaScript Roadmap',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Threat Management' },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'threat-modeling',
+        position: { x: 100, y: 250 },
+        data: { label: 'Threat Modeling' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'vulnerability-assessment',
+        position: { x: 300, y: 250 },
+        data: { label: 'Vulnerability Assessment' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'supply-chain-risks',
+        position: { x: 100, y: 350 },
+        data: { label: 'Supply Chain Risks' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -51,11 +99,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // CLI Tools
+    // Secure Architecture
     {
-        id: 'cli-tools',
+        id: 'secure-architecture',
         position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Secure Architecture' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,14 +118,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
+        id: 'network-security',
         position: { x: 400, y: 300 },
-        data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Network Security' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -90,105 +135,26 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'cra',
+        id: 'encryption',
+        position: { x: 600, y: 300 },
+        data: { label: 'Encryption' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'access-control',
         position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
-        style: {
-            background: '#ff6b6b', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Components Basics
-    {
-        id: 'components-basics',
-        position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'functional-components',
-        position: { x: 100, y: 500 },
-        data: {
-            label: 'Functional Components',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
-        data: {
-            label: 'Class Components',
-            recommendation: 'optional',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
+        data: { label: 'Access Control' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -203,11 +169,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Hooks
+    // Incident Response
     {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
+        id: 'incident-response',
+        position: { x: 1000, y: 150 },
+        data: { label: 'Incident Response' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -222,9 +188,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
+        id: 'monitoring',
+        position: { x: 900, y: 250 },
+        data: { label: 'Monitoring & Detection' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -239,9 +205,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
+        id: 'response-plan',
+        position: { x: 1100, y: 250 },
+        data: { label: 'Response Planning' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -256,53 +222,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // State Management
+    // Compliance & Governance
     {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
+        id: 'compliance-governance',
         position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
-            recommendation: 'alternative',
-        },
+        data: { label: 'Compliance & Governance' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -314,18 +240,36 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
             transition: 'transform 0.2s ease-in-out',
         },
     },
-
-    // Frontend Roadmap Link
     {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        id: 'gdpr',
+        position: { x: 900, y: 500 },
         data: {
-            label: 'Frontend Roadmap',
+            label: 'GDPR Compliance',
             recommendation: 'recommended',
         },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'ccpa',
+        position: { x: 1100, y: 500 },
+        data: {
+            label: 'CCPA Compliance',
+            recommendation: 'recommended',
+        },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -338,12 +282,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const CybersecurityEdges: Edge[] = [
+    // Main connections from Cybersecurity
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'cybersecurity-threat-management',
+        source: 'cybersecurity',
+        target: 'threat-management',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +296,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'cybersecurity-secure-architecture',
+        source: 'cybersecurity',
+        target: 'secure-architecture',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +307,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'cybersecurity-incident-response',
+        source: 'cybersecurity',
+        target: 'incident-response',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +318,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'cybersecurity-compliance-governance',
+        source: 'cybersecurity',
+        target: 'compliance-governance',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +329,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Threat Management connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'threat-management-threat-modeling',
+        source: 'threat-management',
+        target: 'threat-modeling',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,23 +343,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
+        id: 'threat-management-vulnerability-assessment',
+        source: 'threat-management',
+        target: 'vulnerability-assessment',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -425,33 +355,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'threat-management-supply-chain-risks',
+        source: 'threat-management',
+        target: 'supply-chain-risks',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +367,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Secure Architecture connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'secure-architecture-network-security',
+        source: 'secure-architecture',
+        target: 'network-security',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +381,21 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'secure-architecture-encryption',
+        source: 'secure-architecture',
+        target: 'encryption',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'secure-architecture-access-control',
+        source: 'secure-architecture',
+        target: 'access-control',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -487,28 +405,54 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // External links
+    // Incident Response connections
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
+        id: 'incident-response-monitoring',
+        source: 'incident-response',
+        target: 'monitoring',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
     {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'incident-response-response-plan',
+        source: 'incident-response',
+        target: 'response-plan',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Compliance & Governance connections
+    {
+        id: 'compliance-governance-gdpr',
+        source: 'compliance-governance',
+        target: 'gdpr',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'compliance-governance-ccpa',
+        source: 'compliance-governance',
+        target: 'ccpa',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },

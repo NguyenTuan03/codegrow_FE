@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main Developer Relations Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'developer-relations',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'Developer Relations',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,17 +29,48 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Community Building
     {
-        id: 'js-roadmap',
+        id: 'community-building',
         position: { x: 200, y: 150 },
-        data: {
-            label: 'Visit JavaScript Roadmap',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Community Building' },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'events',
+        position: { x: 100, y: 250 },
+        data: { label: 'Events & Meetups' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'online-communities',
+        position: { x: 300, y: 250 },
+        data: { label: 'Online Communities' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -51,11 +82,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // CLI Tools
+    // Content Creation
     {
-        id: 'cli-tools',
+        id: 'content-creation',
         position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Content Creation' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,14 +101,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
+        id: 'tutorials',
         position: { x: 400, y: 300 },
-        data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Tutorials & Demos' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -90,105 +118,26 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'cra',
+        id: 'blog-posts',
+        position: { x: 600, y: 300 },
+        data: { label: 'Blog Posts & Videos' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'social-media',
         position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
-        style: {
-            background: '#ff6b6b', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Components Basics
-    {
-        id: 'components-basics',
-        position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'functional-components',
-        position: { x: 100, y: 500 },
-        data: {
-            label: 'Functional Components',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
-        data: {
-            label: 'Class Components',
-            recommendation: 'optional',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
+        data: { label: 'Social Media Engagement' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -203,11 +152,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Hooks
+    // Developer Advocacy
     {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
+        id: 'developer-advocacy',
+        position: { x: 1000, y: 150 },
+        data: { label: 'Developer Advocacy' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -222,9 +171,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
+        id: 'public-speaking',
+        position: { x: 900, y: 250 },
+        data: { label: 'Public Speaking' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -239,9 +188,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
+        id: 'feedback-loop',
+        position: { x: 1100, y: 250 },
+        data: { label: 'Feedback Loop' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -256,53 +205,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // State Management
+    // Technical Engagement
     {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
+        id: 'technical-engagement',
         position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
-            recommendation: 'alternative',
-        },
+        data: { label: 'Technical Engagement' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -314,18 +223,33 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
             transition: 'transform 0.2s ease-in-out',
         },
     },
-
-    // Frontend Roadmap Link
     {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        id: 'api-support',
+        position: { x: 900, y: 500 },
         data: {
-            label: 'Frontend Roadmap',
+            label: 'API Support',
             recommendation: 'recommended',
         },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'developer-experience',
+        position: { x: 1100, y: 500 },
+        data: { label: 'Developer Experience (DX)' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -338,12 +262,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const DeveloperRelationsEdges: Edge[] = [
+    // Main connections from Developer Relations
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'developer-relations-community',
+        source: 'developer-relations',
+        target: 'community-building',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +276,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'developer-relations-content',
+        source: 'developer-relations',
+        target: 'content-creation',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +287,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'developer-relations-advocacy',
+        source: 'developer-relations',
+        target: 'developer-advocacy',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +298,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'developer-relations-technical',
+        source: 'developer-relations',
+        target: 'technical-engagement',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +309,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Community Building connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'community-building-events',
+        source: 'community-building',
+        target: 'events',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,59 +323,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'community-building-online',
+        source: 'community-building',
+        target: 'online-communities',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +335,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Content Creation connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'content-creation-tutorials',
+        source: 'content-creation',
+        target: 'tutorials',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +349,21 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'content-creation-blogs',
+        source: 'content-creation',
+        target: 'blog-posts',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'content-creation-social',
+        source: 'content-creation',
+        target: 'social-media',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -487,28 +373,54 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // External links
+    // Developer Advocacy connections
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
+        id: 'developer-advocacy-speaking',
+        source: 'developer-advocacy',
+        target: 'public-speaking',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
     {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'developer-advocacy-feedback',
+        source: 'developer-advocacy',
+        target: 'feedback-loop',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Technical Engagement connections
+    {
+        id: 'technical-engagement-api',
+        source: 'technical-engagement',
+        target: 'api-support',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'technical-engagement-dx',
+        source: 'technical-engagement',
+        target: 'developer-experience',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },

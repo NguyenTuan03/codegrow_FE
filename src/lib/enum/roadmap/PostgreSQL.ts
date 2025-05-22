@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const PostgreSQLNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main PostgreSQL Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'postgresql',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'PostgreSQL',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,12 +29,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Backend Roadmap Link
     {
-        id: 'js-roadmap',
+        id: 'backend-roadmap',
         position: { x: 200, y: 150 },
         data: {
-            label: 'Visit JavaScript Roadmap',
+            label: 'Visit Backend Roadmap',
             recommendation: 'recommended',
         },
         style: {
@@ -51,11 +51,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // CLI Tools
+    // Learn the Basics
     {
-        id: 'cli-tools',
+        id: 'learn-basics',
         position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Learn the Basics' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,14 +70,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
-        position: { x: 400, y: 300 },
-        data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
+        id: 'installation',
+        position: { x: 300, y: 300 },
+        data: { label: 'Installation & Setup' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -90,14 +87,28 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'cra',
-        position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
+        id: 'basic-commands',
+        position: { x: 600, y: 300 },
+        data: { label: 'Basic Commands' },
         style: {
-            background: '#ff6b6b', // Kept original color for recommendation
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'data-types',
+        position: { x: 900, y: 300 },
+        data: { label: 'Data Types' },
+        style: {
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -110,11 +121,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Components Basics
+    // Schema Design
     {
-        id: 'components-basics',
+        id: 'schema-design',
         position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
+        data: { label: 'Schema Design' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -129,10 +140,203 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'functional-components',
+        id: 'tables',
         position: { x: 100, y: 500 },
+        data: { label: 'Creating Tables' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'constraints',
+        position: { x: 300, y: 500 },
+        data: { label: 'Constraints (PK, FK, etc.)' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'normalization',
+        position: { x: 100, y: 600 },
+        data: { label: 'Normalization' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+
+    // Querying Data
+    {
+        id: 'querying-data',
+        position: { x: 600, y: 400 },
+        data: { label: 'Querying Data' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'select-queries',
+        position: { x: 450, y: 500 },
+        data: { label: 'SELECT Queries' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'joins',
+        position: { x: 750, y: 500 },
+        data: { label: 'Joins' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'aggregates',
+        position: { x: 600, y: 600 },
+        data: { label: 'Aggregate Functions' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+
+    // Administration
+    {
+        id: 'administration',
+        position: { x: 1000, y: 200 },
+        data: { label: 'Administration' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'user-roles',
+        position: { x: 1000, y: 300 },
+        data: { label: 'User Roles & Permissions' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'backup-restore',
+        position: { x: 1000, y: 400 },
+        data: { label: 'Backup & Restore' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+
+    // Advanced Features
+    {
+        id: 'advanced-features',
+        position: { x: 1000, y: 600 },
+        data: { label: 'Advanced Features' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'indexes',
+        position: { x: 900, y: 700 },
         data: {
-            label: 'Functional Components',
+            label: 'Indexes',
             recommendation: 'recommended',
         },
         style: {
@@ -149,10 +353,10 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
+        id: 'triggers',
+        position: { x: 1100, y: 700 },
         data: {
-            label: 'Class Components',
+            label: 'Triggers',
             recommendation: 'optional',
         },
         style: {
@@ -168,182 +372,14 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
             transition: 'transform 0.2s ease-in-out',
         },
     },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Hooks
-    {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // State Management
-    {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
-        position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
-            recommendation: 'alternative',
-        },
-        style: {
-            background: '#ffd700', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Frontend Roadmap Link
-    {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
-        data: {
-            label: 'Frontend Roadmap',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const PostgreSQLEdges: Edge[] = [
+    // Main connections from PostgreSQL
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'postgresql-learn-basics',
+        source: 'postgresql',
+        target: 'learn-basics',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +388,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'postgresql-schema-design',
+        source: 'postgresql',
+        target: 'schema-design',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +399,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'postgresql-querying-data',
+        source: 'postgresql',
+        target: 'querying-data',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +410,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'postgresql-administration',
+        source: 'postgresql',
+        target: 'administration',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +421,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Learn Basics connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'learn-basics-installation',
+        source: 'learn-basics',
+        target: 'installation',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,23 +435,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
+        id: 'learn-basics-commands',
+        source: 'learn-basics',
+        target: 'basic-commands',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -425,33 +447,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'learn-basics-data-types',
+        source: 'learn-basics',
+        target: 'data-types',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +459,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Schema Design connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'schema-design-tables',
+        source: 'schema-design',
+        target: 'tables',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +473,122 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'schema-design-constraints',
+        source: 'schema-design',
+        target: 'constraints',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'schema-design-normalization',
+        source: 'schema-design',
+        target: 'normalization',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Querying Data connections
+    {
+        id: 'querying-data-select',
+        source: 'querying-data',
+        target: 'select-queries',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'querying-data-joins',
+        source: 'querying-data',
+        target: 'joins',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'querying-data-aggregates',
+        source: 'querying-data',
+        target: 'aggregates',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Administration connections
+    {
+        id: 'administration-user-roles',
+        source: 'administration',
+        target: 'user-roles',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'administration-backup-restore',
+        source: 'administration',
+        target: 'backup-restore',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'administration-advanced-features',
+        source: 'administration',
+        target: 'advanced-features',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeWidth: 2,
+        },
+    },
+
+    // Advanced Features connections
+    {
+        id: 'advanced-features-indexes',
+        source: 'advanced-features',
+        target: 'indexes',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'advanced-features-triggers',
+        source: 'advanced-features',
+        target: 'triggers',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -489,21 +600,9 @@ export const ReactEdges: Edge[] = [
 
     // External links
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'postgresql-backend-roadmap',
+        source: 'postgresql',
+        target: 'backend-roadmap',
         type: 'smoothstep',
         animated: true,
         style: {

@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
+import { GetComment } from '@/lib/services/course/getComment';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -27,36 +28,59 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
+interface Category {
+    _id: string;
+    name: string;
+}
+
+interface User {
+    fullName: string;
+    email: string;
+    role: string;
+    id: string;
+}
+
+interface Message {
+    id: string;
+    content: string;
+    rating?: number;
+    createdAt: string;
+    parentComment?: string | null;
+    user: User;
+    replies?: Message[];
+}
+
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    enrolledCount: number;
+    author: { _id: string; fullName: string; email: string; role: string };
+    category: string | Category;
+    createdAt: string;
+    lessons: number;
+    rating?: number; // Will be updated with average rating from comments
+    image?: string;
+}
+
+interface ApiResponse {
+    message: string;
+    status: number;
+    metadata: {
+        courses: Course[];
+        page: number;
+        totalPages: number;
+    };
+}
+
+interface CommentResponse {
+    message: string;
+    status: number;
+    metadata: Message[];
+}
+
 export default function CoursesPage() {
-    interface Category {
-        _id: string;
-        name: string;
-    }
-
-    interface Course {
-        _id: string;
-        title: string;
-        description: string;
-        price: number;
-        enrolledCount: number;
-        author: { _id: string; fullName: string; email: string; role: string };
-        category: string | Category;
-        createdAt: string;
-        lessons: number;
-        rating?: number;
-        image?: string; // Added for course image
-    }
-
-    interface ApiResponse {
-        message: string;
-        status: number;
-        metadata: {
-            courses: Course[];
-            page: number;
-            totalPages: number;
-        };
-    }
-
     const [courses, setCourses] = useState<Course[]>([]);
     const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -83,24 +107,53 @@ export default function CoursesPage() {
         }
     };
 
+    const fetchCommentsAndCalculateRatings = async (courseId: string): Promise<number> => {
+        try {
+            const response: CommentResponse = await GetComment(courseId);
+            if (!response || !response.metadata) {
+                throw new Error('Failed to fetch comments');
+            }
+
+            const comments = response.metadata;
+            const ratings = comments
+                .filter((comment) => comment.rating !== undefined)
+                .map((comment) => comment.rating as number);
+
+            if (ratings.length === 0) return 0; // No ratings available
+
+            const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+            return Number(avgRating.toFixed(1)); // Round to 1 decimal place
+        } catch (error) {
+            console.error(`Error fetching comments for course ${courseId}:`, error);
+            return 0; // Default to 0 if fetching fails
+        }
+    };
+
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
 
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                const parsedCourses = data.metadata.courses.map((course: Course) => {
-                    let categoryObj = categories.find((cat) => cat._id === course.category);
-                    if (!categoryObj && typeof course.category === 'object') {
-                        categoryObj = course.category as Category;
-                    }
-                    return {
-                        ...course,
-                        category: categoryObj || { _id: '', name: 'Uncategorized' },
-                        rating: Math.floor(Math.random() * 2) + 3 + Math.random(), // Random rating 3-5
-                        image: `/course-${Math.floor(Math.random() * 5) + 1}.jpg`, // Placeholder image
-                    };
-                });
+                const parsedCourses = await Promise.all(
+                    data.metadata.courses.map(async (course: Course) => {
+                        let categoryObj = categories.find((cat) => cat._id === course.category);
+                        if (!categoryObj && typeof course.category === 'object') {
+                            categoryObj = course.category as Category;
+                        }
+
+                        // Fetch average rating from comments
+                        const avgRating = await fetchCommentsAndCalculateRatings(course._id);
+                        console.log('Average rating:', avgRating);
+
+                        return {
+                            ...course,
+                            category: categoryObj || { _id: '', name: 'Uncategorized' },
+                            rating: avgRating || 4.5, // Fallback to 4.5 if no rating
+                            image: `/course-${Math.floor(Math.random() * 5) + 1}.jpg`, // Placeholder image
+                        };
+                    }),
+                );
 
                 setCourses(parsedCourses);
                 setFilteredCourses(parsedCourses);
@@ -327,7 +380,7 @@ export default function CoursesPage() {
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                            {course.rating?.toFixed(1) || '4.5'}
+                                                            {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
                                                 </div>

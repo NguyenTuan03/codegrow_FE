@@ -14,11 +14,11 @@ export default function DeveloperRoadmaps() {
         { name: 'Android', href: '/customer/roadmap/Android' },
         { name: 'IOS', href: '/customer/roadmap/IOS' },
         { name: 'PostgreSQL', href: '/customer/roadmap/PostgreSQL' },
-        { name: 'Blockchain', href: '/customer/roadmap/Blockchain' },
+        { name: 'BlockChain', href: '/customer/roadmap/BlockChain' },
         { name: 'QA', href: '/customer/roadmap/QA' },
         { name: 'Software Architect', href: '/customer/roadmap/SoftwareArchitect' },
         { name: 'Cyber Security', href: '/customer/roadmap/CyberSecurity' },
-        { name: 'UX Design', href: '/customer/roadmap/UXDesign' },
+        { name: 'UI Design', href: '/customer/roadmap/UIDesign' },
         { name: 'Game Developer', href: '/customer/roadmap/GameDeveloper' },
         { name: 'Technical Writer', href: '/customer/roadmap/TechnicalWriter' },
         { name: 'MLOps', href: '/customer/roadmap/MLOps' },
@@ -31,7 +31,7 @@ export default function DeveloperRoadmaps() {
         <ReactFlowProvider>
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
                 <div className="max-w-6xl mx-auto">
-                    <h1 className="text-5xl font-bold text-center mb-4 text-purple-500 dark:text-purple-400">
+                    <h1 className="text-5xl font-bold text-center mb-4 text-[#5AD3AF] dark:[#5AD3AF]">
                         Developer Roadmaps
                     </h1>
 
