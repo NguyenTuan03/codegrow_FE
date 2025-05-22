@@ -8,6 +8,10 @@ import ClassInfo from '@/app/(routes)/mentor/classes/[classId]/CLassInfor';
 import StudentsPanel from '@/app/(routes)/mentor/classes/[classId]/StudentPanel';
 import Post from './Post';
 
+import { BookOpen, Users, FileText, Award } from 'lucide-react';
+import MarksAttendance from './MarkAttendance';
+import Assignments from './Assignment';
+
 interface Schedule {
     startDate: string;
     endDate: string;
@@ -52,6 +56,7 @@ export default function ClassDetailPage() {
     const { classId } = useParams<{ classId: string }>();
     const [classData, setClassData] = useState<ClassItem | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('Stream');
 
     useEffect(() => {
         const fetchClassDetail = async () => {
@@ -116,21 +121,67 @@ export default function ClassDetailPage() {
         );
     }
 
+    const tabs = [
+        { name: 'Stream', icon: BookOpen },
+        { name: 'Classwork', icon: FileText },
+        { name: 'People', icon: Users },
+        { name: 'Marks', icon: Award },
+    ];
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+                {/* Header */}
+                <div className="relative bg-[#5AD3AF] rounded-xl p-6 text-white mb-8">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                         {classData.title}
                     </h1>
-                    <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                        Manage your class, share updates, and engage with students
+                    <p className="mt-2 text-sm sm:text-base opacity-90">
+                        Course: {classData.course.title || 'N/A'} | Mentor:{' '}
+                        {classData.mentor.fullName || 'N/A'}
                     </p>
+                    <button className="absolute top-6 right-6 bg-white text-[#5AD3AF] px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors duration-200">
+                        <BookOpen className="w-5 h-5" />
+                        Join
+                    </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-1 space-y-6">
-                        <ClassInfo classData={classData} />
+                {/* Tabs */}
+                <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+                    <nav className="flex space-x-2 sm:space-x-4 overflow-x-auto">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.name}
+                                onClick={() => setActiveTab(tab.name)}
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                                    activeTab === tab.name
+                                        ? 'border-b-2 border-[#5AD3AF] text-[#5AD3AF]'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                            >
+                                <tab.icon className="w-5 h-5" />
+                                {tab.name}
+                            </button>
+                        ))}
+                    </nav>
+                </div>
+
+                {/* Content */}
+                {activeTab === 'Stream' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-1 space-y-6">
+                            <ClassInfo classData={classData} />
+                        </div>
+                        <div className="lg:col-span-2">
+                            <Post />
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Classwork' && <Assignments />}
+
+                {activeTab === 'People' && (
+                    <div className="max-w-3xl mx-auto">
                         <StudentsPanel
                             classData={classData}
                             students={classData.students.map((student) => ({
@@ -139,10 +190,9 @@ export default function ClassDetailPage() {
                             }))}
                         />
                     </div>
-                    <div className="lg:col-span-2">
-                        <Post />
-                    </div>
-                </div>
+                )}
+
+                {activeTab === 'Marks' && <MarksAttendance students={classData.students} />}
             </div>
         </div>
     );
