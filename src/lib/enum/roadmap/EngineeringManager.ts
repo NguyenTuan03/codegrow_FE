@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const EngineeringManagerNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main Engineering Manager Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'engineering-manager',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'Engineering Manager',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,17 +29,48 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Leadership Skills
     {
-        id: 'js-roadmap',
+        id: 'leadership-skills',
         position: { x: 200, y: 150 },
-        data: {
-            label: 'Visit JavaScript Roadmap',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Leadership Skills' },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'communication',
+        position: { x: 100, y: 250 },
+        data: { label: 'Communication' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'decision-making',
+        position: { x: 300, y: 250 },
+        data: { label: 'Decision Making' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -51,11 +82,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // CLI Tools
+    // Project Management
     {
-        id: 'cli-tools',
+        id: 'project-management',
         position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Project Management' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,14 +101,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
+        id: 'agile-practices',
         position: { x: 400, y: 300 },
-        data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Agile Practices' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -90,105 +118,26 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'cra',
+        id: 'roadmapping',
+        position: { x: 600, y: 300 },
+        data: { label: 'Tech Roadmapping' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'risk-management',
         position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
-        style: {
-            background: '#ff6b6b', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Components Basics
-    {
-        id: 'components-basics',
-        position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'functional-components',
-        position: { x: 100, y: 500 },
-        data: {
-            label: 'Functional Components',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
-        data: {
-            label: 'Class Components',
-            recommendation: 'optional',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
+        data: { label: 'Risk Management' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -203,11 +152,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Hooks
+    // Team Building
     {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
+        id: 'team-building',
+        position: { x: 1000, y: 150 },
+        data: { label: 'Team Building' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -222,9 +171,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
+        id: 'hiring',
+        position: { x: 900, y: 250 },
+        data: { label: 'Hiring & Onboarding' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -239,9 +188,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
+        id: 'mentoring',
+        position: { x: 1100, y: 250 },
+        data: { label: 'Mentoring & Growth' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -256,53 +205,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // State Management
+    // Technical Oversight
     {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
+        id: 'technical-oversight',
         position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
-            recommendation: 'alternative',
-        },
+        data: { label: 'Technical Oversight' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -314,18 +223,33 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
             transition: 'transform 0.2s ease-in-out',
         },
     },
-
-    // Frontend Roadmap Link
     {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        id: 'code-reviews',
+        position: { x: 900, y: 500 },
         data: {
-            label: 'Frontend Roadmap',
+            label: 'Code Reviews',
             recommendation: 'recommended',
         },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'architecture-decisions',
+        position: { x: 1100, y: 500 },
+        data: { label: 'Architecture Decisions' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -338,12 +262,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const EngineeringManagerEdges: Edge[] = [
+    // Main connections from Engineering Manager
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'engineering-manager-leadership',
+        source: 'engineering-manager',
+        target: 'leadership-skills',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +276,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'engineering-manager-project',
+        source: 'engineering-manager',
+        target: 'project-management',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +287,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'engineering-manager-team',
+        source: 'engineering-manager',
+        target: 'team-building',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +298,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'engineering-manager-technical',
+        source: 'engineering-manager',
+        target: 'technical-oversight',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +309,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Leadership Skills connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'leadership-skills-communication',
+        source: 'leadership-skills',
+        target: 'communication',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,59 +323,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'leadership-skills-decision',
+        source: 'leadership-skills',
+        target: 'decision-making',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +335,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Project Management connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'project-management-agile',
+        source: 'project-management',
+        target: 'agile-practices',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +349,21 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'project-management-roadmapping',
+        source: 'project-management',
+        target: 'roadmapping',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'project-management-risk',
+        source: 'project-management',
+        target: 'risk-management',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -487,28 +373,54 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // External links
+    // Team Building connections
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
+        id: 'team-building-hiring',
+        source: 'team-building',
+        target: 'hiring',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
     {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'team-building-mentoring',
+        source: 'team-building',
+        target: 'mentoring',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Technical Oversight connections
+    {
+        id: 'technical-oversight-code-reviews',
+        source: 'technical-oversight',
+        target: 'code-reviews',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'technical-oversight-architecture',
+        source: 'technical-oversight',
+        target: 'architecture-decisions',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },

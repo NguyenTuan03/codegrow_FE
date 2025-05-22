@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main Blockchain Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'blockchain',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'Blockchain',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,33 +29,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Blockchain Fundamentals
     {
-        id: 'js-roadmap',
+        id: 'blockchain-fundamentals',
         position: { x: 200, y: 150 },
-        data: {
-            label: 'Visit JavaScript Roadmap',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // CLI Tools
-    {
-        id: 'cli-tools',
-        position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Blockchain Fundamentals' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,69 +48,80 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
+        id: 'distributed-ledger',
+        position: { x: 100, y: 250 },
+        data: { label: 'Distributed Ledger' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'consensus-mechanisms',
+        position: { x: 300, y: 250 },
+        data: { label: 'Consensus Mechanisms' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'cryptography',
+        position: { x: 100, y: 350 },
+        data: { label: 'Cryptography Basics' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+
+    // Smart Contracts
+    {
+        id: 'smart-contracts',
+        position: { x: 600, y: 200 },
+        data: { label: 'Smart Contracts' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'solidity',
         position: { x: 400, y: 300 },
         data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#ffd700', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'cra',
-        position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
-        style: {
-            background: '#ff6b6b', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Components Basics
-    {
-        id: 'components-basics',
-        position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'functional-components',
-        position: { x: 100, y: 500 },
-        data: {
-            label: 'Functional Components',
+            label: 'Solidity',
             recommendation: 'recommended',
         },
         style: {
@@ -149,160 +138,31 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
+        id: 'vyper',
+        position: { x: 600, y: 300 },
         data: {
-            label: 'Class Components',
-            recommendation: 'optional',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Hooks
-    {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // State Management
-    {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
-        position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
+            label: 'Vyper',
             recommendation: 'alternative',
         },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'testing-smart-contracts',
+        position: { x: 800, y: 300 },
+        data: { label: 'Testing Smart Contracts' },
+        style: {
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -315,17 +175,110 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Frontend Roadmap Link
+    // Decentralized Applications (DApps)
     {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        id: 'dapps',
+        position: { x: 1000, y: 150 },
+        data: { label: 'Decentralized Apps (DApps)' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'web3js',
+        position: { x: 900, y: 250 },
         data: {
-            label: 'Frontend Roadmap',
+            label: 'Web3.js',
             recommendation: 'recommended',
         },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'ethersjs',
+        position: { x: 1100, y: 250 },
+        data: {
+            label: 'Ethers.js',
+            recommendation: 'alternative',
+        },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+
+    // Blockchain Security
+    {
+        id: 'blockchain-security',
+        position: { x: 1000, y: 400 },
+        data: { label: 'Blockchain Security' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'smart-contract-audits',
+        position: { x: 900, y: 500 },
+        data: {
+            label: 'Smart Contract Audits',
+            recommendation: 'recommended',
+        },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'threat-prevention',
+        position: { x: 1100, y: 500 },
+        data: { label: 'Threat Prevention' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -338,12 +291,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const BlockchainEdges: Edge[] = [
+    // Main connections from Blockchain
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'blockchain-fundamentals',
+        source: 'blockchain',
+        target: 'blockchain-fundamentals',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +305,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'blockchain-smart-contracts',
+        source: 'blockchain',
+        target: 'smart-contracts',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +316,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'blockchain-dapps',
+        source: 'blockchain',
+        target: 'dapps',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +327,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'blockchain-security',
+        source: 'blockchain',
+        target: 'blockchain-security',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +338,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Blockchain Fundamentals connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'fundamentals-distributed-ledger',
+        source: 'blockchain-fundamentals',
+        target: 'distributed-ledger',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,23 +352,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
+        id: 'fundamentals-consensus-mechanisms',
+        source: 'blockchain-fundamentals',
+        target: 'consensus-mechanisms',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -425,33 +364,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'fundamentals-cryptography',
+        source: 'blockchain-fundamentals',
+        target: 'cryptography',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +376,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Smart Contracts connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'smart-contracts-solidity',
+        source: 'smart-contracts',
+        target: 'solidity',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +390,21 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'smart-contracts-vyper',
+        source: 'smart-contracts',
+        target: 'vyper',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'smart-contracts-testing',
+        source: 'smart-contracts',
+        target: 'testing-smart-contracts',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -487,28 +414,54 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // External links
+    // DApps connections
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
+        id: 'dapps-web3js',
+        source: 'dapps',
+        target: 'web3js',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
     {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'dapps-ethersjs',
+        source: 'dapps',
+        target: 'ethersjs',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Blockchain Security connections
+    {
+        id: 'blockchain-security-smart-contract-audits',
+        source: 'blockchain-security',
+        target: 'smart-contract-audits',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'blockchain-security-threat-prevention',
+        source: 'blockchain-security',
+        target: 'threat-prevention',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },

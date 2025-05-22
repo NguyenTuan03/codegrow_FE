@@ -2,20 +2,20 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
-    recommendation?: 'recommended' | 'alternative' | 'not-recommended' | 'optional';
+    recommendation?: 'recommended' | 'alternative' | 'optional';
 };
 
-export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
-    // Main React Node
+export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
+    // Main Product Manager Node
     {
-        id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        id: 'product-manager',
+        position: { x: 600, y: 50 },
         data: {
-            label: 'React',
+            label: 'Product Manager',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -29,17 +29,48 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // JavaScript Roadmap Link
+    // Product Strategy
     {
-        id: 'js-roadmap',
+        id: 'product-strategy',
         position: { x: 200, y: 150 },
-        data: {
-            label: 'Visit JavaScript Roadmap',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Product Strategy' },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'market-research',
+        position: { x: 100, y: 250 },
+        data: { label: 'Market Research' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'roadmapping',
+        position: { x: 300, y: 250 },
+        data: { label: 'Roadmapping' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -51,11 +82,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // CLI Tools
+    // Product Development
     {
-        id: 'cli-tools',
+        id: 'product-development',
         position: { x: 600, y: 200 },
-        data: { label: 'CLI Tools' },
+        data: { label: 'Product Development' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -70,14 +101,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'vite',
+        id: 'requirements',
         position: { x: 400, y: 300 },
-        data: {
-            label: 'Vite',
-            recommendation: 'recommended',
-        },
+        data: { label: 'Defining Requirements' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -90,105 +118,26 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'cra',
+        id: 'collaboration',
+        position: { x: 600, y: 300 },
+        data: { label: 'Cross-Team Collaboration' },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'agile',
         position: { x: 800, y: 300 },
-        data: {
-            label: 'Create React App',
-            recommendation: 'not-recommended',
-        },
-        style: {
-            background: '#ff6b6b', // Kept original color for recommendation
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-
-    // Components Basics
-    {
-        id: 'components-basics',
-        position: { x: 200, y: 400 },
-        data: { label: 'Components Basics' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'functional-components',
-        position: { x: 100, y: 500 },
-        data: {
-            label: 'Functional Components',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'class-components',
-        position: { x: 300, y: 500 },
-        data: {
-            label: 'Class Components',
-            recommendation: 'optional',
-        },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'jsx',
-        position: { x: 100, y: 600 },
-        data: { label: 'JSX' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'props-state',
-        position: { x: 300, y: 600 },
-        data: { label: 'Props vs State' },
+        data: { label: 'Agile Methodologies' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -203,11 +152,11 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // Hooks
+    // Launch & Growth
     {
-        id: 'basic-hooks',
-        position: { x: 600, y: 400 },
-        data: { label: 'Basic Hooks' },
+        id: 'launch-growth',
+        position: { x: 1000, y: 150 },
+        data: { label: 'Launch & Growth' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -222,9 +171,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'usestate',
-        position: { x: 450, y: 500 },
-        data: { label: 'useState' },
+        id: 'go-to-market',
+        position: { x: 900, y: 250 },
+        data: { label: 'Go-to-Market Strategy' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -239,9 +188,9 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
     {
-        id: 'useeffect',
-        position: { x: 750, y: 500 },
-        data: { label: 'useEffect' },
+        id: 'metrics',
+        position: { x: 1100, y: 250 },
+        data: { label: 'Metrics & Analytics' },
         style: {
             background: '#e6f7fa',
             border: '2px solid #2e90fa',
@@ -256,53 +205,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 
-    // State Management
+    // Cybersecurity in Product Management
     {
-        id: 'state-management',
-        position: { x: 1000, y: 200 },
-        data: { label: 'State Management' },
-        style: {
-            background: '#e6f7fa',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            color: '#1a202c',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'redux',
-        position: { x: 1000, y: 300 },
-        data: {
-            label: 'Redux / Toolkit',
-            recommendation: 'recommended',
-        },
-        style: {
-            background: '#764abc', // Kept original color for recommendation
-            color: '#fff',
-            border: '2px solid #2e90fa',
-            borderRadius: 12,
-            padding: 12,
-            width: 260,
-            textAlign: 'center',
-            fontSize: 14,
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease-in-out',
-        },
-    },
-    {
-        id: 'zustand',
+        id: 'cybersecurity-pm',
         position: { x: 1000, y: 400 },
-        data: {
-            label: 'Zustand',
-            recommendation: 'alternative',
-        },
+        data: { label: 'Cybersecurity in PM' },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#e6f7fa',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -314,18 +223,36 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
             transition: 'transform 0.2s ease-in-out',
         },
     },
-
-    // Frontend Roadmap Link
     {
-        id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        id: 'security-requirements',
+        position: { x: 900, y: 500 },
         data: {
-            label: 'Frontend Roadmap',
+            label: 'Security Requirements',
             recommendation: 'recommended',
         },
         style: {
-            background: '#a5d8ff',
-            border: '2px dashed #2e90fa',
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
+            borderRadius: 12,
+            padding: 12,
+            width: 260,
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#1a202c',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            transition: 'transform 0.2s ease-in-out',
+        },
+    },
+    {
+        id: 'compliance',
+        position: { x: 1100, y: 500 },
+        data: {
+            label: 'Compliance (GDPR, CCPA)',
+            recommendation: 'recommended',
+        },
+        style: {
+            background: '#e6f7fa',
+            border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
@@ -338,12 +265,12 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
 ];
 
-export const ReactEdges: Edge[] = [
-    // Main connections from React
+export const ProductManagerEdges: Edge[] = [
+    // Main connections from Product Manager
     {
-        id: 'react-cli-tools',
-        source: 'react',
-        target: 'cli-tools',
+        id: 'product-manager-strategy',
+        source: 'product-manager',
+        target: 'product-strategy',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -352,9 +279,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-components-basics',
-        source: 'react',
-        target: 'components-basics',
+        id: 'product-manager-development',
+        source: 'product-manager',
+        target: 'product-development',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -363,9 +290,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-basic-hooks',
-        source: 'react',
-        target: 'basic-hooks',
+        id: 'product-manager-launch-growth',
+        source: 'product-manager',
+        target: 'launch-growth',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -374,9 +301,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'react-state-management',
-        source: 'react',
-        target: 'state-management',
+        id: 'product-manager-cybersecurity-pm',
+        source: 'product-manager',
+        target: 'cybersecurity-pm',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -385,11 +312,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // CLI Tools connections
+    // Product Strategy connections
     {
-        id: 'cli-tools-vite',
-        source: 'cli-tools',
-        target: 'vite',
+        id: 'product-strategy-market-research',
+        source: 'product-strategy',
+        target: 'market-research',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -399,59 +326,9 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'cli-tools-cra',
-        source: 'cli-tools',
-        target: 'cra',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-
-    // Components Basics connections
-    {
-        id: 'components-basics-functional',
-        source: 'components-basics',
-        target: 'functional-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'components-basics-class',
-        source: 'components-basics',
-        target: 'class-components',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-jsx',
-        source: 'functional-components',
-        target: 'jsx',
-        type: 'smoothstep',
-        animated: true,
-        style: {
-            stroke: '#5AD3AF',
-            strokeDasharray: '6',
-            strokeWidth: 2,
-        },
-    },
-    {
-        id: 'functional-props-state',
-        source: 'functional-components',
-        target: 'props-state',
+        id: 'product-strategy-roadmapping',
+        source: 'product-strategy',
+        target: 'roadmapping',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -461,11 +338,11 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // State Management connections
+    // Product Development connections
     {
-        id: 'state-management-redux',
-        source: 'state-management',
-        target: 'redux',
+        id: 'product-development-requirements',
+        source: 'product-development',
+        target: 'requirements',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -475,9 +352,21 @@ export const ReactEdges: Edge[] = [
         },
     },
     {
-        id: 'state-management-zustand',
-        source: 'state-management',
-        target: 'zustand',
+        id: 'product-development-collaboration',
+        source: 'product-development',
+        target: 'collaboration',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'product-development-agile',
+        source: 'product-development',
+        target: 'agile',
         type: 'smoothstep',
         animated: true,
         style: {
@@ -487,28 +376,54 @@ export const ReactEdges: Edge[] = [
         },
     },
 
-    // External links
+    // Launch & Growth connections
     {
-        id: 'react-js-roadmap',
-        source: 'react',
-        target: 'js-roadmap',
+        id: 'launch-growth-go-to-market',
+        source: 'launch-growth',
+        target: 'go-to-market',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
     {
-        id: 'react-frontend-roadmap',
-        source: 'react',
-        target: 'frontend-roadmap',
+        id: 'launch-growth-metrics',
+        source: 'launch-growth',
+        target: 'metrics',
         type: 'smoothstep',
         animated: true,
         style: {
             stroke: '#5AD3AF',
-            strokeDasharray: '5,5',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+
+    // Cybersecurity in Product Management connections
+    {
+        id: 'cybersecurity-pm-security-requirements',
+        source: 'cybersecurity-pm',
+        target: 'security-requirements',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
+            strokeWidth: 2,
+        },
+    },
+    {
+        id: 'cybersecurity-pm-compliance',
+        source: 'cybersecurity-pm',
+        target: 'compliance',
+        type: 'smoothstep',
+        animated: true,
+        style: {
+            stroke: '#5AD3AF',
+            strokeDasharray: '6',
             strokeWidth: 2,
         },
     },
