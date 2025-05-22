@@ -9,12 +9,14 @@ import { UpdateClass } from '@/lib/services/class/updateclass';
 import { AssignStudent } from '@/lib/services/class/assignstudent';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetCourses } from '@/lib/services/course/getcourse';
+
 import { Pencil, Save, Trash2, X, BookOpen, Users, FileText, Award } from 'lucide-react';
 import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
 import Stream from './Stream';
 import Assignments from './Assigment';
 import MarksAttendance from './MarkAttendance';
+import { GetListUserEnrollpedding } from '@/lib/services/class/getlistuserenrollpedding';
 
 interface Schedule {
     startDate: string;
@@ -73,6 +75,21 @@ interface RawUser {
     fullName: string;
     role: string;
     email?: string;
+}
+
+interface EnrollmentRecord {
+    _id: string;
+    user: RawUser;
+    course: string;
+    progress: number;
+    completed: boolean;
+    isConsulted: boolean;
+    isDeleted: boolean;
+    enrolledAt: string;
+    fullName?: string; // Optional redundant fields
+    email?: string;
+    phone?: string;
+    note?: string;
 }
 
 export default function ClassDetailPage() {
@@ -153,15 +170,16 @@ export default function ClassDetailPage() {
     const fetchStudents = async () => {
         try {
             setStudentsLoading(true);
-            const response = await getUser();
+            const response = await GetListUserEnrollpedding(1, 10); // Fetch first page, 10 users
 
-            if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
-                throw new Error('Invalid or missing users data');
+            if (!response?.metadata || !Array.isArray(response.metadata)) {
+                throw new Error('Invalid or missing enrollment data');
             }
 
-            const customers = response.metadata.users
-                .filter((user: RawUser) => user.role === 'customer')
-                .map((user: RawUser) => {
+            const customers = response.metadata
+                .filter((record: EnrollmentRecord) => !record.isConsulted && !record.isDeleted) // Keep only pending and non-deleted records
+                .map((record: EnrollmentRecord) => {
+                    const user = record.user;
                     if (!user._id || !user.fullName) {
                         console.warn('Invalid user data:', user);
                         return null;
@@ -188,7 +206,6 @@ export default function ClassDetailPage() {
             setStudentsLoading(false);
         }
     };
-
     useEffect(() => {
         fetchCourse();
         fetchMentors();
@@ -390,7 +407,7 @@ export default function ClassDetailPage() {
             console.log('Assigning student:', { studentId: _id, classId, fullName });
             const response = await AssignStudent(token, classId, _id);
             console.log('AssignStudent Response:', response);
-
+            window.location.reload();
             if (response.status === '200') {
                 const newStudent: User = {
                     _id,
@@ -414,6 +431,8 @@ export default function ClassDetailPage() {
                 setTimeout(() => {
                     setIsModalOpen(false);
                     router.refresh();
+
+                    window.location.reload();
                 }, 2000);
             } else {
                 throw new Error(response.message || 'Failed to add student: Unknown error');
@@ -429,6 +448,7 @@ export default function ClassDetailPage() {
             });
         }
     };
+
     const handleOpenModal = () => {
         setIsModalOpen(true);
         fetchStudents();

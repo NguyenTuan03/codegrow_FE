@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
     Carousel,
@@ -47,6 +48,8 @@ export default function CoursesList({
     totalPages,
     handlePageChange,
 }: CoursesListProps) {
+    const router = useRouter(); // Initialize useRouter for navigation
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -119,6 +122,16 @@ export default function CoursesList({
                     </button>
                 </div>
             )}
+
+            {/* Explore More Classes Button */}
+            <div className="mt-10 flex justify-center">
+                <button
+                    onClick={() => router.push('/customer/classes')}
+                    className="px-6 py-3 bg-[#5AD3AF] text-white rounded-lg font-semibold hover:bg-[#4ac2a0] transition-colors duration-300 shadow-md"
+                >
+                    Explore More Classes
+                </button>
+            </div>
         </div>
     );
 }
