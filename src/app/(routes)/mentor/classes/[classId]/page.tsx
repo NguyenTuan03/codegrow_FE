@@ -1,10 +1,12 @@
 'use client';
+
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { viewDetail } from '@/lib/services/class/viewdetail';
 import ClassInfo from '@/app/(routes)/mentor/classes/[classId]/CLassInfor';
 import StudentsPanel from '@/app/(routes)/mentor/classes/[classId]/StudentPanel';
+import Post from './Post';
 
 interface Schedule {
     startDate: string;
@@ -101,40 +103,45 @@ export default function ClassDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 transition-opacity duration-300"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF] transition-opacity duration-300"></div>
             </div>
         );
     }
 
     if (!classData || !classData.schedule) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-300 p-6">
+            <div className="text-center text-gray-600 dark:text-gray-300 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
                 Class not found or invalid data
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="mb-8">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                         {classData.title}
                     </h1>
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                        Manage your class, share updates, and engage with students
+                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Class Information */}
-                    <ClassInfo classData={classData} />
-
-                    {/* Students Panel */}
-                    <StudentsPanel
-                        classData={classData}
-                        students={classData.students.map((student) => ({
-                            _id: student._id,
-                            fullName: student.fullName,
-                        }))}
-                    />
+                    <div className="lg:col-span-1 space-y-6">
+                        <ClassInfo classData={classData} />
+                        <StudentsPanel
+                            classData={classData}
+                            students={classData.students.map((student) => ({
+                                _id: student._id,
+                                fullName: student.fullName,
+                            }))}
+                        />
+                    </div>
+                    <div className="lg:col-span-2">
+                        <Post />
+                    </div>
                 </div>
             </div>
         </div>
