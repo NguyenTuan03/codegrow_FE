@@ -140,10 +140,6 @@ export default function ClassDetailPage() {
                         Course: {classData.course.title || 'N/A'} | Mentor:{' '}
                         {classData.mentor.fullName || 'N/A'}
                     </p>
-                    <button className="absolute top-6 right-6 bg-white text-[#5AD3AF] px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors duration-200">
-                        <BookOpen className="w-5 h-5" />
-                        Join
-                    </button>
                 </div>
 
                 {/* Tabs */}
@@ -182,13 +178,7 @@ export default function ClassDetailPage() {
 
                 {activeTab === 'People' && (
                     <div className="max-w-3xl mx-auto">
-                        <StudentsPanel
-                            classData={classData}
-                            students={classData.students.map((student) => ({
-                                _id: student._id,
-                                fullName: student.fullName,
-                            }))}
-                        />
+                        <StudentsPanel classData={{ students: classData.students }} />
                     </div>
                 )}
 
