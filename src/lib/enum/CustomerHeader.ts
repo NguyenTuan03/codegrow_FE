@@ -27,4 +27,8 @@ export const CUSTOMER_HEADER = [
         name: 'Project',
         href: '/customer/project',
     },
+    {
+        name: 'Chat',
+        href: '/chat'
+    }
 ];
