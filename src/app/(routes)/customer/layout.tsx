@@ -11,7 +11,7 @@ type Props = {
 const Layout = ({ children }: Props) => {
     return (
         <div
-            className=" mx-auto  w-full"
+            className="mx-auto w-full"
             style={{
                 backgroundColor: 'var(--sidebar-background)',
                 color: 'var(--sidebar-foreground)',
@@ -19,12 +19,14 @@ const Layout = ({ children }: Props) => {
         >
             <ThemeProvider
                 attribute="class"
-                defaultTheme="light" // Default to 'light' theme
+                defaultTheme="light"
                 enableSystem
                 disableTransitionOnChange
             >
+                {/* Ensure the header is not affected by parent overflow */}
                 <Customerheader />
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50">
+                {/* Add padding-top to account for the fixed header height */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 min-h-screen pt-[100px] pl-[30px] pr-[30px]">
                     <main>{children}</main>
                 </div>
             </ThemeProvider>

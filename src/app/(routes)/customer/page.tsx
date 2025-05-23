@@ -138,7 +138,7 @@ const HomePage = () => {
     };
 
     return (
-        <div className="px-4 py-8 w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
+        <div className=" w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                 <div className="md:col-span-8">
                     <h3 className="text-3xl mb-3">Welcome back, customer</h3>

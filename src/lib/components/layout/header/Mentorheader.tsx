@@ -36,7 +36,9 @@ export default function MentorHeader() {
     };
 
     return (
-        <header className="bg-white dark:bg-gray-800 shadow-sm p-4 flex justify-between items-center transition-colors duration-300">
+        <header
+            className="fixed w-full top-0 left-0 right-0 z-50  bg-white dark:bg-gray-800 shadow-sm flex justify-between items-center transition-colors duration-300 h-16 px-4" // Reinforced fixed positioning
+        >
             {/* Logo */}
             <div className="text-xl font-bold text-gray-900 dark:text-white">
                 <h1>Mentor Dashboard</h1>
@@ -60,7 +62,7 @@ export default function MentorHeader() {
                         </Avatar>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent className="p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg w-64 border border-gray-200 dark:border-gray-700">
+                    <DropdownMenuContent className="p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg w-64 border border-gray-200 dark:border-gray-700 z-[60]">
                         <p className="font-semibold text-gray-800 dark:text-gray-100">User Name</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">user@example.com</p>
                         <div className="mt-4">

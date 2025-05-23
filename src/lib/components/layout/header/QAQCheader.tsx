@@ -1,3 +1,4 @@
+'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogOut, Menu, Plus, Settings, User } from 'lucide-react';
 import React, { useContext } from 'react';
@@ -14,6 +15,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 const QAQCheader = () => {
     const userAuth = useContext(Auth);
     const router = useRouter();
+
     const handleLogout = () => {
         if (userAuth) {
             userAuth.logoutUser();
@@ -22,7 +24,7 @@ const QAQCheader = () => {
     };
 
     return (
-        <div className="h-[60px] px-4 flex flex-row items-center justify-between bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div className="h-[60px] px-4 left-400  fixed flex flex-row items-center justify-between bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300">
             <div></div>
             <div className="flex items-center gap-5">
                 <Plus className="text-gray-800 dark:text-gray-200" />
@@ -34,24 +36,24 @@ const QAQCheader = () => {
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                    <DropdownMenuContent className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 z-[60]">
                         <DropdownMenuItem
                             onClick={() => router.push('/qaqc/profileqaqc')}
                             className="hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                            <User className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                            <User className="h-4 w-4 text-gray-700 dark:text-gray-300 mr-2" />
                             Profile
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => router.push('/qaqc/changepassword')}
                             className="hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
-                            <Settings className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                            <Settings className="h-4 w-4 text-gray-700 dark:text-gray-300 mr-2" />
                             Change Password
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={handleLogout}>
                             <div className="flex items-center gap-2">
-                                <LogOut className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                                <LogOut className="h-4 w-4 text-gray-700 dark:text-gray-300 mr-2" />
                                 Logout
                             </div>
                         </DropdownMenuItem>

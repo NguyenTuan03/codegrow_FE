@@ -34,7 +34,7 @@ const revenueData = [
 
 const Page: React.FC = () => {
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6">
+        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6 ">
             {/* Main Content */}
             <div className="flex-1">
                 {/* Header */}

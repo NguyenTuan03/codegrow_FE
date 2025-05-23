@@ -22,12 +22,24 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const { messages, input, handleInputChange, handleSubmit, isLoading, stop, reload, error } =
-        useChat({ api: apiEndpoint });
+        useChat({
+            api: apiEndpoint,
+            onResponse: (response) => {
+                console.log('Stream response received:', response);
+            },
+            onError: (err) => {
+                console.error('Stream error:', err);
+            },
+            onFinish: (message) => {
+                console.log('Stream finished with message:', message);
+            },
+        });
 
     useEffect(() => {
         console.log('ChatBox mounted, apiEndpoint:', apiEndpoint);
+        console.log('Current messages:', messages);
         if (error) console.log('Chat error:', error);
-    }, [apiEndpoint, error]);
+    }, [apiEndpoint, messages, error]);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -96,10 +108,10 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                             </CardHeader>
 
                             <CardContent>
-                                <ScrollArea className="h-[300px] pr-4">
+                                <ScrollArea key={messages.length} className="h-[300px] pr-4">
                                     {messages?.length === 0 && (
                                         <div className="w-full mt-32 text-gray-500 items-center justify-center flex gap-3">
-                                            No message yet
+                                            No messages yet
                                         </div>
                                     )}
                                     {messages?.map((message, index) => (
@@ -179,7 +191,7 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                     )}
                                     {error && (
                                         <div className="w-full items-center flex justify-center gap-3">
-                                            <div>Error: {error.message}</div>
+                                            <div>Error: {error.message || 'An error occurred'}</div>
                                             <pre className="text-xs text-red-500">
                                                 {JSON.stringify(error, null, 2)}
                                             </pre>
