@@ -6,7 +6,7 @@ type EnrolledCoursesProps = {
     courses: {
         _id: string;
         title: string;
-        category: string;
+        category: { _id: string; name: string } | null;
         price: number;
     }[];
 };
@@ -29,7 +29,7 @@ const ProfileEnrollCourse = ({ courses }: EnrolledCoursesProps) => {
                                     {course.title}
                                 </h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    {course.category} - {course.price.toLocaleString()} VNĐ
+                                    {course?.category?.name} - {course.price.toLocaleString()} VNĐ
                                 </p>
                             </div>
                             <Link

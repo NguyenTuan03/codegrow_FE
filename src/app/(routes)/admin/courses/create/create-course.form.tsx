@@ -28,6 +28,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GetAllCategory } from '@/lib/services/category/getallcategory';
 
 // Interface for mentor data
 interface Mentor {
@@ -35,6 +36,11 @@ interface Mentor {
     fullName: string;
     email: string;
     role: string;
+}
+
+interface Category {
+    _id: string;
+    name: string;
 }
 
 // Course Schema
@@ -60,8 +66,10 @@ type CreateCourseFormData = z.infer<typeof CourseSchema>;
 export default function CreateCourseForm() {
     const [loading, setLoading] = useState(false);
     const [mentorsLoading, setMentorsLoading] = useState(true);
+    const [categoriesLoading, setCategoriesLoading] = useState(true); // Add loading state for categories
     const [author, setAuthors] = useState<Mentor[]>([]);
     const router = useRouter();
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const form = useForm<CreateCourseFormData>({
         resolver: zodResolver(CourseSchema),
@@ -74,7 +82,7 @@ export default function CreateCourseForm() {
         },
     });
 
-    // Fetch author from API
+    // Fetch authors from API
     const fetchAuthor = async () => {
         try {
             setMentorsLoading(true);
@@ -85,7 +93,6 @@ export default function CreateCourseForm() {
             }
 
             const author = response.metadata.users;
-
             setAuthors(author);
         } catch (error) {
             console.error('Failed to fetch authors:', error);
@@ -99,8 +106,28 @@ export default function CreateCourseForm() {
         }
     };
 
+    // Fetch categories from API
+    const fetchCategories = async () => {
+        try {
+            setCategoriesLoading(true);
+            const data = await GetAllCategory();
+            console.log('Fetched categories:', data.metadata.categories); // Debug log
+            setCategories(data.metadata.categories);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to load categories',
+                variant: 'destructive',
+            });
+        } finally {
+            setCategoriesLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchAuthor();
+        fetchCategories();
     }, []);
 
     const handleSubmit = async (data: CreateCourseFormData) => {
@@ -115,7 +142,7 @@ export default function CreateCourseForm() {
                     variant: 'destructive',
                 });
                 setLoading(false);
-                return; // Exit the function early if the token is missing
+                return;
             }
 
             const payload = {
@@ -216,7 +243,7 @@ export default function CreateCourseForm() {
                                 />
                             </div>
 
-                            {/* Category */}
+                            {/* Category - Changed to Select */}
                             <FormField
                                 control={form.control}
                                 name="category"
@@ -225,20 +252,36 @@ export default function CreateCourseForm() {
                                         <FormLabel className="text-gray-700 font-medium">
                                             Category*
                                         </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                placeholder="Web Development"
-                                                className="focus-visible:ring-2 focus-visible:ring-primary"
-                                                required
-                                            />
-                                        </FormControl>
+                                        {categoriesLoading ? (
+                                            <Skeleton className="h-10 w-full" />
+                                        ) : (
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-primary">
+                                                        <SelectValue placeholder="Select a category" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {categories.map((category) => (
+                                                        <SelectItem
+                                                            key={category._id}
+                                                            value={category._id}
+                                                        >
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
-                            {/* Author - Now a Select dropdown */}
+                            {/* Author - Select dropdown */}
                             <FormField
                                 control={form.control}
                                 name="author"
@@ -318,7 +361,7 @@ export default function CreateCourseForm() {
                                 <Button
                                     type="submit"
                                     className="px-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
-                                    disabled={loading || mentorsLoading}
+                                    disabled={loading || mentorsLoading || categoriesLoading}
                                 >
                                     {loading ? (
                                         <span className="flex items-center">

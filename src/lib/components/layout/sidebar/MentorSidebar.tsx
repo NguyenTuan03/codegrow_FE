@@ -27,6 +27,18 @@ import {
 export default function MentorSidebar() {
     const pathname = usePathname();
 
+    // Function to determine if a link or section is active
+    const isActive = (href: string, isSection: boolean = false) => {
+        const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
+        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+        return isSection
+            ? normalizedPathname.startsWith(normalizedHref)
+            : normalizedPathname === normalizedHref ||
+                  (normalizedHref !== '/mentor' &&
+                      normalizedPathname.startsWith(normalizedHref + '/'));
+    };
+
     const navItems = [
         { href: '/mentor', icon: Home, label: 'Home' },
         { href: '/mentor/calendar', icon: Calendar, label: 'Calendar' },
@@ -46,6 +58,11 @@ export default function MentorSidebar() {
         { href: '/mentor/help', icon: HelpCircle, label: 'Help Center' },
     ];
 
+    // Check if any class route is active for the "Classes" section label
+    const isClassesActive = classesItems.some((item) =>
+        isActive(`/mentor/classes/${item.id}`, true),
+    );
+
     return (
         <Sidebar className="w-64 pt-5 bg-gray-50 dark:bg-gray-900 border-r shadow-md">
             <SidebarContent>
@@ -62,8 +79,11 @@ export default function MentorSidebar() {
                                 <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={pathname === item.href}
-                                        className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                                        className={`hover:bg-indigo-100 dark:hover:bg-indigo-800 ${
+                                            isActive(item.href)
+                                                ? 'text-blue-600 dark:text-blue-400 font-semibold bg-indigo-50 dark:bg-indigo-800'
+                                                : ''
+                                        }`}
                                     >
                                         <Link href={item.href}>
                                             <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />
@@ -80,24 +100,30 @@ export default function MentorSidebar() {
 
                 {/* Classes Section */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-6 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase flex items-center justify-between">
+                    <SidebarGroupLabel
+                        className={`px-6 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase flex items-center justify-between ${
+                            isClassesActive
+                                ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                                : 'hover:text-indigo-600 dark:hover:text-indigo-400'
+                        }`}
+                    >
                         <Link href="/mentor/classes">
-                            <span className="cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Classes
-                            </span>
+                            <span className="cursor-pointer">Classes</span>
                         </Link>
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {classesItems.map((item) => {
                                 const href = `/mentor/classes/${item.id}`;
-                                const isActive = pathname?.startsWith(href);
                                 return (
                                     <SidebarMenuItem key={item.id}>
                                         <SidebarMenuButton
                                             asChild
-                                            isActive={isActive}
-                                            className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                                            className={`hover:bg-indigo-100 dark:hover:bg-indigo-800 ${
+                                                isActive(href)
+                                                    ? 'text-blue-600 dark:text-blue-400 font-semibold bg-indigo-50 dark:bg-indigo-800'
+                                                    : ''
+                                            }`}
                                         >
                                             <Link href={href}>
                                                 <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />
@@ -124,8 +150,11 @@ export default function MentorSidebar() {
                                 <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={pathname === item.href}
-                                        className="hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                                        className={`hover:bg-indigo-100 dark:hover:bg-indigo-800 ${
+                                            isActive(item.href)
+                                                ? 'text-blue-600 dark:text-blue-400 font-semibold bg-indigo-50 dark:bg-indigo-800'
+                                                : ''
+                                        }`}
                                     >
                                         <Link href={item.href}>
                                             <item.icon className="h-5 w-5 mr-3 text-indigo-600 dark:text-indigo-400" />

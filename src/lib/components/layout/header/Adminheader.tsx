@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ModeToggle } from '@/components/mode-toggle';
@@ -25,7 +25,13 @@ export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
+    const pathname = usePathname();
     const userAuth = useContext(Auth);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
         const user = localStorage.getItem('user');
@@ -52,24 +58,44 @@ export const AdminHeader = () => {
     ];
 
     const reportItems = [
-        { name: 'Courses', icon: <BookOpen className="h-4 w-4 mr-2" /> },
-        { name: 'Mentors', icon: <User className="h-4 w-4 mr-2" /> },
+        {
+            name: 'Courses',
+            href: '/admin/report/courses',
+            icon: <BookOpen className="h-4 w-4 mr-2" />,
+        },
+        { name: 'Mentors', href: '/admin/report/mentors', icon: <User className="h-4 w-4 mr-2" /> },
     ];
 
     const menuItems = [
-        { name: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4 mr-2" /> },
-        { name: 'Settings', icon: <Settings className="h-4 w-4 mr-2" /> },
+        {
+            name: 'Dashboard',
+            href: '/admin/report/dashboard',
+            icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
+        },
+        {
+            name: 'Settings',
+            href: '/admin/report/settings',
+            icon: <Settings className="h-4 w-4 mr-2" />,
+        },
     ];
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-    const [isClient, setIsClient] = useState(false);
+
+    const isActiveLink = (href: string) => {
+        const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
+        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+        return (
+            normalizedPathname === normalizedHref ||
+            (normalizedHref !== '' && normalizedPathname.startsWith(normalizedHref + '/'))
+        );
+    };
+
     if (!isClient) {
-        return null; // Tránh render trên server
+        return null;
     }
+
     return (
         <header
-            className="sticky w-full top-0 z-50 shadow-sm border-b"
+            className="fixed w-full top-0 left-65 right-0 z-50 shadow-sm border-b" // Switch to fixed positioning
             style={{
                 backgroundColor: 'var(--sidebar-background)',
                 color: 'var(--sidebar-foreground)',
@@ -90,16 +116,18 @@ export const AdminHeader = () => {
                                 <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
                                     <div className="py-1">
                                         {reportItems.map((item) => (
-                                            <a
-                                                key={item.name}
-                                                href={`/admin/report/${item.name.toLowerCase()}`}
-                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            >
-                                                <span className="text-gray-700 dark:text-gray-300">
+                                            <Link key={item.name} href={item.href}>
+                                                <div
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                                        isActiveLink(item.href)
+                                                            ? 'text-blue-600 dark:text-blue-400 font-semibold bg-gray-100 dark:bg-gray-700'
+                                                            : 'text-gray-700 dark:text-gray-300'
+                                                    }`}
+                                                >
                                                     {item.icon}
-                                                </span>
-                                                {item.name}
-                                            </a>
+                                                    {item.name}
+                                                </div>
+                                            </Link>
                                         ))}
                                     </div>
                                 </AccordionContent>
@@ -117,15 +145,17 @@ export const AdminHeader = () => {
                                 <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
                                     <div className="py-1">
                                         {menuItems.map((item) => (
-                                            <Link
-                                                key={item.name}
-                                                href={`/admin/report/${item.name.toLowerCase()}`}
-                                                className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            >
-                                                <span className="text-gray-700 dark:text-gray-300">
+                                            <Link key={item.name} href={item.href}>
+                                                <div
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                                        isActiveLink(item.href)
+                                                            ? 'text-blue-600 dark:text-blue-400 font-semibold bg-gray-100 dark:bg-gray-700'
+                                                            : 'text-gray-700 dark:text-gray-300'
+                                                    }`}
+                                                >
                                                     {item.icon}
-                                                </span>
-                                                {item.name}
+                                                    {item.name}
+                                                </div>
                                             </Link>
                                         ))}
                                     </div>
@@ -199,15 +229,15 @@ export const AdminHeader = () => {
                         >
                             <DropdownMenuItem>
                                 <User className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-                                <a href="/admin/profileadmin" className="w-full">
+                                <Link href="/admin/profileadmin" className="w-full">
                                     Profile
-                                </a>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Settings className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-                                <a href="/admin/changepassword" className="w-full">
-                                    Change Password{' '}
-                                </a>
+                                <Link href="/admin/changepassword" className="w-full">
+                                    Change Password
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleLogout}>
                                 <div className="flex items-center gap-2">
@@ -255,7 +285,7 @@ export const AdminHeader = () => {
                                 </div>
                             </DropdownMenuItem>
                             <DropdownMenuItem className="justify-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500">
-                                <a href="#">View all</a>
+                                <Link href="#">View all</Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -271,14 +301,14 @@ export const AdminHeader = () => {
                             align="end"
                         >
                             <DropdownMenuItem>
-                                <a href="#" className="w-full">
+                                <Link href="#" className="w-full">
                                     System Settings
-                                </a>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <a href="#" className="w-full">
+                                <Link href="#" className="w-full">
                                     Preferences
-                                </a>
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

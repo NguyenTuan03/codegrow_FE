@@ -14,15 +14,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CUSTOMER_HEADER } from '@/lib/enum/CustomerHeader';
 import { ModeToggle } from '@/components/mode-toggle';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Customerheader = () => {
-    const { resolvedTheme } = useTheme(); // Use resolvedTheme for SSR-safe theme
+    const { resolvedTheme } = useTheme();
     const userAuth = useContext(Auth);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const user = localStorage.getItem('user');
@@ -60,11 +61,21 @@ const Customerheader = () => {
         },
     ]);
 
+    const isActiveLink = (href: string) => {
+        const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
+        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+        return (
+            normalizedPathname === normalizedHref ||
+            (normalizedHref !== '' && normalizedPathname.startsWith(normalizedHref + '/'))
+        );
+    };
+
     return (
         <div
-            className={`flex w-full h-[80px] px-4 items-center border-b shadow-sm ${
+            className={`flex w-full h-[80px] px-4 items-center border-b shadow-sm fixed top-0 left-0 right-0 z-50 ${
                 resolvedTheme === 'dark' ? 'bg-gray-800 text-white' : 'bg-[#EEF1EF] text-black'
-            }`}
+            }`} // Switch to fixed positioning
         >
             {/* Logo */}
             <Image src="/Logo.png" alt="Logo" width={60} height={60} />
@@ -73,7 +84,13 @@ const Customerheader = () => {
             <div className="flex flex-1 gap-6 ml-6">
                 {CUSTOMER_HEADER.map((item, index) => (
                     <Link href={item.href} key={index}>
-                        <div className="font-medium hover:underline cursor-pointer text-sm">
+                        <div
+                            className={`font-medium hover:underline cursor-pointer text-sm transition-colors ${
+                                isActiveLink(item.href)
+                                    ? 'text-[#5AD3AF] underline underline-offset-4 font-semibold'
+                                    : 'text-gray-800 dark:text-gray-200'
+                            }`}
+                        >
                             {item.name}
                         </div>
                     </Link>
@@ -164,7 +181,7 @@ const Customerheader = () => {
                                     className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
                                     <HelpCircle className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                    <span className="text-sm font-medium"> Help Support</span>
+                                    <span className="text-sm font-medium">Help Support</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
