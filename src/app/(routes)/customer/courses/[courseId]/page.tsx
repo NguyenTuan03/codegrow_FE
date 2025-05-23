@@ -34,19 +34,8 @@ export default function CourseLearningPage() {
     const { courseId } = useParams<{ courseId: string }>();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
-    // const [completedModules] = useState({
-    //     '1': false,
-    //     '2': false,
-    //     '3': false,
-    //     '4': false,
-    // });
     const [progressPercentage, setProgressPercentage] = useState(0);
     const [completedModules, setCompletedModules] = useState<{ [key: string]: boolean }>({});
-
-    // const progressPercentage =
-    //     (Object.values(completedModules).filter(Boolean).length /
-    //         Object.values(completedModules).length) *
-    //     100;
 
     const handleNavigation = (path: string) => {
         router.push(path);
@@ -92,6 +81,7 @@ export default function CourseLearningPage() {
             setLoading(false);
         }
     };
+
     const handleProcess = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -131,52 +121,58 @@ export default function CourseLearningPage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#EEF1EF] dark:bg-gray-900 px-6 py-12 md:px-24 lg:px-32 space-y-8 transition-colors duration-300">
-            <Breadcrumbs
-                courseId={courseId}
-                category={course?.category?.name || 'Category'}
-                title={course?.title || 'Course'}
-            />
-            <CourseHeader course={course} />
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 md:px-12 lg:px-24 py-12 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Breadcrumbs */}
+                <Breadcrumbs
+                    courseId={courseId}
+                    category={course?.category?.name || 'Category'}
+                    title={course?.title || 'Course'}
+                />
 
-            <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="flex flex-wrap gap-2 mb-8 bg-transparent border-b border-gray-200 dark:border-gray-700">
-                    {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
-                        <TabsTrigger
-                            key={i}
-                            value={['overview', 'grades', 'notes', 'messages'][i]}
-                            className="py-3 px-6 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-t-lg transition-all data-[state=active]:bg-white data-[state=active]:dark:bg-gray-800 data-[state=active]:text-[#657ED4] data-[state=active]:dark:text-[#5AD3AF] data-[state=active]:shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            {tab}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                {/* Course Header */}
+                <CourseHeader course={course} />
 
-                <TabsContent value="overview">
-                    <OverviewTab
-                        progressPercentage={progressPercentage}
-                        completedModules={completedModules}
-                        onNavigate={handleNavigation}
-                        courseId={courseId}
-                    />
-                </TabsContent>
-                <TabsContent value="grades">
-                    <GradesTab />
-                </TabsContent>
-                <TabsContent value="notes">
-                    <NotesTab />
-                </TabsContent>
-                <TabsContent value="messages">
-                    <MessagesTab courseId={courseId} />
-                </TabsContent>
-            </Tabs>
+                {/* Tabs Navigation */}
+                <Tabs defaultValue="overview" className="w-full">
+                    <TabsList className="flex flex-wrap justify-start gap-2 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-2 rounded-t-xl">
+                        {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
+                            <TabsTrigger
+                                key={i}
+                                value={['overview', 'grades', 'notes', 'messages'][i]}
+                                className="py-2 px-6 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-full transition-all duration-200 data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                {tab}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+
+                    <TabsContent value="overview">
+                        <OverviewTab
+                            progressPercentage={progressPercentage}
+                            completedModules={completedModules}
+                            onNavigate={handleNavigation}
+                            courseId={courseId}
+                        />
+                    </TabsContent>
+                    <TabsContent value="grades">
+                        <GradesTab />
+                    </TabsContent>
+                    <TabsContent value="notes">
+                        <NotesTab />
+                    </TabsContent>
+                    <TabsContent value="messages">
+                        <MessagesTab courseId={courseId} />
+                    </TabsContent>
+                </Tabs>
+            </div>
         </div>
     );
 }

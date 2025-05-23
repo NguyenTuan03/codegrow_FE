@@ -1,8 +1,8 @@
+// @/app/(routes)/customer/process/YourMentor.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     Dialog,
@@ -11,11 +11,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { EyeIcon, ChevronRight } from 'lucide-react';
+import { EyeIcon, ChevronRight, User } from 'lucide-react';
 import { getUser } from '@/lib/services/admin/getuser';
 import { ViewDetailReview } from '@/app/(routes)/qaqc/manage/ViewDetailReview';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 type Mentor = {
     _id: string;
@@ -52,20 +53,23 @@ export default function YourMentor() {
 
     return (
         <section className="w-full">
-            <Card className="border shadow-none">
-                <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
-                    <CardTitle className="text-lg font-semibold">Mentors</CardTitle>
+            <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                <CardHeader className="flex flex-row items-center justify-between p-4">
+                    <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <User className="w-6 h-6 text-[#5AD3AF]" />
+                        Mentors
+                    </CardTitle>
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-primary hover:text-primary/90"
+                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] flex items-center gap-1"
                     >
                         View All
-                        <ChevronRight className="w-4 h-4 ml-1" />
+                        <ChevronRight className="w-4 h-4" />
                     </Button>
                 </CardHeader>
 
-                <CardContent className="p-4 pt-0">
+                <CardContent className="p-4">
                     {loading ? (
                         <div className="space-y-4">
                             {[...Array(3)].map((_, i) => (
@@ -86,24 +90,26 @@ export default function YourMentor() {
                     ) : mentors.length > 0 ? (
                         <ul className="space-y-3">
                             {mentors.slice(0, 3).map((mentor) => (
-                                <li key={mentor._id} className="group">
-                                    <div className="flex items-center justify-between p-2 rounded-lg group-hover:bg-muted/50 transition-colors">
+                                <li key={mentor._id}>
+                                    <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <div className="flex items-center space-x-3">
                                             <Avatar className="h-9 w-9">
-                                                <AvatarFallback className="bg-primary text-primary-foreground">
+                                                <AvatarFallback className="bg-[#5AD3AF] text-white">
                                                     {mentor.fullName.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="font-medium">{mentor.fullName}</p>
+                                                <p className="font-semibold text-gray-800 dark:text-gray-200">
+                                                    {mentor.fullName}
+                                                </p>
                                                 <div className="flex items-center space-x-2 mt-1">
                                                     <Badge
-                                                        variant="secondary"
-                                                        className="text-xs capitalize"
+                                                        variant="outline"
+                                                        className="text-xs capitalize text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 rounded-full px-2 py-0.5"
                                                     >
                                                         {mentor.role}
                                                     </Badge>
-                                                    <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px]">
                                                         {mentor.email}
                                                     </span>
                                                 </div>
@@ -115,7 +121,7 @@ export default function YourMentor() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-2 hover:bg-primary hover:text-primary-foreground"
+                                                    className="gap-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-full transition-all duration-200"
                                                 >
                                                     <EyeIcon className="h-4 w-4" />
                                                     Details
@@ -135,7 +141,7 @@ export default function YourMentor() {
                             ))}
                         </ul>
                     ) : (
-                        <div className="text-center py-4 text-muted-foreground">
+                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
                             No mentors available
                         </div>
                     )}

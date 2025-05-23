@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Dispatch, SetStateAction } from 'react';
+import { BookOpen, User, Users, Calendar, Clock, Award, FileText } from 'lucide-react';
 
 interface Schedule {
     startDate: string;
@@ -45,7 +46,7 @@ interface ClassItem {
     title: string;
     course: Course;
     description: string;
-    mentor: User; // Use User to match ClassDetailPage
+    mentor: User;
     status: string;
     maxStudents: number;
     students: User[];
@@ -91,18 +92,22 @@ export default function ClassInfo({
     ];
 
     return (
-        <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                    Class Information
-                </h2>
+        <div className="lg:col-span-1">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                    <BookOpen className="w-6 h-6 text-[#5AD3AF]" />
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                        Class Information
+                    </h2>
+                </div>
                 {isEditing ? (
-                    <>
-                        <div className="mb-4">
+                    <div className="space-y-6">
+                        <div>
                             <label
                                 htmlFor="title"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <BookOpen className="w-5 h-5 text-[#5AD3AF]" />
                                 Title
                             </label>
                             <Input
@@ -110,15 +115,16 @@ export default function ClassInfo({
                                 type="text"
                                 value={formData?.title || ''}
                                 onChange={(e) => handleInputChange(e, 'title')}
-                                className="w-full"
+                                className="w-full border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Enter class title"
                             />
                         </div>
-                        <div className="mb-4">
+                        <div>
                             <label
                                 htmlFor="course"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <BookOpen className="w-5 h-5 text-[#5AD3AF]" />
                                 Course
                             </label>
                             <select
@@ -140,7 +146,7 @@ export default function ClassInfo({
                                         setFormData({ ...formData, course: selectedCourse });
                                     }
                                 }}
-                                className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#5AD3AF]"
                             >
                                 <option value="" disabled>
                                     Select a course
@@ -152,11 +158,12 @@ export default function ClassInfo({
                                 ))}
                             </select>
                         </div>
-                        <div className="mb-4">
+                        <div>
                             <label
                                 htmlFor="mentor"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <User className="w-5 h-5 text-[#5AD3AF]" />
                                 Mentor
                             </label>
                             <select
@@ -175,7 +182,7 @@ export default function ClassInfo({
                                         setFormData({ ...formData, mentor: selectedMentor });
                                     }
                                 }}
-                                className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#5AD3AF]"
                             >
                                 <option value="" disabled>
                                     Select a mentor
@@ -187,27 +194,29 @@ export default function ClassInfo({
                                 ))}
                             </select>
                         </div>
-                        <div className="mb-4">
+                        <div>
                             <label
                                 htmlFor="description"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <FileText className="w-5 h-5 text-[#5AD3AF]" />
                                 Description
                             </label>
                             <Textarea
                                 id="description"
                                 value={formData?.description || ''}
                                 onChange={(e) => handleInputChange(e, 'description')}
-                                className="w-full"
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-y"
                                 rows={4}
                                 placeholder="Enter class description"
                             />
                         </div>
-                        <div className="mb-4">
+                        <div>
                             <label
                                 htmlFor="maxStudents"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <Users className="w-5 h-5 text-[#5AD3AF]" />
                                 Max Students
                             </label>
                             <Input
@@ -215,17 +224,18 @@ export default function ClassInfo({
                                 type="number"
                                 value={formData?.maxStudents || 0}
                                 onChange={(e) => handleInputChange(e, 'maxStudents')}
-                                className="w-full"
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Enter maximum number of students"
                                 min="1"
                                 max="30"
                             />
                         </div>
-                        <div className="mb-4">
+                        <div>
                             <label
                                 htmlFor="status"
-                                className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
+                                <Award className="w-5 h-5 text-[#5AD3AF]" />
                                 Status
                             </label>
                             <select
@@ -240,7 +250,7 @@ export default function ClassInfo({
                                         'status',
                                     )
                                 }
-                                className="w-full border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#5AD3AF]"
                             >
                                 <option value="open">Open</option>
                                 <option value="closed">Closed</option>
@@ -251,8 +261,9 @@ export default function ClassInfo({
                             <div>
                                 <label
                                     htmlFor="startDate"
-                                    className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                    className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
+                                    <Calendar className="w-5 h-5 text-[#5AD3AF]" />
                                     Start Date
                                 </label>
                                 <Input
@@ -260,14 +271,15 @@ export default function ClassInfo({
                                     type="date"
                                     value={formData?.schedule?.startDate?.split('T')[0] || ''}
                                     onChange={(e) => handleInputChange(e, 'startDate')}
-                                    className="w-full"
+                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 />
                             </div>
                             <div>
                                 <label
                                     htmlFor="endDate"
-                                    className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                    className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
+                                    <Calendar className="w-5 h-5 text-[#5AD3AF]" />
                                     End Date
                                 </label>
                                 <Input
@@ -275,14 +287,15 @@ export default function ClassInfo({
                                     type="date"
                                     value={formData?.schedule?.endDate?.split('T')[0] || ''}
                                     onChange={(e) => handleInputChange(e, 'endDate')}
-                                    className="w-full"
+                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 />
                             </div>
                             <div>
                                 <label
                                     htmlFor="time"
-                                    className="block text-gray-700 dark:text-gray-200 font-medium mb-1"
+                                    className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
+                                    <Clock className="w-5 h-5 text-[#5AD3AF]" />
                                     Class Time
                                 </label>
                                 <Select
@@ -298,7 +311,7 @@ export default function ClassInfo({
                                         }
                                     }}
                                 >
-                                    <SelectTrigger className="w-full">
+                                    <SelectTrigger className="w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <SelectValue placeholder="Select time" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white dark:bg-gray-800">
@@ -320,15 +333,16 @@ export default function ClassInfo({
                             </div>
                             <div>
                                 <fieldset>
-                                    <legend className="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+                                    <legend className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2">
+                                        <Calendar className="w-5 h-5 text-[#5AD3AF]" />
                                         Class Days
                                     </legend>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-3">
                                         {daysOfWeekOptions.map((day) => (
                                             <label
                                                 key={day}
                                                 htmlFor={`day-${day.toLowerCase()}`}
-                                                className="flex items-center gap-1"
+                                                className="flex items-center gap-1 text-gray-700 dark:text-gray-200"
                                             >
                                                 <input
                                                     type="checkbox"
@@ -339,147 +353,183 @@ export default function ClassInfo({
                                                         ) || false
                                                     }
                                                     onChange={() => handleDayChange(day)}
-                                                    className="h-4 w-4 text-blue-600 dark:text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#5AD3AF] focus:ring-[#5AD3AF] border-gray-300 rounded"
                                                 />
-                                                <span className="text-gray-700 dark:text-gray-200">
-                                                    {day}
-                                                </span>
+                                                <span>{day}</span>
                                             </label>
                                         ))}
                                     </div>
                                 </fieldset>
                             </div>
                         </div>
-                    </>
+                    </div>
                 ) : (
-                    <>
-                        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                            {classData.description}
-                        </p>
+                    <div className="space-y-6">
+                        <div>
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
+                                {classData.description || 'No description available.'}
+                            </p>
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div>
-                                        <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                            Course
-                                        </h3>
-
-                                        <p className="text-gray-600 dark:text-gray-300">
-                                            {classData.course.title || 'N/A'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                            Course Description
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-300">
-                                            {classData.course.description || 'N/A'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                            Course Price
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-300">
-                                            {classData.course.price
-                                                ? `${classData.course.price} VND`
-                                                : 'N/A'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                            Course Category
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-300">
-                                            {classData.course.category || 'N/A'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                            Course Created At
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-300">
-                                            {classData.course.createdAt
-                                                ? new Date(
-                                                      classData.course.createdAt,
-                                                  ).toLocaleDateString()
-                                                : 'N/A'}
-                                        </p>
-                                    </div>
+                            <div className="flex items-start gap-3">
+                                <BookOpen className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.title || 'N/A'}
+                                    </p>
                                 </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Course Author
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.course.author || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <FileText className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course Description
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.description || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Mentor
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.mentor.fullName || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <Award className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course Price
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.price
+                                            ? `${classData.course.price} VND`
+                                            : 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Max Students
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.maxStudents || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <BookOpen className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course Category
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.category || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Status
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.status || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course Created At
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.createdAt
+                                            ? new Date(
+                                                  classData.course.createdAt,
+                                              ).toLocaleDateString()
+                                            : 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Start Date
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.schedule.startDate
-                                        ? new Date(
-                                              classData.schedule.startDate,
-                                          ).toLocaleDateString()
-                                        : 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <User className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Course Author
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.course.author || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    End Date
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.schedule.endDate
-                                        ? new Date(classData.schedule.endDate).toLocaleDateString()
-                                        : 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <User className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Mentor
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.mentor.fullName || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Class Time
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.schedule.time || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <Users className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Max Students
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.maxStudents || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-medium text-gray-700 dark:text-gray-200">
-                                    Class Days
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300">
-                                    {classData.schedule.daysOfWeek?.join(', ') || 'N/A'}
-                                </p>
+                            <div className="flex items-start gap-3">
+                                <Award className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Status
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.status || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Start Date
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.schedule.startDate
+                                            ? new Date(
+                                                  classData.schedule.startDate,
+                                              ).toLocaleDateString()
+                                            : 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        End Date
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.schedule.endDate
+                                            ? new Date(
+                                                  classData.schedule.endDate,
+                                              ).toLocaleDateString()
+                                            : 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Clock className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Class Time
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.schedule.time || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <div>
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                        Class Days
+                                    </h3>
+                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                        {classData.schedule.daysOfWeek?.join(', ') || 'N/A'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

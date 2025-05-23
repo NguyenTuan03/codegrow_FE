@@ -13,6 +13,7 @@ import CertificationSection from '@/app/(routes)/customer/process/CertificationS
 import LeaderboardCard from '@/app/(routes)/customer/process/LeaderboardCard';
 import UserProfileCard from '@/app/(routes)/customer/process/UserProfileCard';
 import MyAssignmentCard from '@/app/(routes)/customer/process/MyAssignmentCard';
+import { BookOpen } from 'lucide-react';
 
 interface Category {
     _id: string;
@@ -85,20 +86,26 @@ export default function Process() {
     }, []);
 
     return (
-        <div className=" mx-auto bg-[#EEF1EF] dark:bg-gray-900 px-4 py-8 transition-colors duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 space-y-8">
-                    <CourseInProgress enrollCourse={enrollCourse} />
-                    <UpcomingAssignment />
-                    <ContinueWatching />
-                    <YourMentor />
-                    <CertificationSection />
-                </div>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 md:px-12 lg:px-24 py-12 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
+                    <BookOpen className="w-8 h-8 text-[#5AD3AF]" />
+                    Learning Dashboard
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 space-y-8">
+                        <CourseInProgress enrollCourse={enrollCourse} />
+                        <UpcomingAssignment />
+                        <ContinueWatching />
+                        <YourMentor />
+                        <CertificationSection />
+                    </div>
 
-                <div className="space-y-6">
-                    <UserProfileCard user={user} />
-                    <LeaderboardCard />
-                    {user && <MyAssignmentCard user={user} />}
+                    <div className="space-y-6">
+                        <UserProfileCard user={user} />
+                        <LeaderboardCard />
+                        {user && <MyAssignmentCard user={user} />}
+                    </div>
                 </div>
             </div>
         </div>

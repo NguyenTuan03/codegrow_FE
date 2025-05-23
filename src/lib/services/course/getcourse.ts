@@ -3,7 +3,7 @@ import { get } from '@/lib/util/HttpRequest';
 export const GetCourses = async (page: number = 1, limit: number = 6) => {
     try {
         const token = localStorage.getItem('token');
-        const response = get('/course?expand=author category', {
+        const response = get('/course', {
             params: { page, limit },
             headers: {
                 Authorization: token ? `Bearer ${token}` : '',
