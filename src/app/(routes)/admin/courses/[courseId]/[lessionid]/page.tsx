@@ -7,14 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -37,7 +30,7 @@ import { UpdateQuiz } from '@/lib/services/quizs/updatequiz';
 import { DeleteQuiz } from '@/lib/services/quizs/deletequiz';
 import { GetQuiz } from '@/lib/services/quizs/getquiz';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface Lesson {
     _id: string;
@@ -101,7 +94,38 @@ export default function LessonDetail() {
     const lessonId = params.lessionid as string;
     const courseId = params.courseId as string;
 
-    // Load lesson details (without quizzes)
+    // Helper function to transform YouTube URL into embed format
+    const transformYouTubeUrl = (url: string): string => {
+        try {
+            const urlObj = new URL(url);
+            let videoId: string | null = null;
+
+            // Handle standard YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
+            if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
+                videoId = urlObj.searchParams.get('v');
+            }
+            // Handle shortened YouTube URL (e.g., https://youtu.be/VIDEO_ID)
+            else if (urlObj.hostname.includes('youtu.be')) {
+                videoId = urlObj.pathname.split('/')[1];
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            // If URL is already in embed format or not a YouTube URL, return as-is
+            if (urlObj.pathname.includes('/embed/')) {
+                return url;
+            }
+
+            // Return original URL if transformation fails (e.g., for Vimeo or other providers)
+            return url;
+        } catch (error) {
+            console.error('Failed to transform YouTube URL:', error);
+            return url; // Fallback to original URL
+        }
+    };
+
     const loadLessonDetails = async () => {
         try {
             setLoading(true);
@@ -119,12 +143,10 @@ export default function LessonDetail() {
         }
     };
 
-    // Load all quizzes for the lesson
     const loadAllQuiz = async () => {
         try {
             const response = await GetQuiz(lessonId);
             console.log('get quiz :', response);
-
             const quizData = response.metadata || [];
             setQuizzes(quizData);
         } catch (error) {
@@ -138,7 +160,6 @@ export default function LessonDetail() {
         }
     };
 
-    // Load lesson and quizzes on mount
     useEffect(() => {
         const fetchData = async () => {
             await loadLessonDetails();
@@ -147,12 +168,10 @@ export default function LessonDetail() {
         fetchData();
     }, [lessonId]);
 
-    // Log quizzes after state updates
     useEffect(() => {
         console.log('Quizzes updated:', quizzes);
     }, [quizzes]);
 
-    // Handle quiz form input changes
     const handleQuizInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         index?: number,
@@ -178,7 +197,6 @@ export default function LessonDetail() {
         }
     };
 
-    // Handle checkbox change for isCorrect
     const handleIsCorrectChange = (index: number, checked: boolean) => {
         setCurrentQuiz((prev) => ({
             ...prev,
@@ -188,7 +206,6 @@ export default function LessonDetail() {
         }));
     };
 
-    // Add option or test case
     const addOption = () => {
         setCurrentQuiz((prev) => ({
             ...prev,
@@ -203,7 +220,6 @@ export default function LessonDetail() {
         }));
     };
 
-    // Remove option or test case
     const removeOption = (index: number) => {
         setCurrentQuiz((prev) => ({
             ...prev,
@@ -218,7 +234,6 @@ export default function LessonDetail() {
         }));
     };
 
-    // Handle create quiz
     const handleCreateQuiz = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -226,7 +241,6 @@ export default function LessonDetail() {
                 throw new Error('No authentication token found');
             }
 
-            // Validation
             if (!currentQuiz.questionText?.trim()) {
                 throw new Error('Question text is required');
             }
@@ -272,7 +286,7 @@ export default function LessonDetail() {
                     variant: 'default',
                     className: 'bg-[#5AD3AF] text-black',
                 });
-                await loadAllQuiz(); // Refresh quizzes
+                await loadAllQuiz();
                 router.refresh();
             }
 
@@ -287,7 +301,6 @@ export default function LessonDetail() {
         }
     };
 
-    // Handle edit quiz
     const handleEditQuiz = async () => {
         if (!editingQuizId) return;
         try {
@@ -318,7 +331,7 @@ export default function LessonDetail() {
             setIsEditDialogOpen(false);
             resetQuizForm();
             setEditingQuizId(null);
-            await loadAllQuiz(); // Refresh quizzes
+            await loadAllQuiz();
         } catch (error) {
             toast({
                 title: 'Error',
@@ -327,12 +340,12 @@ export default function LessonDetail() {
             });
         }
     };
-    // Mở dialog xác nhận xóa
+
     const openDeleteDialog = (quizId: string) => {
         setQuizIdToDelete(quizId);
         setIsDeleteDialogOpen(true);
     };
-    // Handle delete quiz
+
     const handleDeleteQuiz = async (quizId: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -350,9 +363,7 @@ export default function LessonDetail() {
                     className: 'bg-[#5AD3AF] text-black',
                 });
                 console.log('Quiz deleted successfully:', quizzes);
-
-                router.refresh(); // Refresh the page to reflect changes
-                // Làm mới danh sách quiz sau khi xóa
+                router.refresh();
                 await loadAllQuiz();
             }
         } catch (error) {
@@ -368,7 +379,6 @@ export default function LessonDetail() {
         }
     };
 
-    // Reset quiz form
     const resetQuizForm = () => {
         setCurrentQuiz({
             questionText: '',
@@ -385,7 +395,6 @@ export default function LessonDetail() {
         setQuizType('multiple_choice');
     };
 
-    // Open edit dialog with quiz data
     const openEditDialog = (quiz: Quiz) => {
         setCurrentQuiz({
             questionText: quiz.questionText,
@@ -404,7 +413,6 @@ export default function LessonDetail() {
         setIsEditDialogOpen(true);
     };
 
-    // Open view dialog with quiz data
     const openViewDialog = (quiz: Quiz) => {
         setSelectedQuiz(quiz);
         setIsViewDialogOpen(true);
@@ -412,7 +420,7 @@ export default function LessonDetail() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
             </div>
         );
@@ -420,262 +428,782 @@ export default function LessonDetail() {
 
     if (!lesson) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-400 p-4">
-                Lesson not found.
+            <div className="text-center py-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+                <p className="text-lg text-gray-600 dark:text-gray-400">Lesson not found.</p>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            {/* Header với nút back và tiêu đề */}
-            <div className="flex items-center gap-4 mb-8">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => router.push(`/admin/courses/${courseId}`)}
-                    className="rounded-full"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Lesson Management</h1>
-                    <p className="text-muted-foreground">Manage lesson content and quizzes</p>
+        <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Header with back button and title */}
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => router.push(`/admin/courses/${courseId}`)}
+                        className="rounded-full text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                            Lesson Management
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Manage lesson content and quizzes
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            {/* Tab layout cho bài học và quiz */}
-            <Tabs defaultValue="lesson" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 max-w-xs">
-                    <TabsTrigger value="lesson">Lesson</TabsTrigger>
-                    <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
-                </TabsList>
+                {/* Tab layout for lesson and quizzes */}
+                <Tabs defaultValue="lesson" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 max-w-xs">
+                        <TabsTrigger
+                            value="lesson"
+                            className="data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white"
+                        >
+                            Lesson
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="quizzes"
+                            className="data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white"
+                        >
+                            Quizzes
+                        </TabsTrigger>
+                    </TabsList>
 
-                {/* Tab nội dung bài học */}
-                <TabsContent value="lesson">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Lesson Details</CardTitle>
-                            <CardDescription>View and edit lesson information</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid gap-6">
+                    {/* Tab for lesson content */}
+                    <TabsContent value="lesson">
+                        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                    Lesson Details
+                                </CardTitle>
+                                <CardDescription className="text-gray-600 dark:text-gray-400">
+                                    View lesson information
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Title</Label>
-                                        <p className="text-sm font-medium">
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Title
+                                        </Label>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {lesson?.title || 'N/A'}
                                         </p>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Order</Label>
-                                        <p className="text-sm font-medium">
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Order
+                                        </Label>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {lesson?.order || 'N/A'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label>Content</Label>
-                                    <div className="p-4 bg-muted rounded-md">
-                                        <p className="text-sm">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Content
+                                    </Label>
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                        <p className="text-sm text-gray-800 dark:text-gray-200">
                                             {lesson?.content || 'No content available'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label>Video</Label>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Video
+                                    </Label>
                                     {lesson?.videoUrl ? (
-                                        <Button variant="outline" asChild>
-                                            <a
-                                                href={lesson.videoUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-2"
-                                            >
-                                                <Eye className="h-4 w-4" />
-                                                View Video
-                                            </a>
-                                        </Button>
+                                        <div className="relative aspect-video">
+                                            <iframe
+                                                src={transformYouTubeUrl(lesson.videoUrl)}
+                                                title="Lesson Video"
+                                                className="w-full h-full rounded-lg"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                                onError={(e) => {
+                                                    console.error('Iframe error:', e);
+                                                    toast({
+                                                        title: 'Error',
+                                                        description:
+                                                            'Failed to load video. Please ensure the URL is valid.',
+                                                        variant: 'destructive',
+                                                    });
+                                                }}
+                                            ></iframe>
+                                        </div>
                                     ) : (
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
                                             No video available
                                         </p>
                                     )}
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                {/* Tab quản lý quiz */}
-                <TabsContent value="quizzes">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle>Quizzes</CardTitle>
-                                <CardDescription>
-                                    Manage lesson quizzes and assessments
-                                </CardDescription>
-                            </div>
-                            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <Button size="sm" className="gap-2">
-                                        <Plus className="h-4 w-4" />
-                                        Add Quiz
-                                    </Button>
-                                </DialogTrigger>
-                                {/* Giữ nguyên dialog tạo quiz */}
-                            </Dialog>
-                        </CardHeader>
-                        <CardContent>
-                            {quizzes.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12">
-                                    <div className="text-center space-y-2">
-                                        <Code className="h-8 w-8 mx-auto text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">No quizzes yet</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            Start by creating a new quiz
-                                        </p>
+                    {/* Tab for quizzes */}
+                    <TabsContent value="quizzes">
+                        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                        Quizzes
+                                    </CardTitle>
+                                    <CardDescription className="text-gray-600 dark:text-gray-400">
+                                        Manage lesson quizzes and assessments
+                                    </CardDescription>
+                                </div>
+                                <Dialog
+                                    open={isCreateDialogOpen}
+                                    onOpenChange={setIsCreateDialogOpen}
+                                >
+                                    <DialogTrigger asChild>
                                         <Button
-                                            className="mt-4"
-                                            onClick={() => setIsCreateDialogOpen(true)}
+                                            size="sm"
+                                            className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white gap-2"
                                         >
-                                            Create Quiz
+                                            <Plus className="h-4 w-4" />
+                                            Add Quiz
                                         </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="border rounded-lg overflow-hidden">
-                                    <Table>
-                                        <TableHeader className="bg-muted/50">
-                                            <TableRow>
-                                                <TableHead className="w-[120px]">Type</TableHead>
-                                                <TableHead>Question</TableHead>
-                                                <TableHead>Details</TableHead>
-                                                <TableHead className="w-[150px]">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {quizzes.map((quiz) => (
-                                                <TableRow key={quiz._id}>
-                                                    <TableCell>
-                                                        <span
-                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                                quiz.type === 'multiple_choice'
-                                                                    ? 'bg-purple-100 text-purple-800'
-                                                                    : 'bg-blue-100 text-blue-800'
-                                                            }`}
-                                                        >
-                                                            {quiz.type === 'multiple_choice'
-                                                                ? 'Multiple Choice'
-                                                                : 'Coding'}
-                                                        </span>
-                                                    </TableCell>
-                                                    <TableCell className="font-medium">
-                                                        <div className="line-clamp-2">
-                                                            {quiz.questionText}
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {quiz.type === 'multiple_choice' ? (
-                                                            <div className="text-sm text-muted-foreground">
-                                                                {quiz.options?.length} options
-                                                            </div>
-                                                        ) : (
-                                                            <div className="text-sm text-muted-foreground">
-                                                                {quiz.language} •{' '}
-                                                                {quiz.testCases?.length} test cases
-                                                            </div>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => openViewDialog(quiz)}
-                                                            >
-                                                                <Eye className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => openEditDialog(quiz)}
-                                                            >
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() =>
-                                                                    openDeleteDialog(quiz._id)
-                                                                }
-                                                                className="text-red-600 hover:text-red-600"
-                                                            >
-                                                                <Trash className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-            {/* Quiz Section */}
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
-                    Quizzes
-                </h3>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                                Create New Quiz
+                                            </DialogTitle>
+                                        </DialogHeader>
 
-                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-800 dark:hover:bg-indigo-900">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Quiz
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl rounded-lg bg-white dark:bg-gray-900">
+                                        <div className="space-y-6 py-4">
+                                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                                <button
+                                                    onClick={() => setQuizType('multiple_choice')}
+                                                    className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
+                                                        quizType === 'multiple_choice'
+                                                            ? 'border-[#5AD3AF] bg-[#5AD3AF]/10 text-[#5AD3AF] shadow-sm'
+                                                            : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <ListChecks className="h-5 w-5 mr-2" />
+                                                    Multiple Choice
+                                                </button>
+                                                <button
+                                                    onClick={() => setQuizType('code')}
+                                                    className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
+                                                        quizType === 'code'
+                                                            ? 'border-[#5AD3AF] bg-[#5AD3AF]/10 text-[#5AD3AF] shadow-sm'
+                                                            : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    <Code className="h-5 w-5 mr-2" />
+                                                    Coding Quiz
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Question
+                                                </Label>
+                                                <Textarea
+                                                    id="questionText"
+                                                    name="questionText"
+                                                    value={currentQuiz.questionText}
+                                                    onChange={handleQuizInputChange}
+                                                    placeholder="Enter your question here..."
+                                                    className="min-h-[100px] bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Explanation
+                                                </Label>
+                                                <Textarea
+                                                    id="explanation"
+                                                    name="explanation"
+                                                    value={currentQuiz.explanation}
+                                                    onChange={handleQuizInputChange}
+                                                    placeholder="Provide an explanation for the answer..."
+                                                    className="min-h-[80px] bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                />
+                                            </div>
+
+                                            {quizType === 'multiple_choice' ? (
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            Answer Options
+                                                        </Label>
+                                                        <Button
+                                                            onClick={addOption}
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                                        >
+                                                            <Plus className="h-4 w-4 mr-1" />
+                                                            Add Option
+                                                        </Button>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        {currentQuiz.options?.map(
+                                                            (option, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center gap-3"
+                                                                >
+                                                                    <Checkbox
+                                                                        id={`option-${index}`}
+                                                                        checked={option.isCorrect}
+                                                                        onCheckedChange={(
+                                                                            checked,
+                                                                        ) =>
+                                                                            handleIsCorrectChange(
+                                                                                index,
+                                                                                !!checked,
+                                                                            )
+                                                                        }
+                                                                        className="h-5 w-5 rounded-full border-gray-300 dark:border-gray-600 data-[state=checked]:bg-[#5AD3AF] dark:data-[state=checked]:bg-[#5AD3AF]"
+                                                                    />
+                                                                    <Input
+                                                                        name="options"
+                                                                        value={option.text}
+                                                                        onChange={(e) =>
+                                                                            handleQuizInputChange(
+                                                                                e,
+                                                                                index,
+                                                                            )
+                                                                        }
+                                                                        placeholder={`Option ${index + 1}`}
+                                                                        className="flex-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                                    />
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={() =>
+                                                                            removeOption(index)
+                                                                        }
+                                                                        disabled={
+                                                                            currentQuiz.options!
+                                                                                .length <= 2
+                                                                        }
+                                                                        className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                                    >
+                                                                        <Trash className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Language
+                                                            </Label>
+                                                            <Select
+                                                                value={currentQuiz.language}
+                                                                onValueChange={(value) =>
+                                                                    setCurrentQuiz({
+                                                                        ...currentQuiz,
+                                                                        language: value,
+                                                                    })
+                                                                }
+                                                            >
+                                                                <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]">
+                                                                    <SelectValue placeholder="Select language" />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+                                                                    <SelectItem value="javascript">
+                                                                        JavaScript
+                                                                    </SelectItem>
+                                                                    <SelectItem value="python">
+                                                                        Python
+                                                                    </SelectItem>
+                                                                    <SelectItem value="java">
+                                                                        Java
+                                                                    </SelectItem>
+                                                                    <SelectItem value="csharp">
+                                                                        C#
+                                                                    </SelectItem>
+                                                                    <SelectItem value="cpp">
+                                                                        C++
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Expected Output
+                                                            </Label>
+                                                            <Input
+                                                                name="expectedOutput"
+                                                                value={
+                                                                    currentQuiz.expectedOutput || ''
+                                                                }
+                                                                onChange={handleQuizInputChange}
+                                                                placeholder="Expected output"
+                                                                className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            Starter Code
+                                                        </Label>
+                                                        <Textarea
+                                                            name="starterCode"
+                                                            value={currentQuiz.starterCode || ''}
+                                                            onChange={handleQuizInputChange}
+                                                            placeholder="Enter starter code..."
+                                                            className="min-h-[150px] bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="flex justify-between items-center">
+                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Test Cases
+                                                            </Label>
+                                                            <Button
+                                                                onClick={addTestCase}
+                                                                size="sm"
+                                                                variant="outline"
+                                                                className="text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                                            >
+                                                                <Plus className="h-4 w-4 mr-1" />
+                                                                Add Test Case
+                                                            </Button>
+                                                        </div>
+
+                                                        {currentQuiz.testCases?.map(
+                                                            (testCase, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="grid grid-cols-2 gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                                                                >
+                                                                    <div className="space-y-1">
+                                                                        <Label className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                                                            Input
+                                                                        </Label>
+                                                                        <Input
+                                                                            name="testCases"
+                                                                            value={testCase.input}
+                                                                            onChange={(e) =>
+                                                                                handleQuizInputChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    'input',
+                                                                                )
+                                                                            }
+                                                                            placeholder="Input"
+                                                                            className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-1">
+                                                                        <Label className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                                                                            Expected Output
+                                                                        </Label>
+                                                                        <div className="flex gap-2">
+                                                                            <Input
+                                                                                name="testCases"
+                                                                                value={
+                                                                                    testCase.expectedOutput
+                                                                                }
+                                                                                onChange={(e) =>
+                                                                                    handleQuizInputChange(
+                                                                                        e,
+                                                                                        index,
+                                                                                        'expectedOutput',
+                                                                                    )
+                                                                                }
+                                                                                placeholder="Expected Output"
+                                                                                className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                                                            />
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={() =>
+                                                                                    removeTestCase(
+                                                                                        index,
+                                                                                    )
+                                                                                }
+                                                                                disabled={
+                                                                                    currentQuiz
+                                                                                        .testCases!
+                                                                                        .length <= 1
+                                                                                }
+                                                                                className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                                            >
+                                                                                <Trash className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="flex justify-end gap-3 pt-4">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setIsCreateDialogOpen(false);
+                                                        resetQuizForm();
+                                                    }}
+                                                    className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    onClick={handleCreateQuiz}
+                                                    className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                                >
+                                                    Create Quiz
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </CardHeader>
+                            <CardContent>
+                                {quizzes.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-12">
+                                        <div className="text-center space-y-2">
+                                            <Code className="h-8 w-8 mx-auto text-gray-500 dark:text-gray-400" />
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                No quizzes yet
+                                            </h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                Start by creating a new quiz
+                                            </p>
+                                            <Button
+                                                className="mt-4 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                                onClick={() => setIsCreateDialogOpen(true)}
+                                            >
+                                                Create Quiz
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="border rounded-lg overflow-hidden">
+                                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                                            <thead className="bg-gray-50 dark:bg-gray-700">
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                    >
+                                                        Type
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                    >
+                                                        Question
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                    >
+                                                        Details
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                    >
+                                                        Actions
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+                                                {quizzes.map((quiz) => (
+                                                    <tr
+                                                        key={quiz._id}
+                                                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                    >
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <Badge
+                                                                className={
+                                                                    quiz.type === 'multiple_choice'
+                                                                        ? 'bg-[#657ED4] text-white'
+                                                                        : 'bg-[#5AD3AF] text-white'
+                                                                }
+                                                            >
+                                                                {quiz.type === 'multiple_choice'
+                                                                    ? 'Multiple Choice'
+                                                                    : 'Coding'}
+                                                            </Badge>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                            <div className="line-clamp-2">
+                                                                {quiz.questionText}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                            {quiz.type === 'multiple_choice' ? (
+                                                                <div>
+                                                                    {quiz.options?.length} options
+                                                                </div>
+                                                            ) : (
+                                                                <div>
+                                                                    {quiz.language} •{' '}
+                                                                    {quiz.testCases?.length} test
+                                                                    cases
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                            <div className="flex gap-2 justify-end">
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        openViewDialog(quiz)
+                                                                    }
+                                                                    className="text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                                                >
+                                                                    <Eye className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        openEditDialog(quiz)
+                                                                    }
+                                                                    className="text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                                                >
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        openDeleteDialog(quiz._id)
+                                                                    }
+                                                                    className="text-red-500 border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                                >
+                                                                    <Trash className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+
+                {/* Delete Confirmation Dialog */}
+                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-semibold text-gray-800 dark:text-white">
-                                Create New Quiz
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Confirm Deletion
                             </DialogTitle>
                         </DialogHeader>
+                        <div className="py-4">
+                            <p className="text-gray-600 dark:text-gray-400">
+                                Are you sure you want to delete this quiz? This action cannot be
+                                undone.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setIsDeleteDialogOpen(false);
+                                    setQuizIdToDelete(null);
+                                }}
+                                className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    if (quizIdToDelete) {
+                                        handleDeleteQuiz(quizIdToDelete);
+                                    }
+                                }}
+                                className="bg-red-500 hover:bg-red-600 text-white"
+                            >
+                                Delete
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
-                        <div className="space-y-6 py-4">
-                            <div className="grid grid-cols-2 gap-4 mb-6">
-                                <button
-                                    onClick={() => setQuizType('multiple_choice')}
-                                    className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
-                                        quizType === 'multiple_choice'
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200 shadow-sm'
-                                            : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                                >
-                                    <ListChecks className="h-5 w-5 mr-2" />
-                                    Multiple Choice
-                                </button>
-                                <button
-                                    onClick={() => setQuizType('code')}
-                                    className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
-                                        quizType === 'code'
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-200 shadow-sm'
-                                            : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                                >
-                                    <Code className="h-5 w-5 mr-2" />
-                                    Coding Quiz
-                                </button>
+                {/* View Quiz Dialog */}
+                <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+                    <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Quiz Details
+                            </DialogTitle>
+                        </DialogHeader>
+                        {selectedQuiz && (
+                            <div className="space-y-4 mt-4">
+                                <div>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Quiz Type
+                                    </Label>
+                                    <p className="text-gray-900 dark:text-gray-100">
+                                        {selectedQuiz.type === 'multiple_choice'
+                                            ? 'Multiple Choice'
+                                            : 'Coding'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Question
+                                    </Label>
+                                    <p className="text-gray-900 dark:text-gray-100">
+                                        {selectedQuiz.questionText}
+                                    </p>
+                                </div>
+                                <div>
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Explanation
+                                    </Label>
+                                    <p className="text-gray-900 dark:text-gray-100">
+                                        {selectedQuiz.explanation || 'No explanation provided'}
+                                    </p>
+                                </div>
+                                {selectedQuiz.type === 'multiple_choice' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Options
+                                        </Label>
+                                        <ul className="list-disc pl-4 mt-1">
+                                            {selectedQuiz.options?.map((option, index) => (
+                                                <li
+                                                    key={index}
+                                                    className={
+                                                        option.isCorrect
+                                                            ? 'text-green-600 dark:text-green-400'
+                                                            : 'text-gray-900 dark:text-gray-100'
+                                                    }
+                                                >
+                                                    {option.text} {option.isCorrect && '(Correct)'}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {selectedQuiz.type === 'code' && (
+                                    <>
+                                        <div>
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Starter Code
+                                            </Label>
+                                            <pre className="mt-1 p-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-900 dark:text-gray-100">
+                                                {selectedQuiz.starterCode || 'No starter code'}
+                                            </pre>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Expected Output
+                                            </Label>
+                                            <p className="text-gray-900 dark:text-gray-100">
+                                                {selectedQuiz.expectedOutput ||
+                                                    'No expected output'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Language
+                                            </Label>
+                                            <p className="text-gray-900 dark:text-gray-100">
+                                                {selectedQuiz.language || 'No language specified'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Test Cases
+                                            </Label>
+                                            {selectedQuiz.testCases?.length ? (
+                                                <ul className="list-disc pl-4 mt-1">
+                                                    {selectedQuiz.testCases.map(
+                                                        (testCase, index) => (
+                                                            <li
+                                                                key={index}
+                                                                className="text-gray-900 dark:text-gray-100"
+                                                            >
+                                                                Input: {testCase.input}, Expected
+                                                                Output: {testCase.expectedOutput}
+                                                            </li>
+                                                        ),
+                                                    )}
+                                                </ul>
+                                            ) : (
+                                                <p className="text-gray-900 dark:text-gray-100">
+                                                    No test cases
+                                                </p>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
 
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* Edit Quiz Dialog */}
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Edit Quiz
+                            </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                            <div>
+                                <Label
+                                    htmlFor="quizType"
+                                    className="text-gray-700 dark:text-gray-300"
+                                >
+                                    Quiz Type
+                                </Label>
+                                <Select
+                                    name="quizType"
+                                    value={quizType}
+                                    onValueChange={(value) =>
+                                        setQuizType(value as 'multiple_choice' | 'code')
+                                    }
+                                >
+                                    <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]">
+                                        <SelectValue placeholder="Select quiz type" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+                                        <SelectItem value="multiple_choice">
+                                            Multiple Choice
+                                        </SelectItem>
+                                        <SelectItem value="code">Coding</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label
+                                    htmlFor="questionText"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     Question
                                 </Label>
                                 <Textarea
@@ -683,13 +1211,15 @@ export default function LessonDetail() {
                                     name="questionText"
                                     value={currentQuiz.questionText}
                                     onChange={handleQuizInputChange}
-                                    placeholder="Enter your question here..."
-                                    className="min-h-[100px] bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
+                                    placeholder="Enter quiz question"
+                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
                                 />
                             </div>
-
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <div>
+                                <Label
+                                    htmlFor="explanation"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     Explanation
                                 </Label>
                                 <Textarea
@@ -697,583 +1227,154 @@ export default function LessonDetail() {
                                     name="explanation"
                                     value={currentQuiz.explanation}
                                     onChange={handleQuizInputChange}
-                                    placeholder="Provide an explanation for the answer..."
-                                    className="min-h-[80px] bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
+                                    placeholder="Enter explanation"
+                                    className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
                                 />
                             </div>
-
-                            {quizType === 'multiple_choice' ? (
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Answer Options
-                                        </Label>
-                                        <Button
-                                            onClick={addOption}
-                                            size="sm"
-                                            variant="outline"
-                                            className="text-indigo-600 dark:text-indigo-400"
-                                        >
-                                            <Plus className="h-4 w-4 mr-1" />
-                                            Add Option
-                                        </Button>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        {currentQuiz.options?.map((option, index) => (
-                                            <div key={index} className="flex items-center gap-3">
-                                                <Checkbox
-                                                    id={`option-${index}`}
-                                                    checked={option.isCorrect}
-                                                    onCheckedChange={(checked) =>
-                                                        handleIsCorrectChange(index, !!checked)
-                                                    }
-                                                    className="h-5 w-5 rounded-full data-[state=checked]:bg-indigo-600 dark:data-[state=checked]:bg-indigo-500"
-                                                />
-                                                <Input
-                                                    name="options"
-                                                    value={option.text}
-                                                    onChange={(e) =>
-                                                        handleQuizInputChange(e, index)
-                                                    }
-                                                    placeholder={`Option ${index + 1}`}
-                                                    className="flex-1 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
-                                                />
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => removeOption(index)}
-                                                    disabled={currentQuiz.options!.length <= 2}
-                                                    className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                >
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Language
-                                            </Label>
-                                            <Select
-                                                value={currentQuiz.language}
-                                                onValueChange={(value) =>
-                                                    setCurrentQuiz({
-                                                        ...currentQuiz,
-                                                        language: value,
-                                                    })
+                            {quizType === 'multiple_choice' && (
+                                <>
+                                    {currentQuiz.options?.map((option, index) => (
+                                        <div key={index} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`option-${index}`}
+                                                checked={option.isCorrect}
+                                                onCheckedChange={(checked) =>
+                                                    handleIsCorrectChange(index, !!checked)
                                                 }
-                                            >
-                                                <SelectTrigger className="bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200">
-                                                    <SelectValue placeholder="Select language" />
-                                                </SelectTrigger>
-                                                <SelectContent className="bg-gray-50 dark:bg-gray-800">
-                                                    <SelectItem value="javascript">
-                                                        JavaScript
-                                                    </SelectItem>
-                                                    <SelectItem value="python">Python</SelectItem>
-                                                    <SelectItem value="java">Java</SelectItem>
-                                                    <SelectItem value="csharp">C#</SelectItem>
-                                                    <SelectItem value="cpp">C++</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Expected Output
-                                            </Label>
-                                            <Input
-                                                name="expectedOutput"
-                                                value={currentQuiz.expectedOutput || ''}
-                                                onChange={handleQuizInputChange}
-                                                placeholder="Expected output"
-                                                className="bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
+                                                className="h-5 w-5 rounded-full border-gray-300 dark:border-gray-600 data-[state=checked]:bg-[#5AD3AF] dark:data-[state=checked]:bg-[#5AD3AF]"
                                             />
+                                            <Input
+                                                name="options"
+                                                value={option.text}
+                                                onChange={(e) => handleQuizInputChange(e, index)}
+                                                placeholder={`Option ${index + 1}`}
+                                                className="flex-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                            />
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => removeOption(index)}
+                                                disabled={currentQuiz.options!.length <= 2}
+                                                className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            >
+                                                <Trash className="h-4 w-4" />
+                                            </Button>
                                         </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    ))}
+                                    <Button
+                                        onClick={addOption}
+                                        className="mt-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                    >
+                                        Add Option
+                                    </Button>
+                                </>
+                            )}
+                            {quizType === 'code' && (
+                                <>
+                                    <div>
+                                        <Label
+                                            htmlFor="starterCode"
+                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
                                             Starter Code
                                         </Label>
                                         <Textarea
+                                            id="starterCode"
                                             name="starterCode"
-                                            value={currentQuiz.starterCode || ''}
+                                            value={currentQuiz.starterCode}
                                             onChange={handleQuizInputChange}
-                                            placeholder="Enter starter code..."
-                                            className="min-h-[150px] bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
+                                            placeholder="Enter starter code"
+                                            className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
                                         />
                                     </div>
-
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
+                                    <div>
+                                        <Label
+                                            htmlFor="expectedOutput"
+                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
+                                            Expected Output
+                                        </Label>
+                                        <Input
+                                            id="expectedOutput"
+                                            name="expectedOutput"
+                                            value={currentQuiz.expectedOutput}
+                                            onChange={handleQuizInputChange}
+                                            placeholder="Enter expected output"
+                                            className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label
+                                            htmlFor="language"
+                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >
+                                            Language
+                                        </Label>
+                                        <Input
+                                            id="language"
+                                            name="language"
+                                            value={currentQuiz.language}
+                                            onChange={handleQuizInputChange}
+                                            placeholder="Enter programming language"
+                                            className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                        />
+                                    </div>
+                                    {currentQuiz.testCases?.map((testCase, index) => (
+                                        <div key={index} className="space-y-2">
                                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                Test Cases
+                                                Test Case {index + 1}
                                             </Label>
+                                            <Input
+                                                name="testCases"
+                                                value={testCase.input}
+                                                onChange={(e) =>
+                                                    handleQuizInputChange(e, index, 'input')
+                                                }
+                                                placeholder="Input"
+                                                className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                            />
+                                            <Input
+                                                name="testCases"
+                                                value={testCase.expectedOutput}
+                                                onChange={(e) =>
+                                                    handleQuizInputChange(
+                                                        e,
+                                                        index,
+                                                        'expectedOutput',
+                                                    )
+                                                }
+                                                placeholder="Expected Output"
+                                                className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#5AD3AF]"
+                                            />
                                             <Button
-                                                onClick={addTestCase}
-                                                size="sm"
-                                                variant="outline"
-                                                className="text-indigo-600 dark:text-indigo-400"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => removeTestCase(index)}
+                                                disabled={currentQuiz.testCases!.length <= 1}
+                                                className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                                             >
-                                                <Plus className="h-4 w-4 mr-1" />
-                                                Add Test Case
+                                                <Trash className="h-4 w-4" />
                                             </Button>
                                         </div>
-
-                                        {currentQuiz.testCases?.map((testCase, index) => (
-                                            <div
-                                                key={index}
-                                                className="grid grid-cols-2 gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-                                            >
-                                                <div className="space-y-1">
-                                                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                                        Input
-                                                    </Label>
-                                                    <Input
-                                                        name="testCases"
-                                                        value={testCase.input}
-                                                        onChange={(e) =>
-                                                            handleQuizInputChange(e, index, 'input')
-                                                        }
-                                                        placeholder="Input"
-                                                        className="bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <Label className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                                        Expected Output
-                                                    </Label>
-                                                    <div className="flex gap-2">
-                                                        <Input
-                                                            name="testCases"
-                                                            value={testCase.expectedOutput}
-                                                            onChange={(e) =>
-                                                                handleQuizInputChange(
-                                                                    e,
-                                                                    index,
-                                                                    'expectedOutput',
-                                                                )
-                                                            }
-                                                            placeholder="Expected Output"
-                                                            className="bg-gray-50 dark:bg-gray-800 dark:border-gray-700 text-gray-800 dark:text-gray-200"
-                                                        />
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => removeTestCase(index)}
-                                                            disabled={
-                                                                currentQuiz.testCases!.length <= 1
-                                                            }
-                                                            className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                        >
-                                                            <Trash className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                    ))}
+                                    <Button
+                                        onClick={addTestCase}
+                                        className="mt-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                    >
+                                        Add Test Case
+                                    </Button>
+                                </>
                             )}
-
-                            <div className="flex justify-end gap-3 pt-4">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setIsCreateDialogOpen(false);
-                                        resetQuizForm();
-                                    }}
-                                    className="text-gray-800 dark:text-gray-200"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={handleCreateQuiz}
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-800 dark:hover:bg-indigo-900"
-                                >
-                                    Create Quiz
-                                </Button>
-                            </div>
+                            <Button
+                                onClick={handleEditQuiz}
+                                className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                            >
+                                Update Quiz
+                            </Button>
                         </div>
                     </DialogContent>
                 </Dialog>
             </div>
-
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="max-w-sm bg-white dark:bg-gray-900">
-                    <DialogHeader>
-                        <DialogTitle className="text-gray-900 dark:text-white">
-                            Confirm Deletion
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <p className="text-gray-700 dark:text-gray-300">
-                            Are you sure you want to delete this quiz? This action cannot be undone.
-                        </p>
-                    </div>
-                    <div className="flex justify-end gap-3">
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setIsDeleteDialogOpen(false);
-                                setQuizIdToDelete(null);
-                            }}
-                            className="text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                if (quizIdToDelete) {
-                                    handleDeleteQuiz(quizIdToDelete);
-                                }
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600"
-                        >
-                            Delete
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* View Quiz Dialog */}
-            <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-                <DialogContent className="max-w-lg bg-white dark:bg-gray-900">
-                    <DialogHeader>
-                        <DialogTitle className="text-gray-900 dark:text-white">
-                            Quiz Details
-                        </DialogTitle>
-                    </DialogHeader>
-                    {selectedQuiz && (
-                        <div className="space-y-4 mt-4">
-                            <div>
-                                <Label className="text-gray-700 dark:text-gray-300">
-                                    Quiz Type
-                                </Label>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {selectedQuiz.type === 'multiple_choice'
-                                        ? 'Multiple Choice'
-                                        : 'code'}
-                                </p>
-                            </div>
-                            <div>
-                                <Label className="text-gray-700 dark:text-gray-300">Question</Label>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {selectedQuiz.questionText}
-                                </p>
-                            </div>
-                            <div>
-                                <Label className="text-gray-700 dark:text-gray-300">
-                                    Explanation
-                                </Label>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {selectedQuiz.explanation || 'No explanation provided'}
-                                </p>
-                            </div>
-                            {selectedQuiz.type === 'multiple_choice' && (
-                                <div>
-                                    <Label className="text-gray-700 dark:text-gray-300">
-                                        Options
-                                    </Label>
-                                    <ul className="list-disc pl-4 mt-1">
-                                        {selectedQuiz.options?.map((option, index) => (
-                                            <li
-                                                key={index}
-                                                className={
-                                                    option.isCorrect
-                                                        ? 'text-green-600 dark:text-green-400'
-                                                        : 'text-gray-900 dark:text-gray-100'
-                                                }
-                                            >
-                                                {option.text} {option.isCorrect && '(Correct)'}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            {selectedQuiz.type === 'code' && (
-                                <>
-                                    <div>
-                                        <Label className="text-gray-700 dark:text-gray-300">
-                                            Starter Code
-                                        </Label>
-                                        <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-gray-900 dark:text-gray-100">
-                                            {selectedQuiz.starterCode || 'No starter code'}
-                                        </pre>
-                                    </div>
-                                    <div>
-                                        <Label className="text-gray-700 dark:text-gray-300">
-                                            Expected Output
-                                        </Label>
-                                        <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                            {selectedQuiz.expectedOutput || 'No expected output'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <Label className="text-gray-700 dark:text-gray-300">
-                                            Language
-                                        </Label>
-                                        <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                            {selectedQuiz.language || 'No language specified'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <Label className="text-gray-700 dark:text-gray-300">
-                                            Test Cases
-                                        </Label>
-                                        {selectedQuiz.testCases?.length ? (
-                                            <ul className="list-disc pl-4 mt-1">
-                                                {selectedQuiz.testCases.map((testCase, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="text-gray-900 dark:text-gray-100"
-                                                    >
-                                                        Input: {testCase.input}, Expected Output:{' '}
-                                                        {testCase.expectedOutput}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                                No test cases
-                                            </p>
-                                        )}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
-
-            {/* Edit Quiz Dialog */}
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="max-w-lg bg-white dark:bg-gray-900">
-                    <DialogHeader>
-                        <DialogTitle className="text-gray-900 dark:text-white">
-                            Edit Quiz
-                        </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 mt-4">
-                        <div>
-                            <Label htmlFor="quizType" className="text-gray-700 dark:text-gray-300">
-                                Quiz Type
-                            </Label>
-                            <Select
-                                name="quizType"
-                                value={quizType}
-                                onValueChange={(value) =>
-                                    setQuizType(value as 'multiple_choice' | 'code')
-                                }
-                            >
-                                <SelectTrigger
-                                    id="quizType"
-                                    className="w-full bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                >
-                                    <SelectValue placeholder="Select quiz type" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white dark:bg-gray-800 dark:border-gray-700">
-                                    <SelectItem
-                                        value="multiple_choice"
-                                        className="text-gray-900 dark:text-gray-100"
-                                    >
-                                        Multiple Choice
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="code"
-                                        className="text-gray-900 dark:text-gray-100"
-                                    >
-                                        Code
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div>
-                            <Label
-                                htmlFor="questionText"
-                                className="text-gray-700 dark:text-gray-300"
-                            >
-                                Question
-                            </Label>
-                            <Textarea
-                                id="questionText"
-                                name="questionText"
-                                value={currentQuiz.questionText}
-                                onChange={handleQuizInputChange}
-                                placeholder="Enter quiz question"
-                                className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                            />
-                        </div>
-                        <div>
-                            <Label
-                                htmlFor="explanation"
-                                className="text-gray-700 dark:text-gray-300"
-                            >
-                                Explanation
-                            </Label>
-                            <Textarea
-                                id="explanation"
-                                name="explanation"
-                                value={currentQuiz.explanation}
-                                onChange={handleQuizInputChange}
-                                placeholder="Enter explanation"
-                                className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                            />
-                        </div>
-                        {quizType === 'multiple_choice' && (
-                            <>
-                                {currentQuiz.options?.map((option, index) => (
-                                    <div key={index} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`option-${index}`}
-                                            checked={option.isCorrect}
-                                            onCheckedChange={(checked) =>
-                                                handleIsCorrectChange(index, !!checked)
-                                            }
-                                            className="border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
-                                        />
-                                        <Input
-                                            name="options"
-                                            value={option.text}
-                                            onChange={(e) => handleQuizInputChange(e, index)}
-                                            placeholder={`Option ${index + 1}`}
-                                            className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                        />
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => removeOption(index)}
-                                            disabled={currentQuiz.options!.length <= 2}
-                                            className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-600"
-                                        >
-                                            <Trash className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button
-                                    onClick={addOption}
-                                    className="mt-2 bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
-                                >
-                                    Add Option
-                                </Button>
-                            </>
-                        )}
-                        {quizType === 'code' && (
-                            <>
-                                <div>
-                                    <Label
-                                        htmlFor="starterCode"
-                                        className="text-gray-700 dark:text-gray-300"
-                                    >
-                                        Starter Code
-                                    </Label>
-                                    <Textarea
-                                        id="starterCode"
-                                        name="starterCode"
-                                        value={currentQuiz.starterCode}
-                                        onChange={handleQuizInputChange}
-                                        placeholder="Enter starter code"
-                                        className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                    />
-                                </div>
-                                <div>
-                                    <Label
-                                        htmlFor="expectedOutput"
-                                        className="text-gray-700 dark:text-gray-300"
-                                    >
-                                        Expected Output
-                                    </Label>
-                                    <Input
-                                        id="expectedOutput"
-                                        name="expectedOutput"
-                                        value={currentQuiz.expectedOutput}
-                                        onChange={handleQuizInputChange}
-                                        placeholder="Enter expected output"
-                                        className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                    />
-                                </div>
-                                <div>
-                                    <Label
-                                        htmlFor="language"
-                                        className="text-gray-700 dark:text-gray-300"
-                                    >
-                                        Language
-                                    </Label>
-                                    <Input
-                                        id="language"
-                                        name="language"
-                                        value={currentQuiz.language}
-                                        onChange={handleQuizInputChange}
-                                        placeholder="Enter programming language"
-                                        className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                    />
-                                </div>
-                                {currentQuiz.testCases?.map((testCase, index) => (
-                                    <div key={index} className="space-y-2">
-                                        <Label className="text-gray-700 dark:text-gray-300">
-                                            Test Case {index + 1}
-                                        </Label>
-                                        <Input
-                                            name="testCases"
-                                            value={testCase.input}
-                                            onChange={(e) =>
-                                                handleQuizInputChange(e, index, 'input')
-                                            }
-                                            placeholder="Input"
-                                            className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                        />
-                                        <Input
-                                            name="testCases"
-                                            value={testCase.expectedOutput}
-                                            onChange={(e) =>
-                                                handleQuizInputChange(e, index, 'expectedOutput')
-                                            }
-                                            placeholder="Expected Output"
-                                            className="bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
-                                        />
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => removeTestCase(index)}
-                                            disabled={currentQuiz.testCases!.length <= 1}
-                                            className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-600"
-                                        >
-                                            <Trash className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button
-                                    onClick={addTestCase}
-                                    className="mt-2 bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
-                                >
-                                    Add Test Case
-                                </Button>
-                            </>
-                        )}
-                        <Button
-                            onClick={handleEditQuiz}
-                            className="w-full bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
-                        >
-                            Update Quiz
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* Back Button */}
-            <Button
-                onClick={() => router.push(`/admin/courses/${courseId}`)}
-                className="mt-6 bg-gray-600 text-white hover:bg-gray-700"
-            >
-                Back to Lessons
-            </Button>
         </div>
     );
 }

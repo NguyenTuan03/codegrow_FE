@@ -17,7 +17,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CreateClassBody } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
-import { CalendarIcon, ClockIcon, UsersIcon } from 'lucide-react';
+import { CalendarIcon, ClockIcon, Link2Icon, UsersIcon } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -70,6 +70,7 @@ export default function CreateClassForm() {
                 daysOfWeek: [],
                 time: '19:00-21:00',
             },
+            linkMeet: '',
         },
     });
 
@@ -130,6 +131,7 @@ export default function CreateClassForm() {
                 description: data.description || '',
                 maxStudents: data.maxStudents,
                 schedule: formattedSchedule,
+                linkMeet: data.linkMeet,
             };
 
             console.log('Payload being sent to CreateClass:', payload);
@@ -479,7 +481,33 @@ export default function CreateClassForm() {
                                     </FormItem>
                                 )}
                             />
-
+                            {/* Link Meet */}
+                            <FormField
+                                control={form.control}
+                                name="linkMeet"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-700 font-medium">
+                                            Meeting Link*
+                                        </FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Link2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Input
+                                                    {...field}
+                                                    placeholder="https://meet.google.com/abc-xyz"
+                                                    className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
+                                                    required
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                        <p className="text-sm text-gray-500">
+                                            Enter a valid meeting link (e.g., Google Meet, Zoom)
+                                        </p>
+                                    </FormItem>
+                                )}
+                            />
                             <div className="flex justify-end gap-4 pt-4">
                                 <Button
                                     type="button"

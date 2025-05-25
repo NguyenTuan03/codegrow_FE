@@ -46,6 +46,7 @@ interface ClassItem {
     maxStudents: number;
     students: User[];
     schedule: Schedule;
+    linkMeet?: string;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -71,15 +72,31 @@ export default function ClassDetailPage() {
 
                 const normalizedData: ClassItem = {
                     ...metadata,
-                    course: metadata.course || {
-                        _id: '',
-                        title: 'N/A',
-                        description: '',
-                        price: 0,
-                        category: '',
-                        createdAt: '',
-                        author: '',
-                    },
+                    course: metadata.course
+                        ? {
+                              ...metadata.course,
+                              category:
+                                  typeof metadata.course.category === 'object' &&
+                                  metadata.course.category !== null
+                                      ? metadata.course.category.name
+                                      : metadata.course.category || '',
+                              author:
+                                  typeof metadata.course.author === 'object' &&
+                                  metadata.course.author !== null
+                                      ? metadata.course.author.fullName ||
+                                        metadata.course.author._id ||
+                                        ''
+                                      : metadata.course.author || '',
+                          }
+                        : {
+                              _id: '',
+                              title: 'N/A',
+                              description: '',
+                              price: 0,
+                              category: '',
+                              createdAt: '',
+                              author: '',
+                          },
                     mentor: metadata.mentor || {
                         _id: '',
                         fullName: 'N/A',

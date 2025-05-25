@@ -27,6 +27,7 @@ export const CreateClassBody = z.object({
         .min(1, { message: 'Số học viên tối đa phải lớn hơn 0.' })
         .max(30, { message: 'Số học viên tối đa không được vượt quá 30.' }),
     schedule: ScheduleSchema,
+    linkMeet: z.string().min(1, { message: 'Meeting link là bắt buộc.' }),
 });
 
 export type CreateClassBodyType = z.infer<typeof CreateClassBody>;

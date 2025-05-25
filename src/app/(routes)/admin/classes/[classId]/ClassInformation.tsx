@@ -8,7 +8,18 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Dispatch, SetStateAction } from 'react';
-import { BookOpen, User, Users, Calendar, Clock, Award, FileText } from 'lucide-react';
+import {
+    BookOpen,
+    User,
+    Users,
+    Calendar,
+    Clock,
+    Award,
+    FileText,
+    Link2,
+    PlayCircle,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Schedule {
     startDate: string;
@@ -22,9 +33,16 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string };
     createdAt: string;
-    author: string;
+    author: {
+        _id: string;
+        fullName: string;
+        role: string;
+        email: string;
+    };
+    isDeleted?: boolean;
+    enrolledCount?: number;
 }
 
 interface User {
@@ -51,6 +69,7 @@ interface ClassItem {
     maxStudents: number;
     students: User[];
     schedule: Schedule;
+    linkMeet?: string;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -90,6 +109,12 @@ export default function ClassInfo({
         'Saturday',
         'Sunday',
     ];
+
+    const handleJoinMeeting = () => {
+        if (classData.linkMeet) {
+            window.open(classData.linkMeet, '_blank', 'noopener,noreferrer');
+        }
+    };
 
     return (
         <div className="lg:col-span-1">
@@ -139,9 +164,14 @@ export default function ClassInfo({
                                             title: '',
                                             description: '',
                                             price: 0,
-                                            category: '',
+                                            category: { _id: '', name: '' },
                                             createdAt: '',
-                                            author: '',
+                                            author: {
+                                                _id: '',
+                                                fullName: '',
+                                                role: '',
+                                                email: '',
+                                            },
                                         };
                                         setFormData({ ...formData, course: selectedCourse });
                                     }
@@ -210,6 +240,29 @@ export default function ClassInfo({
                                 rows={4}
                                 placeholder="Enter class description"
                             />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="linkMeet"
+                                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
+                            >
+                                <Link2 className="w-5 h-5 text-[#5AD3AF]" />
+                                Meeting Link
+                            </label>
+                            <div className="relative">
+                                <Link2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Input
+                                    id="linkMeet"
+                                    type="text"
+                                    value={formData?.linkMeet || ''}
+                                    onChange={(e) => handleInputChange(e, 'linkMeet')}
+                                    className="w-full pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    placeholder="https://meet.google.com/abc-xyz"
+                                />
+                            </div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                Enter a valid meeting link (e.g., Google Meet, Zoom)
+                            </p>
                         </div>
                         <div>
                             <label
@@ -389,10 +442,16 @@ export default function ClassInfo({
                                         Course Description
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.description || 'N/A'}
+                                        {classData.course.description
+                                            ? classData.course.description.slice(0, 50) +
+                                              (classData.course.description.length > 50
+                                                  ? '...'
+                                                  : '')
+                                            : 'N/A'}
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-start gap-3">
                                 <Award className="w-5 h-5 text-[#5AD3AF] mt-1" />
                                 <div>
@@ -413,7 +472,7 @@ export default function ClassInfo({
                                         Course Category
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.category || 'N/A'}
+                                        {classData.course.category.name || 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -439,7 +498,7 @@ export default function ClassInfo({
                                         Course Author
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.author || 'N/A'}
+                                        {classData.course.author.fullName || 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -528,6 +587,21 @@ export default function ClassInfo({
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                        <div className="mt-6">
+                            <Button
+                                className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                                onClick={handleJoinMeeting}
+                                disabled={!classData.linkMeet}
+                                aria-label={
+                                    classData.linkMeet
+                                        ? 'Join meeting'
+                                        : 'No meeting link available'
+                                }
+                            >
+                                <PlayCircle className="w-5 h-5" />
+                                Join Meeting
+                            </Button>
                         </div>
                     </div>
                 )}
