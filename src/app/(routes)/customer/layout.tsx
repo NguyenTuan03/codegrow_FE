@@ -26,7 +26,7 @@ const Layout = ({ children }: Props) => {
                 {/* Ensure the header is not affected by parent overflow */}
                 <Customerheader />
                 {/* Add padding-top to account for the fixed header height */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 min-h-screen pt-[100px] pl-[30px] pr-[30px]">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 min-h-screen mt-[100px] ml-[200px] mr-[200px]   ">
                     <main>{children}</main>
                 </div>
             </ThemeProvider>
