@@ -17,7 +17,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CreateClassBody } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
-import { CalendarIcon, ClockIcon, UsersIcon } from 'lucide-react';
+import { CalendarIcon, ClockIcon, UsersIcon, Link2Icon } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -34,7 +34,6 @@ import { z } from 'zod';
 // Define a schema for the form that excludes the token field
 const CreateClassFormBody = CreateClassBody.omit({ token: true });
 type CreateClassFormBodyType = z.infer<typeof CreateClassFormBody>;
-
 interface Course {
     _id: string;
     title: string;
@@ -68,8 +67,9 @@ export default function CreateClassForm() {
                 startDate: '',
                 endDate: '',
                 daysOfWeek: [],
-                time: '19:00-21:00',
+                time: '19:00 - 21:00', // Updated format
             },
+            linkMeet: '', // Updated to linkMeet
         },
     });
 
@@ -130,6 +130,7 @@ export default function CreateClassForm() {
                 description: data.description || '',
                 maxStudents: data.maxStudents,
                 schedule: formattedSchedule,
+                linkMeet: data.linkMeet, // Updated to linkMeet
             };
 
             console.log('Payload being sent to CreateClass:', payload);
@@ -161,6 +162,7 @@ export default function CreateClassForm() {
             setLoading(false);
         }
     };
+
     return (
         <div className="max-w-4xl mx-auto p-6">
             <Card className="border-0 shadow-lg">
@@ -338,31 +340,31 @@ export default function CreateClassForm() {
                                                 <SelectContent className="bg-white dark:bg-gray-800">
                                                     {[
                                                         {
-                                                            value: '07:00-09:00',
+                                                            value: '07:00 - 09:00',
                                                             label: '7:00 - 9:00',
                                                         },
                                                         {
-                                                            value: '09:00-11:00',
+                                                            value: '09:00 - 11:00',
                                                             label: '9:00 - 11:00',
                                                         },
                                                         {
-                                                            value: '11:00-13:00',
+                                                            value: '11:00 - 13:00',
                                                             label: '11:00 - 13:00',
                                                         },
                                                         {
-                                                            value: '13:00-15:00',
+                                                            value: '13:00 - 15:00',
                                                             label: '13:00 - 15:00',
                                                         },
                                                         {
-                                                            value: '15:00-17:00',
+                                                            value: '15:00 - 17:00',
                                                             label: '15:00 - 17:00',
                                                         },
                                                         {
-                                                            value: '17:00-19:00',
+                                                            value: '17:00 - 19:00',
                                                             label: '17:00 - 19:00',
                                                         },
                                                         {
-                                                            value: '19:00-21:00',
+                                                            value: '19:00 - 21:00',
                                                             label: '19:00 - 21:00',
                                                         },
                                                     ].map((timeSlot) => (
@@ -476,6 +478,34 @@ export default function CreateClassForm() {
                                             ))}
                                         </div>
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Link Meet */}
+                            <FormField
+                                control={form.control}
+                                name="linkMeet" // Updated to linkMeet
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-gray-700 font-medium">
+                                            Meeting Link*
+                                        </FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Link2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Input
+                                                    {...field}
+                                                    placeholder="https://meet.google.com/abc-xyz"
+                                                    className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
+                                                    required
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                        <p className="text-sm text-gray-500">
+                                            Enter a valid meeting link (e.g., Google Meet, Zoom)
+                                        </p>
                                     </FormItem>
                                 )}
                             />
