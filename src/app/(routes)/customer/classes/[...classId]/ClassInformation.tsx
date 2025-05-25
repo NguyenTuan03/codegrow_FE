@@ -18,11 +18,17 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string };
     createdAt: string;
-    author: string;
+    author: {
+        _id: string;
+        fullName: string;
+        role: string;
+        email: string;
+    };
+    isDeleted?: boolean;
+    enrolledCount?: number;
 }
-
 interface User {
     _id: string;
     email: string;
