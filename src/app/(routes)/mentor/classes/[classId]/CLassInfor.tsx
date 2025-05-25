@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+
 import { Calendar, Clock, Users, BookOpen, PlayCircle } from 'lucide-react';
 
 interface Schedule {
@@ -40,17 +40,22 @@ interface ClassItem {
     maxStudents: number;
     students: User[];
     schedule: Schedule;
+    linkMeet?: string;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
     __v: number;
 }
-
 interface ClassInfoProps {
     classData: ClassItem;
 }
 
 export default function ClassInfo({ classData }: ClassInfoProps) {
+    const handleJoinMeeting = () => {
+        if (classData.linkMeet) {
+            window.open(classData.linkMeet, '_blank', 'noopener,noreferrer');
+        }
+    };
     return (
         <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
             <CardHeader className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -185,15 +190,26 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                         </div>
                     </div>
                 </div>
-
-                <div className="mt-8">
+                <div className="mt-6">
+                    <Button
+                        className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                        onClick={handleJoinMeeting}
+                        aria-label={
+                            classData.linkMeet ? 'Join meeting' : 'No meeting link available'
+                        }
+                    >
+                        <PlayCircle className="w-5 h-5" />
+                        Join Meeting
+                    </Button>
+                </div>
+                {/* <div className="mt-8">
                     <Link href={`/mentor/meeting`}>
                         <Button className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm">
                             <PlayCircle className="w-5 h-5" />
                             Join Meeting
                         </Button>
                     </Link>
-                </div>
+                </div> */}
             </CardContent>
         </Card>
     );

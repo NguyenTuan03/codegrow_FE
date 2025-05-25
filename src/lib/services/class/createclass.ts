@@ -8,7 +8,7 @@ export const CreateClass = async ({
     description,
     maxStudents,
     schedule,
-    linkMeet, // Updated to linkMeet
+    linkMeet,
 }: CreateClassBodyType) => {
     try {
         const payload = {
@@ -22,7 +22,7 @@ export const CreateClass = async ({
                 daysOfWeek: schedule.daysOfWeek,
                 time: schedule.time,
             },
-            linkMeet, // Updated to linkMeet
+            linkMeet,
         };
 
         const response = await httpRequest.post('/classrooms', payload, {

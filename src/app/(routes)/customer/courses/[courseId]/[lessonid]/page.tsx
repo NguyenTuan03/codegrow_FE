@@ -71,7 +71,37 @@ export default function LessonDetail() {
     const params = useParams();
     const lessonId = params.lessonid as string;
     const courseId = params.courseId as string;
+    // Helper function to transform YouTube URL into embed format
+    const transformYouTubeUrl = (url: string): string => {
+        try {
+            const urlObj = new URL(url);
+            let videoId: string | null = null;
 
+            // Handle standard YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
+            if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
+                videoId = urlObj.searchParams.get('v');
+            }
+            // Handle shortened YouTube URL (e.g., https://youtu.be/VIDEO_ID)
+            else if (urlObj.hostname.includes('youtu.be')) {
+                videoId = urlObj.pathname.split('/')[1];
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            // If URL is already in embed format or not a YouTube URL, return as-is
+            if (urlObj.pathname.includes('/embed/')) {
+                return url;
+            }
+
+            // Return original URL if transformation fails (e.g., for Vimeo or other providers)
+            return url;
+        } catch (error) {
+            console.error('Failed to transform YouTube URL:', error);
+            return url; // Fallback to original URL
+        }
+    };
     // Load lesson details (without quizzes)
     const loadLessonDetails = async () => {
         try {
@@ -232,11 +262,20 @@ export default function LessonDetail() {
                             <Card className="overflow-hidden border-none shadow-lg">
                                 <div className="bg-gray-900 aspect-video relative flex items-center justify-center">
                                     <iframe
-                                        src={lesson.videoUrl}
-                                        className="w-full h-full"
-                                        title={lesson.title}
+                                        src={transformYouTubeUrl(lesson.videoUrl)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please ensure the URL is valid.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
                                     ></iframe>
                                 </div>
                             </Card>

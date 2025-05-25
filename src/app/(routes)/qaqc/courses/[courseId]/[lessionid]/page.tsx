@@ -5,14 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -27,12 +20,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Eye, Edit, Save } from 'lucide-react';
+import { Loader2, Eye, Edit, Save, CheckCircle } from 'lucide-react';
 import { viewDetailLesson } from '@/lib/services/lessons/getdetailllesson';
 import { UpdateLesson } from '@/lib/services/lessons/updateLessonFeedback';
 
-// Minimal router interface for App Router
 interface Router {
     push: (href: string) => void;
     refresh: () => void;
@@ -84,7 +77,7 @@ export default function LessonDetail() {
     const [loading, setLoading] = useState(true);
     const [isUpdateLessonDialogOpen, setIsUpdateLessonDialogOpen] = useState(false);
     const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-    const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false);
+
     const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
     const [updateLessonData, setUpdateLessonData] = useState<UpdateLessonData>({
         status: 'pending',
@@ -94,10 +87,39 @@ export default function LessonDetail() {
 
     const router = useRouter() as Router;
     const params = useParams();
-    const lessonId = params.lessionid as string;
+    const lessonId = params.lessionid as string; // Note: Should be fixed to lessonId
     const courseId = params.courseId as string;
+    // Helper function to transform YouTube URL into embed format
+    const transformYouTubeUrl = (url: string): string => {
+        try {
+            const urlObj = new URL(url);
+            let videoId: string | null = null;
 
-    // Load lesson details
+            // Handle standard YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
+            if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
+                videoId = urlObj.searchParams.get('v');
+            }
+            // Handle shortened YouTube URL (e.g., https://youtu.be/VIDEO_ID)
+            else if (urlObj.hostname.includes('youtu.be')) {
+                videoId = urlObj.pathname.split('/')[1];
+            }
+
+            if (videoId) {
+                return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            // If URL is already in embed format or not a YouTube URL, return as-is
+            if (urlObj.pathname.includes('/embed/')) {
+                return url;
+            }
+
+            // Return original URL if transformation fails (e.g., for Vimeo or other providers)
+            return url;
+        } catch (error) {
+            console.error('Failed to transform YouTube URL:', error);
+            return url; // Fallback to original URL
+        }
+    };
     const loadLessonDetails = async () => {
         try {
             setLoading(true);
@@ -120,7 +142,6 @@ export default function LessonDetail() {
         loadLessonDetails();
     }, [lessonId]);
 
-    // Handle update lesson form input changes
     const handleUpdateLessonInputChange = (name: string, value: string) => {
         setUpdateLessonData((prev) => ({ ...prev, [name]: value }));
     };
@@ -167,7 +188,6 @@ export default function LessonDetail() {
         }
     };
 
-    // Reset update lesson form
     const resetUpdateLessonForm = () => {
         setUpdateLessonData({
             status: 'pending',
@@ -176,7 +196,6 @@ export default function LessonDetail() {
         });
     };
 
-    // Open view dialog with quiz data
     const openViewDialog = (quiz: Quiz) => {
         setSelectedQuiz(quiz);
         setIsViewDialogOpen(true);
@@ -184,7 +203,7 @@ export default function LessonDetail() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
             </div>
         );
@@ -192,279 +211,253 @@ export default function LessonDetail() {
 
     if (!lesson) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-300 p-4">
-                Lesson not found.
+            <div className="text-center py-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+                <p className="text-lg text-gray-600 dark:text-gray-400">Lesson not found.</p>
             </div>
         );
     }
 
     return (
-        <div className="p-6 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
-            {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {lesson.title}
-                    </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                        Lesson #{lesson.order}
-                    </p>
-                </div>
-
-                <div className="flex gap-3 w-full sm:w-auto">
-                    <Button
-                        onClick={() => router.push(`/qaqc/courses/${courseId}`)}
-                        variant="outline"
-                        className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                        Back to Lessons
-                    </Button>
-
-                    <Dialog
-                        open={isUpdateLessonDialogOpen}
-                        onOpenChange={setIsUpdateLessonDialogOpen}
-                    >
-                        <DialogTrigger asChild>
-                            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                                <Edit className="h-4 w-4 mr-2" />
-                                Update Lesson
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl text-gray-900 dark:text-white">
-                                    Update Lesson Status
-                                </DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                        Status
-                                    </Label>
-                                    <Select
-                                        value={updateLessonData.status}
-                                        onValueChange={(value) =>
-                                            handleUpdateLessonInputChange('status', value)
+        <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto space-y-8">
+                {/* Header Section */}
+                <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
+                    <CardHeader className="p-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                                    {lesson.title}
+                                </h2>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    Lesson #{lesson.order} •{' '}
+                                    <Badge
+                                        className={
+                                            lesson.status === 'done'
+                                                ? 'bg-[#5AD3AF] text-white'
+                                                : 'bg-red-500 text-white'
                                         }
                                     >
-                                        <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600">
-                                            <SelectValue placeholder="Select status" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700">
-                                            <SelectItem
-                                                value="pending"
-                                                className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            >
-                                                Pending
-                                            </SelectItem>
-                                            <SelectItem
-                                                value="done"
-                                                className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            >
-                                                Done
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                        Mark
-                                    </Label>
-                                    <Select
-                                        value={updateLessonData.mark}
-                                        onValueChange={(value) =>
-                                            handleUpdateLessonInputChange('mark', value)
-                                        }
-                                    >
-                                        <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600">
-                                            <SelectValue placeholder="Select mark" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700">
-                                            {['A+', 'A', 'B', 'C', 'D'].map((mark) => (
-                                                <SelectItem
-                                                    key={mark}
-                                                    value={mark}
-                                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
-                                                >
-                                                    {mark}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                        Notes
-                                    </Label>
-                                    <Textarea
-                                        value={updateLessonData.note}
-                                        onChange={(e) =>
-                                            handleUpdateLessonInputChange('note', e.target.value)
-                                        }
-                                        placeholder="Add your notes here..."
-                                        className="min-h-[100px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-                                    />
-                                </div>
-
-                                <Button
-                                    onClick={handleUpdateLesson}
-                                    className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white"
-                                >
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save Changes
-                                </Button>
+                                        {lesson.status === 'done' ? 'Completed' : 'Pending'}
+                                    </Badge>
+                                </p>
                             </div>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div>
-
-            {/* Lesson Content Section */}
-            <div className="mb-10">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                        Lesson Content
-                    </h3>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
-                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                            Content
-                        </Label>
-                        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            {lesson.content || (
-                                <p className="text-gray-400 dark:text-gray-300 italic">
-                                    No content provided
-                                </p>
-                            )}
-                        </div>
-                        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            {lesson.status === 'done' ? (
-                                <p className="text-green-500 dark:text-green-400 font-medium">
-                                    Lesson is completed
-                                </p>
-                            ) : (
-                                <p className="text-red-500 dark:text-red-400 font-medium">
-                                    Lesson is pending
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="space-y-1">
-                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                            Video
-                        </Label>
-                        {lesson.videoUrl ? (
-                            <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <div className="relative group cursor-pointer">
-                                        <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center">
+                            <div className="flex gap-3 w-full sm:w-auto">
+                                <Button
+                                    onClick={() => router.push(`/qaqc/courses/${courseId}`)}
+                                    variant="outline"
+                                    className="w-full sm:w-auto text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                >
+                                    Back to Lessons
+                                </Button>
+                                <Dialog
+                                    open={isUpdateLessonDialogOpen}
+                                    onOpenChange={setIsUpdateLessonDialogOpen}
+                                >
+                                    <DialogTrigger asChild>
+                                        <Button className="w-full sm:w-auto bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white">
+                                            <Edit className="h-4 w-4 mr-2" />
+                                            Update Lesson
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                                Update Lesson Status
+                                            </DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-6 py-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Status
+                                                </Label>
+                                                <Select
+                                                    value={updateLessonData.status}
+                                                    onValueChange={(value) =>
+                                                        handleUpdateLessonInputChange(
+                                                            'status',
+                                                            value,
+                                                        )
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF]">
+                                                        <SelectValue placeholder="Select status" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
+                                                        <SelectItem value="pending">
+                                                            Pending
+                                                        </SelectItem>
+                                                        <SelectItem value="done">Done</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Mark
+                                                </Label>
+                                                <Select
+                                                    value={updateLessonData.mark}
+                                                    onValueChange={(value) =>
+                                                        handleUpdateLessonInputChange('mark', value)
+                                                    }
+                                                >
+                                                    <SelectTrigger className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF]">
+                                                        <SelectValue placeholder="Select mark" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
+                                                        {['A+', 'A', 'B', 'C', 'D'].map((mark) => (
+                                                            <SelectItem key={mark} value={mark}>
+                                                                {mark}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Notes
+                                                </Label>
+                                                <Textarea
+                                                    value={updateLessonData.note}
+                                                    onChange={(e) =>
+                                                        handleUpdateLessonInputChange(
+                                                            'note',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Add your notes here..."
+                                                    className="min-h-[100px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF]"
+                                                />
+                                            </div>
                                             <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="rounded-full bg-white/90 hover:bg-white text-indigo-600 dark:text-indigo-400"
+                                                onClick={handleUpdateLesson}
+                                                className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
                                             >
-                                                <Eye className="h-5 w-5" />
+                                                <Save className="h-4 w-4 mr-2" />
+                                                Save Changes
                                             </Button>
                                         </div>
-                                        <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                            <span className="text-gray-500 dark:text-gray-300">
-                                                Video Preview
-                                            </span>
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
-                                    <div className="relative aspect-video">
-                                        <video
-                                            className="w-full h-full rounded-lg"
-                                            src={lesson.videoUrl}
-                                            controls
-                                            autoPlay
-                                            onError={(e) => {
-                                                console.error('Video error:', e);
-                                                toast({
-                                                    title: 'Error',
-                                                    description: 'Failed to load video',
-                                                    variant: 'destructive',
-                                                });
-                                            }}
-                                        >
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        ) : (
-                            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
-                                <p className="text-gray-400 dark:text-gray-300 italic">
-                                    No video available
-                                </p>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
-                        )}
-                    </div>
-                </div>
-            </div>
+                        </div>
+                    </CardHeader>
+                </Card>
 
-            {/* Quizzes Section */}
-            <div>
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                        Lesson Quizzes
-                    </h3>
-                </div>
-
-                {quizzes.length > 0 ? (
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                        <Table>
-                            <TableHeader className="bg-gray-50 dark:bg-gray-800">
-                                <TableRow>
-                                    <TableHead className="w-[120px] text-gray-700 dark:text-gray-200">
-                                        Type Type
-                                    </TableHead>
-                                    <TableHead className="text-gray-700 dark:text-gray-200">
-                                        Question
-                                    </TableHead>
-                                    <TableHead className="text-gray-700 dark:text-gray-200">
-                                        Details
-                                    </TableHead>
-                                    <TableHead className="text-right text-gray-700 dark:text-gray-200">
-                                        Actions
-                                    </TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {quizzes.map((quiz) => (
-                                    <TableRow
-                                        key={quiz._id}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                                    >
-                                        <TableCell>
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                    quiz.type === 'multiple_choice'
-                                                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                                                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                                                }`}
-                                            >
-                                                {quiz.type === 'multiple_choice'
-                                                    ? 'Multiple Choice'
-                                                    : 'Coding'}
+                {/* Lesson Content Section */}
+                <Card className="bg-white dark:bg-gray-800 border  border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
+                    <CardHeader className="p-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-[#5AD3AF] rounded-full" />
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Lesson Content
+                            </h3>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-0">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Content
+                                </Label>
+                                <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                    <p className="text-gray-800 dark:text-gray-200 line-clamp-4">
+                                        {lesson.content || (
+                                            <span className="italic text-gray-500 dark:text-gray-400">
+                                                No content provided
                                             </span>
-                                        </TableCell>
-                                        <TableCell className="font-medium max-w-[200px] truncate text-gray-900 dark:text-white">
-                                            {quiz.questionText}
-                                        </TableCell>
-                                        <TableCell>
+                                        )}
+                                    </p>
+                                </Card>
+                                <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                    <div className="flex items-center gap-2">
+                                        <Badge
+                                            className={
+                                                lesson.status === 'done'
+                                                    ? 'bg-[#5AD3AF] text-white'
+                                                    : 'bg-red-500 text-white'
+                                            }
+                                        >
+                                            {lesson.status === 'done' ? 'Completed' : 'Pending'}
+                                        </Badge>
+                                    </div>
+                                </Card>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Video
+                                </Label>
+                                {lesson.videoUrl ? (
+                                    <iframe
+                                        src={transformYouTubeUrl(lesson.videoUrl)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please ensure the URL is valid.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
+                                    ></iframe>
+                                ) : (
+                                    <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-center">
+                                        <p className="text-gray-500 dark:text-gray-400 italic">
+                                            No video available
+                                        </p>
+                                    </Card>
+                                )}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Quizzes Section */}
+                <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
+                    <CardHeader className="p-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-[#5AD3AF] rounded-full" />
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Lesson Quizzes
+                            </h3>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-0">
+                        {quizzes.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {quizzes.map((quiz) => (
+                                    <Card
+                                        key={quiz._id}
+                                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-transform duration-200 hover:scale-105 hover:shadow-xl"
+                                    >
+                                        <CardHeader className="p-4 border-b border-gray-200 dark:border-gray-600">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
+                                                    {quiz.questionText}
+                                                </h4>
+                                                <Badge
+                                                    className={
+                                                        quiz.type === 'multiple_choice'
+                                                            ? 'bg-[#657ED4] text-white'
+                                                            : 'bg-[#5AD3AF] text-white'
+                                                    }
+                                                >
+                                                    {quiz.type === 'multiple_choice'
+                                                        ? 'Multiple Choice'
+                                                        : 'Coding'}
+                                                </Badge>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="p-4 space-y-2">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                                {quiz.explanation || 'No explanation provided'}
+                                            </p>
                                             {quiz.type === 'multiple_choice' ? (
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-sm text-gray-500 dark:text-gray-300">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    <span>
                                                         {
                                                             quiz.options?.filter((o) => o.isCorrect)
                                                                 .length
@@ -473,197 +466,186 @@ export default function LessonDetail() {
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md">
-                                                        {quiz.language}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500 dark:text-gray-300">
-                                                        {quiz.testCases?.length} test case(s)
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                    <span>{quiz.language || 'N/A'}</span>
+                                                    <span>
+                                                        • {quiz.testCases?.length || 0} test case(s)
                                                     </span>
                                                 </div>
                                             )}
-                                        </TableCell>
-                                        <TableCell className="text-right">
+                                        </CardContent>
+                                        <div className="p-4">
                                             <Button
-                                                variant="ghost"
+                                                variant="outline"
                                                 size="sm"
+                                                className="w-full text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
                                                 onClick={() => openViewDialog(quiz)}
-                                                className="text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
                                             >
-                                                <Eye className="h-4 w-4 mr-1" />
-                                                View
+                                                <Eye className="h-4 w-4 mr-2" />
+                                                View Details
                                             </Button>
-                                        </TableCell>
-                                    </TableRow>
+                                        </div>
+                                    </Card>
                                 ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                ) : (
-                    <div className="p-8 text-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
-                        <p className="text-gray-500 dark:text-gray-300">
-                            No quizzes available for this lesson
-                        </p>
-                    </div>
-                )}
-            </div>
-
-            {/* Quiz Detail Dialog */}
-            <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-                <DialogContent className="sm:max-w-[600px] bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow-sm">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl text-gray-900 dark:text-white">
-                            Quiz Details
-                        </DialogTitle>
-                    </DialogHeader>
-                    {selectedQuiz && (
-                        <div className="space-y-6 py-2">
-                            <div className="space-y-1">
-                                <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                    Question
-                                </Label>
-                                <p className="text-gray-900 dark:text-white font-medium">
-                                    {selectedQuiz.questionText}
+                            </div>
+                        ) : (
+                            <div className="p-8 text-center border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-lg">
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    No quizzes available for this lesson
                                 </p>
                             </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-                            <div className="space-y-1">
-                                <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                    Explanation
-                                </Label>
-                                <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                                    <p className="text-gray-700 dark:text-gray-200">
-                                        {selectedQuiz.explanation || 'No explanation provided'}
+                {/* Quiz Detail Dialog */}
+                <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+                    <DialogContent className="sm:max-w-[600px] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                Quiz Details
+                            </DialogTitle>
+                        </DialogHeader>
+                        {selectedQuiz && (
+                            <div className="space-y-6 py-4">
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Question
+                                    </Label>
+                                    <p className="text-gray-900 dark:text-gray-100 font-medium">
+                                        {selectedQuiz.questionText}
                                     </p>
                                 </div>
-                            </div>
-
-                            {selectedQuiz.type === 'multiple_choice' ? (
-                                <div className="space-y-3">
-                                    <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                        Options
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Explanation
                                     </Label>
-                                    <div className="space-y-2">
-                                        {selectedQuiz.options?.map((option, index) => (
-                                            <div
-                                                key={index}
-                                                className={`p-3 rounded-md border ${
-                                                    option.isCorrect
-                                                        ? 'border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20'
-                                                        : 'border-gray-200 dark:border-gray-700'
-                                                }`}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div
-                                                        className={`h-5 w-5 rounded-full border flex items-center justify-center ${
-                                                            option.isCorrect
-                                                                ? 'border-green-500 bg-green-500 dark:border-green-400 dark:bg-green-400 text-white'
-                                                                : 'border-gray-300 dark:border-gray-600'
-                                                        }`}
-                                                    >
-                                                        {option.isCorrect && (
-                                                            <svg
-                                                                className="h-3 w-3"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                            >
-                                                                <path
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    strokeWidth={2}
-                                                                    d="M5 13l4 4L19 7"
-                                                                />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-gray-800 dark:text-gray-200">
-                                                        {option.text}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                        <p className="text-gray-800 dark:text-gray-200">
+                                            {selectedQuiz.explanation || 'No explanation provided'}
+                                        </p>
+                                    </Card>
                                 </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                                Language
-                                            </Label>
-                                            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded-md">
-                                                <p className="text-gray-800 dark:text-gray-200">
-                                                    {selectedQuiz.language || 'Not specified'}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1">
-                                            <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                                Expected Output
-                                            </Label>
-                                            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded-md">
-                                                <p className="text-gray-800 dark:text-gray-200">
-                                                    {selectedQuiz.expectedOutput || 'Not specified'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                            Starter Code
+                                {selectedQuiz.type === 'multiple_choice' ? (
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Options
                                         </Label>
-                                        <pre className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-sm font-mono text-gray-800 dark:text-gray-200 overflow-x-auto">
-                                            {selectedQuiz.starterCode || 'No starter code provided'}
-                                        </pre>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <Label className="text-sm font-medium text-gray-500 dark:text-gray-200">
-                                            Test Cases ({selectedQuiz.testCases?.length || 0})
-                                        </Label>
-                                        {selectedQuiz.testCases?.length ? (
-                                            <div className="space-y-2">
-                                                {selectedQuiz.testCases.map((testCase, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="p-3 bg-gray-50 dark:bg-gray-700 rounded-md"
-                                                    >
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">
-                                                                    Input
-                                                                </p>
-                                                                <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                                                                    {testCase.input}
-                                                                </p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">
-                                                                    Expected Output
-                                                                </p>
-                                                                <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
-                                                                    {testCase.expectedOutput}
-                                                                </p>
-                                                            </div>
+                                        <div className="space-y-2">
+                                            {selectedQuiz.options?.map((option, index) => (
+                                                <Card
+                                                    key={index}
+                                                    className={`p-3 border ${
+                                                        option.isCorrect
+                                                            ? 'border-[#5AD3AF] bg-[#5AD3AF]/10'
+                                                            : 'border-gray-200 dark:border-gray-600'
+                                                    } rounded-lg`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div
+                                                            className={`h-5 w-5 rounded-full border flex items-center justify-center ${
+                                                                option.isCorrect
+                                                                    ? 'border-[#5AD3AF] bg-[#5AD3AF] text-white'
+                                                                    : 'border-gray-300 dark:border-gray-600'
+                                                            }`}
+                                                        >
+                                                            {option.isCorrect && (
+                                                                <CheckCircle className="h-3 w-3" />
+                                                            )}
                                                         </div>
+                                                        <p className="text-gray-800 dark:text-gray-200">
+                                                            {option.text}
+                                                        </p>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-sm text-gray-500 dark:text-gray-300">
-                                                No test cases provided
-                                            </p>
-                                        )}
+                                                </Card>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </DialogContent>
-            </Dialog>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Language
+                                                </Label>
+                                                <Card className="p-3 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                                    <p className="text-gray-800 dark:text-gray-200">
+                                                        {selectedQuiz.language || 'Not specified'}
+                                                    </p>
+                                                </Card>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    Expected Output
+                                                </Label>
+                                                <Card className="p-3 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                                    <p className="text-gray-800 dark:text-gray-200">
+                                                        {selectedQuiz.expectedOutput ||
+                                                            'Not specified'}
+                                                    </p>
+                                                </Card>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Starter Code
+                                            </Label>
+                                            <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                                                <pre className="text-sm font-mono text-gray-800 dark:text-gray-200 overflow-x-auto">
+                                                    {selectedQuiz.starterCode ||
+                                                        'No starter code provided'}
+                                                </pre>
+                                            </Card>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Test Cases ({selectedQuiz.testCases?.length || 0})
+                                            </Label>
+                                            {selectedQuiz.testCases?.length ? (
+                                                <div className="space-y-2">
+                                                    {selectedQuiz.testCases.map(
+                                                        (testCase, index) => (
+                                                            <Card
+                                                                key={index}
+                                                                className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 rounded-lg"
+                                                            >
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                                    <div>
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                                                            Input
+                                                                        </p>
+                                                                        <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                                            {testCase.input}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                                                            Expected Output
+                                                                        </p>
+                                                                        <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                                            {
+                                                                                testCase.expectedOutput
+                                                                            }
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </Card>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    No test cases provided
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
+            </div>
         </div>
     );
 }

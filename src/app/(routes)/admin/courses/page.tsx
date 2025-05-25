@@ -138,10 +138,8 @@ export default function AdminCoursesPage() {
                         return {
                             ...course,
                             category: categoryObj || { _id: '', name: 'Uncategorized' },
-                            status: ['published', 'draft', 'archived'][
-                                Math.floor(Math.random() * 3)
-                            ] as 'published' | 'draft' | 'archived',
-                            rating: avgRating || 4.5, // Fallback to 4.5 if no rating
+
+                            rating: avgRating || 5, // Fallback to 4.5 if no rating
                         };
                     }),
                 );

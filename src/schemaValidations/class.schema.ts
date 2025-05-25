@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import z from 'zod';
 
 // Schema cho thời khóa biểu (schedule)
 const ScheduleSchema = z.object({
@@ -8,20 +8,8 @@ const ScheduleSchema = z.object({
     endDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: 'Ngày kết thúc không hợp lệ.',
     }),
-    daysOfWeek: z
-        .array(
-            z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], {
-                errorMap: () => ({ message: 'Ngày học phải là một ngày hợp lệ trong tuần.' }),
-            }),
-        )
-        .min(1, { message: 'Phải có ít nhất một ngày học trong tuần.' })
-        .transform((days) => days.map((day) => day.toLowerCase())), // Transform to lowercase
-    time: z
-        .string()
-        .min(1, { message: 'Thời gian học là bắt buộc.' })
-        .regex(/^\d{2}:\d{2}\s-\s\d{2}:\d{2}$/, {
-            message: 'Thời gian học phải có định dạng "HH:mm - HH:mm" (e.g., "19:00 - 21:00").',
-        }),
+    daysOfWeek: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ngày học trong tuần.' }),
+    time: z.string().min(1, { message: 'Thời gian học là bắt buộc.' }),
 });
 
 // Schema cho việc tạo lớp học
@@ -39,10 +27,7 @@ export const CreateClassBody = z.object({
         .min(1, { message: 'Số học viên tối đa phải lớn hơn 0.' })
         .max(30, { message: 'Số học viên tối đa không được vượt quá 30.' }),
     schedule: ScheduleSchema,
-    linkMeet: z
-        .string()
-        .min(1, { message: 'Link Meet là bắt buộc.' })
-        .url('Link Meet phải là một URL hợp lệ (e.g., https://meet.google.com/abc-xyz).'),
+    linkMeet: z.string().min(1, { message: 'Meeting link là bắt buộc.' }),
 });
 
 export type CreateClassBodyType = z.infer<typeof CreateClassBody>;
