@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-// import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -44,276 +43,272 @@ interface ResultCodeInfo {
 const resultCodes: ResultCodeInfo[] = [
     {
         code: '0',
-        description: 'Thành công.',
+        description: 'Success.',
         finalStatus: true,
         recommendedActions: '',
         type: 'Success',
     },
     {
         code: '10',
-        description: 'Hệ thống đang được bảo trì.',
+        description: 'System is under maintenance.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng quay lại sau khi bảo trì được hoàn tất.',
+        recommendedActions: 'Please try again after maintenance is complete.',
         type: 'System error',
     },
     {
         code: '11',
-        description: 'Truy cập bị từ chối.',
+        description: 'Access denied.',
         finalStatus: false,
         recommendedActions:
-            'Cấu hình tài khoản doanh nghiệp không cho phép truy cập. Vui lòng xem lại các thông tin đăng ký và cấu hình trên M4B, hoặc liên hệ trực tiếp với MoMo để được điều chỉnh.',
+            'Your business account configuration does not allow access. Please review your registration and configuration details on M4B, or contact MoMo directly for adjustments.',
         type: 'System error',
     },
     {
         code: '12',
-        description: 'Phiên bản API không được hỗ trợ cho yêu cầu này.',
+        description: 'API version not supported for this request.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng nâng cấp lên phiên bản mới nhất của cổng thanh toán, vì phiên bản bạn đang truy cập hiện không còn được hỗ trợ.',
+            'Please upgrade to the latest version of the payment gateway, as the version you are accessing is no longer supported.',
         type: 'System error',
     },
     {
         code: '13',
-        description: 'Xác thực doanh nghiệp thất bại.',
+        description: 'Business authentication failed.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng kiểm tra thông tin kết nối, bao gồm cả chữ ký mà bạn đang sử dụng, và đối chiếu với các thông tin được cung cấp từ M4B.',
+            'Please check your connection details, including the signature you are using, and verify them against the information provided by M4B.',
         type: 'Merchant error',
     },
     {
         code: '20',
-        description: 'Yêu cầu sai định dạng.',
+        description: 'Invalid request format.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng kiểm tra định dạng của yêu cầu, các biến thể, hoặc tham số còn thiếu.',
+            'Please check the format of your request, including any missing variables or parameters.',
         type: 'Merchant error',
     },
     {
         code: '21',
-        description: 'Yêu cầu bị từ chối vì số tiền giao dịch không hợp lệ.',
+        description: 'Request rejected due to invalid transaction amount.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng kiểm tra số tiền hợp lệ và thực hiện lại yêu cầu.',
+        recommendedActions: 'Please verify the transaction amount and resubmit the request.',
         type: 'Merchant error',
     },
     {
         code: '22',
-        description: 'Số tiền giao dịch không hợp lệ.',
+        description: 'Invalid transaction amount.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng kiểm tra nếu số tiền thanh toán nằm trong giới hạn quy định của yêu cầu thanh toán này. Đối với yêu cầu dạng capture, hãy kiểm tra số tiền capture có bằng với số tiền đã được xác nhận trước đó hay không.',
+            'Please ensure the payment amount is within the allowed limits for this transaction. For capture requests, verify that the capture amount matches the previously confirmed amount.',
         type: 'Merchant error',
     },
     {
         code: '40',
-        description: 'RequestId bị trùng.',
+        description: 'Duplicate RequestId.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng thử lại với một requestId khác.',
+        recommendedActions: 'Please try again with a different RequestId.',
         type: 'Merchant error',
     },
     {
         code: '41',
-        description: 'OrderId bị trùng.',
+        description: 'Duplicate OrderId.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng truy vấn trạng thái của orderId này, hoặc thử lại với một orderId khác.',
+            'Please check the status of this OrderId or try again with a different OrderId.',
         type: 'Merchant error',
     },
     {
         code: '42',
-        description: 'OrderId không hợp lệ hoặc không được tìm thấy.',
+        description: 'OrderId is invalid or not found.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng thử lại với một orderId khác.',
+        recommendedActions: 'Please try again with a different OrderId.',
         type: 'Merchant error',
     },
     {
         code: '43',
-        description: 'Yêu cầu bị từ chối vì xung đột trong quá trình xử lý giao dịch.',
+        description: 'Request rejected due to conflict during transaction processing.',
         finalStatus: false,
         recommendedActions:
-            'Trước khi thử lại, vui lòng kiểm tra nếu có một giao dịch khác đang được xử lý có thể hạn chế yêu cầu này được tiếp nhận, hoặc orderId được sử dụng không phù hợp với yêu cầu này.',
+            'Before retrying, please check if another transaction in progress might be restricting this request, or if the OrderId is not suitable for this request.',
         type: 'Merchant error',
     },
     {
         code: '45',
-        description: 'Trùng ItemId.',
+        description: 'Duplicate ItemId.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng kiểm tra và thử lại yêu cầu với ItemId duy nhất.',
+        recommendedActions: 'Please verify and resubmit the request with a unique ItemId.',
         type: 'Merchant error',
     },
     {
         code: '47',
-        description:
-            'Yêu cầu bị từ chối vì thông tin không hợp lệ trong danh sách dữ liệu khả dụng.',
+        description: 'Request rejected due to invalid information in the available data list.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng kiểm tra và thử lại với yêu cầu khác.',
+        recommendedActions: 'Please verify and resubmit with a different request.',
         type: 'System error',
     },
     {
         code: '98',
-        description: 'QR Code tạo không thành công. Vui lòng thử lại sau.',
+        description: 'Failed to generate QR Code. Please try again later.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng thử lại với yêu cầu khác.',
+        recommendedActions: 'Please try again with a different request.',
         type: 'System error',
     },
     {
         code: '99',
-        description: 'Lỗi không xác định.',
+        description: 'Unknown error.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'System error',
     },
     {
         code: '1000',
-        description: 'Giao dịch đã được khởi tạo, chờ người dùng xác nhận thanh toán.',
+        description: 'Transaction initiated, awaiting user payment confirmation.',
         finalStatus: false,
         recommendedActions:
-            'Giao dịch vẫn đang chờ người dùng xác nhận thanh toán; trạng thái của giao dịch sẽ được tự động thay đổi ngay sau khi người dùng xác nhận hoặc hủy thanh toán.',
+            'The transaction is still pending user confirmation; the transaction status will automatically update once the user confirms or cancels the payment.',
         type: 'Pending',
     },
     {
         code: '1001',
-        description: 'Giao dịch thanh toán thất bại do tài khoản người dùng không đủ tiền.',
+        description: 'Payment transaction failed due to insufficient funds in the user’s account.',
         finalStatus: true,
         recommendedActions: '',
         type: 'Merchant error',
     },
     {
         code: '1002',
-        description: 'Giao dịch bị từ chối do nhà phát hành tài khoản thanh toán.',
+        description: 'Transaction rejected by the payment account issuer.',
         finalStatus: true,
         recommendedActions:
-            'Sự từ chối xảy ra khi thẻ được dùng để thanh toán hiện không còn khả dụng, hoặc kết nối đến hệ thống của nhà phát hành thẻ bị gián đoạn. Vui lòng tạm thời sử dụng phương thức thanh toán khác.',
+            'The rejection occurs when the card used for payment is no longer valid, or the connection to the issuer’s system is interrupted. Please use a different payment method temporarily.',
         type: 'User error',
     },
     {
         code: '1003',
-        description: 'Giao dịch bị đã bị hủy.',
+        description: 'Transaction has been canceled.',
         finalStatus: true,
         recommendedActions:
-            'Giao dịch bị hủy bởi doanh nghiệp hoặc bởi trình xử lý timeout của MoMo. Vui lòng đánh dấu giao dịch này đã bị hủy (giao dịch thất bại).',
+            'The transaction was canceled by the merchant or by MoMo’s timeout process. Please mark this transaction as canceled (failed transaction).',
         type: 'Merchant error',
     },
     {
         code: '1004',
-        description:
-            'Giao dịch thất bại do số tiền thanh toán vượt quá hạn mức thanh toán của người dùng.',
+        description: 'Transaction failed due to exceeding the user’s payment limit.',
         finalStatus: true,
-        recommendedActions:
-            'Vui lòng đánh dấu giao dịch này thất bại, và thử lại vào một khoảng thời gian khác.',
+        recommendedActions: 'Please mark this transaction as failed and try again later.',
         type: 'User error',
     },
     {
         code: '1005',
-        description: 'Giao dịch thất bại do url hoặc QR code đã hết hạn.',
+        description: 'Transaction failed due to expired URL or QR code.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng gửi lại một yêu cầu thanh toán khác.',
+        recommendedActions: 'Please submit a new payment request.',
         type: 'System error',
     },
     {
         code: '1006',
-        description: 'Giao dịch thất bại do người dùng đã từ chối xác nhận thanh toán.',
+        description: 'Transaction failed because the user declined to confirm the payment.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng gửi lại một yêu cầu thanh toán khác.',
+        recommendedActions: 'Please submit a new payment request.',
         type: 'User error',
     },
     {
         code: '1007',
-        description:
-            'Giao dịch bị từ chối vì tài khoản không tồn tại hoặc đang ở trạng thái ngưng hoạt động.',
+        description: 'Transaction rejected because the account does not exist or is inactive.',
         finalStatus: true,
         recommendedActions:
-            'Vui lòng đảm bảo trạng thái tài khoản phải được kích hoạt/ đã xác thực trước khi thực hiện lại hoặc liên hệ MoMo để được hỗ trợ.',
+            'Please ensure the account is activated/verified before retrying, or contact MoMo for support.',
         type: 'System error',
     },
     {
         code: '1017',
-        description: 'Giao dịch bị hủy bởi đối tác.',
+        description: 'Transaction canceled by the partner.',
         finalStatus: true,
         recommendedActions: '',
         type: 'Merchant error',
     },
     {
         code: '1026',
-        description: 'Giao dịch bị hạn chế theo thể lệ chương trình khuyến mãi.',
+        description: 'Transaction restricted due to promotional program rules.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'System error',
     },
     {
         code: '1080',
         description:
-            'Giao dịch hoàn tiền thất bại trong quá trình xử lý. Vui lòng thử lại trong khoảng thời gian ngắn, tốt hơn là sau một giờ.',
+            'Refund transaction failed during processing. Please try again shortly, preferably after an hour.',
         finalStatus: true,
         recommendedActions:
-            'Vui lòng kiểm tra nếu orderId hoặc transId được dùng trong yêu cầu này là chính xác, sau đó thử lại yêu cầu hoàn tiền (khuyến khích thử lại sau một giờ đối với giao dịch thanh toán được thực hiện hơn một tháng trước).',
+            'Please verify if the OrderId or TransId used in this request is correct, then retry the refund request (preferably after an hour for transactions older than one month).',
         type: 'Merchant error',
     },
     {
         code: '1081',
         description:
-            'Giao dịch hoàn tiền bị từ chối. Giao dịch thanh toán ban đầu có thể đã được hoàn.',
+            'Refund transaction rejected. The original payment may have already been refunded.',
         finalStatus: true,
         recommendedActions:
-            'Vui lòng kiểm tra nếu giao dịch thanh toán ban đầu đã được hoàn thành công, hoặc số tiền hoàn vượt quá số tiền cho phép hoàn của giao dịch thanh toán ban đầu.',
+            'Please check if the original payment was successfully refunded, or if the refund amount exceeds the allowable refund amount for the original payment.',
         type: 'Merchant error',
     },
     {
         code: '1088',
-        description:
-            'Giao dịch hoàn tiền bị từ chối. Giao dịch thanh toán ban đầu không được hỗ trợ hoàn tiền.',
+        description: 'Refund transaction rejected. The original payment does not support refunds.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'Merchant error',
     },
     {
         code: '2019',
-        description: 'Yêu cầu bị từ chối vì orderGroupId không hợp lệ.',
+        description: 'Request rejected due to invalid OrderGroupId.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'Merchant error',
     },
     {
         code: '4001',
-        description: 'Giao dịch bị từ chối do tài khoản người dùng đang bị hạn chế.',
+        description: 'Transaction rejected because the user’s account is restricted.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'User error',
     },
     {
         code: '4002',
-        description: 'Giao dịch bị từ chối do tài khoản người dùng chưa được xác thực với C06.',
+        description: 'Transaction rejected because the user’s account is not verified with C06.',
         finalStatus: true,
-        recommendedActions: 'Người dùng cần cập nhật sinh trắc học qua NFC để được phép giao dịch.',
+        recommendedActions:
+            'The user needs to update biometrics via NFC to proceed with transactions.',
         type: 'User error',
     },
     {
         code: '4100',
-        description: 'Giao dịch thất bại do người dùng không đăng nhập thành công.',
+        description: 'Transaction failed because the user did not log in successfully.',
         finalStatus: true,
         recommendedActions: '',
         type: 'User error',
     },
     {
         code: '7000',
-        description: 'Giao dịch đang được xử lý.',
+        description: 'Transaction is being processed.',
         finalStatus: false,
-        recommendedActions: 'Vui lòng chờ giao dịch được xử lý hoàn tất.',
+        recommendedActions: 'Please wait for the transaction to complete processing.',
         type: 'Pending',
     },
     {
         code: '7002',
-        description: 'Giao dịch đang được xử lý bởi nhà cung cấp loại hình thanh toán.',
+        description: 'Transaction is being processed by the payment method provider.',
         finalStatus: false,
         recommendedActions:
-            'Vui lòng chờ giao dịch được xử lý. Kết quả giao dịch sẽ được thông báo ngay khi được xử lý hoàn tất.',
+            'Please wait for the transaction to be processed. The transaction result will be notified once processing is complete.',
         type: 'Pending',
     },
     {
         code: '9000',
-        description: 'Giao dịch đã được xác nhận thành công.',
+        description: 'Transaction successfully confirmed.',
         finalStatus: false,
         recommendedActions:
-            'Đối với thanh toán 1 bước (autoCapture=1), đây có thể xem như giao dịch thanh toán đã thành công. Đối với thanh toán 2 bước (autoCapture=0), vui lòng thực hiện tiếp yêu cầu capture hoặc cancel. Đối với liên kết, vui lòng tiến hành yêu cầu lấy recurring token.',
+            'For one-step payments (autoCapture=1), this can be considered a successful payment. For two-step payments (autoCapture=0), please proceed with a capture or cancel request. For tokenization, please proceed with a recurring token request.',
         type: 'Pending',
     },
 ];
@@ -346,15 +341,15 @@ export default function MoMoCallbackPage() {
     if (isLoading || !params) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-                <Card className="w-full max-w-md shadow-sm rounded-lg">
+                <Card className="w-full max-w-md shadow-md rounded-xl border border-gray-200 dark:border-gray-700">
                     <CardHeader className="text-center space-y-4">
                         <Loader2 className="w-12 h-12 mx-auto text-blue-600 animate-spin" />
-                        <CardTitle className="text-2xl font-semibold">
-                            Đang xử lý thanh toán...
+                        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                            Processing Payment...
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="text-center text-gray-500">
-                        <p>Vui lòng chờ trong khi chúng tôi xác nhận giao dịch của bạn</p>
+                    <CardContent className="text-center text-gray-600 dark:text-gray-400">
+                        <p>Please wait while we confirm your transaction.</p>
                     </CardContent>
                 </Card>
             </div>
@@ -363,9 +358,9 @@ export default function MoMoCallbackPage() {
 
     const result = resultCodes.find((rc) => rc.code === params.resultCode) || {
         code: params.resultCode,
-        description: 'Mã lỗi không xác định.',
+        description: 'Unknown error code.',
         finalStatus: true,
-        recommendedActions: 'Vui lòng liên hệ MoMo để biết thêm chi tiết.',
+        recommendedActions: 'Please contact MoMo for more details.',
         type: 'Unknown',
     };
 
@@ -374,10 +369,10 @@ export default function MoMoCallbackPage() {
     const isError = !isSuccess && !isPending;
 
     const statusColor = isSuccess
-        ? 'bg-green-100 border-green-500 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+        ? 'bg-green-50 border-green-500 text-green-800 dark:bg-green-900/30 dark:border-green-600 dark:text-green-300'
         : isError
-          ? 'bg-red-100 border-red-500 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-          : 'bg-yellow-100 border-yellow-500 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+          ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-900/30 dark:border-red-600 dark:text-red-300'
+          : 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-600 dark:text-yellow-300';
 
     const statusIcon = isSuccess ? (
         <CheckCircle2 className="w-6 h-6" />
@@ -390,17 +385,19 @@ export default function MoMoCallbackPage() {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
-                <Card className="overflow-hidden shadow-sm">
-                    <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b">
+                <Card className="overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+                    <CardHeader className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-semibold">
-                                Kết quả thanh toán
+                            <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                                Payment Result
                             </CardTitle>
                             <div className="flex items-center space-x-2">
-                                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    Mã giao dịch:
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    Transaction ID:
                                 </span>
-                                <span className="text-sm font-mono">{params.transId || 'N/A'}</span>
+                                <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
+                                    {params.transId || 'N/A'}
+                                </span>
                             </div>
                         </div>
                     </CardHeader>
@@ -412,15 +409,15 @@ export default function MoMoCallbackPage() {
                             <div>
                                 <h3 className="text-lg font-semibold mb-1">
                                     {isSuccess
-                                        ? 'Thanh toán thành công'
+                                        ? 'Payment Successful'
                                         : isError
-                                          ? 'Thanh toán thất bại'
-                                          : 'Thanh toán đang xử lý'}
+                                          ? 'Payment Failed'
+                                          : 'Payment Processing'}
                                 </h3>
                                 <p className="text-sm">{decodeURIComponent(params.message)}</p>
                                 {result.recommendedActions && (
                                     <div className="mt-2 text-sm">
-                                        <p className="font-medium">Hướng dẫn:</p>
+                                        <p className="font-medium">Recommended Actions:</p>
                                         <p>{result.recommendedActions}</p>
                                     </div>
                                 )}
@@ -429,23 +426,29 @@ export default function MoMoCallbackPage() {
 
                         {/* Payment Details */}
                         <div className="space-y-4">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-300">
-                                Chi tiết giao dịch
+                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                                Transaction Details
                             </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="flex items-center">
-                                    <Package className="w-5 h-5 mr-2 text-gray-400" />
+                                    <Package className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Mã đơn hàng</p>
-                                        <p className="font-medium">{params.orderId}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Order ID
+                                        </p>
+                                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                                            {params.orderId}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center">
-                                    <DollarSign className="w-5 h-5 mr-2 text-gray-400" />
+                                    <DollarSign className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Số tiền</p>
-                                        <p className="font-medium">
-                                            {new Intl.NumberFormat('vi-VN', {
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Amount
+                                        </p>
+                                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                                            {new Intl.NumberFormat('en-US', {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             }).format(Number(params.amount))}
@@ -453,21 +456,29 @@ export default function MoMoCallbackPage() {
                                     </div>
                                 </div>
                                 <div className="flex items-center">
-                                    <Info className="w-5 h-5 mr-2 text-gray-400" />
+                                    <Info className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Thông tin</p>
-                                        <p className="font-medium">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Information
+                                        </p>
+                                        <p className="font-medium text-gray-900 dark:text-gray-100">
                                             {decodeURIComponent(params.orderInfo)}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center">
-                                    <Clock className="w-5 h-5 mr-2 text-gray-400" />
+                                    <Clock className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Thời gian</p>
-                                        <p className="font-medium">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Time
+                                        </p>
+                                        <p className="font-medium text-gray-900 dark:text-gray-100">
                                             {new Date(Number(params.responseTime)).toLocaleString(
-                                                'vi-VN',
+                                                'en-US',
+                                                {
+                                                    dateStyle: 'medium',
+                                                    timeStyle: 'short',
+                                                },
                                             )}
                                         </p>
                                     </div>
@@ -477,26 +488,40 @@ export default function MoMoCallbackPage() {
 
                         {/* Technical Details */}
                         <div className="space-y-2">
-                            <h4 className="font-medium text-gray-700 dark:text-gray-300">
-                                Thông tin kỹ thuật
+                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                                Technical Information
                             </h4>
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <p className="text-gray-500">Mã kết quả</p>
-                                        <p className="font-mono">{result.code}</p>
+                                        <p className="text-gray-600 dark:text-gray-400">
+                                            Result Code
+                                        </p>
+                                        <p className="font-mono text-gray-900 dark:text-gray-100">
+                                            {result.code}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-gray-500">Loại lỗi</p>
-                                        <p>{result.type}</p>
+                                        <p className="text-gray-600 dark:text-gray-400">
+                                            Error Type
+                                        </p>
+                                        <p className="text-gray-900 dark:text-gray-100">
+                                            {result.type}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-gray-500">Phương thức</p>
-                                        <p>{params.payType || 'N/A'}</p>
+                                        <p className="text-gray-600 dark:text-gray-400">
+                                            Payment Method
+                                        </p>
+                                        <p className="text-gray-900 dark:text-gray-100">
+                                            {params.payType || 'N/A'}
+                                        </p>
                                     </div>
                                     <div>
-                                        <p className="text-gray-500">Đối tác</p>
-                                        <p>{params.partnerCode}</p>
+                                        <p className="text-gray-600 dark:text-gray-400">Partner</p>
+                                        <p className="text-gray-900 dark:text-gray-100">
+                                            {params.partnerCode}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -505,21 +530,35 @@ export default function MoMoCallbackPage() {
                         {/* Actions */}
                         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
                             {isError && (
-                                <Button variant="outline" asChild>
-                                    <Link href="/payment">Thử lại thanh toán</Link>
+                                <Button
+                                    variant="outline"
+                                    asChild
+                                    className="rounded-lg text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors"
+                                >
+                                    <Link href="/payment">Retry Payment</Link>
                                 </Button>
                             )}
-                            <Button asChild>
-                                <Link href="/">Về trang chủ</Link>
+                            <Button
+                                asChild
+                                className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                            >
+                                <Link href="/">Back to Home</Link>
                             </Button>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Footer Note */}
-                <div className="mt-6 text-center text-sm text-gray-500">
+                <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                     <p>
-                        Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi
+                        If you have any questions, please contact our support team at{' '}
+                        <a
+                            href="mailto:support@example.com"
+                            className="text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                            admin@example.com
+                        </a>
+                        .
                     </p>
                 </div>
             </div>
