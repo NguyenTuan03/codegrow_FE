@@ -34,6 +34,7 @@ interface Course {
         role: string;
         email: string;
     };
+
     isDeleted?: boolean;
     enrolledCount?: number;
 }
@@ -215,6 +216,7 @@ export default function CourseDetailPage() {
                             </Badge>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                 Created by {courseData.author.fullName}
+                                {/* Created by {courseData.author} */}
                             </span>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                 {courseData.enrolledCount || 0} students enrolled

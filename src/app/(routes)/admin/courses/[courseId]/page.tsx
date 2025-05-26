@@ -29,6 +29,7 @@ interface Course {
         role: string;
         email: string;
     };
+    // author :  string;
     isDeleted?: boolean;
     enrolledCount?: number;
 }

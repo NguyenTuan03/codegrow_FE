@@ -19,6 +19,7 @@ interface Course {
         email: string;
         role: string;
     };
+    // author :  string;
     category: { _id: string; name: string } | null;
     createdAt: string;
 }
@@ -111,7 +112,8 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                     </div>
                     <div className="flex items-center gap-2">
                         <BookOpen className="w-5 h-5 text-[#657ED4]" />
-                        <span>Instructor: {course.author?.fullName || 'Unknown'}</span>
+                        <span>Author: {course.author?.fullName || 'Unknown'}</span>
+                        {/* <span>Instructor: {course.author || 'Unknown'}</span> */}
                     </div>
                     <div className="flex items-center gap-2">
                         <span>Category: {course.category?.name || 'Uncategorized'}</span>

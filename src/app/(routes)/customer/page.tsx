@@ -260,7 +260,9 @@ const HomePage = () => {
                                                     {course.title}
                                                 </div>
                                                 <div className="text-[#657ED4] dark:text-blue-300 text-sm mt-2">
-                                                    {course.description}
+                                                    {course.description.length > 100
+                                                        ? course.description.slice(0, 100) + '...'
+                                                        : course.description}
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2">

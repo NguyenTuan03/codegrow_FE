@@ -1,26 +1,17 @@
 'use client';
 import React from 'react';
-import {
-    Calendar,
-    Home,
-    MessagesSquare,
-    Settings,
-    ThumbsUp,
-    Users,
-    ClipboardList,
-    CircleSlash,
-} from 'lucide-react';
+import { Calendar, Home, MessagesSquare, Users, ClipboardList, CircleSlash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
 
 const menuItems = [
     { label: 'Home', icon: <Home className="w-5 h-5" />, href: '/qaqc' },
     { label: 'Calendar', icon: <Calendar className="w-5 h-5" />, href: '/qaqc/calendar' },
     { label: 'Mentor Manage', icon: <ClipboardList className="w-5 h-5" />, href: '/qaqc/manage' },
-    { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
+    // { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
     { label: 'Services', icon: <Users className="w-5 h-5" />, href: '/qaqc/services' },
     { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
     { label: 'Courses', icon: <CircleSlash className="w-5 h-5" />, href: '/qaqc/courses' },
-    { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
+    // { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
 ];
 
 const QAQCSidebar = () => {

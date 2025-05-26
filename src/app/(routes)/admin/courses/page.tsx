@@ -49,6 +49,7 @@ interface Course {
     price: number;
     enrolledCount: number;
     author: { _id: string; fullName: string; email: string; role: string };
+    // author :  string;
     category: string | Category;
     createdAt: string;
     lessons: number;
