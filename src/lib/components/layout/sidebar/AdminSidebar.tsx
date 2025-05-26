@@ -1,18 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import {
-    LayoutDashboard,
-    Users,
-    User,
-    Settings,
-    Folder,
-    Key,
-    Plus,
-    Eye,
-    Calendar,
-    Contact,
-    Book,
-} from 'lucide-react';
+import { Users, User, Settings, Eye, Contact, Book } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Import usePathname
 import {
@@ -90,60 +78,6 @@ export const AdminSidebar = () => {
                             <AccordionContent className="pb-0">
                                 <SidebarGroupContent>
                                     <SidebarMenu className="pl-2 space-y-1">
-                                        {/* Users */}
-                                        <AccordionItem value="users" className="border-b-0">
-                                            <AccordionTrigger
-                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ${
-                                                    isActive('/admin/overviewuser', true) ||
-                                                    isActive('/admin/adduser', true)
-                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                                                        : ''
-                                                }`}
-                                            >
-                                                <div className="flex w-full items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-base dark:text-gray-300">
-                                                        <Users className="h-4 w-4" />
-                                                        Users
-                                                    </div>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="pb-0 pl-6">
-                                                <SidebarMenu>
-                                                    <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/overviewuser"
-                                                                className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive('/admin/overviewuser')
-                                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                <Eye className="h-5 w-5" />
-                                                                Overview
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
-
-                                                    <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/adduser"
-                                                                className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive('/admin/adduser')
-                                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                <Plus className="h-5 w-5" />
-                                                                Add User
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
-                                                </SidebarMenu>
-                                            </AccordionContent>
-                                        </AccordionItem>
-
                                         {/* User Profile */}
                                         <AccordionItem value="user-profile" className="border-b-0">
                                             <AccordionTrigger
@@ -339,91 +273,6 @@ export const AdminSidebar = () => {
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
-
-                                        {/* Projects */}
-                                        <AccordionItem value="projects" className="border-b-0">
-                                            <AccordionTrigger
-                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ${
-                                                    isActive('/admin/overviewproject', true) ||
-                                                    isActive('/admin/calender', true)
-                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                                                        : ''
-                                                }`}
-                                            >
-                                                <div className="flex w-full items-center justify-between">
-                                                    <div className="flex items-center gap-2 text-base dark:text-gray-300">
-                                                        <Folder className="h-4 w-4" />
-                                                        Projects
-                                                    </div>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="pb-0 pl-6">
-                                                <SidebarMenu>
-                                                    <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/overviewproject"
-                                                                className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive(
-                                                                        '/admin/overviewproject',
-                                                                    )
-                                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                <Eye className="h-5 w-5" />
-                                                                Overview
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
-                                                    <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/calender"
-                                                                className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive('/admin/calender')
-                                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                <Calendar className="h-5 w-5" />
-                                                                Calendar
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem>
-                                                </SidebarMenu>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </SidebarMenu>
-                                </SidebarGroupContent>
-                            </AccordionContent>
-                        </AccordionItem>
-
-                        {/* Authentication */}
-                        <AccordionItem value="auth" className="border-b-0">
-                            <AccordionTrigger className="px-4 py-2 text-muted-foreground dark:text-gray-400 text-xs font-medium uppercase tracking-wide hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                                <div className="flex w-full items-center justify-between">
-                                    Authentication
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="pb-0">
-                                <SidebarGroupContent>
-                                    <SidebarMenu className="pl-2">
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton asChild>
-                                                <Link
-                                                    href="#"
-                                                    className={`flex items-center gap-2 px-2 py-1 text-base dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                        isActive('#')
-                                                            ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                            : ''
-                                                    }`}
-                                                >
-                                                    <Key className="h-5 w-5" />
-                                                    API Keys
-                                                </Link>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
                                     </SidebarMenu>
                                 </SidebarGroupContent>
                             </AccordionContent>
@@ -433,25 +282,6 @@ export const AdminSidebar = () => {
 
                 {/* Separator */}
                 <SidebarSeparator className="my-4 border-gray-200 dark:border-gray-700" />
-
-                {/* Layouts Section */}
-                <SidebarMenu className="pl-2">
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <Link
-                                href="#"
-                                className={`flex items-center gap-2 px-2 py-1 text-base dark:text-gray-300 dark:hover:text-blue-400 ${
-                                    isActive('#')
-                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                        : ''
-                                }`}
-                            >
-                                <LayoutDashboard className="h-5 w-5" />
-                                Layouts
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
             </SidebarContent>
         </Sidebar>
     );

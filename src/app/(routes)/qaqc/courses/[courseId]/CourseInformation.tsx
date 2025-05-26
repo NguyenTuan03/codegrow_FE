@@ -14,6 +14,7 @@ interface Course {
         role: string;
         email: string;
     };
+    // author :  string;
     isDeleted?: boolean;
     enrolledCount?: number;
 }
@@ -61,6 +62,7 @@ export default function CourseInformation({ courseData }: CourseInformationProps
                     <h3 className="font-medium text-[#657ED4] dark:text-[#5AD3AF]">Author</h3>
                     <p className="text-gray-600 dark:text-gray-400">
                         {courseData.author?.fullName}
+                        {/* {courseData.author} */}
                     </p>
                 </div>
                 <div>

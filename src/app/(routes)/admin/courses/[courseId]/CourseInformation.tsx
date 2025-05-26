@@ -23,6 +23,7 @@ interface Course {
         role: string;
         email: string;
     };
+    // author :  string;
     isDeleted?: boolean;
     enrolledCount?: number;
 }
@@ -46,6 +47,7 @@ interface CourseInformationProps {
     setFormData: React.Dispatch<React.SetStateAction<Course | null>>;
     categories: Category[];
     author: Mentor[];
+    // author :  string;
 }
 
 export default function CourseInformation({
@@ -214,6 +216,7 @@ export default function CourseInformation({
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400">
                                 {courseData.author?.fullName}
+                                {/* {courseData.author} */}
                             </p>
                         </div>
                         <div>
