@@ -84,10 +84,10 @@ export default function ContactForm() {
     }
 
     const inputStyle =
-        'rounded-full bg-[#6ee7b7] dark:bg-[#657ED4] placeholder-white dark:placeholder-gray-200 text-white dark:text-white font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]';
+        'rounded-full bg-[#6ee7b7] dark:bg-[#EEF1EF] placeholder-black dark:placeholder-black-200 text-black dark:text-black font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]';
 
     return (
-        <div className="bg-[#EEF1EF] dark:bg-[#1f2937] p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
+        <div className="  p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
             <Image
                 src="/image 14.png"
                 alt="Contact illustration"

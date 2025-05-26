@@ -3,16 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import {
-    Home,
-    Calendar,
-    BookOpen,
-    BarChart2,
-    Settings,
-    Mail,
-    HelpCircle,
-    ClipboardList,
-} from 'lucide-react';
+import { Home, Calendar, BookOpen, BarChart2, Mail, HelpCircle, ClipboardList } from 'lucide-react';
 import {
     Sidebar,
     SidebarContent,
@@ -124,7 +115,7 @@ export default function MentorSidebar() {
 
     const otherItems = [
         { href: '/mentor/analytics', icon: BarChart2, label: 'Analytics' },
-        { href: '/mentor/settings', icon: Settings, label: 'Settings' },
+        // { href: '/mentor/settings', icon: Settings, label: 'Settings' },
         { href: '/mentor/messages', icon: Mail, label: 'Messages', badge: 3 },
         { href: '/mentor/help', icon: HelpCircle, label: 'Help Center' },
     ];
