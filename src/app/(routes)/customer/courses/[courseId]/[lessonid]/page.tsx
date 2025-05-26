@@ -195,7 +195,7 @@ export default function LessonDetail() {
 
     if (!lesson) {
         return (
-            <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="flex flex-col items-center justify-center h-screen bg-white dark:bg-gray-900">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
                     <Info className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300">
@@ -218,7 +218,7 @@ export default function LessonDetail() {
     return (
         <div className="mx-auto px-4 py-8 max-w-6xl">
             {/* Lesson Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b dark:border-gray-700">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b  dark:border-gray-700">
                 <div className="flex items-center">
                     <Button
                         variant="ghost"

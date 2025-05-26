@@ -290,7 +290,7 @@ export const AdminHeader = () => {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <DropdownMenu modal={false}>
+                    {/* <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -311,7 +311,7 @@ export const AdminHeader = () => {
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                     <ModeToggle />
                 </div>
             </div>

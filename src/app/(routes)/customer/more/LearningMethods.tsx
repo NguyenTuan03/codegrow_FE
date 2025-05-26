@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function LearningMethods() {
     return (
-        <div className="space-y-12 ml-80  px-6 py-10 bg-[#EEF1EF] dark:bg-gray-900 transition-colors duration-300 md:px-16">
+        <div className="space-y-12 ml-80  px-6 py-10 bg-white dark:bg-gray-900 transition-colors duration-300 md:px-16">
             {/* One-on-One Learning */}
             <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">

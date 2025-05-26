@@ -68,7 +68,7 @@ export default function MentorCourses() {
     };
 
     return (
-        <div className="space-y-16 px-6 py-10 bg-[#EEF1EF] dark:bg-gray-900 transition-colors duration-300 md:px-16">
+        <div className="space-y-16 px-6 py-10 bg-white dark:bg-gray-900 transition-colors duration-300 md:px-16">
             <HeroSection />
             <LearningMethods />
             <hr className="border-t border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />

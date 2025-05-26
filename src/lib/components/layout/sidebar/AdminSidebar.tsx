@@ -92,7 +92,7 @@ export const AdminSidebar = () => {
                                                 <div className="flex w-full items-center justify-between">
                                                     <div className="flex items-center gap-2 text-base dark:text-gray-300">
                                                         <User className="h-4 w-4" />
-                                                        User Profile
+                                                        User
                                                     </div>
                                                 </div>
                                             </AccordionTrigger>
@@ -113,7 +113,7 @@ export const AdminSidebar = () => {
                                                             </Link>
                                                         </SidebarMenuButton>
                                                     </SidebarMenuItem>
-                                                    <SidebarMenuItem>
+                                                    {/* <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
                                                                 href="/admin/users"
@@ -127,7 +127,7 @@ export const AdminSidebar = () => {
                                                                 Users
                                                             </Link>
                                                         </SidebarMenuButton>
-                                                    </SidebarMenuItem>
+                                                    </SidebarMenuItem> */}
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link

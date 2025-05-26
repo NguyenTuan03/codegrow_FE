@@ -123,7 +123,7 @@ export default function AdminCoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-
+            console.log('Fetched courses:', data);
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -183,22 +183,22 @@ export default function AdminCoursesPage() {
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'published':
-                return 'bg-green-500 hover:bg-green-600 text-white';
-            case 'draft':
-                return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-            case 'archived':
-                return 'bg-gray-500 hover:bg-gray-600 text-white';
-            default:
-                return 'bg-blue-500 hover:bg-blue-600 text-white';
-        }
-    };
+    // const getStatusBadge = (status: string) => {
+    //     switch (status) {
+    //         case 'published':
+    //             return 'bg-green-500 hover:bg-green-600 text-white';
+    //         case 'draft':
+    //             return 'bg-yellow-500 hover:bg-yellow-600 text-white';
+    //         case 'archived':
+    //             return 'bg-gray-500 hover:bg-gray-600 text-white';
+    //         default:
+    //             return 'bg-blue-500 hover:bg-blue-600 text-white';
+    //     }
+    // };
 
     return (
         <div className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-8xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -264,11 +264,11 @@ export default function AdminCoursesPage() {
                                             <div className="relative">
                                                 <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
                                                     <div className="absolute top-2 left-2 space-x-2">
-                                                        <Badge
+                                                        {/* <Badge
                                                             className={`${getStatusBadge(course.status || 'published')} px-3 py-1 text-sm rounded-md shadow-sm`}
                                                         >
                                                             {course.status || 'published'}
-                                                        </Badge>
+                                                        </Badge> */}
                                                         <Badge className="bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
                                                             {typeof course.category === 'object'
                                                                 ? course.category.name

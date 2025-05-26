@@ -147,7 +147,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                         </h3>
                                         <Badge
                                             className={`text-xs ${
-                                                lesson.status === 'published'
+                                                lesson.status === 'done'
                                                     ? 'bg-[#5AD3AF] text-white'
                                                     : 'bg-gray-500 text-white'
                                             }`}

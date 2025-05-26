@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Calendar, Home, MessagesSquare, Users, ClipboardList, CircleSlash } from 'lucide-react';
+import { Calendar, Home, Users, ClipboardList, CircleSlash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
 
 const menuItems = [
@@ -9,7 +9,7 @@ const menuItems = [
     { label: 'Mentor Manage', icon: <ClipboardList className="w-5 h-5" />, href: '/qaqc/manage' },
     // { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
     { label: 'Services', icon: <Users className="w-5 h-5" />, href: '/qaqc/services' },
-    { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
+    // { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
     { label: 'Courses', icon: <CircleSlash className="w-5 h-5" />, href: '/qaqc/courses' },
     // { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
 ];
