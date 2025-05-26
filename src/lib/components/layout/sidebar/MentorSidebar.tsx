@@ -41,14 +41,14 @@ interface ClassItem {
     image?: string;
     bgColor?: string;
     mentor?: string | { _id: string; fullName: string; email: string } | null;
+    course: string;
 }
 
 export default function MentorSidebar() {
     const pathname = usePathname();
-    const [classesItems, setClassesItems] = useState<ClassItem[]>([]);
     const [filteredClasses, setFilteredClasses] = useState<ClassItem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+
     const [loading, setLoading] = useState(true);
     const [showClasses, setShowClasses] = useState(false);
     const limit = 6; // Number of classes per page
@@ -82,9 +82,7 @@ export default function MentorSidebar() {
             const data = await GetClass(page, limit);
             if (data.status === 200 && Array.isArray(data.metadata.classes)) {
                 const fetchedClasses = data.metadata.classes;
-                setClassesItems(fetchedClasses);
                 setCurrentPage(data.metadata.page || 1);
-                setTotalPages(data.metadata.totalPages || 1);
 
                 // Filter classes by mentor ID
                 const mentorClasses = fetchedClasses.filter((classItem: ClassItem) => {
@@ -107,7 +105,6 @@ export default function MentorSidebar() {
                 description: 'Failed to fetch classes',
                 variant: 'destructive',
             });
-            setClassesItems([]);
             setFilteredClasses([]);
             setShowClasses(false);
         } finally {
@@ -209,7 +206,9 @@ export default function MentorSidebar() {
                                                 >
                                                     <Link href={href}>
                                                         <BookOpen className="h-5 w-5 mr-3 text-[#5AD3AF] dark:text-[#5AD3AF]" />
-                                                        <span>{item.title}</span>
+                                                        <span className="truncate">
+                                                            {item.title}
+                                                        </span>
                                                     </Link>
                                                 </SidebarMenuButton>
                                             </SidebarMenuItem>
