@@ -13,7 +13,7 @@ export default function ProfileCustomer() {
 
     interface ProfileData {
         email: string;
-        id: number;
+        _id: string;
         fullName: string;
         role?: string;
         imgUrl?: string;

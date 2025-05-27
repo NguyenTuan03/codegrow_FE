@@ -2,7 +2,7 @@ import httpRequest from '@/lib/util/HttpRequest';
 
 export const UpdateAccount = async (
     token: string,
-    id: number,
+    id: string,
     fullName: string,
     email: string,
     role: string,

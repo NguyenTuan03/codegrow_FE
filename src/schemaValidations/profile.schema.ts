@@ -3,7 +3,7 @@ import z from 'zod';
 export const ProfileRes = z
     .object({
         data: z.object({
-            id: z.number(),
+            _id: z.string(),
             fullName: z.string(),
             email: z.string().email(),
             imgUrl: z.string().url().optional(),

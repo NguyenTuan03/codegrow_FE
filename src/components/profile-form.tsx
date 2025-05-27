@@ -45,7 +45,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
 
         try {
             const token = localStorage.getItem('token') || '';
-            const id = profile.id;
+            const id = profile._id;
             const result = await UpdateAccount(
                 token,
                 id,
