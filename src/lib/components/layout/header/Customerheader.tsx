@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes';
 import { useContext, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bell, History, User2, LogOut, Settings, HelpCircle } from 'lucide-react';
+import { Bell, User2, LogOut, Settings, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -100,12 +100,12 @@ const Customerheader = () => {
             <div className="flex items-center gap-3">
                 {isLoggedIn ? (
                     <>
-                        <Button
+                        {/* <Button
                             className="bg-[#5AD3AF] hover:bg-[#6bbea6] text-white px-4 py-2 text-xs rounded-lg"
                             onClick={() => router.push('/customer/upgrade')}
                         >
                             Upgrade
-                        </Button>
+                        </Button> */}
                         <div className="flex items-center gap-3">
                             <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
@@ -155,13 +155,13 @@ const Customerheader = () => {
                                 align="end"
                                 className="w-56 rounded-lg bg-[#EEF1EF] dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg p-1"
                             >
-                                <DropdownMenuItem
+                                {/* <DropdownMenuItem
                                     onClick={() => router.push('/customer/history')}
                                     className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
                                     <History className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-sm font-medium">History Transaction</span>
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
                                     className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
