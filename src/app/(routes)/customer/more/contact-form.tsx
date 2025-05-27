@@ -15,8 +15,25 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import Image from 'next/image';
 import { RegisterClass } from '@/lib/services/api/registerclass';
+
+// List of a few provinces and cities in Vietnam
+const cities = [
+    { value: 'Hà Nội', label: 'Hà Nội' },
+    { value: 'Hồ Chí Minh', label: 'Hồ Chí Minh' },
+    { value: 'Đà Nẵng', label: 'Đà Nẵng' },
+    { value: 'Hải Phòng', label: 'Hải Phòng' },
+    { value: 'Cần Thơ', label: 'Cần Thơ' },
+    { value: 'Nha Trang', label: 'Nha Trang' },
+];
 
 const formSchema = z.object({
     fullName: z
@@ -30,7 +47,7 @@ const formSchema = z.object({
         .max(15, 'Phone number cannot exceed 15 characters')
         .regex(/^[0-9+]+$/, 'Phone number can only contain numbers and +'),
     note: z.string().max(500, 'Note cannot exceed 500 characters').optional(),
-    city: z.string().max(100, 'City cannot exceed 100 characters'),
+    city: z.string().min(1, 'City is required').max(100, 'City cannot exceed 100 characters'),
 });
 
 type ContactFormValues = z.infer<typeof formSchema>;
@@ -53,7 +70,6 @@ export default function ContactForm() {
         try {
             setIsSubmitting(true);
 
-            // Safely get token from localStorage
             const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
             if (!token) {
@@ -68,16 +84,23 @@ export default function ContactForm() {
                 values.city.trim(),
                 values.note?.trim() || '',
             );
-            console.log('Registration response:', res);
+
             toast({
                 title: 'Success!',
-                description: 'Your registration was submitted successfully',
+                description: res.message || 'Your registration was submitted successfully',
                 variant: 'default',
+                className: 'bg-[#5AD3AF] text-black',
             });
 
             form.reset();
         } catch (error) {
             console.error('Registration error:', error);
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'An unknown error occurred',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-black',
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -87,7 +110,7 @@ export default function ContactForm() {
         'rounded-full bg-[#6ee7b7] dark:bg-[#EEF1EF] placeholder-black dark:placeholder-black-200 text-black dark:text-black font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]';
 
     return (
-        <div className="  p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
+        <div className="p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
             <Image
                 src="/image 14.png"
                 alt="Contact illustration"
@@ -103,7 +126,7 @@ export default function ContactForm() {
                     className="space-y-6 w-full max-w-md mx-auto"
                 >
                     <h3 className="text-xl font-bold text-[#657ED4] dark:text-[#5AD3AF] text-center uppercase">
-                        Register for consultation
+                        Register for Consultation
                     </h3>
 
                     <FormField
@@ -164,6 +187,8 @@ export default function ContactForm() {
                             </FormItem>
                         )}
                     />
+
+                    {/* City Selection with Shadcn Select */}
                     <FormField
                         control={form.control}
                         name="city"
@@ -171,17 +196,31 @@ export default function ContactForm() {
                             <FormItem>
                                 <FormLabel className="sr-only">City</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        className={inputStyle}
-                                        placeholder="City"
-                                        {...field}
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
                                         disabled={isSubmitting}
-                                    />
+                                    >
+                                        <SelectTrigger
+                                            className="w-full rounded-full bg-[#6ee7b7] dark:bg-[#EEF1EF] text-black dark:text-black font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]"
+                                            aria-label="Select City"
+                                        >
+                                            <SelectValue placeholder="Select City" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-[#6ee7b7] dark:bg-[#EEF1EF] text-black dark:text-black">
+                                            {cities.map((city) => (
+                                                <SelectItem key={city.value} value={city.value}>
+                                                    {city.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FormControl>
                                 <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="note"

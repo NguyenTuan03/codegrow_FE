@@ -73,7 +73,20 @@ export default function CreateClassForm() {
             linkMeet: '',
         },
     });
+    // const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
+    //         if (event.target && event.target.files && event.target.files[0]) {
+    //             const file = event.target.files[0];
+    //             const fileName = file.name;
+    //             const fileUrl = await uploadFile(fileName, file);
+
+    //             setPetData(prevData => ({
+    //                 ...prevData,
+    //                 petPhoto: fileUrl,
+    //             }));
+    //             setPreviewImage(fileUrl)
+    //         }
+    //     };
     const fetchCourse = async () => {
         try {
             setCourseLoading(true);
@@ -506,6 +519,21 @@ export default function CreateClassForm() {
                                             Enter a valid meeting link (e.g., Google Meet, Zoom)
                                         </p>
                                     </FormItem>
+                                    //                          <div className="flex flex-col mb-4">
+                                    //     <div className="mb-4">
+                                    //         <label className="form-label label-upload cursor-pointer inline-flex items-center" htmlFor="label-upload">
+                                    //             <FcPlus className="mr-2" /> Ảnh thú cưng
+                                    //         </label>
+                                    //         <input type="file" hidden id="label-upload" onChange={(event) => handleUpload(event)} />
+                                    //     </div>
+                                    //     <div className="flex justify-center items-center">
+                                    //         {previewImage ? (
+                                    //             <img src={previewImage} alt="Preview" className="max-w-full h-auto" />
+                                    //         ) : (
+                                    //             <span>Ảnh thú cưng</span>
+                                    //         )}
+                                    //     </div>
+                                    // </div>
                                 )}
                             />
                             <div className="flex justify-end gap-4 pt-4">

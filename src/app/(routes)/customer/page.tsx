@@ -68,11 +68,7 @@ const HomePage = () => {
             return progress;
         } catch (error) {
             console.error(`Error fetching progress for course ${courseId}:`, error);
-            toast({
-                title: 'Error',
-                description: 'Failed to load course progress. Please try again later.',
-                variant: 'destructive',
-            });
+
             return 0; // Default to 0 if there's an error
         }
     };
@@ -84,11 +80,6 @@ const HomePage = () => {
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
-            toast({
-                title: 'Error',
-                description: 'Failed to fetch categories',
-                variant: 'destructive',
-            });
         }
     };
 
@@ -137,11 +128,7 @@ const HomePage = () => {
             }
         } catch (error: unknown) {
             console.error('Error fetching courses:', error);
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to fetch courses',
-                variant: 'destructive',
-            });
+
             setCourses([]);
         } finally {
             setLoading(false);
