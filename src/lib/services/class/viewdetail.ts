@@ -14,6 +14,7 @@ interface ClassItem {
     maxStudents: number;
     students: User[];
     schedule: Schedule;
+    linkMeet?: string;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -31,9 +32,14 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string };
     createdAt: string;
-    author: string;
+    author: {
+        _id: string;
+        fullName: string;
+        role: string;
+        email: string;
+    };
 }
 
 interface Schedule {

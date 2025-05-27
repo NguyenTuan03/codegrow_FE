@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -16,8 +17,9 @@ import {
     CarouselPrevious,
     CarouselNext,
 } from '@/components/ui/carousel';
-import { BookOpen, X } from 'lucide-react'; // Added X icon for closing chat
+import { BookOpen, X } from 'lucide-react';
 import ChatRealtime from './chatrealtime/page';
+import { GetProgress } from '@/lib/services/api/progress';
 
 interface Category {
     _id: string;
@@ -46,11 +48,34 @@ interface ApiResponse {
 }
 
 const HomePage = () => {
-    const [progress, setProgress] = useState<number>(13);
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [showChat, setShowChat] = useState(false);
+    // Store progress for each course as an object mapping courseId to progress percentage
+    const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
+
+    // Fetch progress for a single course
+    const fetchProgress = async (courseId: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication token is missing');
+            }
+            const response = await GetProgress(token, courseId);
+            console.log(`Progress response for course ${courseId}:`, response);
+            const progress = response.metadata?.progress ?? 0;
+            return progress;
+        } catch (error) {
+            console.error(`Error fetching progress for course ${courseId}:`, error);
+            toast({
+                title: 'Error',
+                description: 'Failed to load course progress. Please try again later.',
+                variant: 'destructive',
+            });
+            return 0; // Default to 0 if there's an error
+        }
+    };
 
     // Fetch categories
     const fetchCategories = async () => {
@@ -88,17 +113,33 @@ const HomePage = () => {
                 });
 
                 setCourses(parsedCourses);
+
+                // Fetch progress for each course
+                const progressPromises = parsedCourses.map(async (course) => {
+                    const progress = await fetchProgress(course._id);
+                    return { courseId: course._id, progress };
+                });
+
+                const progressResults = await Promise.all(progressPromises);
+                const progressMap = progressResults.reduce(
+                    (acc, { courseId, progress }) => {
+                        acc[courseId] = progress;
+                        return acc;
+                    },
+                    {} as { [courseId: string]: number },
+                );
+
+                setCourseProgress(progressMap);
             } else {
                 throw new Error(
                     'No courses found. Please check your connection or try again later.',
                 );
             }
         } catch (error: unknown) {
-            console.error('Lỗi khi lấy khóa học:', error);
+            console.error('Error fetching courses:', error);
             toast({
-                title: 'Lỗi',
-                description:
-                    error instanceof Error ? error.message : 'Không thể lấy danh sách khóa học',
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to fetch courses',
                 variant: 'destructive',
             });
             setCourses([]);
@@ -119,12 +160,6 @@ const HomePage = () => {
         }
     }, [categories]);
 
-    // Progress effect
-    useEffect(() => {
-        const timer = setTimeout(() => setProgress(66), 500);
-        return () => clearTimeout(timer);
-    }, []);
-
     // Toggle chat visibility
     const toggleChat = () => {
         setShowChat((prev) => !prev);
@@ -138,7 +173,7 @@ const HomePage = () => {
     };
 
     return (
-        <div className="px-4 py-8 w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
+        <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                 <div className="md:col-span-8">
                     <h3 className="text-3xl mb-3">Welcome back, customer</h3>
@@ -175,8 +210,15 @@ const HomePage = () => {
                     <div className="flex flex-row items-center">
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4">
-                            <Progress value={progress} className="w-[60%] bg-[#657ED4]" />
-                            <div>{progress} exercises completed</div>
+                            <Progress
+                                value={courses.length > 0 ? courseProgress[courses[0]._id] || 0 : 0}
+                                className="w-[60%] bg-[#657ED4]"
+                            />
+                            <div>
+                                {courses.length > 0
+                                    ? `${courseProgress[courses[0]._id] || 0}% completed`
+                                    : 'No progress available'}
+                            </div>
                         </div>
                     </div>
                     <Card className="bg-[#EEF1EF] dark:bg-gray-700 border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
@@ -227,7 +269,7 @@ const HomePage = () => {
                         </div>
                     ) : courses.length === 0 ? (
                         <div className="text-center text-gray-600 dark:text-gray-400 p-6">
-                            Không có khóa học nào hiện tại.
+                            No courses available at the moment.
                         </div>
                     ) : (
                         <Carousel
@@ -260,7 +302,19 @@ const HomePage = () => {
                                                     {course.title}
                                                 </div>
                                                 <div className="text-[#657ED4] dark:text-blue-300 text-sm mt-2">
-                                                    {course.description}
+                                                    {course.description.length > 100
+                                                        ? course.description.slice(0, 100) + '...'
+                                                        : course.description}
+                                                </div>
+                                                {/* Display Progress for Each Course */}
+                                                <div className="mt-4">
+                                                    <Progress
+                                                        value={courseProgress[course._id] || 0}
+                                                        className="w-full bg-[#657ED4]"
+                                                    />
+                                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                        {courseProgress[course._id] || 0}% completed
+                                                    </div>
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2">

@@ -24,9 +24,16 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string };
     createdAt: string;
-    author: string;
+    author: {
+        _id: string;
+        fullName: string;
+        role: string;
+        email: string;
+    };
+    isDeleted?: boolean;
+    enrolledCount?: number;
 }
 
 interface User {
@@ -82,14 +89,20 @@ export default function ClassDetailPage() {
                 const normalizedData: ClassItem = {
                     ...metadata,
                     students,
-                    course: metadata.course || {
-                        _id: '',
-                        title: 'N/A',
-                        description: '',
-                        price: 0,
-                        category: '',
-                        createdAt: '',
-                        author: '',
+                    course: {
+                        _id: metadata.course?._id || '',
+                        title: metadata.course?.title || 'N/A',
+                        description: metadata.course?.description || '',
+                        price: metadata.course?.price ?? 0,
+
+                        category: metadata.course?.category || { _id: '', name: '' },
+                        createdAt: metadata.course?.createdAt || '',
+                        author: metadata.course?.author || {
+                            _id: '',
+                            fullName: '',
+                            email: '',
+                            role: '',
+                        },
                     },
                     mentor: metadata.mentor || {
                         _id: '',

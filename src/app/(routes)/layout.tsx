@@ -54,12 +54,35 @@ const Layout = ({ children }: Props) => {
         }
     };
 
+    // Determine if the role requires a sidebar and header
+    const hasSidebarAndHeader = ['admin', 'mentor', 'qaqc'].includes(role ?? '');
+
+    // Correct header height based on role (h-16 = 64px for Admin and Mentor, h-[60px] = 60px for QAQC)
+    const headerHeight = role === 'qaqc' ? 60 : 64; // Match actual header heights
+
     return (
         <div className="flex min-h-screen w-full">
-            <div className="h-full z-50">{renderSidebar()}</div>
-            <div className="flex-1 flex flex-col w-full">
-                <header className="w-full sticky top-0 z-40">{renderHeader()}</header>
-                <main className="flex-1 w-full overflow-auto">{children}</main>
+            {/* Render Sidebar only for roles that need it */}
+            {hasSidebarAndHeader && (
+                <div className="fixed top-0 left-0 h-full w-64 z-50">{renderSidebar()}</div>
+            )}
+            {/* Main Content Area */}
+            <div
+                className={`flex-1 flex flex-col w-full ${hasSidebarAndHeader ? 'ml-64' : ''}`} // Conditionally apply ml-64 for roles with a sidebar
+            >
+                {/* Render Header only for roles that need it */}
+                {hasSidebarAndHeader && <header className="w-full">{renderHeader()}</header>}
+                <main
+                    className={`flex-1 w-full overflow-auto flex justify-center ${
+                        hasSidebarAndHeader ? 'px-4' : ''
+                    }`} // Center content and add padding for roles with a sidebar
+                    style={{
+                        paddingTop: hasSidebarAndHeader ? `${headerHeight}px` : 0, // Apply padding only for roles with a header
+                    }}
+                >
+                    <div className="w-full max-w-8xl">{children}</div>{' '}
+                    {/* Constrain content width for centering */}
+                </main>
                 <Footer />
             </div>
         </div>

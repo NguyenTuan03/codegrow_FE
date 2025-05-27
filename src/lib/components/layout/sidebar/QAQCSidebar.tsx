@@ -1,31 +1,33 @@
 'use client';
-import React, { useState } from 'react';
-import {
-    Calendar,
-    Home,
-    MessagesSquare,
-    Settings,
-    ThumbsUp,
-    Users,
-    ClipboardList,
-    CircleSlash,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import { Calendar, Home, Users, ClipboardList, CircleSlash } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
 
 const menuItems = [
     { label: 'Home', icon: <Home className="w-5 h-5" />, href: '/qaqc' },
     { label: 'Calendar', icon: <Calendar className="w-5 h-5" />, href: '/qaqc/calendar' },
     { label: 'Mentor Manage', icon: <ClipboardList className="w-5 h-5" />, href: '/qaqc/manage' },
-    { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
+    // { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
     { label: 'Services', icon: <Users className="w-5 h-5" />, href: '/qaqc/services' },
-    { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
+    // { label: 'Message', icon: <MessagesSquare className="w-5 h-5" />, href: '/qaqc/message' },
     { label: 'Courses', icon: <CircleSlash className="w-5 h-5" />, href: '/qaqc/courses' },
-    { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
+    // { label: 'Setting', icon: <Settings className="w-5 h-5" />, href: '/qaqc/settings' },
 ];
 
 const QAQCSidebar = () => {
-    const [activeItem, setActiveItem] = useState('Home');
     const router = useRouter();
+    const pathname = usePathname(); // Get the current route
+
+    // Function to determine if a link is active
+    const isActive = (href: string) => {
+        const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
+        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+        return (
+            normalizedPathname === normalizedHref ||
+            (normalizedHref !== '/qaqc' && normalizedPathname.startsWith(normalizedHref + '/'))
+        );
+    };
 
     return (
         <>
@@ -40,9 +42,8 @@ const QAQCSidebar = () => {
                             key={item.label}
                             icon={item.icon}
                             label={item.label}
-                            active={activeItem === item.label}
+                            active={isActive(item.href)}
                             onClick={() => {
-                                setActiveItem(item.label);
                                 router.push(item.href);
                             }}
                         />
@@ -69,9 +70,9 @@ function SidebarItem({
             onClick={onClick}
             className={`flex items-center gap-3 text-sm font-medium px-3 py-2 rounded-md cursor-pointer ${
                 active
-                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                    : 'text-black dark:text-gray-300'
-            } hover:bg-gray-100 dark:hover:bg-gray-800`}
+                    ? 'text-blue-600 dark:text-blue-400 font-semibold bg-gray-100 dark:bg-gray-800'
+                    : 'text-black dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
         >
             {icon}
             <span>{label}</span>

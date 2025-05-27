@@ -15,20 +15,16 @@ export const CUSTOMER_HEADER = [
         name: 'More',
         href: '/customer/more',
     },
-    {
-        name: 'Test',
-        href: '/customer/test',
-    },
+    // {
+    //     name: 'Test',
+    //     href: '/customer/test',
+    // },
     {
         name: 'Process',
         href: '/customer/process',
     },
-    {
-        name: 'Project',
-        href: '/customer/project',
-    },
-    {
-        name: 'Chat',
-        href: '/chat'
-    }
+    // {
+    //     name: 'Project',
+    //     href: '/customer/project',
+    // },
 ];

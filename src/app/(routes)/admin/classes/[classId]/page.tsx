@@ -30,11 +30,17 @@ interface Course {
     title: string;
     description: string;
     price: number;
-    category: string;
+    category: { _id: string; name: string };
     createdAt: string;
-    author: string;
+    author: {
+        _id: string;
+        fullName: string;
+        role: string;
+        email: string;
+    };
+    isDeleted?: boolean;
+    enrolledCount?: number;
 }
-
 interface User {
     _id: string;
     email: string;
@@ -59,6 +65,7 @@ interface ClassItem {
     maxStudents: number;
     students: User[];
     schedule: Schedule;
+    linkMeet?: string;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -233,15 +240,46 @@ export default function ClassDetailPage() {
                 const normalizedData: ClassItem = {
                     ...metadata,
                     students,
-                    course: metadata.course || {
-                        _id: '',
-                        title: 'N/A',
-                        description: '',
-                        price: 0,
-                        category: '',
-                        createdAt: '',
-                        author: '',
-                    },
+                    course: metadata.course
+                        ? {
+                              ...metadata.course,
+                              category:
+                                  typeof metadata.course.category === 'object' &&
+                                  typeof metadata.course.category._id === 'object'
+                                      ? {
+                                            _id: metadata.course.category._id,
+                                            name: metadata.course.category.name,
+                                        }
+                                      : typeof metadata.course.category === 'object'
+                                        ? {
+                                              _id: metadata.course.category._id,
+                                              name: metadata.course.category.name,
+                                          }
+                                        : { _id: '', name: 'N/A' },
+                              author:
+                                  typeof metadata.course.author === 'string'
+                                      ? {
+                                            _id: metadata.course.author,
+                                            fullName: 'N/A',
+                                            role: '',
+                                            email: '',
+                                        }
+                                      : metadata.course.author,
+                          }
+                        : {
+                              _id: '',
+                              title: 'N/A',
+                              description: '',
+                              price: 0,
+                              category: { _id: '', name: 'N/A' },
+                              createdAt: '',
+                              author: {
+                                  _id: '',
+                                  fullName: '',
+                                  role: '',
+                                  email: '',
+                              },
+                          },
                     mentor: metadata.mentor || {
                         _id: '',
                         fullName: 'N/A',
@@ -249,7 +287,7 @@ export default function ClassDetailPage() {
                         role: '',
                     },
                 };
-
+                console.log('Normalized data:', normalizedData);
                 setClassData(normalizedData);
                 setFormData(normalizedData);
             } catch (error) {

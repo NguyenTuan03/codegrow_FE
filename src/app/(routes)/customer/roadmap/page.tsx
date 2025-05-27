@@ -29,8 +29,8 @@ export default function DeveloperRoadmaps() {
 
     return (
         <ReactFlowProvider>
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
-                <div className="max-w-6xl mx-auto">
+            <div className="min-h-screen  dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
+                <div className="max-w-7xl mx-auto">
                     <h1 className="text-5xl font-bold text-center mb-4 text-[#5AD3AF] dark:[#5AD3AF]">
                         Developer Roadmaps
                     </h1>

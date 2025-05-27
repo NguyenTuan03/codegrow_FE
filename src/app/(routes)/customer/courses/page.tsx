@@ -57,6 +57,7 @@ interface Course {
     price: number;
     enrolledCount: number;
     author: { _id: string; fullName: string; email: string; role: string };
+    // author :  string;
     category: string | Category;
     createdAt: string;
     lessons: number;
@@ -234,7 +235,7 @@ export default function CoursesPage() {
 
     return (
         <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-8xl mx-auto">
                 {/* Header Section */}
                 <div className="mb-10">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
@@ -368,6 +369,9 @@ export default function CoursesPage() {
                                                 <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     by {course.author.fullName}
                                                 </p>
+                                                {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    by {course.author}
+                                                </p> */}
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1">
                                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">

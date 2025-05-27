@@ -18,36 +18,62 @@ import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
+import { GetComment } from '@/lib/services/course/getComment';
+
+interface Category {
+    _id: string;
+    name: string;
+}
+
+interface User {
+    fullName: string;
+    email: string;
+    role: string;
+    id: string;
+}
+
+interface Message {
+    id: string;
+    content: string;
+    rating?: number;
+    createdAt: string;
+    parentComment?: string | null;
+    user: User;
+    replies?: Message[];
+}
+
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    enrolledCount: number;
+    author: { _id: string; fullName: string; email: string; role: string };
+    // author :  string;
+    category: string | Category;
+    createdAt: string;
+    lessons: number;
+    status?: 'published' | 'draft' | 'archived';
+    rating?: number; // Add rating field
+}
+
+interface ApiResponse {
+    message: string;
+    status: number;
+    metadata: {
+        courses: Course[];
+        page: number;
+        totalPages: number;
+    };
+}
+
+interface CommentResponse {
+    message: string;
+    status: number;
+    metadata: Message[];
+}
 
 export default function AdminCoursesPage() {
-    interface Category {
-        _id: string;
-        name: string;
-    }
-
-    interface Course {
-        _id: string;
-        title: string;
-        description: string;
-        price: number;
-        enrolledCount: number;
-        author: { _id: string; fullName: string; email: string; role: string };
-        category: string | Category;
-        createdAt: string;
-        lessons: number;
-        status?: 'published' | 'draft' | 'archived';
-    }
-
-    interface ApiResponse {
-        message: string;
-        status: number;
-        metadata: {
-            courses: Course[];
-            page: number;
-            totalPages: number;
-        };
-    }
-
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,34 +96,63 @@ export default function AdminCoursesPage() {
         }
     };
 
+    // Function to fetch comments and calculate average rating
+    const fetchCommentsAndCalculateRatings = async (courseId: string): Promise<number> => {
+        try {
+            const response: CommentResponse = await GetComment(courseId);
+            if (!response || !response.metadata) {
+                throw new Error('Failed to fetch comments');
+            }
+
+            const comments = response.metadata;
+            const ratings = comments
+                .filter((comment) => comment.rating !== undefined)
+                .map((comment) => comment.rating as number);
+
+            if (ratings.length === 0) return 0; // No ratings available
+
+            const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+            return Number(avgRating.toFixed(1)); // Round to 1 decimal place
+        } catch (error) {
+            console.error(`Error fetching comments for course ${courseId}:`, error);
+            return 0; // Default to 0 if fetching fails
+        }
+    };
+
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-
+            console.log('Fetched courses:', data);
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                const parsedCourses = data.metadata.courses.map((course: Course) => {
-                    let categoryObj = categories.find((cat) => cat._id === course.category);
-                    if (!categoryObj && typeof course.category === 'object') {
-                        categoryObj = course.category as Category;
-                    }
-                    return {
-                        ...course,
-                        category: categoryObj || { _id: '', name: 'Uncategorized' },
-                        status: ['published', 'draft', 'archived'][
-                            Math.floor(Math.random() * 3)
-                        ] as 'published' | 'draft' | 'archived',
-                    };
-                });
+                const parsedCourses = await Promise.all(
+                    data.metadata.courses.map(async (course: Course) => {
+                        let categoryObj = categories.find((cat) => cat._id === course.category);
+                        if (!categoryObj && typeof course.category === 'object') {
+                            categoryObj = course.category as Category;
+                        }
+
+                        // Fetch average rating from comments
+                        const avgRating = await fetchCommentsAndCalculateRatings(course._id);
+                        console.log(`Average rating for course ${course._id}:`, avgRating);
+
+                        return {
+                            ...course,
+                            category: categoryObj || { _id: '', name: 'Uncategorized' },
+
+                            rating: avgRating || 5, // Fallback to 4.5 if no rating
+                        };
+                    }),
+                );
 
                 setCourses(parsedCourses);
-                setCurrentPage(data.metadata.page);
-                setTotalPages(data.metadata.totalPages);
             } else {
                 throw new Error(
                     'No courses found. Please check your connection or try again later.',
                 );
             }
+            setCurrentPage(data.metadata.page);
+            setTotalPages(data.metadata.totalPages);
         } catch (error: unknown) {
             console.error('Failed to fetch courses:', error);
             toast({
@@ -128,22 +183,22 @@ export default function AdminCoursesPage() {
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'published':
-                return 'bg-green-500 hover:bg-green-600 text-white';
-            case 'draft':
-                return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-            case 'archived':
-                return 'bg-gray-500 hover:bg-gray-600 text-white';
-            default:
-                return 'bg-blue-500 hover:bg-blue-600 text-white';
-        }
-    };
+    // const getStatusBadge = (status: string) => {
+    //     switch (status) {
+    //         case 'published':
+    //             return 'bg-green-500 hover:bg-green-600 text-white';
+    //         case 'draft':
+    //             return 'bg-yellow-500 hover:bg-yellow-600 text-white';
+    //         case 'archived':
+    //             return 'bg-gray-500 hover:bg-gray-600 text-white';
+    //         default:
+    //             return 'bg-blue-500 hover:bg-blue-600 text-white';
+    //     }
+    // };
 
     return (
         <div className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-8xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -209,11 +264,11 @@ export default function AdminCoursesPage() {
                                             <div className="relative">
                                                 <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
                                                     <div className="absolute top-2 left-2 space-x-2">
-                                                        <Badge
+                                                        {/* <Badge
                                                             className={`${getStatusBadge(course.status || 'published')} px-3 py-1 text-sm rounded-md shadow-sm`}
                                                         >
                                                             {course.status || 'published'}
-                                                        </Badge>
+                                                        </Badge> */}
                                                         <Badge className="bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
                                                             {typeof course.category === 'object'
                                                                 ? course.category.name
@@ -238,7 +293,7 @@ export default function AdminCoursesPage() {
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                            4.5
+                                                            {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -260,9 +315,7 @@ export default function AdminCoursesPage() {
                                                     className="flex-1 border-[#5AD3AF] text-[#5AD3AF] hover:bg-[#5AD3AF]/10 dark:border-[#5AD3AF] dark:text-[#5AD3AF] dark:hover:bg-[#5AD3AF]/20"
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        router.push(
-                                                            `/admin/courses/${course._id}/edit`,
-                                                        );
+                                                        router.push(`/admin/courses/${course._id}`);
                                                     }}
                                                 >
                                                     <Edit className="w-4 h-4 mr-2" />
@@ -274,7 +327,6 @@ export default function AdminCoursesPage() {
                                                     className="flex-1"
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        // Add delete confirmation logic here
                                                         toast({
                                                             title: 'Delete Course',
                                                             description: `Are you sure you want to delete "${course.title}"?`,
@@ -282,7 +334,6 @@ export default function AdminCoursesPage() {
                                                                 <Button
                                                                     variant="destructive"
                                                                     onClick={() => {
-                                                                        // Add delete logic here
                                                                         toast({
                                                                             title: 'Deleted',
                                                                             description: `Course "${course.title}" has been deleted`,

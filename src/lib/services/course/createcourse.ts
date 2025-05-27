@@ -1,4 +1,5 @@
 import httpRequest from '@/lib/util/HttpRequest';
+
 interface CreateCourseParams {
     token: string;
     title: string;

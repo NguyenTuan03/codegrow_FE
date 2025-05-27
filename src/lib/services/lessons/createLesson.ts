@@ -45,3 +45,65 @@ export const CreateLesson = async ({
         throw error;
     }
 };
+
+// import httpRequest from '@/lib/util/HttpRequest';
+
+// interface CreateLessonParams {
+//     token: string;
+//     course: string;
+//     title: string;
+//     content: string;
+//     order: number;
+//     type: 'reading' | 'watching'; // New field
+//     videoUrl?: string; // Only for watching lessons
+//     urlMaterial?: string; // Only for reading lessons
+//     description?: string; // Only for reading lessons
+//     videoKey?: string;
+//     quiz?: string[];
+// }
+
+// export const CreateLesson = async ({
+//     token,
+//     course,
+//     title,
+//     content,
+//     order,
+//     type,
+//     videoUrl,
+//     urlMaterial,
+//     description,
+//     videoKey,
+//     quiz,
+// }: CreateLessonParams) => {
+//     try {
+//         const payload: any = {
+//             course,
+//             title,
+//             content,
+//             order,
+//             type,
+//         };
+
+//         if (type === 'watching') {
+//             if (videoUrl) payload.videoUrl = videoUrl;
+//             if (videoKey) payload.videoKey = videoKey;
+//         } else if (type === 'reading') {
+//             if (urlMaterial) payload.urlMaterial = urlMaterial;
+//             if (description) payload.description = description;
+//         }
+
+//         if (quiz && quiz.length > 0) {
+//             payload.quiz = quiz;
+//         }
+
+//         const response = await httpRequest.post('/lesson', payload, {
+//             headers: { Authorization: `Bearer ${token}` },
+//         });
+
+//         console.log('✅ API Response:', response.data);
+//         return response.data;
+//     } catch (error) {
+//         console.error('❌ Error from CreateLesson API:', error);
+//         throw error;
+//     }
+// };

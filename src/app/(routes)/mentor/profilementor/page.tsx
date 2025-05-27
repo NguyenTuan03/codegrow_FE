@@ -19,7 +19,7 @@ export default function ProfileMentor() {
                 }
 
                 const user = JSON.parse(userData);
-                const id = user._id;
+                const id = user.id;
 
                 const userDetail = await getUserDetail(id);
                 console.log(`User detail for ID ${id}:`, userDetail);

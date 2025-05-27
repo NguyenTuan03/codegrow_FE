@@ -25,7 +25,8 @@ interface Course {
         email: string;
         role: string;
     };
-    category: { _id: string; name: string } | null;
+    // author :  string;
+    category: { _id: string; name: string };
     createdAt: string;
 }
 

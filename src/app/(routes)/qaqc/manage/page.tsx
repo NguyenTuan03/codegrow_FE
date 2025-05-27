@@ -68,17 +68,15 @@ type ReviewItem = {
 const mentorColumns: ColumnDef<MentorTableData>[] = [
     {
         accessorKey: 'name',
-        header: 'Name',
+        header: 'Tên',
         cell: ({ row }) => (
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium uppercase">
-                    <Avatar>
-                        <AvatarFallback className="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
-                            {(row.getValue('name') as string).charAt(0)}
-                        </AvatarFallback>
-                    </Avatar>
-                </div>
-                <span className="text-gray-800 dark:text-gray-200">
+                <Avatar className="w-9 h-9">
+                    <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium">
+                        {(row.getValue('name') as string).charAt(0)}
+                    </AvatarFallback>
+                </Avatar>
+                <span className="text-gray-900 dark:text-gray-100 font-medium">
                     {row.getValue('name') as string}
                 </span>
             </div>
@@ -88,16 +86,14 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
         accessorKey: 'email',
         header: 'Email',
         cell: ({ row }) => (
-            <div className="flex items-center gap-3">
-                <span className="text-gray-800 dark:text-gray-200">
-                    {row.getValue('email') as string}
-                </span>
-            </div>
+            <span className="text-gray-700 dark:text-gray-300">
+                {row.getValue('email') as string}
+            </span>
         ),
     },
     {
         accessorKey: 'action',
-        header: 'Action',
+        header: 'Hành động',
         cell: ({ row }) => (
             <div className="flex gap-2">
                 <Dialog>
@@ -105,17 +101,17 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                         <Button
                             variant="outline"
                             size="sm"
-                            title="Add Review"
-                            className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Thêm đánh giá"
+                            className="flex gap-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors"
                         >
                             <PlusIcon className="w-4 h-4" />
-                            Add
+                            Thêm
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-white dark:bg-gray-800">
+                    <DialogContent className="bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
-                            <DialogTitle className="text-gray-900 dark:text-white">
-                                Add Review for {row.getValue('name')}
+                            <DialogTitle className="text-gray-900 dark:text-white text-lg font-semibold">
+                                Thêm đánh giá cho {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
                         <CreateReviewForm mentorId={row.original._id} />
@@ -127,17 +123,17 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                         <Button
                             variant="outline"
                             size="sm"
-                            title="View Reviews"
-                            className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Xem chi tiết đánh giá"
+                            className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             <EyeIcon className="w-4 h-4" />
-                            View Detail
+                            Xem chi tiết
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-white dark:bg-gray-800">
+                    <DialogContent className="max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
-                            <DialogTitle className="text-gray-900 dark:text-white">
-                                Reviews for {row.getValue('name')}
+                            <DialogTitle className="text-gray-900 dark:text-white text-lg font-semibold">
+                                Đánh giá cho {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
                         <ViewDetailReview mentorId={row.original._id} />
@@ -152,34 +148,40 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
 const reviewColumns: ColumnDef<ReviewItem>[] = [
     {
         accessorKey: 'mentor.fullName',
-        header: 'Reviewer',
+        header: 'Người đánh giá',
         cell: ({ row }) => (
-            <span className="text-gray-800 dark:text-gray-200">
+            <span className="text-gray-900 dark:text-gray-100 font-medium">
                 {row.original.mentor?.fullName || 'N/A'}
             </span>
         ),
     },
     {
         accessorKey: 'comment',
-        header: 'Comment',
+        header: 'Nhận xét',
         cell: ({ row }) => (
-            <span className="text-gray-800 dark:text-gray-200">{row.getValue('comment')}</span>
+            <span className="text-gray-700 dark:text-gray-300">{row.getValue('comment')}</span>
         ),
     },
     {
         accessorKey: 'createdAt',
-        header: 'Date',
+        header: 'Ngày',
         cell: ({ row }) => (
-            <span className="text-gray-800 dark:text-gray-200">
-                {new Date(row.getValue('createdAt')).toLocaleDateString()}
+            <span className="text-gray-700 dark:text-gray-300">
+                {new Date(row.getValue('createdAt')).toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                })}
             </span>
         ),
     },
     {
         accessorKey: 'rating',
-        header: 'Rating',
+        header: 'Điểm',
         cell: ({ row }) => (
-            <span className="text-gray-800 dark:text-gray-200">{row.getValue('rating')}</span>
+            <span className="text-yellow-600 dark:text-yellow-400 font-semibold">
+                {row.getValue('rating')}/5
+            </span>
         ),
     },
 ];
@@ -203,8 +205,6 @@ export default function MentorsPage() {
         try {
             setLoadingMentors(true);
             const response = await getUser();
-            console.log('Mentors API Response:', response);
-
             const mentors: Mentor[] = response.metadata.users;
             const filteredMentors = mentors.filter((mentor) => mentor.role === 'mentor');
             const mappedData: MentorTableData[] = filteredMentors.map((mentor) => ({
@@ -216,7 +216,7 @@ export default function MentorsPage() {
             setAllMentors(mappedData);
             setLoadingMentors(false);
         } catch (error) {
-            setErrorMentors('Error fetching mentors');
+            setErrorMentors('Lỗi khi tải danh sách mentor');
             setLoadingMentors(false);
             console.error('Error fetching mentors:', error);
         }
@@ -239,7 +239,6 @@ export default function MentorsPage() {
                 page: reviewCurrentPage,
                 limit: reviewPageSize,
             });
-            console.log('Reviews API Response:', data);
 
             setReviewData(data.metadata.reviews || data.metadata);
             const total =
@@ -248,7 +247,7 @@ export default function MentorsPage() {
             setReviewTotalPages(total > 0 ? total : 1);
             setLoadingReviews(false);
         } catch (error) {
-            setErrorReviews('Error fetching reviews');
+            setErrorReviews('Lỗi khi tải danh sách đánh giá');
             setLoadingReviews(false);
             console.error('Error fetching reviews:', error);
         }
@@ -317,307 +316,321 @@ export default function MentorsPage() {
     };
 
     return (
-        <div className=" mx-auto py-8 px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+        <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
             {/* Mentors Section */}
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Mentors</h2>
-            {loadingMentors && (
-                <p className="text-center text-gray-500 dark:text-gray-400">Loading mentors...</p>
-            )}
-            {errorMentors && (
-                <p className="text-center text-red-500 dark:text-red-400">{errorMentors}</p>
-            )}
-            {!loadingMentors && !errorMentors && (
-                <>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 mb-4 shadow-sm bg-white dark:bg-gray-800">
-                        <Table>
-                            <TableHeader>
-                                {mentorTable.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow
-                                        key={headerGroup.id}
-                                        className="border-b border-gray-200 dark:border-gray-700"
-                                    >
-                                        {headerGroup.headers.map((header) => (
-                                            <TableHead
-                                                key={header.id}
-                                                className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700"
-                                            >
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
-                                            </TableHead>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {mentorTable.getRowModel().rows.length ? (
-                                    mentorTable.getRowModel().rows.map((row) => (
+            <section className="mb-12">
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                    Danh sách Mentor
+                </h2>
+                {loadingMentors && (
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-6">
+                        Đang tải danh sách mentor...
+                    </p>
+                )}
+                {errorMentors && (
+                    <p className="text-center text-red-500 dark:text-red-400 py-6">
+                        {errorMentors}
+                    </p>
+                )}
+                {!loadingMentors && !errorMentors && (
+                    <>
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <Table className="bg-white dark:bg-gray-800">
+                                <TableHeader>
+                                    {mentorTable.getHeaderGroups().map((headerGroup) => (
                                         <TableRow
-                                            key={row.id}
-                                            className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            key={headerGroup.id}
+                                            className="border-b border-gray-200 dark:border-gray-700"
                                         >
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id}>
+                                            {headerGroup.headers.map((header) => (
+                                                <TableHead
+                                                    key={header.id}
+                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left"
+                                                >
                                                     {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext(),
+                                                        header.column.columnDef.header,
+                                                        header.getContext(),
                                                     )}
-                                                </TableCell>
+                                                </TableHead>
                                             ))}
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={mentorColumns.length}
-                                            className="h-24 text-center text-gray-500 dark:text-gray-400"
-                                        >
-                                            No mentors found.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {/* Pagination Controls for Mentors */}
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                Items per page:
-                            </span>
-                            <Select
-                                value={mentorPageSize.toString()}
-                                onValueChange={handleMentorPageSizeChange}
-                            >
-                                <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
-                                    <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                                    <SelectItem
-                                        value="10"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        10
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="20"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        20
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="50"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        50
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                                    ))}
+                                </TableHeader>
+                                <TableBody>
+                                    {mentorTable.getRowModel().rows.length ? (
+                                        mentorTable.getRowModel().rows.map((row) => (
+                                            <TableRow
+                                                key={row.id}
+                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <TableCell key={cell.id} className="py-4 px-6">
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={mentorColumns.length}
+                                                className="py-10 text-center text-gray-500 dark:text-gray-400"
+                                            >
+                                                Không tìm thấy mentor.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
 
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() =>
-                                            handleMentorPageChange(mentorCurrentPage - 1)
-                                        }
-                                        className={`${
-                                            mentorCurrentPage === 1
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-
-                                {getMentorPageNumbers().map((page) => (
-                                    <PaginationItem key={page}>
-                                        <PaginationLink
-                                            onClick={() => handleMentorPageChange(page)}
-                                            isActive={mentorCurrentPage === page}
-                                            className={`${
-                                                mentorCurrentPage === page
-                                                    ? 'bg-blue-500 text-white dark:bg-blue-600'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            } border-gray-300 dark:border-gray-600`}
+                        {/* Pagination Controls for Mentors */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Số mục mỗi trang:
+                                </span>
+                                <Select
+                                    value={mentorPageSize.toString()}
+                                    onValueChange={handleMentorPageSizeChange}
+                                >
+                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
+                                        <SelectItem
+                                            value="10"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         >
-                                            {page}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                ))}
+                                            10
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="20"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            20
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="50"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            50
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() =>
-                                            handleMentorPageChange(mentorCurrentPage + 1)
-                                        }
-                                        className={`${
-                                            mentorCurrentPage === mentorTotalPages
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
-                </>
-            )}
+                            <Pagination>
+                                <PaginationContent className="flex items-center gap-1">
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={() =>
+                                                handleMentorPageChange(mentorCurrentPage - 1)
+                                            }
+                                            className={`${
+                                                mentorCurrentPage === 1
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                        />
+                                    </PaginationItem>
+
+                                    {getMentorPageNumbers().map((page) => (
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                onClick={() => handleMentorPageChange(page)}
+                                                isActive={mentorCurrentPage === page}
+                                                className={`${
+                                                    mentorCurrentPage === page
+                                                        ? 'bg-blue-500 text-white dark:bg-blue-600'
+                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                } px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors`}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={() =>
+                                                handleMentorPageChange(mentorCurrentPage + 1)
+                                            }
+                                            className={`${
+                                                mentorCurrentPage === mentorTotalPages
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
+                    </>
+                )}
+            </section>
 
             {/* Review History Section */}
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Review History
-            </h2>
-            <p className="mb-6 text-gray-600 dark:text-gray-400">
-                This section allows you to review the history of QAQC activities.
-            </p>
-            {loadingReviews && (
-                <p className="text-center text-gray-500 dark:text-gray-400">Loading reviews...</p>
-            )}
-            {errorReviews && (
-                <p className="text-center text-red-500 dark:text-red-400">{errorReviews}</p>
-            )}
-            {!loadingReviews && !errorReviews && (
-                <>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 mb-4 shadow-sm bg-white dark:bg-gray-800">
-                        <Table>
-                            <TableHeader>
-                                {reviewTable.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow
-                                        key={headerGroup.id}
-                                        className="border-b border-gray-200 dark:border-gray-700"
-                                    >
-                                        {headerGroup.headers.map((header) => (
-                                            <TableHead
-                                                key={header.id}
-                                                className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700"
-                                            >
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
-                                            </TableHead>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {reviewTable.getRowModel().rows.length ? (
-                                    reviewTable.getRowModel().rows.map((row) => (
+            <section>
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                    Lịch sử đánh giá
+                </h2>
+                <p className="mb-6 text-gray-600 dark:text-gray-400">
+                    Phần này cho phép bạn xem lại lịch sử các hoạt động đánh giá QAQC.
+                </p>
+                {loadingReviews && (
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-6">
+                        Đang tải danh sách đánh giá...
+                    </p>
+                )}
+                {errorReviews && (
+                    <p className="text-center text-red-500 dark:text-red-400 py-6">
+                        {errorReviews}
+                    </p>
+                )}
+                {!loadingReviews && !errorReviews && (
+                    <>
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <Table className="bg-white dark:bg-gray-800">
+                                <TableHeader>
+                                    {reviewTable.getHeaderGroups().map((headerGroup) => (
                                         <TableRow
-                                            key={row.id}
-                                            className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            key={headerGroup.id}
+                                            className="border-b border-gray-200 dark:border-gray-700"
                                         >
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id}>
+                                            {headerGroup.headers.map((header) => (
+                                                <TableHead
+                                                    key={header.id}
+                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left"
+                                                >
                                                     {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext(),
+                                                        header.column.columnDef.header,
+                                                        header.getContext(),
                                                     )}
-                                                </TableCell>
+                                                </TableHead>
                                             ))}
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell
-                                            colSpan={reviewColumns.length}
-                                            className="h-24 text-center text-gray-500 dark:text-gray-400"
-                                        >
-                                            No reviews found.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    {/* Pagination Controls for Review History */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                Items per page:
-                            </span>
-                            <Select
-                                value={reviewPageSize.toString()}
-                                onValueChange={handleReviewPageSizeChange}
-                            >
-                                <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
-                                    <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                                    <SelectItem
-                                        value="10"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        10
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="20"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        20
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="50"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        50
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                                    ))}
+                                </TableHeader>
+                                <TableBody>
+                                    {reviewTable.getRowModel().rows.length ? (
+                                        reviewTable.getRowModel().rows.map((row) => (
+                                            <TableRow
+                                                key={row.id}
+                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <TableCell key={cell.id} className="py-4 px-6">
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext(),
+                                                        )}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={reviewColumns.length}
+                                                className="py-10 text-center text-gray-500 dark:text-gray-400"
+                                            >
+                                                Không tìm thấy đánh giá.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
 
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() =>
-                                            handleReviewPageChange(reviewCurrentPage - 1)
-                                        }
-                                        className={`${
-                                            reviewCurrentPage === 1
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-
-                                {getReviewPageNumbers().map((page) => (
-                                    <PaginationItem key={page}>
-                                        <PaginationLink
-                                            onClick={() => handleReviewPageChange(page)}
-                                            isActive={reviewCurrentPage === page}
-                                            className={`${
-                                                reviewCurrentPage === page
-                                                    ? 'bg-blue-500 text-white dark:bg-blue-600'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            } border-gray-300 dark:border-gray-600`}
+                        {/* Pagination Controls for Review History */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Số mục mỗi trang:
+                                </span>
+                                <Select
+                                    value={reviewPageSize.toString()}
+                                    onValueChange={handleReviewPageSizeChange}
+                                >
+                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
+                                        <SelectItem
+                                            value="10"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         >
-                                            {page}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                ))}
+                                            10
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="20"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            20
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="50"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            50
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() =>
-                                            handleReviewPageChange(reviewCurrentPage + 1)
-                                        }
-                                        className={`${
-                                            reviewCurrentPage === reviewTotalPages
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
-                </>
-            )}
+                            <Pagination>
+                                <PaginationContent className="flex items-center gap-1">
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={() =>
+                                                handleReviewPageChange(reviewCurrentPage - 1)
+                                            }
+                                            className={`${
+                                                reviewCurrentPage === 1
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                        />
+                                    </PaginationItem>
+
+                                    {getReviewPageNumbers().map((page) => (
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                onClick={() => handleReviewPageChange(page)}
+                                                isActive={reviewCurrentPage === page}
+                                                className={`${
+                                                    reviewCurrentPage === page
+                                                        ? 'bg-blue-500 text-white dark:bg-blue-600'
+                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                } px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors`}
+                                            >
+                                                {page}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={() =>
+                                                handleReviewPageChange(reviewCurrentPage + 1)
+                                            }
+                                            className={`${
+                                                reviewCurrentPage === reviewTotalPages
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
+                    </>
+                )}
+            </section>
         </div>
     );
 }
