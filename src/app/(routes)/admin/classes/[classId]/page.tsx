@@ -556,7 +556,7 @@ export default function ClassDetailPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
-                <div className="relative bg-[#657ED4] rounded-xl p-6 text-white mb-8">
+                <div className="relative bg-[#657ED4] dark-bg-[#5AD3AF] rounded-xl p-6 text-white mb-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         {isEditing ? (
                             <h1 className=" sm:text-4xl font-bold tracking-tight">
