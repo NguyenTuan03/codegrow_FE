@@ -13,13 +13,7 @@ interface Course {
     description: string;
     price: number;
     enrolledCount: number;
-    author: {
-        _id: string;
-        fullName: string;
-        email: string;
-        role: string;
-    };
-    // author :  string;
+    author: string;
     category: { _id: string; name: string } | null;
     createdAt: string;
 }
@@ -92,7 +86,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="relative h-48 bg-gradient-to-r from-[#5AD3AF]/20 to-[#657ED4]/20 dark:from-[#5AD3AF]/10 dark:to-[#657ED4]/10">
+            <div className="relative h-48 bg-gradient-to-r dark:from-[#5AD3AF]/20 to-[#657ED4]/20 from-[#5AD3AF]/10 dark:to-[#657ED4]/10">
                 {/* Placeholder for course image or banner */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <BookOpen className="w-20 h-20 text-[#5AD3AF] opacity-20" />
@@ -100,36 +94,34 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
             </div>
             <div className="p-6 sm:p-8 space-y-6">
                 {/* Course Title */}
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                <h1 className="sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] tracking-tight">
                     {course.title}
                 </h1>
 
                 {/* Course Meta Info */}
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-600 dark:text-gray-300">
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm ">
+                    <div className="text-base flex items-center gap-2">
                         <Users className="w-5 h-5 text-[#657ED4]" />
                         <span>{course.enrolledCount} students enrolled</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className=" text-base flex items-center gap-2">
                         <BookOpen className="w-5 h-5 text-[#657ED4]" />
-                        <span>Author: {course.author?.fullName || 'Unknown'}</span>
+                        <span>Author: {course.author || 'Unknown'}</span>
                         {/* <span>Instructor: {course.author || 'Unknown'}</span> */}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="text-base flex items-center gap-2">
                         <span>Category: {course.category?.name || 'Uncategorized'}</span>
                     </div>
                 </div>
 
                 {/* Course Description */}
-                <p className="text-gray-700 dark:text-gray-200 leading-relaxed text-base">
-                    {course.description}
-                </p>
+                <p className="text-xl leading-relaxed ">{course.description}</p>
 
                 {/* Price and Enrollment Status */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                         Học phí:{' '}
-                        <span className="text-[#5AD3AF] dark:text-[#5AD3AF] text-2xl">
+                        <span className="text-[#657ED4] dark:text-[#5AD3AF] text-xl">
                             ${course.price.toFixed(2)}
                         </span>
                     </p>

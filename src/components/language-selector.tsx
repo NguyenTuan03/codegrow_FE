@@ -21,7 +21,7 @@ const languages = Object.entries(LANGUAGE_VERSIONS) as [string, string][];
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onSelect, disabled }) => {
     return (
         <div className="flex items-center space-x-4">
-            <h3 className="text-lg font-medium text-gray-900">Language:</h3>
+            <h3 className="text-xl font-medium text-gray-900">Language:</h3>
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button
@@ -40,14 +40,14 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ language, onSelect,
                             key={lang}
                             className={`${
                                 lang === language
-                                    ? 'bg-blue-100 text-blue-600 font-semibold'
-                                    : 'hover:bg-blue-50 hover:text-blue-600'
+                                    ? 'bg-blue-100 text-base text-blue-600 font-semibold'
+                                    : 'hover:bg-blue-50 text-base hover:text-blue-600'
                             } cursor-pointer`}
                             onClick={() => onSelect(lang)}
                         >
                             <div className="flex items-center justify-between w-full">
                                 <span className="capitalize">{lang}</span>
-                                <span className="text-sm text-gray-500">({version})</span>
+                                <span className="text-base text-gray-500">({version})</span>
                             </div>
                         </DropdownMenuItem>
                     ))}

@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/MyAssignmentCard.tsx
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -80,14 +79,14 @@ export default function MyAssignmentCard({ user }: Props) {
         <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
             <CardHeader className="p-4">
                 <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <FileText className="w-6 h-6 text-[#AXIS_ADAPTERS]" />
+                    <FileText className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     My Assignments
                 </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
                 {loading ? (
                     <div className="flex justify-center items-center h-32">
-                        <Loader2 className="h-8 w-8 animate-spin text-[#5AD3AF]" />
+                        <Loader2 className="h-8 w-8 animate-spin text-[#657ED4] dark:text-[#5AD3AF]" />
                     </div>
                 ) : submissions.length === 0 ? (
                     <p className="text-gray-500 dark:text-gray-400 text-center py-4">
@@ -147,7 +146,7 @@ export default function MyAssignmentCard({ user }: Props) {
                                                 onClick={() =>
                                                     setCurrentPage((prev) => Math.max(prev - 1, 1))
                                                 }
-                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300"
                                             />
                                         )}
                                     </PaginationItem>
@@ -164,7 +163,7 @@ export default function MyAssignmentCard({ user }: Props) {
                                                         Math.min(prev + 1, totalPages),
                                                     )
                                                 }
-                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+                                                className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300"
                                             />
                                         )}
                                     </PaginationItem>

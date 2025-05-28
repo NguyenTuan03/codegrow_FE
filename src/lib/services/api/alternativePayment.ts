@@ -1,23 +1,24 @@
-import httpRequest from "@/lib/util/HttpRequest";
+import httpRequest from '@/lib/util/HttpRequest';
 interface IalternativePayment {
-    token:string | null,
-    paymentMethod:string,
+    token: string | null;
+    paymentMethod: string;
     course: {
-        _id:string
-    }
+        _id: string;
+    };
 }
-export const alternativePayment = async ({ token, paymentMethod, course }:IalternativePayment) => {
-    try {        
+export const alternativePayment = async ({ token, paymentMethod, course }: IalternativePayment) => {
+    try {
         const response = await httpRequest.post(
             '/users/enroll',
-                {
+            {
                 courseId: course._id,
                 paymentMethod,
-              }, {
+            },
+            {
                 headers: {
-                  Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
-              }
+            },
         );
         return response;
     } catch (error) {

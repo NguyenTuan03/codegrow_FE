@@ -19,7 +19,7 @@ interface Message {
     createdAt: string;
     parentComment?: string | null;
     user: User;
-    replies?: Message[]; // Add replies field for nested structure
+    replies?: Message[];
 }
 
 interface StarRatingProps {
@@ -39,8 +39,8 @@ function StarRating({ rating, setRating, editable = false, size = 20 }: StarRati
                     className={`w-${size / 4} h-${size / 4} ${
                         star <= rating
                             ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300 fill-gray-300'
-                    }`}
+                            : 'text-gray-300 dark:text-gray-500 fill-gray-300 dark:fill-gray-500'
+                    } ${editable ? 'cursor-pointer' : ''}`}
                     viewBox="0 0 24 24"
                     onClick={() => editable && setRating && setRating(star)}
                 >
@@ -61,7 +61,7 @@ interface CommentProps {
     ) => Promise<void>;
     loading: boolean;
     messages: Message[];
-    depth?: number; // Add depth to control indentation
+    depth?: number;
 }
 
 export default function Comment({ msg, postMessage, loading, messages, depth = 0 }: CommentProps) {
@@ -69,7 +69,7 @@ export default function Comment({ msg, postMessage, loading, messages, depth = 0
     const [replyMessage, setReplyMessage] = useState('');
     const [replyRating, setReplyRating] = useState<number | null>(null);
 
-    const authorName = msg.user?.fullName || 'Người dùng ẩn danh';
+    const authorName = msg.user?.fullName || 'Anonymous User';
     const initials = authorName
         .split(' ')
         .map((word) => word[0])
@@ -81,9 +81,10 @@ export default function Comment({ msg, postMessage, loading, messages, depth = 0
         if (!msg.id) {
             console.error('❌ Comment ID is missing!');
             toast({
-                title: 'Lỗi',
-                description: 'Không thể gửi phản hồi: ID bình luận không hợp lệ.',
+                title: 'Error',
+                description: 'Cannot submit reply: Invalid comment ID.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
@@ -99,19 +100,27 @@ export default function Comment({ msg, postMessage, loading, messages, depth = 0
             <div
                 className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${
                     depth > 0 ? `ml-${depth * 8}` : ''
-                }`}
+                } bg-white dark:bg-gray-800`}
             >
                 <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 text-blue-800 dark:bg-gray-600 dark:text-white rounded-full w-10 h-10 flex items-center justify-center font-medium">
+                    <div className="bg-blue-100 text-blue-800 dark:bg-gray-600 dark:text-gray-200 rounded-full w-10 h-10 flex items-center justify-center font-medium">
                         {initials || 'N/A'}
                     </div>
                     <div className="flex-1">
                         <div className="flex justify-between items-start">
-                            <h4 className="font-medium text-gray-800 dark:text-gray-200">
+                            <h4 className="font-semibold text-base text-gray-800 dark:text-gray-200">
                                 {authorName}
                             </h4>
-                            <span className="text-xs text-gray-400">
-                                {new Date(msg.createdAt).toLocaleString()}
+                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                                {new Date(msg.createdAt).toLocaleString('en-US', {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true,
+                                })}
                             </span>
                         </div>
                         {msg.rating !== undefined && (
@@ -124,28 +133,28 @@ export default function Comment({ msg, postMessage, loading, messages, depth = 0
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-[#657ED4] hover:text-[#354065]"
+                                className="text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] transition-colors duration-200"
                                 onClick={() => {
                                     setIsReplying(!isReplying);
                                     setReplyMessage('');
                                     setReplyRating(null);
                                 }}
                             >
-                                {isReplying ? 'Hủy phản hồi' : 'Phản hồi'}
+                                {isReplying ? 'Cancel Reply' : 'Reply'}
                             </Button>
                         </div>
                         {isReplying && (
                             <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3">
                                 <textarea
-                                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-[#657ED4] focus:border-[#657ED4] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                     rows={2}
-                                    placeholder="Viết phản hồi..."
+                                    placeholder="Write a reply..."
                                     value={replyMessage}
                                     onChange={(e) => setReplyMessage(e.target.value)}
                                 />
                                 <div className="mt-2 flex items-center gap-4">
                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Đánh giá (tùy chọn):
+                                        Rating (optional):
                                     </span>
                                     <StarRating
                                         rating={replyRating ?? 0}
@@ -157,21 +166,22 @@ export default function Comment({ msg, postMessage, loading, messages, depth = 0
                                     <Button
                                         variant="outline"
                                         size="sm"
+                                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => {
                                             setIsReplying(false);
                                             setReplyMessage('');
                                             setReplyRating(null);
                                         }}
                                     >
-                                        Hủy
+                                        Cancel
                                     </Button>
                                     <Button
                                         size="sm"
-                                        className="bg-[#657ED4] hover:bg-[#354065] text-white"
+                                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white transition-all duration-200"
                                         onClick={handleReply}
                                         disabled={loading}
                                     >
-                                        {loading ? 'Đang gửi...' : 'Gửi phản hồi'}
+                                        {loading ? 'Submitting...' : 'Submit Reply'}
                                     </Button>
                                 </div>
                             </div>

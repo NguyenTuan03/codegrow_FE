@@ -73,7 +73,7 @@ const Customerheader = () => {
 
     return (
         <div
-            className={`flex w-full h-[80px] px-4 items-center border-b shadow-sm fixed top-0 left-0 right-0 z-50 ${
+            className={`flex w-full h-[80px] px-4  items-center border-b shadow-sm fixed top-0 left-0 right-0 z-50 ${
                 resolvedTheme === 'dark' ? 'bg-gray-800 text-white' : 'bg-[#EEF1EF] text-black'
             }`} // Switch to fixed positioning
         >
@@ -85,9 +85,9 @@ const Customerheader = () => {
                 {CUSTOMER_HEADER.map((item, index) => (
                     <Link href={item.href} key={index}>
                         <div
-                            className={`font-medium hover:underline cursor-pointer text-sm transition-colors ${
+                            className={`font-medium hover:underline cursor-pointer text-xl transition-colors ${
                                 isActiveLink(item.href)
-                                    ? 'text-[#5AD3AF] underline underline-offset-4 font-semibold'
+                                    ? 'text-[#657ED4] underline underline-offset-4 font-semibold'
                                     : 'text-gray-800 dark:text-gray-200'
                             }`}
                         >
@@ -112,7 +112,7 @@ const Customerheader = () => {
                                     <div className="relative">
                                         <Bell className="w-5 h-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
                                         {notifications.length > 0 && (
-                                            <span className="absolute -top-1 -right-1 bg-[#5AD3AF] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                                            <span className="absolute -top-1 -right-1 bg-[#657ED4] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                                                 {notifications.length}
                                             </span>
                                         )}
@@ -164,30 +164,30 @@ const Customerheader = () => {
                                 </DropdownMenuItem> */}
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <User2 className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                    <User2 className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Profile</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/changepassword')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <Settings className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                    <Settings className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/support')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <HelpCircle className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                    <HelpCircle className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Help Support</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#5AD3AF] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <LogOut className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                    <LogOut className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -196,12 +196,12 @@ const Customerheader = () => {
                 ) : (
                     <>
                         <Button
-                            className="me-2 bg-[#5AD3AF] hover:bg-[#6bbea6] text-white px-4 py-2 rounded-md"
+                            className=" bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3  md:text-base"
                             variant="outline"
                         >
                             <Link href="/login">Log in</Link>
                         </Button>
-                        <Button className="bg-[#5AD3AF] hover:bg-[#6bbea6] text-white px-4 py-2 rounded-md">
+                        <Button className=" bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3  md:text-base">
                             <Link href="/register">Sign up</Link>
                         </Button>
                     </>

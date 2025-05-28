@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/ContinueWatching.tsx
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +9,7 @@ export default function ContinueWatching() {
         <section>
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <PlayCircle className="w-6 h-6 text-[#5AD3AF]" />
+                    <PlayCircle className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     Continue Watching
                 </h2>
                 <div className="flex items-center gap-2">
@@ -32,11 +31,11 @@ export default function ContinueWatching() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
-                    <div className="h-40 bg-gradient-to-r from-[#5AD3AF]/20 to-[#657ED4]/20 dark:from-[#5AD3AF]/10 dark:to-[#657ED4]/10 relative">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
+                    <div className="h-40 bg-gradient-to-r from-[#657ED4]/20 to-[#5AD3AF]/20 dark:from-[#657ED4]/10 dark:to-[#5AD3AF]/10 relative">
                         <div className="absolute inset-0 flex items-center justify-center text-gray-800 dark:text-gray-100">
                             <div className="text-center px-4">
-                                <div className="text-xs uppercase mb-1 text-[#5AD3AF] font-semibold">
+                                <div className="text-xs uppercase mb-1 text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                     FRONTEND
                                 </div>
                                 <div className="font-semibold text-sm line-clamp-2">
@@ -58,7 +57,7 @@ export default function ContinueWatching() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]"
+                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 <span className="text-xl">+</span>
                             </Button>
@@ -66,11 +65,11 @@ export default function ContinueWatching() {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
-                    <div className="h-40 bg-gradient-to-r from-[#5AD3AF]/20 to-[#657ED4]/20 dark:from-[#5AD3AF]/10 dark:to-[#657ED4]/10 relative">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
+                    <div className="h-40 bg-gradient-to-r from-[#657ED4]/20 to-[#5AD3AF]/20 dark:from-[#657ED4]/10 dark:to-[#5AD3AF]/10 relative">
                         <div className="absolute inset-0 flex items-center justify-center text-gray-800 dark:text-gray-100">
                             <div className="text-center px-4">
-                                <div className="text-xs uppercase mb-1 text-[#5AD3AF] font-semibold">
+                                <div className="text-xs uppercase mb-1 text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                     BACKEND
                                 </div>
                                 <div className="font-semibold text-sm line-clamp-2">
@@ -91,7 +90,7 @@ export default function ContinueWatching() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]"
+                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 <span className="text-xl">+</span>
                             </Button>
@@ -99,11 +98,11 @@ export default function ContinueWatching() {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
-                    <div className="h-40 bg-gradient-to-r from-[#5AD3AF]/20 to-[#657ED4]/20 dark:from-[#5AD3AF]/10 dark:to-[#657ED4]/10 relative">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
+                    <div className="h-40 bg-gradient-to-r from-[#657ED4]/20 to-[#5AD3AF]/20 dark:from-[#657ED4]/10 dark:to-[#5AD3AF]/10 relative">
                         <div className="absolute inset-0 flex items-center justify-center text-gray-800 dark:text-gray-100">
                             <div className="text-center px-4">
-                                <div className="text-xs uppercase mb-1 text-[#5AD3AF] font-semibold">
+                                <div className="text-xs uppercase mb-1 text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
                                     FRONTEND
                                 </div>
                                 <div className="font-semibold text-sm line-clamp-2">
@@ -125,7 +124,7 @@ export default function ContinueWatching() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]"
+                                className="h-8 w-8 p-0 text-gray-400 dark:text-gray-300 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 <span className="text-xl">+</span>
                             </Button>

@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/UserProfileCard.tsx
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,7 +43,7 @@ export default function UserProfileCard({ user }: UserProfileCardProps) {
         <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
             <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-4">
-                    <div className="h-16 w-16 bg-[#5AD3AF]/20 dark:bg-[#5AD3AF]/10 rounded-full flex items-center justify-center text-[#5AD3AF]">
+                    <div className="h-16 w-16 bg-[#657ED4]/20 dark:bg-[#5AD3AF]/10 rounded-full flex items-center justify-center text-[#657ED4] dark:text-[#5AD3AF]">
                         <User className="h-8 w-8" />
                     </div>
                 </div>
@@ -57,14 +56,14 @@ export default function UserProfileCard({ user }: UserProfileCardProps) {
                 <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
                         <span className="flex items-center gap-1">
-                            <Flame className="w-4 h-4 text-[#5AD3AF]" />
+                            <Flame className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                             Daily Streak
                         </span>
                         <span className="font-semibold">{user?.dailyStreak || 0} days</span>
                     </div>
                     <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
                         <span className="flex items-center gap-1">
-                            <Trophy className="w-4 h-4 text-[#5AD3AF]" />
+                            <Trophy className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                             Total XP
                         </span>
                         <span className="font-semibold">{user?.totalXP || 0} XP</span>

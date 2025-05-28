@@ -1,4 +1,3 @@
-// @/app/(routes)/process/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -13,7 +12,6 @@ import CertificationSection from '@/app/(routes)/customer/process/CertificationS
 import LeaderboardCard from '@/app/(routes)/customer/process/LeaderboardCard';
 import UserProfileCard from '@/app/(routes)/customer/process/UserProfileCard';
 import MyAssignmentCard from '@/app/(routes)/customer/process/MyAssignmentCard';
-import { BookOpen } from 'lucide-react';
 
 interface Category {
     _id: string;
@@ -50,15 +48,18 @@ export default function Process() {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [enrollCourse, setEnrollCourse] = useState<Course[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchUserDetail = async () => {
         try {
+            setIsLoading(true);
             const userId = localStorage.getItem('user');
             if (!userId) {
                 toast({
                     title: 'Lỗi',
                     description: 'Bạn cần đăng nhập để xem thông tin chi tiết',
                     variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black',
                 });
                 router.push('/login');
                 return;
@@ -77,7 +78,10 @@ export default function Process() {
                 title: 'Lỗi',
                 description: 'Không thể lấy thông tin người dùng',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black',
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -85,11 +89,18 @@ export default function Process() {
         fetchUserDetail();
     }, []);
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+                <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 sm:px-6 md:px-12 lg:px-24 py-12 transition-colors duration-300">
             <div className="max-w-8xl mx-auto">
-                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
-                    <BookOpen className="w-8 h-8 text-[#5AD3AF]" />
+                <h1 className="text-3xl md:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] mb-8 flex items-center gap-2 ">
                     Learning Dashboard
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
