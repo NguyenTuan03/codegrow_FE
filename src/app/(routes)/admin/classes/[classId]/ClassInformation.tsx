@@ -120,7 +120,7 @@ export default function ClassInfo({
         <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                    <BookOpen className="w-6 h-6 text-[#5AD3AF]" />
+                    <BookOpen className="w-6 h-6 text-[#657ED4]" />
                     <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                         Class Information
                     </h2>
@@ -132,7 +132,7 @@ export default function ClassInfo({
                                 htmlFor="title"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <BookOpen className="w-5 h-5 text-[#5AD3AF]" />
+                                <BookOpen className="w-5 h-5 text-[#657ED4]" />
                                 Title
                             </label>
                             <Input
@@ -260,7 +260,7 @@ export default function ClassInfo({
                                     placeholder="https://meet.google.com/abc-xyz"
                                 />
                             </div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-base text-gray-500 dark:text-gray-400 mt-1">
                                 Enter a valid meeting link (e.g., Google Meet, Zoom)
                             </p>
                         </div>
@@ -425,20 +425,9 @@ export default function ClassInfo({
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="flex items-start gap-3">
-                                <BookOpen className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <FileText className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
-                                        Course
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.title || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <FileText className="w-5 h-5 text-[#5AD3AF] mt-1" />
-                                <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Description
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -453,9 +442,9 @@ export default function ClassInfo({
                             </div>
 
                             <div className="flex items-start gap-3">
-                                <Award className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Award className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Price
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -465,21 +454,11 @@ export default function ClassInfo({
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-start gap-3">
-                                <BookOpen className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
-                                        Course Category
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.category.name || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
-                                <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Created At
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -491,21 +470,11 @@ export default function ClassInfo({
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-start gap-3">
-                                <User className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <User className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
-                                        Course Author
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
-                                        {classData.course.author.fullName || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <User className="w-5 h-5 text-[#5AD3AF] mt-1" />
-                                <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Mentor
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -514,9 +483,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Users className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Max Students
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -525,9 +494,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Award className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Award className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Status
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -536,9 +505,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Start Date
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -551,9 +520,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         End Date
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -566,9 +535,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Clock className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Clock className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Class Time
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -577,9 +546,9 @@ export default function ClassInfo({
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                                <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                                 <div>
-                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                                    <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Class Days
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -590,7 +559,7 @@ export default function ClassInfo({
                         </div>
                         <div className="mt-6">
                             <Button
-                                className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                                className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] hover:bg-[#34574d] dark-bg-[#5AD3AF] dark-hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
                                 onClick={handleJoinMeeting}
                                 disabled={!classData.linkMeet}
                                 aria-label={

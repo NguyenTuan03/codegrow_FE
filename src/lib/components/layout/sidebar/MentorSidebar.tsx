@@ -39,12 +39,10 @@ export default function MentorSidebar() {
     const pathname = usePathname();
     const [filteredClasses, setFilteredClasses] = useState<ClassItem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-
     const [loading, setLoading] = useState(true);
     const [showClasses, setShowClasses] = useState(false);
-    const limit = 6; // Number of classes per page
+    const limit = 6;
 
-    // Function to determine if a link or section is active
     const isActive = (href: string, isSection: boolean = false) => {
         const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
         const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
@@ -56,7 +54,6 @@ export default function MentorSidebar() {
                       normalizedPathname.startsWith(normalizedHref + '/'));
     };
 
-    // Fetch classes and filter by mentor ID
     const fetchClasses = async (page: number = 1) => {
         try {
             setLoading(true);
@@ -75,9 +72,8 @@ export default function MentorSidebar() {
                 const fetchedClasses = data.metadata.classes;
                 setCurrentPage(data.metadata.page || 1);
 
-                // Filter classes by mentor ID
                 const mentorClasses = fetchedClasses.filter((classItem: ClassItem) => {
-                    if (!classItem.mentor) return false; // Skip classes with no mentor
+                    if (!classItem.mentor) return false;
                     const classMentorId =
                         typeof classItem.mentor === 'string'
                             ? classItem.mentor
@@ -85,7 +81,7 @@ export default function MentorSidebar() {
                     return classMentorId === mentorId;
                 });
                 setFilteredClasses(mentorClasses);
-                setShowClasses(mentorClasses.length > 0); // Show "Classes" section only if there are matching classes
+                setShowClasses(mentorClasses.length > 0);
             } else {
                 throw new Error('Invalid class data');
             }
@@ -95,6 +91,7 @@ export default function MentorSidebar() {
                 title: 'Error',
                 description: 'Failed to fetch classes',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setFilteredClasses([]);
             setShowClasses(false);
@@ -115,12 +112,10 @@ export default function MentorSidebar() {
 
     const otherItems = [
         { href: '/mentor/analytics', icon: BarChart2, label: 'Analytics' },
-        // { href: '/mentor/settings', icon: Settings, label: 'Settings' },
         { href: '/mentor/messages', icon: Mail, label: 'Messages', badge: 3 },
         { href: '/mentor/help', icon: HelpCircle, label: 'Help Center' },
     ];
 
-    // Check if any class route is active for the "Classes" section label
     const isClassesActive = filteredClasses.some((item) =>
         isActive(`/mentor/classes/${item._id}`, true),
     );
@@ -130,7 +125,9 @@ export default function MentorSidebar() {
             <SidebarContent>
                 {/* Logo Section */}
                 <div className="flex items-center gap-x-3 px-6 mb-8">
-                    <h1 className="text-2xl font-bold">CODEGROW</h1>
+                    <h1 className="text-2xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
+                        CODEGROW
+                    </h1>
                 </div>
 
                 {/* Main Navigation */}
@@ -141,14 +138,14 @@ export default function MentorSidebar() {
                                 <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
-                                        className={`hover:bg-[#5AD3AF]/10 dark:hover:bg-[#5AD3AF]/20 ${
+                                        className={`hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20 ${
                                             isActive(item.href)
-                                                ? 'text-[#5AD3AF] font-semibold bg-[#5AD3AF]/10 dark:bg-[#5AD3AF]/20'
+                                                ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-[#657ED4]/10 dark:bg-[#5AD3AF]/20'
                                                 : ''
                                         } rounded-lg mx-2 py-2 transition-colors duration-200`}
                                     >
                                         <Link href={item.href}>
-                                            <item.icon className="h-5 w-5 mr-3 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                            <item.icon className="h-5 w-5 mr-3 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span>{item.label}</span>
                                         </Link>
                                     </SidebarMenuButton>
@@ -164,8 +161,8 @@ export default function MentorSidebar() {
                         <SidebarGroupLabel
                             className={`px-6 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase flex items-center justify-between ${
                                 isClassesActive
-                                    ? 'text-[#5AD3AF] font-semibold'
-                                    : 'hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                    ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold'
+                                    : 'hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                             }`}
                         >
                             <Link href="/mentor/classes">
@@ -175,11 +172,11 @@ export default function MentorSidebar() {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {loading ? (
-                                    <div className="px-6 py-2 text-gray-500 dark:text-gray-400">
+                                    <div className="px-6 py-2 text-gray-500 dark:text-gray-400 font-medium">
                                         <span>Loading classes...</span>
                                     </div>
                                 ) : filteredClasses.length === 0 ? (
-                                    <div className="px-6 py-2 text-gray-500 dark:text-gray-400">
+                                    <div className="px-6 py-2 text-gray-500 dark:text-gray-400 font-medium">
                                         <span>No classes found</span>
                                     </div>
                                 ) : (
@@ -189,14 +186,14 @@ export default function MentorSidebar() {
                                             <SidebarMenuItem key={item._id}>
                                                 <SidebarMenuButton
                                                     asChild
-                                                    className={`hover:bg-[#5AD3AF]/10 dark:hover:bg-[#5AD3AF]/20 ${
+                                                    className={`hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20 ${
                                                         isActive(href)
-                                                            ? 'text-[#5AD3AF] font-semibold bg-[#5AD3AF]/10 dark:bg-[#5AD3AF]/20'
+                                                            ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-[#657ED4]/10 dark:bg-[#5AD3AF]/20'
                                                             : ''
                                                     } rounded-lg mx-2 py-2 transition-colors duration-200`}
                                                 >
                                                     <Link href={href}>
-                                                        <BookOpen className="h-5 w-5 mr-3 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <BookOpen className="h-5 w-5 mr-3 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                         <span className="truncate">
                                                             {item.title}
                                                         </span>
@@ -222,17 +219,17 @@ export default function MentorSidebar() {
                                 <SidebarMenuItem key={item.href}>
                                     <SidebarMenuButton
                                         asChild
-                                        className={`hover:bg-[#5AD3AF]/10 dark:hover:bg-[#5AD3AF]/20 ${
+                                        className={`hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20 ${
                                             isActive(item.href)
-                                                ? 'text-[#5AD3AF] font-semibold bg-[#5AD3AF]/10 dark:bg-[#5AD3AF]/20'
+                                                ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-[#657ED4]/10 dark:bg-[#5AD3AF]/20'
                                                 : ''
                                         } rounded-lg mx-2 py-2 transition-colors duration-200`}
                                     >
                                         <Link href={item.href}>
-                                            <item.icon className="h-5 w-5 mr-3 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                            <item.icon className="h-5 w-5 mr-3 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span>{item.label}</span>
                                             {item.badge && (
-                                                <SidebarMenuBadge className="ml-auto bg-[#5AD3AF]/20 dark:bg-[#5AD3AF]/30 text-[#5AD3AF] dark:text-[#5AD3AF]">
+                                                <SidebarMenuBadge className="ml-auto bg-[#657ED4]/20 dark:bg-[#5AD3AF]/30 text-[#657ED4] dark:text-[#5AD3AF] font-medium">
                                                     {item.badge}
                                                 </SidebarMenuBadge>
                                             )}

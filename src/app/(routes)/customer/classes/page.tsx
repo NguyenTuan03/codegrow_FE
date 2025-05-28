@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { GetClass } from '@/lib/services/class/getclass';
-import { format } from 'date-fns';
+
 import {
     Card,
     CardHeader,
@@ -12,7 +12,7 @@ import {
     CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Calendar, Clock, User } from 'lucide-react';
+import { Users, Clock, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +43,7 @@ interface ClassItem {
         daysOfWeek: string[];
         time: string;
     };
-    image?: string;
+    imgUrl?: string;
     bgColor?: string;
 }
 
@@ -164,9 +164,9 @@ export default function Classes() {
                                     <div
                                         className={`h-40 ${course.bgColor || 'bg-gradient-to-r from-[#5AD3AF] to-[#4ac2a0]'} relative overflow-hidden rounded-t-xl`}
                                     >
-                                        {course.image && (
+                                        {course.imgUrl && (
                                             <img
-                                                src={course.image}
+                                                src={course.imgUrl}
                                                 alt={course.title}
                                                 className="w-full h-full object-cover opacity-80"
                                             />
@@ -210,20 +210,6 @@ export default function Classes() {
                                                 <Clock className="h-3 w-3 mr-1 inline" />
                                                 {course.schedule.time}
                                             </Badge>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                            <Calendar className="h-4 w-4 text-[#5AD3AF]" />
-                                            <span>
-                                                {format(
-                                                    new Date(course.schedule.startDate),
-                                                    'MMM dd, yyyy',
-                                                )}{' '}
-                                                -{' '}
-                                                {format(
-                                                    new Date(course.schedule.endDate),
-                                                    'MMM dd, yyyy',
-                                                )}
-                                            </span>
                                         </div>
                                     </CardContent>
                                     <CardFooter className="flex justify-between">

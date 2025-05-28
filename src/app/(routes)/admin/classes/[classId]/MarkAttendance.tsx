@@ -47,7 +47,7 @@ const MarksAttendance: React.FC<MarksAttendanceProps> = ({ students }) => {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-                <Award className="w-6 h-6 text-[#5AD3AF]" />
+                <Award className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Grades & Attendance
             </h2>
             <div className="space-y-6">
@@ -68,13 +68,13 @@ const MarksAttendance: React.FC<MarksAttendanceProps> = ({ students }) => {
                                         {record.fullName}
                                     </p>
                                     <div className="mt-2 flex items-center gap-3">
-                                        <Award className="w-4 h-4 text-[#5AD3AF]" />
+                                        <Award className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
                                             Grade: {record.grade}
                                         </p>
                                     </div>
                                     <div className="mt-1 flex items-center gap-3">
-                                        <Calendar className="w-4 h-4 text-[#5AD3AF]" />
+                                        <Calendar className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                         <p className="text-sm text-gray-600 dark:text-gray-400">
                                             Attendance: {record.attendance}
                                         </p>

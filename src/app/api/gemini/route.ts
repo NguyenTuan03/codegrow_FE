@@ -57,6 +57,7 @@ export async function POST(request: Request) {
         });
 
         const response = stream?.toDataStreamResponse();
+        console.log('Response:', response);
         response.headers.set('Content-Type', 'text/event-stream'); // Uncomment this line
         return response;
     } catch (error) {

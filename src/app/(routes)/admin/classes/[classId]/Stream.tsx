@@ -39,7 +39,7 @@ const Stream: React.FC = () => {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-                <Paperclip className="w-6 h-6 text-[#5AD3AF]" />
+                <Paperclip className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Class Stream
             </h2>
             <div className="space-y-6">
@@ -56,15 +56,15 @@ const Stream: React.FC = () => {
                         >
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                    <p className="font-semibold text-base text-gray-900 dark:text-gray-100">
                                         {post.author}
                                     </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    <p className="text-base text-gray-500 dark:text-gray-400">
                                         {post.timestamp}
                                     </p>
                                 </div>
                                 {post.isDraft && (
-                                    <span className="text-sm text-blue-500 dark:text-blue-400 font-medium">
+                                    <span className="text-base text-blue-500 dark:text-blue-400 font-medium">
                                         Draft
                                     </span>
                                 )}
