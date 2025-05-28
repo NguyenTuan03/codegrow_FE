@@ -8,22 +8,9 @@ interface Course {
     price: number;
     category: { _id: string; name: string };
     createdAt: string;
-    author: {
-        _id: string;
-        fullName: string;
-        role: string;
-        email: string;
-    };
-    // author :  string;
+    author: string;
     isDeleted?: boolean;
     enrolledCount?: number;
-}
-
-interface Mentor {
-    _id: string;
-    fullName: string;
-    email: string;
-    role: string;
 }
 
 interface Category {
@@ -36,7 +23,6 @@ interface CourseInformationProps {
     formData: Course | null;
     setFormData: React.Dispatch<React.SetStateAction<Course | null>>;
     categories: Category[];
-    author: Mentor[];
 }
 
 export default function CourseInformation({ courseData }: CourseInformationProps) {
@@ -60,10 +46,7 @@ export default function CourseInformation({ courseData }: CourseInformationProps
                 </div>
                 <div>
                     <h3 className="font-medium text-[#657ED4] dark:text-[#5AD3AF]">Author</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        {courseData.author?.fullName}
-                        {/* {courseData.author} */}
-                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">{courseData.author}</p>
                 </div>
                 <div>
                     <h3 className="font-medium text-[#657ED4] dark:text-[#5AD3AF]">Created At</h3>

@@ -20,6 +20,16 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ModeToggle } from '@/components/mode-toggle';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
+
+interface ProfileData {
+    email: string;
+    _id: string;
+    fullName: string;
+    role?: string;
+    avatar: string;
+    wallet?: string;
+}
 
 export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -28,6 +38,8 @@ export const AdminHeader = () => {
     const pathname = usePathname();
     const userAuth = useContext(Auth);
     const [isClient, setIsClient] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
     useEffect(() => {
         setIsClient(true);
@@ -37,7 +49,29 @@ export const AdminHeader = () => {
         const user = localStorage.getItem('user');
         if (!user) {
             router.push('/login');
+            return;
         }
+
+        async function fetchProfile() {
+            try {
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    throw new Error('User data is missing');
+                }
+
+                const user = JSON.parse(userData);
+                const id = user.id;
+                const userDetail = await getUserDetail(id);
+                console.log(`User detail for ID ${id}:`, userDetail);
+                setProfileData(userDetail.metadata);
+            } catch (error) {
+                console.error('❌ Error fetching user details:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchProfile();
     }, [router]);
 
     const handleLogout = () => {
@@ -61,21 +95,25 @@ export const AdminHeader = () => {
         {
             name: 'Courses',
             href: '/admin/report/courses',
-            icon: <BookOpen className="h-4 w-4 mr-2" />,
+            icon: <BookOpen className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
         },
-        { name: 'Mentors', href: '/admin/report/mentors', icon: <User className="h-4 w-4 mr-2" /> },
+        {
+            name: 'Mentors',
+            href: '/admin/report/mentors',
+            icon: <User className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
+        },
     ];
 
     const menuItems = [
         {
             name: 'Dashboard',
             href: '/admin/report/dashboard',
-            icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
+            icon: <LayoutDashboard className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
         },
         {
             name: 'Settings',
             href: '/admin/report/settings',
-            icon: <Settings className="h-4 w-4 mr-2" />,
+            icon: <Settings className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
         },
     ];
 
@@ -94,33 +132,27 @@ export const AdminHeader = () => {
     }
 
     return (
-        <header
-            className="fixed w-full top-0 left-65 right-0 z-50 shadow-sm border-b" // Switch to fixed positioning
-            style={{
-                backgroundColor: 'var(--sidebar-background)',
-                color: 'var(--sidebar-foreground)',
-            }}
-        >
-            <div className="container flex h-16 items-center justify-between px-4">
+        <header className="fixed w-full top-0 left-0 right-0 z-50 shadow-sm border-b bg-gray-50 dark:bg-gray-900">
+            <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
                 {/* Left side - Logo and Dropdowns */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 ">
                     <div className="flex items-center gap-4">
                         {/* Report Dropdown */}
                         <Accordion type="single" collapsible className="w-auto">
                             <AccordionItem value="report" className="border-b-0">
                                 <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
-                                    <div className="flex items-center gap-1 text-base font-normal">
-                                        Report{' '}
+                                    <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
+                                        Report
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
+                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                                     <div className="py-1">
                                         {reportItems.map((item) => (
                                             <Link key={item.name} href={item.href}>
                                                 <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
                                                         isActiveLink(item.href)
-                                                            ? 'text-blue-600 dark:text-blue-400 font-semibold bg-gray-100 dark:bg-gray-700'
+                                                            ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
                                                             : 'text-gray-700 dark:text-gray-300'
                                                     }`}
                                                 >
@@ -138,18 +170,18 @@ export const AdminHeader = () => {
                         <Accordion type="single" collapsible className="w-auto">
                             <AccordionItem value="menu" className="border-b-0">
                                 <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
-                                    <div className="flex items-center gap-1 text-base font-normal">
-                                        Menu{' '}
+                                    <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
+                                        Menu
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50">
+                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                                     <div className="py-1">
                                         {menuItems.map((item) => (
                                             <Link key={item.name} href={item.href}>
                                                 <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
                                                         isActiveLink(item.href)
-                                                            ? 'text-blue-600 dark:text-blue-400 font-semibold bg-gray-100 dark:bg-gray-700'
+                                                            ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
                                                             : 'text-gray-700 dark:text-gray-300'
                                                     }`}
                                                 >
@@ -172,7 +204,7 @@ export const AdminHeader = () => {
                         <input
                             type="text"
                             placeholder="Search in font"
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-200"
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                             value={searchQuery}
@@ -182,7 +214,7 @@ export const AdminHeader = () => {
 
                     {/* Search Results */}
                     {isSearchFocused && (
-                        <div className="absolute mt-1 w-full bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-600">
+                        <div className="absolute mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                             {searchResults
                                 .filter(
                                     (item) =>
@@ -196,16 +228,14 @@ export const AdminHeader = () => {
                                 .map((item) => (
                                     <div
                                         key={item.id}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                        className="flex items-center gap-3 px-4 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black cursor-pointer transition-colors font-medium"
                                     >
                                         <div className="text-gray-500 dark:text-gray-300">
                                             {item.icon}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium">
-                                                {item.title}
-                                            </span>
-                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            <span className="text-sm">{item.title}</span>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                                 {item.category}
                                             </span>
                                         </div>
@@ -218,103 +248,100 @@ export const AdminHeader = () => {
                 <div className="flex items-center gap-4">
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
-                            <Avatar className="w-8 h-8 bg-gradient-to-br from-gray-800 to-gray-900 text-white shadow-md hover:shadow-lg transition-shadow">
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback>A</AvatarFallback>
-                            </Avatar>
+                            {loading ? (
+                                <div className="animate-pulse">
+                                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                                </div>
+                            ) : (
+                                <Avatar className="w-8 h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
+                                    <AvatarImage
+                                        src={profileData?.avatar || '/default-avatar.png'}
+                                        alt={profileData?.fullName}
+                                    />
+                                    <AvatarFallback className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
+                                        {profileData?.fullName?.charAt(0) || 'A'}
+                                    </AvatarFallback>
+                                </Avatar>
+                            )}
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-48 bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
+                            className="w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-1"
                             align="end"
                         >
-                            <DropdownMenuItem>
-                                <User className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                                <User className="h-4 w-4" />
                                 <Link href="/admin/profileadmin" className="w-full">
                                     Profile
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Settings className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                                <Settings className="h-4 w-4" />
                                 <Link href="/admin/changepassword" className="w-full">
                                     Change Password
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleLogout}>
-                                <div className="flex items-center gap-2">
-                                    <LogOut className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-                                    Logout
-                                </div>
+                            <DropdownMenuItem
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                                <Bell className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                                <Bell className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className="w-72 bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
+                            className="w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
                             align="end"
                         >
-                            <div className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <div className="px-4 py-2 text-sm font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
                                 Notifications
                             </div>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="px-4 py-2 font-medium">
                                 <div className="flex flex-col gap-1 text-sm">
-                                    <span className="font-medium">New user registered</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="text-gray-800 dark:text-gray-200">
+                                        New user registered
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                         2 minutes ago
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="px-4 py-2 font-medium">
                                 <div className="flex flex-col gap-1 text-sm">
-                                    <span className="font-medium">System update completed</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="text-gray-800 dark:text-gray-200">
+                                        System update completed
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                         10 minutes ago
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem className="px-4 py-2 font-medium">
                                 <div className="flex flex-col gap-1 text-sm">
-                                    <span className="font-medium">You have 3 unread messages</span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="text-gray-800 dark:text-gray-200">
+                                        You have 3 unread messages
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                         30 minutes ago
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="justify-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500">
+                            <DropdownMenuItem className="justify-center text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] font-medium">
                                 <Link href="#">View all</Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-
-                    {/* <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            className="w-48 bg-gray-100 dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
-                            align="end"
-                        >
-                            <DropdownMenuItem>
-                                <Link href="#" className="w-full">
-                                    System Settings
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link href="#" className="w-full">
-                                    Preferences
-                                </Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu> */}
                     <ModeToggle />
                 </div>
             </div>
         </header>
     );
 };
+
+export default AdminHeader;

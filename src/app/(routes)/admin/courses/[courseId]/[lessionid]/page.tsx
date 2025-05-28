@@ -429,7 +429,7 @@ export default function LessonDetail() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen  dark:bg-gray-900 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header with back button and title */}
                 <div className="flex items-center gap-4">
@@ -442,10 +442,10 @@ export default function LessonDetail() {
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                             Lesson Management
                         </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">
                             Manage lesson content and quizzes
                         </p>
                     </div>
@@ -453,7 +453,7 @@ export default function LessonDetail() {
 
                 {/* Tab layout for lesson and quizzes */}
                 <Tabs defaultValue="lesson" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 max-w-xs rounded-lg bg-gray-100 dark:bg-gray-800 p-1">
+                    <TabsList className="grid w-full grid-cols-2 max-w-xs rounded-lg bg-gray-100 dark:bg-gray-800 mb-5 p-1">
                         <TabsTrigger
                             value="lesson"
                             className="rounded-md py-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
@@ -475,36 +475,36 @@ export default function LessonDetail() {
                                 <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
                                     Lesson Details
                                 </CardTitle>
-                                <CardDescription className="text-gray-600 dark:text-gray-400">
+                                <CardDescription className="text-gray-600 text-base dark:text-gray-400">
                                     View detailed information about the lesson
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
                                             Title
                                         </Label>
-                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
                                             {lesson?.title || 'No data available'}
                                         </p>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
                                             Order
                                         </Label>
-                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
                                             {lesson?.order || 'No data available'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
                                         Content
                                     </Label>
                                     <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <p className="text-sm text-gray-800 dark:text-gray-200">
+                                        <p className="text-base text-gray-800 dark:text-gray-200">
                                             {lesson?.content || 'No content available'}
                                         </p>
                                     </div>
@@ -548,10 +548,10 @@ export default function LessonDetail() {
                         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                                    <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
                                         Quizzes
                                     </CardTitle>
-                                    <CardDescription className="text-gray-600 dark:text-gray-400">
+                                    <CardDescription className="text-gray-600 text-base dark:text-gray-400">
                                         Manage quizzes and assessments for the lesson
                                     </CardDescription>
                                 </div>
