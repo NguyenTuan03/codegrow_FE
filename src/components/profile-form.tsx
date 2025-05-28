@@ -120,7 +120,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
+                                        <FormLabel className="text-gray-700 text-base dark:text-gray-300 font-medium">
                                             Email
                                         </FormLabel>
                                         <FormControl>
@@ -134,7 +134,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                 }`}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
+                                        <FormMessage className="text-red-500 text-base" />
                                     </FormItem>
                                 )}
                             />
@@ -145,8 +145,8 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
-                                            Họ và tên
+                                        <FormLabel className="text-gray-700 text-base dark:text-gray-300 font-medium">
+                                            Full Name
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -159,7 +159,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                 }`}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
+                                        <FormMessage className="text-red-500 text-base" />
                                     </FormItem>
                                 )}
                             />
@@ -170,8 +170,8 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
-                                            Vai trò
+                                        <FormLabel className="text-gray-700 text-base dark:text-gray-300 font-medium">
+                                            Role
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -185,15 +185,15 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                 }`}
                                             />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
+                                        <FormMessage className="text-red-500 text-base" />
                                     </FormItem>
                                 )}
                             />
 
                             {/* Wallet */}
                             <FormItem>
-                                <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
-                                    Số dư ví
+                                <FormLabel className="text-gray-700 text-base  dark:text-gray-300 font-medium">
+                                    Wallet
                                 </FormLabel>
                                 <FormControl>
                                     <div className="flex items-center space-x-2">

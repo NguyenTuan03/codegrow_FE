@@ -105,7 +105,7 @@ export default function ProfileCustomer() {
             ) : (
                 <div className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-10 md:p-12 transform transition-all duration-300 hover:shadow-3xl">
                     <div className="text-center mb-12">
-                        <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:[#5AD3AF]">
                             Your Profile
                         </h1>
                         <p className="text-xl text-gray-700 dark:text-gray-300 mt-4">

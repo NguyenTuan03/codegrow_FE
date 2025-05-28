@@ -28,12 +28,7 @@ interface Course {
     price: number;
     category: { _id: string; name: string };
     createdAt: string;
-    author: {
-        _id: string;
-        fullName: string;
-        role: string;
-        email: string;
-    };
+    author: string;
 
     isDeleted?: boolean;
     enrolledCount?: number;
@@ -259,7 +254,6 @@ export default function CourseDetailPage() {
                             formData={formData}
                             setFormData={setFormData}
                             categories={categories}
-                            author={author}
                         />
                     </TabsContent>
                     <TabsContent value="students">

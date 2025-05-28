@@ -12,7 +12,7 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users, BookOpen, Star, Edit, Trash2 } from 'lucide-react';
+import { Users, BookOpen, Star, Edit, Calendar } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
@@ -48,13 +48,12 @@ interface Course {
     description: string;
     price: number;
     enrolledCount: number;
-    author: { _id: string; fullName: string; email: string; role: string };
-    // author :  string;
+    author: string;
     category: string | Category;
     createdAt: string;
     lessons: number;
     status?: 'published' | 'draft' | 'archived';
-    rating?: number; // Add rating field
+    rating?: number;
 }
 
 interface ApiResponse {
@@ -92,11 +91,11 @@ export default function AdminCoursesPage() {
                 title: 'Error',
                 description: 'Failed to fetch categories',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
 
-    // Function to fetch comments and calculate average rating
     const fetchCommentsAndCalculateRatings = async (courseId: string): Promise<number> => {
         try {
             const response: CommentResponse = await GetComment(courseId);
@@ -109,13 +108,13 @@ export default function AdminCoursesPage() {
                 .filter((comment) => comment.rating !== undefined)
                 .map((comment) => comment.rating as number);
 
-            if (ratings.length === 0) return 0; // No ratings available
+            if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-            return Number(avgRating.toFixed(1)); // Round to 1 decimal place
+            return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
-            return 0; // Default to 0 if fetching fails
+            return 0;
         }
     };
 
@@ -132,15 +131,14 @@ export default function AdminCoursesPage() {
                             categoryObj = course.category as Category;
                         }
 
-                        // Fetch average rating from comments
                         const avgRating = await fetchCommentsAndCalculateRatings(course._id);
                         console.log(`Average rating for course ${course._id}:`, avgRating);
 
                         return {
                             ...course,
-                            category: categoryObj || { _id: '', name: 'Uncategorized' },
 
-                            rating: avgRating || 5, // Fallback to 4.5 if no rating
+                            category: categoryObj || { _id: '', name: 'Uncategorized' },
+                            rating: avgRating || 5,
                         };
                     }),
                 );
@@ -159,6 +157,7 @@ export default function AdminCoursesPage() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to fetch courses',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setCourses([]);
         } finally {
@@ -174,7 +173,6 @@ export default function AdminCoursesPage() {
         if (categories.length > 0) {
             fetchCourses(currentPage);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, categories]);
 
     const handlePageChange = (page: number) => {
@@ -183,34 +181,41 @@ export default function AdminCoursesPage() {
         }
     };
 
-    // const getStatusBadge = (status: string) => {
-    //     switch (status) {
-    //         case 'published':
-    //             return 'bg-green-500 hover:bg-green-600 text-white';
-    //         case 'draft':
-    //             return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-    //         case 'archived':
-    //             return 'bg-gray-500 hover:bg-gray-600 text-white';
-    //         default:
-    //             return 'bg-blue-500 hover:bg-blue-600 text-white';
-    //     }
-    // };
-
     return (
-        <div className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <div className="max-w-8xl mx-auto">
+        <div className="p-6 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto">
+                {/* Header with Date and Time */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
                             Course Management
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-gray-600 text-xl dark:text-gray-400 mt-2 font-medium">
                             Manage and organize all courses in your platform
                         </p>
                     </div>
+                    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
+                        <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                        <span className="text-gray-800 text-base dark:text-gray-200 font-medium">
+                            {new Date('2025-05-28T15:39:00+07:00').toLocaleString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                                timeZone: 'Asia/Bangkok',
+                            })}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Create New Course Button */}
+                <div className="flex justify-end mb-6">
                     <Button
                         onClick={() => router.push('/admin/courses/create')}
-                        className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md"
                     >
                         Create New Course
                     </Button>
@@ -219,11 +224,15 @@ export default function AdminCoursesPage() {
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {[...Array(4)].map((_, i) => (
-                            <Card key={i} className="overflow-hidden">
-                                <Skeleton className="h-40 w-full" />
+                            <Card
+                                key={i}
+                                className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg"
+                            >
+                                <Skeleton className="h-40 w-full rounded-t-lg" />
                                 <CardContent className="p-4 space-y-3">
                                     <Skeleton className="h-6 w-3/4" />
                                     <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-1/2" />
                                     <Skeleton className="h-4 w-1/2" />
                                 </CardContent>
                                 <CardFooter className="p-4 space-x-2">
@@ -236,19 +245,19 @@ export default function AdminCoursesPage() {
                 ) : (
                     <>
                         {courses.length === 0 ? (
-                            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-lg">
+                            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
                                 <div className="mx-auto w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                                    <BookOpen className="w-12 h-12 text-gray-400" />
+                                    <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-2">
+                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
                                     No courses available
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
+                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6 font-medium">
                                     Create your first course to get started
                                 </p>
                                 <Button
                                     onClick={() => router.push('/admin/courses/create')}
-                                    className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md"
                                 >
                                     Create Course
                                 </Button>
@@ -262,14 +271,9 @@ export default function AdminCoursesPage() {
                                             className="hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col h-full"
                                         >
                                             <div className="relative">
-                                                <div className="h-40 bg-gradient-to-r from-[#e6fcf6] to-[#d0f7eb] dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                                                <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
                                                     <div className="absolute top-2 left-2 space-x-2">
-                                                        {/* <Badge
-                                                            className={`${getStatusBadge(course.status || 'published')} px-3 py-1 text-sm rounded-md shadow-sm`}
-                                                        >
-                                                            {course.status || 'published'}
-                                                        </Badge> */}
-                                                        <Badge className="bg-[#657ED4] hover:bg-[#657ED4] text-white dark:bg-[#657ED4] dark:hover:bg-[#657ED4] px-3 py-1 text-sm rounded-md shadow-sm">
+                                                        <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
                                                             {typeof course.category === 'object'
                                                                 ? course.category.name
                                                                 : 'Uncategorized'}
@@ -278,32 +282,38 @@ export default function AdminCoursesPage() {
                                                 </div>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
-                                                <h4 className="font-semibold text-lg line-clamp-2 text-gray-800 dark:text-white">
+                                                <h4 className="font-semibold text-xl line-clamp-2 text-[#657ED4] dark:text-[#5AD3AF]">
                                                     {course.title}
                                                 </h4>
+                                                <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
+                                                    by{' '}
+                                                    {typeof course.author === 'object'
+                                                        ? course.author
+                                                        : course.author || 'Unknown Author'}
+                                                </p>
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1">
-                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                                                <p className="text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 font-medium">
                                                     {course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-[#657ED4] dark:text-[#657ED4] text-lg">
+                                                    <span className="font-bold  text-base">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
                                                             {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 font-medium">
                                                     <div className="flex items-center">
-                                                        <Users className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <Users className="h-4 w-4 mr-1 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                         <span>{course.enrolledCount} enrolled</span>
                                                     </div>
                                                     <div className="flex items-center">
-                                                        <BookOpen className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <BookOpen className="h-4 w-4 mr-1 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                         <span>{course.lessons} lessons</span>
                                                     </div>
                                                 </div>
@@ -312,7 +322,7 @@ export default function AdminCoursesPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="flex-1 border-[#5AD3AF] text-[#5AD3AF] hover:bg-[#5AD3AF]/10 dark:border-[#5AD3AF] dark:text-[#5AD3AF] dark:hover:bg-[#5AD3AF]/20"
+                                                    className="flex-1 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black rounded-lg font-medium transition-all duration-200"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         router.push(`/admin/courses/${course._id}`);
@@ -320,34 +330,6 @@ export default function AdminCoursesPage() {
                                                 >
                                                     <Edit className="w-4 h-4 mr-2" />
                                                     Edit
-                                                </Button>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    className="flex-1"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        toast({
-                                                            title: 'Delete Course',
-                                                            description: `Are you sure you want to delete "${course.title}"?`,
-                                                            action: (
-                                                                <Button
-                                                                    variant="destructive"
-                                                                    onClick={() => {
-                                                                        toast({
-                                                                            title: 'Deleted',
-                                                                            description: `Course "${course.title}" has been deleted`,
-                                                                        });
-                                                                    }}
-                                                                >
-                                                                    Confirm
-                                                                </Button>
-                                                            ),
-                                                        });
-                                                    }}
-                                                >
-                                                    <Trash2 className="w-4 h-4 mr-2" />
-                                                    Delete
                                                 </Button>
                                             </CardFooter>
                                         </Card>
@@ -367,7 +349,7 @@ export default function AdminCoursesPage() {
                                                         className={
                                                             currentPage === 1
                                                                 ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200 font-medium'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -381,8 +363,8 @@ export default function AdminCoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0]'
-                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] rounded-lg font-semibold'
+                                                                    : 'cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium'
                                                             }
                                                         >
                                                             {page}
@@ -397,7 +379,7 @@ export default function AdminCoursesPage() {
                                                         className={
                                                             currentPage === totalPages
                                                                 ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200 font-medium'
                                                         }
                                                     />
                                                 </PaginationItem>

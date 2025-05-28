@@ -164,30 +164,30 @@ const Customerheader = () => {
                                 </DropdownMenuItem> */}
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-black rounded-md transition-colors"
                                 >
-                                    <User2 className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
+                                    <User2 className="w-4 h-4 text-black hover:text-black dark:text-black" />
                                     <span className="text-sm font-medium">Profile</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/changepassword')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
+                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-black rounded-md transition-colors"
                                 >
-                                    <Settings className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
+                                    <Settings className="w-4 h-4 text-black hover:text-white dark:text-black" />
                                     <span className="text-sm font-medium">Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/support')}
                                     className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <HelpCircle className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
+                                    <HelpCircle className="w-4 h-4 text-black dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Help Support</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] hover:text-black dark:hover:bg-gray-700 dark:hover:text-white rounded-md transition-colors"
                                 >
-                                    <LogOut className="w-4 h-4 text-[#657ED4] dark:text-[#657ED4]" />
+                                    <LogOut className="w-4 h-4 text-black dark:text-[#657ED4]" />
                                     <span className="text-sm font-medium">Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

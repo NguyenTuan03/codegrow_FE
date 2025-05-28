@@ -177,11 +177,11 @@ export default function LessonList({ courseId }: LessonListProps) {
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Lessons</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Lessons</h1>
                     <div className="flex gap-3 w-full sm:w-auto">
                         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                             <DialogTrigger asChild>
-                                <Button className="w-full sm:w-auto bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white flex items-center gap-2">
+                                <Button className="w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70]  text-white flex items-center gap-2">
                                     <PlusCircle className="h-5 w-5" />
                                     Create Lesson
                                 </Button>
@@ -300,7 +300,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                         </Button>
                                         <Button
                                             type="submit"
-                                            className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white"
+                                            className="bg-[#657ED4] hover:bg-[#424c70] text-white"
                                         >
                                             Create Lesson
                                         </Button>
@@ -315,7 +315,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                     <CardHeader className="p-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-1.5 h-6 bg-[#5AD3AF] rounded-full" />
+                            <div className="w-1.5 h-6 bg-[#657ED4] rounded-full" />
                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                 Lesson List
                             </h2>
@@ -352,7 +352,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                         >
                                             <CardHeader className="p-4 border-b border-gray-200 dark:border-gray-600">
                                                 <div className="flex items-center justify-between">
-                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
+                                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
                                                         {lesson.title}
                                                     </h3>
                                                     <Badge
@@ -367,7 +367,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                                 </div>
                                             </CardHeader>
                                             <CardContent className="p-4 space-y-2">
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                                <p className="text-base text-gray-600 dark:text-gray-400 line-clamp-2">
                                                     {lesson.content
                                                         ? lesson.content.slice(0, 100) +
                                                           (lesson.content.length > 100 ? '...' : '')
@@ -382,7 +382,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                                             href={lesson.videoUrl}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="text-[#5AD3AF] hover:underline truncate max-w-[150px]"
+                                                            className="text-[#657ED4] hover:underline truncate max-w-[150px]"
                                                             title={lesson.videoUrl}
                                                         >
                                                             {lesson.videoUrl.slice(0, 20) +
@@ -407,7 +407,7 @@ export default function LessonList({ courseId }: LessonListProps) {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="w-full text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
+                                                    className="w-full bg-[#657ED4] hover:bg-[#3a4569] dark:bg-[#5AD3AF] border-none hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
                                                     onClick={() => handleViewDetails(lesson._id)}
                                                 >
                                                     <Eye className="h-4 w-4 mr-2" />

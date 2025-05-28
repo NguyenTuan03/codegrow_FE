@@ -30,7 +30,7 @@ interface Course {
     description: string;
     price: number;
     enrolledCount: number;
-    author: { _id: string; fullName: string; email: string; role: string };
+    author: string;
     category: Category;
     createdAt: string;
     lessons: number;
