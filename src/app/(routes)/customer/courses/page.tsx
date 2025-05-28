@@ -37,7 +37,7 @@ interface User {
     fullName: string;
     email: string;
     role: string;
-    id: string;
+    _id: string;
 }
 
 interface Message {
@@ -56,8 +56,8 @@ interface Course {
     description: string;
     price: number;
     enrolledCount: number;
-    author: { _id: string; fullName: string; email: string; role: string };
-    // author :  string;
+    author: string;
+
     category: string | Category;
     createdAt: string;
     lessons: number;
@@ -97,6 +97,7 @@ export default function CoursesPage() {
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
+            console.log('Data from GetAllCategory:', data);
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
@@ -134,7 +135,7 @@ export default function CoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-
+            console.log('Data from GetCourses:', data);
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -235,13 +236,13 @@ export default function CoursesPage() {
 
     return (
         <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-            <div className="max-w-8xl mx-auto">
+            <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
                 <div className="mb-10">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                    <h1 className="text-4xl mb-5 font-bold  tracking-tight text-[#657ED4] dark:[#5AD3AF]">
                         Discover Amazing Courses
                     </h1>
-                    <p className="mt-3 text-lg text-gray-600 dark:text-gray-300">
+                    <p className="mt-3 text-xl  text-gray-600 dark:text-gray-300">
                         Learn from the best instructors and enhance your skills with our curated
                         courses.
                     </p>
@@ -255,26 +256,32 @@ export default function CoursesPage() {
                             placeholder="Search courses..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-300 shadow-sm"
+                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] focus:border-transparent transition-all duration-300 shadow-sm"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                <SelectTrigger className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] transition-all">
+                                <SelectTrigger
+                                    className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
+                                    aria-label="Filter by Category"
+                                >
                                     <SelectValue placeholder="Filter by Category" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-lg">
-                                    <SelectItem value="all" className="rounded-md">
+                                <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
+                                    <SelectItem
+                                        value="all"
+                                        className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
                                         All Categories
                                     </SelectItem>
                                     {categories.map((category) => (
                                         <SelectItem
                                             key={category._id}
                                             value={category._id}
-                                            className="rounded-md"
+                                            className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
                                             {category.name}
                                         </SelectItem>
@@ -283,23 +290,41 @@ export default function CoursesPage() {
                             </Select>
                         </div>
                         <Select value={sortOption} onValueChange={setSortOption}>
-                            <SelectTrigger className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#5AD3AF] transition-all">
+                            <SelectTrigger
+                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
+                                aria-label="Sort By"
+                            >
                                 <SelectValue placeholder="Sort By" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-lg">
-                                <SelectItem value="default" className="rounded-md">
+                            <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
+                                <SelectItem
+                                    value="default"
+                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
                                     Default
                                 </SelectItem>
-                                <SelectItem value="price-asc" className="rounded-md">
+                                <SelectItem
+                                    value="price-asc"
+                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
                                     Price: Low to High
                                 </SelectItem>
-                                <SelectItem value="price-desc" className="rounded-md">
+                                <SelectItem
+                                    value="price-desc"
+                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
                                     Price: High to Low
                                 </SelectItem>
-                                <SelectItem value="rating-desc" className="rounded-md">
+                                <SelectItem
+                                    value="rating-desc"
+                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
                                     Rating: High to Low
                                 </SelectItem>
-                                <SelectItem value="enrolled-desc" className="rounded-md">
+                                <SelectItem
+                                    value="enrolled-desc"
+                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
                                     Popularity
                                 </SelectItem>
                             </SelectContent>
@@ -348,53 +373,53 @@ export default function CoursesPage() {
                                     {filteredCourses.map((course) => (
                                         <Card
                                             key={course._id}
-                                            className="group hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
+                                            className="group hover:shadow-md transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
                                         >
                                             <div className="relative h-48 overflow-hidden">
-                                                <img
+                                                {/* <img
                                                     src={course.image || '/course-placeholder.jpg'}
                                                     alt={course.title}
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                                <Badge className="absolute top-3 left-3 bg-[#657ED4] text-white dark:bg-[#657ED4] px-3 py-1 text-sm rounded-full shadow-sm">
+                                                /> */}
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                    {' '}
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
                                                 </Badge>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
-                                                <h4 className="font-semibold text-lg line-clamp-2 text-gray-800 dark:text-white">
+                                                <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-17">
                                                     {course.title}
                                                 </h4>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                    by {course.author.fullName}
-                                                </p>
-                                                {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                <p className="text-xs md:text-base text-gray-500 dark:text-gray-400">
                                                     by {course.author}
-                                                </p> */}
+                                                </p>
                                             </CardHeader>
-                                            <CardContent className="p-4 pt-0 flex-1">
-                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                                                    {course.description}
+                                            <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[120px]">
+                                                <p className="text-xs md:text-base font-normal text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 h-15">
+                                                    {course.description.length > 50
+                                                        ? course.description.slice(0, 50) + '...'
+                                                        : course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-[#5AD3AF] dark:text-[#5AD3AF] text-xl">
+                                                    <span className="font-bold text-base md:text-base">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        <span className="text-xs md:text-base font-medium text-gray-700 dark:text-gray-300">
                                                             {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                <div className="mt-auto flex items-center justify-between text-xs md:text-base text-gray-500 dark:text-gray-400">
                                                     <div className="flex items-center">
-                                                        <Users className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <Users className="h-4 w-4 mr-1" />
                                                         <span>{course.enrolledCount} learners</span>
                                                     </div>
                                                     <div className="flex items-center">
-                                                        <BookOpen className="h-4 w-4 mr-1 text-[#5AD3AF] dark:text-[#5AD3AF]" />
+                                                        <BookOpen className="h-4 w-4 mr-1" />
                                                         <span>{course.lessons} lessons</span>
                                                     </div>
                                                 </div>
@@ -403,7 +428,7 @@ export default function CoursesPage() {
                                                 <Button
                                                     variant="default"
                                                     size="lg"
-                                                    className="w-full bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white dark:bg-[#5AD3AF] dark:hover:bg-[#4ac2a0] text-base py-5 rounded-full transition-colors duration-200 transform hover:scale-[1.02] shadow-md"
+                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         router.push(
@@ -445,7 +470,7 @@ export default function CoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#5AD3AF] text-white hover:bg-[#4ac2a0] rounded-full'
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] rounded-full underline underline-offset-4'
                                                                     : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-full'
                                                             }
                                                         >

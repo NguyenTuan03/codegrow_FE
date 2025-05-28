@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/CourseInProgress.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -53,6 +52,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                 title: 'Error',
                 description: 'Failed to load course progress. Please try again later.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black',
             });
             return { courseId, progress: 0 };
         }
@@ -109,7 +109,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
     return (
         <section>
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-[#5AD3AF]" />
+                <BookOpen className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Course in Progress
             </h2>
 
@@ -126,7 +126,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                         return (
                             <Card
                                 key={course._id}
-                                className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]"
+                                className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]"
                             >
                                 <CardContent className="p-4">
                                     <div className="flex items-center justify-between mb-2">
@@ -144,7 +144,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                     <div className="flex items-center gap-2 mb-3">
                                         <Progress
                                             value={progress}
-                                            className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&_.progress-indicator]:bg-[#5AD3AF]"
+                                            className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&_.progress-indicator]:bg-[#657ED4] dark:[&_.progress-indicator]:bg-[#5AD3AF]"
                                         />
                                         <span className="text-xs text-gray-600 dark:text-gray-300">
                                             {progress}%
@@ -164,7 +164,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                             </div>
                                         </div>
                                         <Link href={`/customer/courses/${course._id}`}>
-                                            <Button className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 text-xs transition-all duration-200 shadow-sm">
+                                            <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 text-xs transition-all duration-200 shadow-sm">
                                                 {progress === 0
                                                     ? 'Start Course'
                                                     : 'Continue Course'}

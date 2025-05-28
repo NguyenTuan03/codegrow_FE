@@ -9,17 +9,17 @@ interface BreadcrumbsProps {
 
 export default function Breadcrumbs({ courseId, category, title }: BreadcrumbsProps) {
     return (
-        <nav className="flex items-center text-sm text-gray-600 dark:text-gray-400 space-x-2">
+        <nav className="flex items-center text-base text-gray-600 dark:text-gray-400 space-x-2">
             <Link
                 href="/customer/courses"
-                className="hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+                className="hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
             >
                 Courses
             </Link>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
                 href={`/customer/courses?category=${category}`}
-                className="hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+                className="hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
             >
                 {category}
             </Link>

@@ -58,10 +58,10 @@ const Output: React.FC<OutputProps> = ({ editorRef, language, submissionResult }
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Output</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Output</h2>
                 <Button
                     variant="outline"
-                    className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                    className="border-green-500 text-green-500 hover:bg-green-500 text-base hover:text-white"
                     onClick={runCode}
                     disabled={isLoading}
                     aria-label={isLoading ? 'Running code' : 'Run code'}
@@ -108,7 +108,7 @@ const Output: React.FC<OutputProps> = ({ editorRef, language, submissionResult }
                         </p>
                     ))
                 ) : (
-                    <p className="text-sm text-gray-500 italic">
+                    <p className="text-xl text-gray-500 italic">
                         Click `Run Code` to see the output or submit to see test case results
                     </p>
                 )}

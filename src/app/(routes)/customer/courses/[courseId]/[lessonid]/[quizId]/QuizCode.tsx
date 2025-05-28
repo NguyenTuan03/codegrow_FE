@@ -70,7 +70,8 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                 title: 'Code copied!',
                 description: 'The code has been copied to your clipboard.',
                 duration: 3000,
-                className: 'bg-[#5AD3AF] text-black',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
         } catch {
             toast({
@@ -78,6 +79,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                 description: 'Please try again.',
                 variant: 'destructive',
                 duration: 3000,
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
@@ -100,6 +102,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                 description: 'Please write some code before submitting',
                 variant: 'destructive',
                 duration: 3000,
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
@@ -126,6 +129,9 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                     : 'Some test cases failed. Try again!',
                 variant: response.isCorrect ? 'default' : 'destructive',
                 duration: 3000,
+                className: response.isCorrect
+                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold'
+                    : 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
 
             if (response.isCorrect) {
@@ -135,7 +141,8 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                     title: 'Quiz Completed!',
                     description: 'This quiz has been marked as complete.',
                     duration: 3000,
-                    className: 'bg-[#5AD3AF] text-black',
+                    className:
+                        'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
                 });
             }
         } catch (error) {
@@ -150,54 +157,56 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
                     <Button
                         variant="outline"
                         onClick={handleBackToLesson}
-                        className="flex items-center gap-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full px-4 py-2 shadow-sm transition-all duration-200"
+                        className="flex items-center gap-2 bg-white text-base dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-[#657ED4] dark:text-[#5AD3AF] rounded-full px-4 py-2 shadow-sm transition-all duration-200"
                         aria-label="Back to lesson detail"
                     >
                         <ArrowLeft className="h-5 w-5" />
                         Back to Lesson
                     </Button>
                     <div className="flex items-center gap-3">
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-3 py-1 rounded-full text-sm font-medium">
+                        <Badge className="bg-green-100 text-base text-green-800 dark:bg-green-900/30 dark:text-green-300 px-3 py-1 rounded-full  font-medium">
                             {quiz.difficulty || 'Beginner'}
                         </Badge>
                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                            <Clock className="h-5 w-5" />
-                            <span className="text-sm font-medium">{formatTime(timeLeft)}</span>
+                            <Clock className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                            <span className="text-base font-medium text-[#657ED4] dark:text-[#5AD3AF]">
+                                {formatTime(timeLeft)}
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Sidebar */}
-                    <Card className="lg:col-span-1 bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden transition-colors duration-300">
+                    <Card className="lg:col-span-1 bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-300">
                         <CardContent className="p-6">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
+                            <h1 className="text-2xl font-bold text-[#657ED4] dark:text-[#5AD3AF] mb-4 leading-tight">
                                 {quiz.questionText}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 text-base mb-6 leading-relaxed">
+                            <p className="text-gray-600  dark:text-gray-400 text-base mb-6 leading-relaxed font-medium">
                                 {quiz.explanation || 'Complete the coding challenge below.'}
                             </p>
                             {quiz.starterCode && (
                                 <div className="mb-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">
                                         Starter Code
                                     </h3>
                                     <div className="relative bg-gray-900 text-white p-4 rounded-lg">
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"
+                                            className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors duration-200"
                                             onClick={handleCopyCode}
                                             aria-label="Copy starter code"
                                         >
                                             <Copy className="h-4 w-4" />
                                         </Button>
-                                        <pre className="text-sm overflow-x-auto">
+                                        <pre className="text-base overflow-x-auto">
                                             <code>{quiz.starterCode}</code>
                                         </pre>
                                     </div>
@@ -205,20 +214,20 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                             )}
                             {quiz.testCases && quiz.testCases.length > 0 && (
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">
                                         Test Cases
                                     </h3>
                                     <div className="space-y-3">
                                         {quiz.testCases.map((testCase, index) => (
                                             <div
                                                 key={index}
-                                                className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg text-sm"
+                                                className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg text-base"
                                             >
-                                                <p>
+                                                <p className="text-gray-800 dark:text-gray-200">
                                                     <span className="font-medium">Input:</span>{' '}
                                                     {testCase.input}
                                                 </p>
-                                                <p>
+                                                <p className="text-gray-800 dark:text-gray-200">
                                                     <span className="font-medium">
                                                         Expected Output:
                                                     </span>{' '}
@@ -232,14 +241,14 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                         </CardContent>
                     </Card>
                     {/* Right Content */}
-                    <Card className="lg:col-span-2 bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden transition-colors duration-300">
+                    <Card className="lg:col-span-2 bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-300">
                         <CardContent className="p-6">
                             <div className="flex justify-end mb-6">
                                 <div className="flex gap-3">
                                     <Button
                                         onClick={handleSubmitCode}
                                         disabled={isSubmitting}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-2 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                                         aria-label={
                                             isSubmitting ? 'Submitting code' : 'Submit code'
                                         }

@@ -17,8 +17,7 @@ import {
     CarouselPrevious,
     CarouselNext,
 } from '@/components/ui/carousel';
-import { BookOpen, X } from 'lucide-react';
-import ChatRealtime from './chatrealtime/page';
+
 import { GetProgress } from '@/lib/services/api/progress';
 
 interface Category {
@@ -160,18 +159,23 @@ const HomePage = () => {
     };
 
     return (
-        <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
+        <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)]  relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                 <div className="md:col-span-8">
-                    <h3 className="text-3xl mb-3">Welcome back, customer</h3>
-                    <p className="mb-2">
+                    <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:[#5AD3AF]">
+                        Welcome back, customer
+                    </h3>
+                    <p className="text-xl mb-2">
                         Solve coding exercises and get mentored to develop fluency in your chosen
-                        programming languages.
+                        programming languages
                     </p>
-                    <div className="font-bold text-[18px] mt-5 mb-3">Where to start...</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
+                    <div className="font-bold text-2xl mt-5 mb-3">Where to start...</div>
+                    <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
                         {HOME_INTRODUCTION.map((item, index) => (
-                            <Card key={index} className="shadow-md bg-white dark:bg-gray-700">
+                            <Card
+                                key={index}
+                                className="shadow-sm bg-gray-100 dark:bg-gray-700 border-gray-100 dark:border-gray-700 rounded-xl"
+                            >
                                 <CardHeader className="flex justify-center">
                                     <div className="relative w-[100px] h-[100px]">
                                         <Image
@@ -184,19 +188,17 @@ const HomePage = () => {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="text-center">
-                                    <p className="text-[#657ED4] dark:text-blue-300 font-medium">
-                                        {item.name}
-                                    </p>
+                                    <p className="  text-base font-medium">{item.name}</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
                 </div>
                 <div className="md:col-span-4">
-                    <div className="text-xl font-bold mb-4">Your track</div>
+                    <div className="text-2xl font-bold mb-4">Your track</div>
                     <div className="flex flex-row items-center">
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
-                        <div className="flex flex-col ml-4">
+                        <div className="flex flex-col ml-4 text-xl">
                             <Progress
                                 value={courses.length > 0 ? courseProgress[courses[0]._id] || 0 : 0}
                                 className="w-[60%] bg-[#657ED4]"
@@ -208,7 +210,7 @@ const HomePage = () => {
                             </div>
                         </div>
                     </div>
-                    <Card className="bg-[#EEF1EF] dark:bg-gray-700 border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
+                    <Card className="bg-gray-100 dark:bg-gray-700 border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
                         <CardHeader className="flex justify-center">
                             <div className="relative w-[120px] h-[120px]">
                                 <Image
@@ -219,22 +221,22 @@ const HomePage = () => {
                                 />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <h2 className="text-xl font-bold mb-2">Become a mentor</h2>
-                            <p className="text-[#657ED4] dark:text-blue-300 mb-6 text-sm">
+                        <CardContent className="bg-gray-100 dark:bg-gray-700">
+                            <h2 className="text-2xl font-bold mb-2 ">Become a mentor</h2>
+                            <p className=" text-gray-500 dark:text-gray-300 mb-6  text-base">
                                 Mentoring is a great way to reinforce your own learning, and help
                                 students learn and discover the things they don’t know.
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button
-                                    className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-semibold px-6"
+                                    className=" bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3  md:text-base"
                                     onClick={toggleChat}
                                 >
                                     {showChat ? 'Close Chat' : 'Apply'}
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[#657ED4] text-[#657ED4] dark:text-blue-300 dark:border-blue-300 px-6 hover:bg-[#EEF1EF] dark:hover:bg-gray-600"
+                                    className=" border-[#657ED4] dark:border-[#5AD3AF] text-xl text-[#657ED4] dark:text-[#5AD3AF] px-6 py-3  md:text-base hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white font-semibold"
                                 >
                                     Read
                                 </Button>
@@ -243,19 +245,19 @@ const HomePage = () => {
                     </Card>
                 </div>
             </div>
-            <Card className="dark:bg-gray-700">
+            <Card className="bg-white dark:bg-gray-700 border-gray-100 dark:border-gray-700 rounded-xl">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold mb-2 text-center my-3">
+                    <CardTitle className="text-2xl md:text-4xl font-bold mb-2 text-center my-3 text-[#657ED4] dark:[#5AD3AF]">
                         All courses in CODEGROW
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
                         <div className="flex justify-center items-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF]"></div>
                         </div>
                     ) : courses.length === 0 ? (
-                        <div className="text-center text-gray-600 dark:text-gray-400 p-6">
+                        <div className="text-center text-gray-600 dark:text-gray-300 p-6 text-base md:text-base font-normal">
                             No courses available at the moment.
                         </div>
                     ) : (
@@ -264,72 +266,70 @@ const HomePage = () => {
                                 align: 'start',
                                 loop: true,
                             }}
-                            className="w-full max-w-full"
+                            className="w-full max-w-full px-4 sm:px-6 lg:px-8"
                         >
                             <CarouselContent className="-ml-4">
                                 {courses.map((course, index) => (
                                     <CarouselItem
                                         key={index}
-                                        className="pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                                        className="pl-4 basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3"
                                     >
-                                        <Card className="bg-white dark:bg-gray-600 shadow-md h-full">
-                                            <CardHeader>
+                                        <Card className="bg-white dark:bg-gray-600 shadow-sm h-full border-gray-100 dark:border-gray-700 rounded-xl flex flex-col">
+                                            <CardHeader className="p-0">
                                                 <div className="relative w-full h-[200px]">
                                                     <Image
-                                                        src="/courses.png" // Placeholder; update with course-specific image if available
+                                                        src="/courses.png"
                                                         alt={course.title}
                                                         fill
-                                                        className="object-cover"
+                                                        className="object-cover rounded-t-xl"
                                                     />
                                                 </div>
                                             </CardHeader>
-                                            <CardContent>
-                                                <div className="text-[#5AD3AF] dark:text-green-400 text-2xl flex items-center gap-2">
-                                                    <BookOpen className="w-6 h-6" />
+                                            <CardContent className="p-4 flex flex-col flex-grow gap-3 min-h-[200px]">
+                                                <div className="text-xl md:text-2xl font-bold flex items-center gap-2 ">
                                                     {course.title}
                                                 </div>
-                                                <div className="text-[#657ED4] dark:text-blue-300 text-sm mt-2">
+                                                <div className="text-base font-normal text-gray-600 dark:text-gray-300 mt-2  line-clamp-3 h-14">
                                                     {course.description.length > 100
                                                         ? course.description.slice(0, 100) + '...'
                                                         : course.description}
                                                 </div>
-                                                {/* Display Progress for Each Course */}
-                                                <div className="mt-4">
+                                                <div className="mt-auto">
                                                     <Progress
                                                         value={courseProgress[course._id] || 0}
-                                                        className="w-full bg-[#657ED4]"
+                                                        className="w-full bg-[#657ED4] dark:bg-[#5AD3AF]"
                                                     />
-                                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    <div className="text-sm md:text-sm font-normal text-gray-600 dark:text-gray-300 mt-1">
                                                         {courseProgress[course._id] || 0}% completed
                                                     </div>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2">
-                                                <div className="flex items-center gap-2">
+                                            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2 p-4 border-t border-gray-100 dark:border-gray-700">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
                                                     <Image
-                                                        src="/learners.png"
-                                                        width={30}
-                                                        height={30}
+                                                        src="/icons8-users-30.png"
+                                                        width={24}
+                                                        height={24}
                                                         alt="Learners"
                                                     />
                                                     {course.enrolledCount}
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
                                                     <Image
                                                         src="/tag.png"
-                                                        width={30}
-                                                        height={30}
+                                                        width={24}
+                                                        height={24}
                                                         alt="Tag"
                                                     />
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
                                                     <Image
                                                         src="/dollar.png"
-                                                        width={30}
-                                                        height={30}
+                                                        width={24}
+                                                        height={24}
                                                         alt="Dollar"
                                                     />
                                                     ${course.price.toFixed(2)}
@@ -339,46 +339,32 @@ const HomePage = () => {
                                     </CarouselItem>
                                 ))}
                             </CarouselContent>
-                            <CarouselPrevious className="hidden md:flex" />
-                            <CarouselNext className="hidden md:flex" />
+                            <CarouselPrevious className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white" />
+                            <CarouselNext className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white" />
                         </Carousel>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-center">
+                <CardFooter className="flex justify-center   dark:border-gray-700 py-6">
+                    {' '}
                     <Link href="/customer/courses" legacyBehavior>
-                        <Button className="text-center p-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white text-xl transition-colors duration-300">
+                        <Button className="text-center px-6 py-3  bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-base md:text-base font-semibold transition-colors duration-300">
+                            {' '}
                             View all courses
                         </Button>
                     </Link>
                 </CardFooter>
             </Card>
 
-            {/* Chat Realtime Overlay */}
-            {showChat && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-4 relative">
-                        <Button
-                            variant="ghost"
-                            className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
-                            onClick={toggleChat}
-                        >
-                            <X className="w-6 h-6" />
-                        </Button>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
-                            Mentor Application Chat
-                        </h3>
-                        <ChatRealtime />
-                    </div>
-                </div>
-            )}
-
             <div className="mt-8">
-                <h3 className="text-center font-bold text-2xl mb-6">What you get from CODEGROW</h3>
+                <h3 className="text-center font-bold text-2xl md:text-4xl mb-6 text-[#657ED4] dark:[#5AD3AF]">
+                    What you get from CODEGROW
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    {' '}
                     {['1', '2', '3', '4'].map((_, index) => (
                         <div
                             key={index}
-                            className="bg-white dark:bg-gray-700 rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300"
+                            className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700"
                         >
                             <div className="relative w-full h-[140px] mb-4">
                                 <Image
@@ -388,10 +374,11 @@ const HomePage = () => {
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="text-[#657ED4] dark:text-blue-300 font-bold mb-3 text-lg">
+                            <div className="font-bold text-xl md:text-xl mb-3">
+                                {' '}
                                 GOOD LEARNING PATH
                             </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className="text-xl md:text-base text-gray-500 dark:text-gray-300 leading-relaxed">
                                 The learning path is designed methodically, in detail, and in
                                 accordance with learning goals. A good roadmap will help make
                                 learning effective, not wasteful, not going down the wrong path, and

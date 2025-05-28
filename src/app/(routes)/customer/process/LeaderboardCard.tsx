@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/LeaderboardCard.tsx
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +11,7 @@ export default function LeaderboardCard() {
             <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <Trophy className="w-6 h-6 text-[#5AD3AF]" />
+                        <Trophy className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Leaderboard
                         </h3>
@@ -57,12 +56,12 @@ export default function LeaderboardCard() {
                     </div>
 
                     <div className="text-sm mb-2 text-gray-600 dark:text-gray-400">
-                        Gain 250XP to enter this week&apos;s leaderboard
+                        Gain 250XP to enter this weeks leaderboard
                     </div>
                     <Progress
                         value={0}
                         max={250}
-                        className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&>div]:bg-[#5AD3AF]"
+                        className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&>div]:bg-[#657ED4] dark:[&>div]:bg-[#5AD3AF]"
                     />
                     <div className="flex justify-end text-xs text-gray-500 dark:text-gray-400 mt-1">
                         0 / 250 XP
@@ -71,7 +70,7 @@ export default function LeaderboardCard() {
 
                 <Button
                     variant="outline"
-                    className="w-full border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-full flex items-center justify-center gap-1 transition-all duration-200"
+                    className="w-full border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full flex items-center justify-center gap-1 transition-all duration-200"
                 >
                     Join Now
                     <ChevronRight className="w-4 h-4" />

@@ -48,7 +48,7 @@ function StarRating({ rating, setRating, editable = false, size = 20 }: StarRati
                     className={`w-${size / 4} h-${size / 4} ${
                         star <= rating
                             ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300 fill-gray-300'
+                            : 'text-gray-300 dark:text-gray-500 fill-gray-300 dark:fill-gray-500'
                     } ${editable ? 'cursor-pointer' : ''}`}
                     viewBox="0 0 24 24"
                     onClick={() => editable && setRating && setRating(star)}
@@ -97,7 +97,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                     parentComment: comment.parentComment ?? null,
                     user: comment.author ??
                         comment.user ?? {
-                            fullName: 'Người dùng ẩn danh',
+                            fullName: 'Anonymous User',
                             email: '',
                             role: '',
                             id: '',
@@ -112,9 +112,10 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         } catch (error) {
             console.error('Error fetching messages:', error);
             toast({
-                title: 'Lỗi',
-                description: 'Không thể tải bình luận',
+                title: 'Error',
+                description: 'Failed to load comments',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
@@ -165,18 +166,20 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
 
         if (!content.trim()) {
             toast({
-                title: 'Lỗi',
-                description: 'Vui lòng nhập nội dung bình luận',
+                title: 'Error',
+                description: 'Please enter comment content',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
 
         if (!isReply && commentRating === null) {
             toast({
-                title: 'Lỗi',
-                description: 'Vui lòng chọn đánh giá cho bình luận chính',
+                title: 'Error',
+                description: 'Please select a rating for the main comment',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
@@ -210,15 +213,21 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
 
             await fetchMessages();
             toast({
-                title: 'Thành công',
-                description: isReply ? 'Đã gửi phản hồi' : 'Đã gửi bình luận',
+                title: 'Success',
+                description: isReply
+                    ? 'Reply submitted successfully'
+                    : 'Comment submitted successfully',
+                variant: 'default',
+                className:
+                    'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
         } catch (error) {
             console.error('Error posting message:', error);
             toast({
-                title: 'Lỗi',
-                description: 'Không thể gửi bình luận',
+                title: 'Error',
+                description: 'Failed to submit comment',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         } finally {
             setLoading(false);
@@ -231,33 +240,33 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-            <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <MessageCircle className="w-6 h-6 text-[#5AD3AF]" />
-                Thảo luận
+            <h3 className="text-2xl font-semibold text-[#657ED4] dark:text-[#5AD3AF] flex items-center gap-2">
+                <MessageCircle className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
+                Discussion
             </h3>
 
             {/* Comment Form */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
                 <Textarea
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#5AD3AF] focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                     rows={4}
-                    placeholder="Đặt câu hỏi hoặc tham gia thảo luận..."
+                    placeholder="Ask a question or join the discussion..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                 />
                 <div className="mt-3 flex items-center gap-4">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Đánh giá:
+                    <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                        Rating:
                     </span>
                     <StarRating rating={rating} setRating={setRating} editable={true} />
                 </div>
                 <div className="mt-4 flex justify-end">
                     <Button
-                        className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 transition-all duration-200 shadow-sm"
+                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 transition-all duration-200 shadow-sm"
                         onClick={() => postMessage(false)}
                         disabled={loading}
                     >
-                        {loading ? 'Đang gửi...' : 'Đăng bình luận'}
+                        {loading ? 'Submitting...' : 'Post Comment'}
                     </Button>
                 </div>
             </div>
@@ -265,8 +274,8 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             {/* Comments List */}
             <div className="space-y-6">
                 {messages.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center">
-                        Chưa có bình luận nào. Hãy là người đầu tiên thảo luận!
+                    <p className="text-gray-500 dark:text-gray-400 text-center font-medium">
+                        No comments yet. Be the first to discuss!
                     </p>
                 ) : (
                     messages.map((msg) => (
