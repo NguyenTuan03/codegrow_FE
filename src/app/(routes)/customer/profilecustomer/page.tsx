@@ -16,7 +16,7 @@ export default function ProfileCustomer() {
         _id: string;
         fullName: string;
         role?: string;
-        imgUrl?: string;
+        avatar: string;
         wallet?: string;
         enrolledCourses?: {
             _id: string;

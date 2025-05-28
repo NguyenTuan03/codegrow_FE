@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { Pencil, Save, Trash2, X, Calendar } from 'lucide-react';
+import { Pencil, Save, Trash2, X } from 'lucide-react';
 import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
 import { DeleteCourse } from '@/lib/services/course/deletecourse';
 import { UpdateCourse } from '@/lib/services/course/updatecourse';
@@ -244,21 +244,6 @@ export default function CourseDetailPage() {
                             </h1>
                         )}
                     </div>
-                    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
-                        <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                        <span className="text-gray-800 dark:text-gray-200 font-medium">
-                            {new Date('2025-05-28T15:52:00+07:00').toLocaleString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true,
-                                timeZone: 'Asia/Bangkok',
-                            })}
-                        </span>
-                    </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -275,8 +260,7 @@ export default function CourseDetailPage() {
                             </button>
                             <button
                                 onClick={handleCancel}
-                                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-md font-semibold"
-                                aria-label="Cancel editing"
+                                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm font-medium"
                             >
                                 <X className="h-5 w-5 mr-2" />
                                 Cancel
@@ -286,16 +270,14 @@ export default function CourseDetailPage() {
                         <>
                             <button
                                 onClick={handleEdit}
-                                className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md font-semibold"
-                                aria-label="Edit course"
+                                className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md"
                             >
                                 <Pencil className="h-5 w-5 mr-2" />
                                 Update
                             </button>
                             <button
                                 onClick={handleDeleteClick}
-                                className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md font-semibold"
-                                aria-label="Delete course"
+                                className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md"
                             >
                                 <Trash2 className="h-5 w-5 mr-2" />
                                 Delete
@@ -322,7 +304,7 @@ export default function CourseDetailPage() {
 
                 {/* Lesson List */}
                 <div className="mt-6">
-                    <LessonList courseId={courseId} />
+                    <LessonList courseId={courseId} coursePrice={courseData?.price ?? 0} />
                 </div>
 
                 <DeleteConfirmationModal

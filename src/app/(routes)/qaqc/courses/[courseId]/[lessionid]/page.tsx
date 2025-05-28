@@ -235,7 +235,7 @@ export default function LessonDetail() {
                                 <Badge
                                     className={
                                         lesson.status === 'done'
-                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white font-medium'
+                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white text-base font-medium'
                                             : 'bg-gray-500 dark:bg-gray-600 text-white font-medium'
                                     }
                                 >

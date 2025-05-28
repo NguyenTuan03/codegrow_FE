@@ -3,9 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
-import { getUser } from '@/lib/services/admin/getuser';
 import { GetListStudents } from '@/lib/services/course/getliststudents';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import StudentList from '@/app/(routes)/admin/courses/[courseId]/StudentList';
@@ -20,6 +18,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Info, Users, BookOpen } from 'lucide-react';
 
 interface Course {
     _id: string;
@@ -29,16 +28,8 @@ interface Course {
     category: { _id: string; name: string };
     createdAt: string;
     author: string;
-
     isDeleted?: boolean;
     enrolledCount?: number;
-}
-
-interface Mentor {
-    _id: string;
-    fullName: string;
-    email: string;
-    role: string;
 }
 
 interface Students {
@@ -59,8 +50,14 @@ export default function CourseDetailPage() {
     const [formData, setFormData] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [listStudents, setListStudents] = useState<Students[]>([]);
-    const [author, setAuthors] = useState<Mentor[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [activeTab, setActiveTab] = useState('information');
+
+    const tabs = [
+        { name: 'Information', icon: Info },
+        { name: 'Students', icon: Users },
+        { name: 'Lessons', icon: BookOpen },
+    ];
 
     const fetchCourseDetail = useCallback(async () => {
         try {
@@ -72,10 +69,6 @@ export default function CourseDetailPage() {
 
             const course = {
                 ...res.metadata,
-                author:
-                    typeof res.metadata.author === 'string'
-                        ? JSON.parse(res.metadata.author)
-                        : res.metadata.author,
                 category:
                     typeof res.metadata.category === 'string'
                         ? JSON.parse(res.metadata.category)
@@ -128,26 +121,9 @@ export default function CourseDetailPage() {
         }
     }, [courseId]);
 
-    const fetchAuthor = useCallback(async () => {
-        try {
-            const response = await getUser();
-            if (!response?.metadata?.users || !Array.isArray(response.metadata.users)) {
-                throw new Error('Invalid or missing users data');
-            }
-            setAuthors(response.metadata.users);
-        } catch (error) {
-            console.error('Failed to fetch authors:', error);
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to load author list',
-                variant: 'destructive',
-            });
-        }
-    }, []);
-
     useEffect(() => {
-        Promise.all([fetchCourseDetail(), fetchListStudents(), fetchAuthor(), fetchCategories()]);
-    }, [fetchCourseDetail, fetchListStudents, fetchAuthor, fetchCategories]);
+        Promise.all([fetchCourseDetail(), fetchListStudents(), fetchCategories()]);
+    }, [fetchCourseDetail, fetchListStudents, fetchCategories]);
 
     if (loading) {
         return (
@@ -175,8 +151,8 @@ export default function CourseDetailPage() {
                     <BreadcrumbList>
                         <BreadcrumbItem>
                             <BreadcrumbLink
-                                href="/admin"
-                                className="text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF]"
+                                href="/qaqc"
+                                className="text-gray-600 text-base dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 Home
                             </BreadcrumbLink>
@@ -184,15 +160,15 @@ export default function CourseDetailPage() {
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
                             <BreadcrumbLink
-                                href="/admin/courses"
-                                className="text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF]"
+                                href="/qaqc/courses"
+                                className="text-gray-600 text-base dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 Courses
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <span className="text-gray-900 dark:text-gray-100">
+                            <span className="text-gray-900 text-base dark:text-gray-100">
                                 {courseData.title}
                             </span>
                         </BreadcrumbItem>
@@ -202,67 +178,84 @@ export default function CourseDetailPage() {
                 {/* Course Header */}
                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                     <CardHeader className="p-6">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                        <h1 className="text-4xl font-bold tracking-tight text-[#657ED4] dark:text-[#5AD3AF]">
                             {courseData.title}
                         </h1>
                         <div className="flex flex-wrap items-center gap-4 mt-2">
-                            <Badge className="bg-[#5AD3AF] text-white px-3 py-1 text-sm">
+                            <Badge className="bg-[#657ED4] dark:bg-[#5AD3AF] text-white px-3 py-1 text-base rounded-full shadow-sm">
                                 {courseData.category.name}
                             </Badge>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Created by {courseData.author.fullName}
-                                {/* Created by {courseData.author} */}
+                            <span className="text-base text-gray-600 dark:text-gray-400">
+                                Created by {courseData.author}
                             </span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="text-base text-gray-600 dark:text-gray-400">
                                 {courseData.enrolledCount || 0} students enrolled
                             </span>
                         </div>
                     </CardHeader>
                     <CardContent className="p-6 pt-0">
-                        <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
-                            {courseData.description.slice(0, 200) +
-                                (courseData.description.length > 200 ? '...' : '')}
+                        <p className="text-gray-600 text-base dark:text-gray-400 line-clamp-3">
+                            {courseData.description}
                         </p>
                         <div className="mt-4 flex items-center gap-4">
-                            <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                 ${courseData.price.toFixed(2)}
                             </span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Created on {new Date(courseData.createdAt).toLocaleDateString()}
+                            <span className="text-base text-gray-600 dark:text-gray-400">
+                                Created on{' '}
+                                {new Date(courseData.createdAt).toLocaleDateString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                })}
+                            </span>
+                            <span className="text-base text-gray-600 dark:text-gray-400">
+                                Last updated{' '}
+                                {new Date('2025-05-28T23:19:00+07:00').toLocaleString('en-US', {
+                                    month: 'long',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true,
+                                    timeZone: 'Asia/Bangkok',
+                                })}
                             </span>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Tabs Navigation */}
-                <Tabs defaultValue="information" className="w-full">
-                    <TabsList className="flex flex-wrap justify-start gap-2 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-2 rounded-t-xl">
-                        {['Information', 'Students', 'Lessons'].map((tab, i) => (
-                            <TabsTrigger
-                                key={i}
-                                value={['information', 'students', 'lessons'][i]}
-                                className="py-2 px-6 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-full transition-all duration-200 data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+                    <nav className="flex space-x-2 sm:space-x-4 overflow-x-auto">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.name}
+                                onClick={() => setActiveTab(tab.name.toLowerCase())}
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                                    activeTab === tab.name.toLowerCase()
+                                        ? 'border-b-2 border-[#657ED4] text-[#657ED4]'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
                             >
-                                {tab}
-                            </TabsTrigger>
+                                <tab.icon className="w-5 h-5" />
+                                {tab.name}
+                            </button>
                         ))}
-                    </TabsList>
+                    </nav>
+                </div>
 
-                    <TabsContent value="information">
-                        <CourseInformation
-                            courseData={courseData}
-                            formData={formData}
-                            setFormData={setFormData}
-                            categories={categories}
-                        />
-                    </TabsContent>
-                    <TabsContent value="students">
-                        <StudentList students={listStudents} />
-                    </TabsContent>
-                    <TabsContent value="lessons">
-                        <Lesson courseId={courseId} />
-                    </TabsContent>
-                </Tabs>
+                {/* Tab Content */}
+                {activeTab === 'information' && (
+                    <CourseInformation
+                        courseData={courseData}
+                        formData={formData}
+                        setFormData={setFormData}
+                        categories={categories}
+                    />
+                )}
+                {activeTab === 'students' && <StudentList students={listStudents} />}
+                {activeTab === 'lessons' && <Lesson courseId={courseId} />}
             </div>
         </div>
     );

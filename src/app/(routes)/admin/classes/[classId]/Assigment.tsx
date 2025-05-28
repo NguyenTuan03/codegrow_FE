@@ -32,7 +32,7 @@ const Assignments: React.FC = () => {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-                <FileText className="w-6 h-6 text-[#5AD3AF]" />
+                <FileText className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Assignments
             </h2>
             <div className="space-y-6">
@@ -58,7 +58,7 @@ const Assignments: React.FC = () => {
                                 </div>
                             </div>
                             <div className="mt-4 flex items-center gap-3">
-                                <Calendar className="w-4 h-4 text-[#5AD3AF]" />
+                                <Calendar className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
                                     {assignment.date}
                                 </p>

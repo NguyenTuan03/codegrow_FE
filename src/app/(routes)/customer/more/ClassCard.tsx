@@ -1,8 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Users, Calendar, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { Users, Clock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -92,14 +92,6 @@ export default function CourseCard({ course }: CourseCardProps) {
                         <Clock className="h-3 w-3 mr-1 inline" />
                         {course.schedule.time}
                     </Badge>
-                </div>
-
-                <div className="flex items-center gap-2 text-base text-gray-600 dark:text-gray-400">
-                    <Calendar className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
-                    <span>
-                        {format(new Date(course.schedule.startDate), 'MMM dd, yyyy')} -{' '}
-                        {format(new Date(course.schedule.endDate), 'MMM dd, yyyy')}
-                    </span>
                 </div>
             </CardContent>
 
