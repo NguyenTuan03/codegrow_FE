@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/YourMentor.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -56,13 +55,13 @@ export default function YourMentor() {
             <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between p-4">
                     <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                        <User className="w-6 h-6 text-[#5AD3AF]" />
+                        <User className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                         Mentors
                     </CardTitle>
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] flex items-center gap-1"
+                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] flex items-center gap-1"
                     >
                         View All
                         <ChevronRight className="w-4 h-4" />
@@ -86,7 +85,9 @@ export default function YourMentor() {
                             ))}
                         </div>
                     ) : error ? (
-                        <div className="text-center py-4 text-destructive">{error}</div>
+                        <div className="text-center py-4 text-red-500 dark:text-red-400">
+                            {error}
+                        </div>
                     ) : mentors.length > 0 ? (
                         <ul className="space-y-3">
                             {mentors.slice(0, 3).map((mentor) => (
@@ -94,7 +95,7 @@ export default function YourMentor() {
                                     <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <div className="flex items-center space-x-3">
                                             <Avatar className="h-9 w-9">
-                                                <AvatarFallback className="bg-[#5AD3AF] text-white">
+                                                <AvatarFallback className="bg-[#657ED4] dark:bg-[#5AD3AF] text-white">
                                                     {mentor.fullName.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -121,7 +122,7 @@ export default function YourMentor() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-full transition-all duration-200"
+                                                    className="gap-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full transition-all duration-200"
                                                 >
                                                     <EyeIcon className="h-4 w-4" />
                                                     Details
@@ -129,7 +130,7 @@ export default function YourMentor() {
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-2xl">
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-xl">
+                                                    <DialogTitle className="text-xl text-gray-900 dark:text-gray-100">
                                                         {mentor.fullName} Reviews
                                                     </DialogTitle>
                                                 </DialogHeader>

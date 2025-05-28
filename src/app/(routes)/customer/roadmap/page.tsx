@@ -30,15 +30,16 @@ export default function DeveloperRoadmaps() {
     return (
         <ReactFlowProvider>
             <div className="min-h-screen  dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
-                <div className="max-w-7xl mx-auto">
-                    <h1 className="text-5xl font-bold text-center mb-4 text-[#5AD3AF] dark:[#5AD3AF]">
+                <div className="max-w-8xl mx-auto">
+                    <h1 className="text-4xl  font-bold  tracking-tight text-center mb-4 text-[#657ED4] dark:[#5AD3AF]">
                         Developer Roadmaps
                     </h1>
 
                     <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto">
-                        <span className="text-gray-800 dark:text-gray-300">roadmap.sh</span> is a
-                        community effort to create roadmaps, guides and other educational content to
-                        help guide developers in picking up a path and guide their learnings.
+                        <span className="text-gray-800 dark:text-gray-300 text-xl">roadmap.sh</span>{' '}
+                        is a community effort to create roadmaps, guides and other educational
+                        content to help guide developers in picking up a path and guide their
+                        learnings.
                     </p>
 
                     <div className="border-t border-gray-300 dark:border-gray-700 pt-8 mb-8">
@@ -51,7 +52,7 @@ export default function DeveloperRoadmaps() {
                                 <div key={index} className="relative group">
                                     <a
                                         href={roadmap.href}
-                                        className="block bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg"
+                                        className="block bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16  items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg"
                                     >
                                         <span>{roadmap.name}</span>
                                         {roadmap.isNew && (

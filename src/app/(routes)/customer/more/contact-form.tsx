@@ -89,7 +89,7 @@ export default function ContactForm() {
                 title: 'Success!',
                 description: res.message || 'Your registration was submitted successfully',
                 variant: 'default',
-                className: 'bg-[#5AD3AF] text-black',
+                className: 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black',
             });
 
             form.reset();
@@ -99,7 +99,7 @@ export default function ContactForm() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'An unknown error occurred',
                 variant: 'destructive',
-                className: 'bg-[#F76F8E] text-black',
+                className: 'bg-[#F76F8E] text-white dark:text-black',
             });
         } finally {
             setIsSubmitting(false);
@@ -107,7 +107,7 @@ export default function ContactForm() {
     }
 
     const inputStyle =
-        'rounded-full bg-[#6ee7b7] dark:bg-[#EEF1EF] placeholder-black dark:placeholder-black-200 text-black dark:text-black font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]';
+        'rounded-full bg-gray-100 dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-800 dark:text-gray-200 font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#657ED4] dark:focus-visible:ring-[#5AD3AF]';
 
     return (
         <div className="p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
@@ -134,7 +134,7 @@ export default function ContactForm() {
                         name="fullName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="sr-only">Full Name</FormLabel>
+                                <FormLabel className="sr-only ">Full Name</FormLabel>
                                 <FormControl>
                                     <Input
                                         className={inputStyle}
@@ -143,7 +143,7 @@ export default function ContactForm() {
                                         disabled={isSubmitting}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>
                         )}
                     />
@@ -163,7 +163,7 @@ export default function ContactForm() {
                                         disabled={isSubmitting}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>
                         )}
                     />
@@ -183,12 +183,11 @@ export default function ContactForm() {
                                         disabled={isSubmitting}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>
                         )}
                     />
 
-                    {/* City Selection with Shadcn Select */}
                     <FormField
                         control={form.control}
                         name="city"
@@ -202,12 +201,12 @@ export default function ContactForm() {
                                         disabled={isSubmitting}
                                     >
                                         <SelectTrigger
-                                            className="w-full rounded-full bg-[#6ee7b7] dark:bg-[#EEF1EF] text-black dark:text-black font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#4ade80] dark:focus-visible:ring-[#5AD3AF]"
+                                            className="w-full rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#657ED4] dark:focus-visible:ring-[#5AD3AF]"
                                             aria-label="Select City"
                                         >
                                             <SelectValue placeholder="Select City" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-[#6ee7b7] dark:bg-[#EEF1EF] text-black dark:text-black">
+                                        <SelectContent className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                             {cities.map((city) => (
                                                 <SelectItem key={city.value} value={city.value}>
                                                     {city.label}
@@ -216,7 +215,7 @@ export default function ContactForm() {
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
-                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>
                         )}
                     />
@@ -235,14 +234,14 @@ export default function ContactForm() {
                                         disabled={isSubmitting}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500 dark:text-red-400 text-sm mt-1" />
+                                <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>
                         )}
                     />
 
                     <Button
                         type="submit"
-                        className="rounded-full bg-[#f76f8e] dark:bg-[#5AD3AF] hover:bg-[#fc8498] dark:hover:bg-[#4ac2a0] text-white w-full px-4 py-2 text-sm font-semibold transition-colors duration-300"
+                        className="rounded-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full px-4 py-2 text-sm font-semibold transition-colors duration-300"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Processing...' : 'Register Now'}

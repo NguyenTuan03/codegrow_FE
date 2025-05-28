@@ -1,4 +1,3 @@
-// @/app/(routes)/customer/process/UpcomingAssignment.tsx
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,11 +5,24 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
 export default function UpcomingAssignment() {
+    const currentDate = new Date('2025-05-28T11:53:00+07:00');
+    const dayOfWeek = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+    const formatTime = (time: string) => {
+        const [hour, minute] = time.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hour), parseInt(minute));
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        });
+    };
+
     return (
         <section>
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <Calendar className="w-6 h-6 text-[#5AD3AF]" />
+                    <Calendar className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     Upcoming Assignment
                 </h2>
                 <div className="flex items-center gap-2">
@@ -38,7 +50,7 @@ export default function UpcomingAssignment() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
                     <CardContent className="p-4">
                         <div className="flex items-center mb-2">
                             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full mr-3"></div>
@@ -52,15 +64,15 @@ export default function UpcomingAssignment() {
                             </div>
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                            WEDNESDAY, 10:00 AM
+                            {dayOfWeek}, {formatTime('10:00')}
                         </div>
-                        <Button className="text-xs bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
+                        <Button className="text-xs bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
                             15min
                         </Button>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
                     <CardContent className="p-4">
                         <div className="flex items-center mb-2">
                             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full mr-3"></div>
@@ -74,15 +86,15 @@ export default function UpcomingAssignment() {
                             </div>
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                            WEDNESDAY, 01:00 PM
+                            {dayOfWeek}, {formatTime('13:00')}
                         </div>
-                        <Button className="text-xs bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
+                        <Button className="text-xs bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
                             15min
                         </Button>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#5AD3AF]">
+                <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-xl hover:border-[#657ED4] dark:hover:border-[#5AD3AF]">
                     <CardContent className="p-4">
                         <div className="flex items-center mb-2">
                             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full mr-3"></div>
@@ -96,9 +108,9 @@ export default function UpcomingAssignment() {
                             </div>
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                            WEDNESDAY, 12:30 PM
+                            {dayOfWeek}, {formatTime('12:30')}
                         </div>
-                        <Button className="text-xs bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
+                        <Button className="text-xs bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full rounded-full px-4 py-2 transition-all duration-200 shadow-sm">
                             30min
                         </Button>
                     </CardContent>

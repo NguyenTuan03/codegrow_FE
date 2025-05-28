@@ -19,13 +19,7 @@ interface Course {
     description: string;
     price: number;
     enrolledCount: number;
-    author: {
-        _id: string;
-        fullName: string;
-        email: string;
-        role: string;
-    };
-    // author :  string;
+    author: string;
     category: { _id: string; name: string };
     createdAt: string;
 }
@@ -51,10 +45,6 @@ export default function CourseLearningPage() {
             if (courseRes.status === 200) {
                 const parsedCourse = {
                     ...courseRes.metadata,
-                    author:
-                        typeof courseRes.metadata.author === 'string'
-                            ? JSON.parse(courseRes.metadata.author)
-                            : courseRes.metadata.author,
                     category:
                         typeof courseRes.metadata.category === 'string'
                             ? JSON.parse(courseRes.metadata.category)
@@ -66,9 +56,11 @@ export default function CourseLearningPage() {
                     title: 'Thành công',
                     description: 'Tải dữ liệu khóa học thành công',
                     variant: 'default',
+                    className:
+                        'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
                 });
             } else {
-                throw new Error('Failed to load course data');
+                throw new Error('Không thể tải dữ liệu khóa học');
             }
         } catch (error) {
             console.error('Lỗi khi tải dữ liệu khóa học:', error);
@@ -77,6 +69,7 @@ export default function CourseLearningPage() {
                 description:
                     error instanceof Error ? error.message : 'Không thể tải dữ liệu khóa học',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         } finally {
             setLoading(false);
@@ -87,10 +80,12 @@ export default function CourseLearningPage() {
         const token = localStorage.getItem('token');
         if (!token) {
             toast({
-                title: 'Error',
-                description: 'Token not found. Please log in again.',
+                title: 'Lỗi',
+                description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+            router.push('/login');
             return;
         }
 
@@ -106,11 +101,12 @@ export default function CourseLearningPage() {
                 setCompletedModules(progress.completedModules);
             }
         } catch (error) {
-            console.error('Failed to fetch progress:', error);
+            console.error('Không thể tải tiến độ:', error);
             toast({
-                title: 'Error',
-                description: 'Failed to load progress data.',
+                title: 'Lỗi',
+                description: 'Không thể tải dữ liệu tiến độ.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
@@ -123,7 +119,17 @@ export default function CourseLearningPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF]"></div>
+            </div>
+        );
+    }
+
+    if (!course) {
+        return (
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+                <p className="text-gray-600 dark:text-gray-400 text-lg font-semibold">
+                    Không tìm thấy khóa học. Vui lòng thử lại.
+                </p>
             </div>
         );
     }
@@ -134,8 +140,8 @@ export default function CourseLearningPage() {
                 {/* Breadcrumbs */}
                 <Breadcrumbs
                     courseId={courseId}
-                    category={course?.category?.name || 'Category'}
-                    title={course?.title || 'Course'}
+                    category={course?.category?.name || 'Danh mục'}
+                    title={course?.title || 'Khóa học'}
                 />
 
                 {/* Course Header */}
@@ -143,12 +149,12 @@ export default function CourseLearningPage() {
 
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="flex flex-wrap justify-start gap-2 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-2 rounded-t-xl">
+                    <TabsList className="flex flex-wrap justify-start gap-4 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-5">
                         {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
                                 value={['overview', 'grades', 'notes', 'messages'][i]}
-                                className="py-2 px-6 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-full transition-all duration-200 data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="py-4 px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 {tab}
                             </TabsTrigger>
