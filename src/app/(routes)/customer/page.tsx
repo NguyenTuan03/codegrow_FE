@@ -16,6 +16,7 @@ import {
     CarouselItem,
     CarouselPrevious,
     CarouselNext,
+    CarouselApi,
 } from '@/components/ui/carousel';
 import { GetProgress } from '@/lib/services/api/progress';
 
@@ -52,6 +53,7 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true);
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
+    const [api, setApi] = useState<CarouselApi | null>(null);
 
     const fetchProgress = async (courseId: string) => {
         try {
@@ -144,16 +146,21 @@ const HomePage = () => {
                 title: 'Chat Opened',
                 description: 'You can now chat with a mentor to apply!',
                 variant: 'default',
+                className: 'bg-[#5AD3AF] text-black font-medium p-4 rounded-lg shadow-md',
             });
         }
     };
 
     const handleCarouselPrevious = () => {
-        console.log('Carousel Previous clicked');
+        if (api) {
+            api.scrollPrev();
+        }
     };
 
     const handleCarouselNext = () => {
-        console.log('Carousel Next clicked');
+        if (api) {
+            api.scrollNext();
+        }
     };
 
     return (
@@ -162,16 +169,18 @@ const HomePage = () => {
                 <div className="md:col-span-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
-                            <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:[#5AD3AF]">
+                            <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                                 Welcome back, customer
                             </h3>
-                            <p className="text-xl mb-2">
+                            <p className="text-base mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 Solve coding exercises and get mentored to develop fluency in your
                                 chosen programming languages
                             </p>
                         </div>
                     </div>
-                    <div className="font-bold text-2xl mt-5 mb-3">Where to start...</div>
+                    <div className="font-bold text-xl mt-5 mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                        Where to start...
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
                         {HOME_INTRODUCTION.map((item, index) => (
                             <Card
@@ -190,22 +199,26 @@ const HomePage = () => {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="text-center">
-                                    <p className="text-base font-medium">{item.name}</p>
+                                    <p className="text-base font-medium text-gray-900 dark:text-gray-100 cursor-default">
+                                        {item.name}
+                                    </p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
                 </div>
                 <div className="md:col-span-4">
-                    <div className="text-2xl font-bold mb-4">Your track</div>
+                    <div className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
+                        Your track
+                    </div>
                     <div className="flex flex-row items-center">
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4 text-xl">
                             <Progress
                                 value={courses.length > 0 ? courseProgress[courses[0]._id] || 0 : 0}
-                                className="w-[60%] bg-[#657ED4]"
+                                className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
                             />
-                            <div>
+                            <div className="text-base font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 {courses.length > 0
                                     ? `${courseProgress[courses[0]._id] || 0}% completed`
                                     : 'No progress available'}
@@ -224,21 +237,23 @@ const HomePage = () => {
                             </div>
                         </CardHeader>
                         <CardContent className="bg-gray-100 dark:bg-gray-700">
-                            <h2 className="text-2xl font-bold mb-2">Become a mentor</h2>
-                            <p className="text-gray-500 dark:text-gray-300 mb-6 text-base">
+                            <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-100 cursor-default">
+                                Become a mentor
+                            </h2>
+                            <p className="text-base text-gray-500 dark:text-gray-300 mb-6 font-medium cursor-default">
                                 Mentoring is a great way to reinforce your own learning, and help
                                 students learn and discover the things they don’t know.
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button
-                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 md:text-base cursor-pointer"
+                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base cursor-pointer"
                                     onClick={toggleChat}
                                 >
                                     {showChat ? 'Close Chat' : 'Apply'}
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[#657ED4] dark:border-[#5AD3AF] text-xl text-[#657ED4] dark:text-[#5AD3AF] px-6 py-3 md:text-base hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white font-semibold cursor-pointer"
+                                    className="border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] px-6 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white font-semibold text-base cursor-pointer"
                                 >
                                     Read
                                 </Button>
@@ -249,21 +264,22 @@ const HomePage = () => {
             </div>
             <Card className="bg-white dark:bg-gray-700 border-gray-100 dark:border-gray-700 rounded-xl">
                 <CardHeader>
-                    <CardTitle className="text-2xl md:text-4xl font-bold mb-2 text-center my-3 text-[#657ED4] dark:[#5AD3AF]">
+                    <CardTitle className="text-4xl font-bold mb-2 text-center my-3 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                         All courses in CODEGROW
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
                         <div className="flex justify-center items-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF]"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] cursor-default"></div>
                         </div>
                     ) : courses.length === 0 ? (
-                        <div className="text-center text-gray-600 dark:text-gray-300 p-6 text-base md:text-base font-normal">
+                        <div className="text-center text-gray-600 dark:text-gray-300 p-6 text-base font-medium cursor-default">
                             No courses available at the moment.
                         </div>
                     ) : (
                         <Carousel
+                            setApi={setApi}
                             opts={{
                                 align: 'start',
                                 loop: true,
@@ -293,10 +309,10 @@ const HomePage = () => {
                                                 ></div>
                                             </CardHeader>
                                             <CardContent className="p-4 flex flex-col flex-grow gap-3 min-h-[200px]">
-                                                <div className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                                                <div className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100 cursor-default">
                                                     {course.title}
                                                 </div>
-                                                <div className="text-base font-normal text-gray-600 dark:text-gray-300 mt-2 line-clamp-3 h-14">
+                                                <div className="text-base font-medium text-gray-600 dark:text-gray-300 mt-2 line-clamp-3 h-14 cursor-default">
                                                     {course.description.length > 100
                                                         ? course.description.slice(0, 100) + '...'
                                                         : course.description}
@@ -306,13 +322,13 @@ const HomePage = () => {
                                                         value={courseProgress[course._id] || 0}
                                                         className="w-full bg-[#657ED4] dark:bg-[#5AD3AF]"
                                                     />
-                                                    <div className="text-sm md:text-sm font-normal text-gray-600 dark:text-gray-300 mt-1">
+                                                    <div className="text-base font-medium text-gray-600 dark:text-gray-300 mt-1 cursor-default">
                                                         {courseProgress[course._id] || 0}% completed
                                                     </div>
                                                 </div>
                                             </CardContent>
                                             <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2 p-4 border-t border-gray-100 dark:border-gray-700">
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
                                                     <Image
                                                         src="/icons8-users-30.png"
                                                         width={24}
@@ -321,7 +337,7 @@ const HomePage = () => {
                                                     />
                                                     {course.enrolledCount}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
                                                     <Image
                                                         src="/tag.png"
                                                         width={24}
@@ -332,7 +348,7 @@ const HomePage = () => {
                                                         ? course.category.name
                                                         : 'Uncategorized'}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-sm md:text-sm font-normal">
+                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
                                                     <Image
                                                         src="/dollar.png"
                                                         width={24}
@@ -359,7 +375,7 @@ const HomePage = () => {
                 </CardContent>
                 <CardFooter className="flex justify-center dark:border-gray-700 py-6">
                     <Link href="/customer/courses" legacyBehavior>
-                        <Button className="text-center px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-base md:text-base font-semibold transition-colors duration-300 cursor-pointer">
+                        <Button className="text-center px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white text-base font-semibold transition-colors duration-300 cursor-pointer">
                             View all courses
                         </Button>
                     </Link>
@@ -367,7 +383,7 @@ const HomePage = () => {
             </Card>
 
             <div className="mt-8">
-                <h3 className="text-center font-bold text-2xl md:text-4xl mb-6 text-[#657ED4] dark:[#5AD3AF]">
+                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -384,10 +400,10 @@ const HomePage = () => {
                                     className="object-contain"
                                 />
                             </div>
-                            <div className="font-bold text-xl md:text-xl mb-3">
+                            <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
                                 GOOD LEARNING PATH
                             </div>
-                            <p className="text-xl md:text-base text-gray-500 dark:text-gray-300 leading-relaxed">
+                            <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
                                 The learning path is designed methodically, in detail, and in
                                 accordance with learning goals. A good roadmap will help make
                                 learning effective, not wasteful, not going down the wrong path, and
