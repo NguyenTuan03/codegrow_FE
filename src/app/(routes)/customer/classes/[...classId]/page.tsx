@@ -7,7 +7,7 @@ import { viewDetail } from '@/lib/services/class/viewdetail';
 import ClassInfo from '@/app/(routes)/customer/classes/[...classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/customer/classes/[...classId]/StudentList';
 import Stream from './Stream';
-import { BookOpen, Users, FileText, Award, Calendar } from 'lucide-react';
+import { BookOpen, Users, FileText, Award } from 'lucide-react';
 import Assignments from './Assignment';
 import MarksAttendance from './MarkAttendance';
 
@@ -175,12 +175,6 @@ export default function ClassDetailPage() {
                             Course: {classData.course.title || 'N/A'} | Mentor:{' '}
                             {classData.mentor.fullName || 'N/A'}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
-                            <Calendar className="h-5 w-5 text-white" />
-                            <span className="text-sm sm:text-base text-white font-medium opacity-90">
-                                Thursday, May 29, 2025, 10:37 AM
-                            </span>
-                        </div>
                     </div>
                 </div>
 
@@ -191,7 +185,7 @@ export default function ClassDetailPage() {
                             <button
                                 key={tab.name}
                                 onClick={() => setActiveTab(tab.name)}
-                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                                className={`flex cursor-pointer items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
                                     activeTab === tab.name
                                         ? 'border-b-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF]'
                                         : 'text-gray-500 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'

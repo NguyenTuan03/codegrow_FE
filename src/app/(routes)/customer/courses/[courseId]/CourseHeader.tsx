@@ -146,7 +146,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                             <Button
                                 onClick={() => handleAlternativePayment('momo')}
                                 disabled={loading}
-                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                     loading ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                             >
@@ -156,7 +156,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                             <Button
                                 onClick={() => handleAlternativePayment('vnpay')}
                                 disabled={loading}
-                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                     loading ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                             >

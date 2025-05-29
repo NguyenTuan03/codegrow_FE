@@ -24,7 +24,7 @@ export default function StudentsPanel({ classData }: StudentsPanelProps) {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
             <div className="p-6">
                 <div className="flex items-center gap-3 mb-6">
-                    <Users className="w-6 h-6 text-[#5AD3AF]" />
+                    <Users className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                         Students
                     </h2>
@@ -45,8 +45,8 @@ export default function StudentsPanel({ classData }: StudentsPanelProps) {
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 <div className="flex items-center">
-                                    <div className="h-10 w-10 rounded-full bg-[#5AD3AF] flex items-center justify-center mr-3">
-                                        <span className="text-sm font-medium text-white">
+                                    <div className="h-10 w-10 rounded-full bg-[#657ED4] dark:bg-[#5AD3AF] flex items-center justify-center mr-3">
+                                        <span className="text-base font-medium text-white">
                                             {student.fullName.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
@@ -56,7 +56,7 @@ export default function StudentsPanel({ classData }: StudentsPanelProps) {
                                 </div>
                                 <button
                                     onClick={() => handleChatClick(student._id)}
-                                    className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                                    className="p-2 cursor-pointer rounded-full text-gray-500 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
                                     aria-label={`Chat with ${student.fullName}`}
                                     title={`Chat with ${student.fullName}`}
                                 >

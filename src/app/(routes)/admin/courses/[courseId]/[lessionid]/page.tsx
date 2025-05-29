@@ -415,7 +415,7 @@ export default function LessonDetail() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500" />
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-500 cursor-default" />
             </div>
         );
     }
@@ -423,7 +423,9 @@ export default function LessonDetail() {
     if (!lesson) {
         return (
             <div className="text-center py-12 bg-gray-50 dark:bg-gray-900">
-                <p className="text-lg text-gray-600 dark:text-gray-400">Lesson not found.</p>
+                <p className="text-lg text-gray-600 dark:text-gray-400 cursor-default">
+                    Lesson not found.
+                </p>
             </div>
         );
     }
@@ -437,15 +439,15 @@ export default function LessonDetail() {
                         variant="outline"
                         size="icon"
                         onClick={() => router.push(`/admin/courses/${courseId}`)}
-                        className="rounded-lg text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors shadow-sm"
+                        className="rounded-lg text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors shadow-sm cursor-pointer"
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
                             Lesson Management
                         </h1>
-                        <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-xl text-gray-600 dark:text-gray-400 mt-1 cursor-default">
                             Manage lesson content and quizzes
                         </p>
                     </div>
@@ -456,13 +458,13 @@ export default function LessonDetail() {
                     <TabsList className="grid w-full grid-cols-2 max-w-xs rounded-lg bg-gray-100 dark:bg-gray-800 mb-5 p-1">
                         <TabsTrigger
                             value="lesson"
-                            className="rounded-md py-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+                            className="rounded-md py-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors cursor-pointer"
                         >
                             Lesson
                         </TabsTrigger>
                         <TabsTrigger
                             value="quizzes"
-                            className="rounded-md py-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors"
+                            className="rounded-md py-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors cursor-pointer"
                         >
                             Quizzes
                         </TabsTrigger>
@@ -472,46 +474,46 @@ export default function LessonDetail() {
                     <TabsContent value="lesson">
                         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                             <CardHeader>
-                                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                                <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white cursor-default">
                                     Lesson Details
                                 </CardTitle>
-                                <CardDescription className="text-gray-600 text-base dark:text-gray-400">
+                                <CardDescription className="text-gray-600 text-base dark:text-gray-400 cursor-default">
                                     View detailed information about the lesson
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                             Title
                                         </Label>
-                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
+                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100 cursor-default">
                                             {lesson?.title || 'No data available'}
                                         </p>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                                        <Label className="text-xl font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                             Order
                                         </Label>
-                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
+                                        <p className="text-base font-medium text-gray-900 dark:text-gray-100 cursor-default">
                                             {lesson?.order || 'No data available'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-xl font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Content
                                     </Label>
                                     <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                        <p className="text-base text-gray-800 dark:text-gray-200">
+                                        <p className="text-base text-gray-800 dark:text-gray-200 cursor-default">
                                             {lesson?.content || 'No content available'}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Video
                                     </Label>
                                     {lesson?.videoUrl ? (
@@ -534,7 +536,7 @@ export default function LessonDetail() {
                                             ></iframe>
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
                                             No video available
                                         </p>
                                     )}
@@ -548,10 +550,10 @@ export default function LessonDetail() {
                         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                    <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white cursor-default">
                                         Quizzes
                                     </CardTitle>
-                                    <CardDescription className="text-gray-600 text-base dark:text-gray-400">
+                                    <CardDescription className="text-gray-600 text-base dark:text-gray-400 cursor-default">
                                         Manage quizzes and assessments for the lesson
                                     </CardDescription>
                                 </div>
@@ -562,7 +564,7 @@ export default function LessonDetail() {
                                     <DialogTrigger asChild>
                                         <Button
                                             size="sm"
-                                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-colors"
+                                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-colors cursor-pointer"
                                         >
                                             <Plus className="h-4 w-4" />
                                             Add Quiz
@@ -570,7 +572,7 @@ export default function LessonDetail() {
                                     </DialogTrigger>
                                     <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
                                         <DialogHeader>
-                                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white cursor-default">
                                                 Create New Quiz
                                             </DialogTitle>
                                         </DialogHeader>
@@ -583,7 +585,7 @@ export default function LessonDetail() {
                                                         onClick={() =>
                                                             setQuizType('multiple_choice')
                                                         }
-                                                        className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
+                                                        className={`flex items-center justify-center p-4 rounded-lg border transition-all cursor-pointer ${
                                                             quizType === 'multiple_choice'
                                                                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
                                                                 : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -594,7 +596,7 @@ export default function LessonDetail() {
                                                     </button>
                                                     <button
                                                         onClick={() => setQuizType('code')}
-                                                        className={`flex items-center justify-center p-4 rounded-lg border transition-all ${
+                                                        className={`flex items-center justify-center p-4 rounded-lg border transition-all cursor-pointer ${
                                                             quizType === 'code'
                                                                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
                                                                 : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -606,7 +608,7 @@ export default function LessonDetail() {
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                         Question
                                                     </Label>
                                                     <Textarea
@@ -615,12 +617,12 @@ export default function LessonDetail() {
                                                         value={currentQuiz.questionText}
                                                         onChange={handleQuizInputChange}
                                                         placeholder="Enter your question here..."
-                                                        className="min-h-[100px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                        className="min-h-[100px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                     />
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                         Explanation
                                                     </Label>
                                                     <Textarea
@@ -629,21 +631,21 @@ export default function LessonDetail() {
                                                         value={currentQuiz.explanation}
                                                         onChange={handleQuizInputChange}
                                                         placeholder="Provide an explanation for the answer..."
-                                                        className="min-h-[80px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                        className="min-h-[80px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                     />
                                                 </div>
 
                                                 {quizType === 'multiple_choice' ? (
                                                     <div className="space-y-4">
                                                         <div className="flex justify-between items-center">
-                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                                 Answer Options
                                                             </Label>
                                                             <Button
                                                                 onClick={addOption}
                                                                 size="sm"
                                                                 variant="outline"
-                                                                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg"
+                                                                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg cursor-pointer"
                                                             >
                                                                 <Plus className="h-4 w-4" />
                                                                 Add Option
@@ -670,7 +672,7 @@ export default function LessonDetail() {
                                                                                     !!checked,
                                                                                 )
                                                                             }
-                                                                            className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                                                                            className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500 cursor-pointer"
                                                                         />
                                                                         <Input
                                                                             name="options"
@@ -682,7 +684,7 @@ export default function LessonDetail() {
                                                                                 )
                                                                             }
                                                                             placeholder={`Option ${index + 1}`}
-                                                                            className="flex-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                                            className="flex-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                                         />
                                                                         <Button
                                                                             variant="ghost"
@@ -694,7 +696,12 @@ export default function LessonDetail() {
                                                                                 currentQuiz.options!
                                                                                     .length <= 2
                                                                             }
-                                                                            className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
+                                                                            className={`text-red-500 rounded-lg transition-colors cursor-pointer ${
+                                                                                currentQuiz.options!
+                                                                                    .length <= 2
+                                                                                    ? 'opacity-50 cursor-not-allowed'
+                                                                                    : 'hover:bg-red-100 dark:hover:bg-red-900/30'
+                                                                            }`}
                                                                         >
                                                                             <Trash className="h-4 w-4" />
                                                                         </Button>
@@ -707,7 +714,7 @@ export default function LessonDetail() {
                                                     <div className="space-y-6">
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                             <div className="space-y-2">
-                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                                     Programming Language
                                                                 </Label>
                                                                 <Select
@@ -719,37 +726,37 @@ export default function LessonDetail() {
                                                                         })
                                                                     }
                                                                 >
-                                                                    <SelectTrigger className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm">
+                                                                    <SelectTrigger className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-pointer">
                                                                         <SelectValue placeholder="Select language" />
                                                                     </SelectTrigger>
                                                                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg shadow-lg">
                                                                         <SelectItem
                                                                             value="javascript"
-                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                                                         >
                                                                             JavaScript
                                                                         </SelectItem>
                                                                         <SelectItem
                                                                             value="python"
-                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                                                         >
                                                                             Python
                                                                         </SelectItem>
                                                                         <SelectItem
                                                                             value="java"
-                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                                                         >
                                                                             Java
                                                                         </SelectItem>
                                                                         <SelectItem
                                                                             value="csharp"
-                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                                                         >
                                                                             C#
                                                                         </SelectItem>
                                                                         <SelectItem
                                                                             value="cpp"
-                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                                                         >
                                                                             C++
                                                                         </SelectItem>
@@ -758,7 +765,7 @@ export default function LessonDetail() {
                                                             </div>
 
                                                             <div className="space-y-2">
-                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                                     Expected Output
                                                                 </Label>
                                                                 <Input
@@ -769,13 +776,13 @@ export default function LessonDetail() {
                                                                     }
                                                                     onChange={handleQuizInputChange}
                                                                     placeholder="Enter expected output"
-                                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                                 />
                                                             </div>
                                                         </div>
 
                                                         <div className="space-y-2">
-                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                                 Starter Code
                                                             </Label>
                                                             <Textarea
@@ -785,20 +792,20 @@ export default function LessonDetail() {
                                                                 }
                                                                 onChange={handleQuizInputChange}
                                                                 placeholder="Enter starter code..."
-                                                                className="min-h-[150px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm resize-vertical"
+                                                                className="min-h-[150px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm resize-vertical cursor-text"
                                                             />
                                                         </div>
 
                                                         <div className="space-y-4">
                                                             <div className="flex justify-between items-center">
-                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                                     Test Cases
                                                                 </Label>
                                                                 <Button
                                                                     onClick={addTestCase}
                                                                     size="sm"
                                                                     variant="outline"
-                                                                    className="flex items-center gap-1 text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg"
+                                                                    className="flex items-center gap-1 text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg cursor-pointer"
                                                                 >
                                                                     <Plus className="h-4 w-4" />
                                                                     Add Test Case
@@ -813,7 +820,7 @@ export default function LessonDetail() {
                                                                             className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
                                                                         >
                                                                             <div className="space-y-1">
-                                                                                <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                                                <Label className="text-xs font-medium text-gray-600 dark:text-gray-400 cursor-default">
                                                                                     Input
                                                                                 </Label>
                                                                                 <Input
@@ -829,11 +836,11 @@ export default function LessonDetail() {
                                                                                         )
                                                                                     }
                                                                                     placeholder="Enter input"
-                                                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                                                 />
                                                                             </div>
                                                                             <div className="space-y-1">
-                                                                                <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                                                <Label className="text-xs font-medium text-gray-600 dark:text-gray-400 cursor-default">
                                                                                     Expected Output
                                                                                 </Label>
                                                                                 <div className="flex gap-2">
@@ -852,7 +859,7 @@ export default function LessonDetail() {
                                                                                             )
                                                                                         }
                                                                                         placeholder="Enter expected output"
-                                                                                        className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                                                        className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                                                     />
                                                                                     <Button
                                                                                         variant="ghost"
@@ -868,7 +875,14 @@ export default function LessonDetail() {
                                                                                                 .length <=
                                                                                             1
                                                                                         }
-                                                                                        className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
+                                                                                        className={`text-red-500 rounded-lg transition-colors cursor-pointer ${
+                                                                                            currentQuiz
+                                                                                                .testCases!
+                                                                                                .length <=
+                                                                                            1
+                                                                                                ? 'opacity-50 cursor-not-allowed'
+                                                                                                : 'hover:bg-red-100 dark:hover:bg-red-900/30'
+                                                                                        }`}
                                                                                     >
                                                                                         <Trash className="h-4 w-4" />
                                                                                     </Button>
@@ -891,13 +905,13 @@ export default function LessonDetail() {
                                                     setIsCreateDialogOpen(false);
                                                     resetQuizForm();
                                                 }}
-                                                className="rounded-lg text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                                className="rounded-lg text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                             >
                                                 Cancel
                                             </Button>
                                             <Button
                                                 onClick={handleCreateQuiz}
-                                                className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                                                className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                                             >
                                                 Create Quiz
                                             </Button>
@@ -910,10 +924,10 @@ export default function LessonDetail() {
                                     <div className="flex flex-col items-center justify-center py-12">
                                         <div className="text-center space-y-3">
                                             <Code className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
-                                            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-white cursor-default">
                                                 No quizzes yet
                                             </h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
                                                 Start by creating a new quiz
                                             </p>
                                         </div>
@@ -925,25 +939,25 @@ export default function LessonDetail() {
                                                 <tr>
                                                     <th
                                                         scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider cursor-default"
                                                     >
                                                         Quiz Type
                                                     </th>
                                                     <th
                                                         scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider cursor-default"
                                                     >
                                                         Question
                                                     </th>
                                                     <th
                                                         scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                        className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider cursor-default"
                                                     >
                                                         Details
                                                     </th>
                                                     <th
                                                         scope="col"
-                                                        className="px-6 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                                                        className="px-6 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider cursor-default"
                                                     >
                                                         Actions
                                                     </th>
@@ -953,7 +967,7 @@ export default function LessonDetail() {
                                                 {quizzes.map((quiz) => (
                                                     <tr
                                                         key={quiz._id}
-                                                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-default"
                                                     >
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <Badge
@@ -969,11 +983,11 @@ export default function LessonDetail() {
                                                             </Badge>
                                                         </td>
                                                         <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                            <div className="line-clamp-2">
+                                                            <div className="line-clamp-2 cursor-default">
                                                                 {quiz.questionText}
                                                             </div>
                                                         </td>
-                                                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                                                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 cursor-default">
                                                             {quiz.type === 'multiple_choice' ? (
                                                                 <div>
                                                                     {quiz.options?.length} options
@@ -994,7 +1008,7 @@ export default function LessonDetail() {
                                                                     onClick={() =>
                                                                         openViewDialog(quiz)
                                                                     }
-                                                                    className="text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg"
+                                                                    className="text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg cursor-pointer"
                                                                 >
                                                                     <Eye className="h-4 w-4" />
                                                                 </Button>
@@ -1004,7 +1018,7 @@ export default function LessonDetail() {
                                                                     onClick={() =>
                                                                         openEditDialog(quiz)
                                                                     }
-                                                                    className="text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg"
+                                                                    className="text-blue-600 dark:text-blue-400 border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors rounded-lg cursor-pointer"
                                                                 >
                                                                     <Edit className="h-4 w-4" />
                                                                 </Button>
@@ -1014,7 +1028,7 @@ export default function LessonDetail() {
                                                                     onClick={() =>
                                                                         openDeleteDialog(quiz._id)
                                                                     }
-                                                                    className="text-red-500 border-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
+                                                                    className="text-red-500 border-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg cursor-pointer"
                                                                 >
                                                                     <Trash className="h-4 w-4" />
                                                                 </Button>
@@ -1035,12 +1049,12 @@ export default function LessonDetail() {
                 <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                     <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white cursor-default">
                                 Confirm Deletion
                             </DialogTitle>
                         </DialogHeader>
                         <div className="py-4">
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-600 dark:text-gray-400 cursor-default">
                                 Are you sure you want to delete this quiz? This action cannot be
                                 undone.
                             </p>
@@ -1052,7 +1066,7 @@ export default function LessonDetail() {
                                     setIsDeleteDialogOpen(false);
                                     setQuizIdToDelete(null);
                                 }}
-                                className="rounded-lg text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                className="rounded-lg text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                             >
                                 Cancel
                             </Button>
@@ -1062,7 +1076,7 @@ export default function LessonDetail() {
                                         handleDeleteQuiz(quizIdToDelete);
                                     }
                                 }}
-                                className="rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md"
+                                className="rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md cursor-pointer"
                             >
                                 Delete
                             </Button>
@@ -1074,41 +1088,41 @@ export default function LessonDetail() {
                 <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
                     <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white cursor-default">
                                 Quiz Details
                             </DialogTitle>
                         </DialogHeader>
                         {selectedQuiz && (
                             <div className="space-y-4 mt-4">
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Quiz Type
                                     </Label>
-                                    <p className="text-gray-900 dark:text-gray-100">
+                                    <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                         {selectedQuiz.type === 'multiple_choice'
                                             ? 'Multiple Choice'
                                             : 'Coding'}
                                     </p>
                                 </div>
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Question
                                     </Label>
-                                    <p className="text-gray-900 dark:text-gray-100">
+                                    <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                         {selectedQuiz.questionText}
                                     </p>
                                 </div>
                                 <div>
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Explanation
                                     </Label>
-                                    <p className="text-gray-900 dark:text-gray-100">
+                                    <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                         {selectedQuiz.explanation || 'No explanation provided'}
                                     </p>
                                 </div>
                                 {selectedQuiz.type === 'multiple_choice' && (
                                     <div>
-                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                             Options
                                         </Label>
                                         <ul className="list-disc pl-4 mt-1">
@@ -1118,7 +1132,7 @@ export default function LessonDetail() {
                                                     className={
                                                         option.isCorrect
                                                             ? 'text-green-600 dark:text-green-400'
-                                                            : 'text-gray-900 dark:text-gray-100'
+                                                            : 'text-gray-900 dark:text-gray-100 cursor-default'
                                                     }
                                                 >
                                                     {option.text}{' '}
@@ -1131,32 +1145,32 @@ export default function LessonDetail() {
                                 {selectedQuiz.type === 'code' && (
                                     <>
                                         <div>
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                 Starter Code
                                             </Label>
-                                            <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 cursor-default">
                                                 {selectedQuiz.starterCode || 'No starter code'}
                                             </pre>
                                         </div>
                                         <div>
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                 Expected Output
                                             </Label>
-                                            <p className="text-gray-900 dark:text-gray-100">
+                                            <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                                 {selectedQuiz.expectedOutput ||
                                                     'No expected output'}
                                             </p>
                                         </div>
                                         <div>
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                 Language
                                             </Label>
-                                            <p className="text-gray-900 dark:text-gray-100">
+                                            <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                                 {selectedQuiz.language || 'No language specified'}
                                             </p>
                                         </div>
                                         <div>
-                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                 Test Cases
                                             </Label>
                                             {selectedQuiz.testCases?.length ? (
@@ -1165,7 +1179,7 @@ export default function LessonDetail() {
                                                         (testCase, index) => (
                                                             <li
                                                                 key={index}
-                                                                className="text-gray-900 dark:text-gray-100"
+                                                                className="text-gray-900 dark:text-gray-100 cursor-default"
                                                             >
                                                                 Input: {testCase.input}, Expected
                                                                 Output: {testCase.expectedOutput}
@@ -1174,7 +1188,7 @@ export default function LessonDetail() {
                                                     )}
                                                 </ul>
                                             ) : (
-                                                <p className="text-gray-900 dark:text-gray-100">
+                                                <p className="text-gray-900 dark:text-gray-100 cursor-default">
                                                     No test cases
                                                 </p>
                                             )}
@@ -1190,7 +1204,7 @@ export default function LessonDetail() {
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+                            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white cursor-default">
                                 Edit Quiz
                             </DialogTitle>
                         </DialogHeader>
@@ -1199,7 +1213,7 @@ export default function LessonDetail() {
                                 <div>
                                     <Label
                                         htmlFor="quizType"
-                                        className="text-gray-700 dark:text-gray-300"
+                                        className="text-gray-700 dark:text-gray-300 cursor-default"
                                     >
                                         Quiz Type
                                     </Label>
@@ -1210,19 +1224,19 @@ export default function LessonDetail() {
                                             setQuizType(value as 'multiple_choice' | 'code')
                                         }
                                     >
-                                        <SelectTrigger className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm">
+                                        <SelectTrigger className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-pointer">
                                             <SelectValue placeholder="Select quiz type" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg shadow-lg">
                                             <SelectItem
                                                 value="multiple_choice"
-                                                className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                             >
                                                 Multiple Choice
                                             </SelectItem>
                                             <SelectItem
                                                 value="code"
-                                                className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                                className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
                                             >
                                                 Coding
                                             </SelectItem>
@@ -1232,7 +1246,7 @@ export default function LessonDetail() {
                                 <div>
                                     <Label
                                         htmlFor="questionText"
-                                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default"
                                     >
                                         Question
                                     </Label>
@@ -1242,13 +1256,13 @@ export default function LessonDetail() {
                                         value={currentQuiz.questionText}
                                         onChange={handleQuizInputChange}
                                         placeholder="Enter quiz question"
-                                        className="min-h-[100px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                        className="min-h-[100px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                     />
                                 </div>
                                 <div>
                                     <Label
                                         htmlFor="explanation"
-                                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default"
                                     >
                                         Explanation
                                     </Label>
@@ -1258,7 +1272,7 @@ export default function LessonDetail() {
                                         value={currentQuiz.explanation}
                                         onChange={handleQuizInputChange}
                                         placeholder="Enter explanation"
-                                        className="min-h-[80px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                        className="min-h-[80px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                     />
                                 </div>
                                 {quizType === 'multiple_choice' && (
@@ -1271,7 +1285,7 @@ export default function LessonDetail() {
                                                     onCheckedChange={(checked) =>
                                                         handleIsCorrectChange(index, !!checked)
                                                     }
-                                                    className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                                                    className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500 cursor-pointer"
                                                 />
                                                 <Input
                                                     name="options"
@@ -1280,14 +1294,18 @@ export default function LessonDetail() {
                                                         handleQuizInputChange(e, index)
                                                     }
                                                     placeholder={`Option ${index + 1}`}
-                                                    className="flex-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                    className="flex-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                 />
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => removeOption(index)}
                                                     disabled={currentQuiz.options!.length <= 2}
-                                                    className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
+                                                    className={`text-red-500 rounded-lg transition-colors cursor-pointer ${
+                                                        currentQuiz.options!.length <= 2
+                                                            ? 'opacity-50 cursor-not-allowed'
+                                                            : 'hover:bg-red-100 dark:hover:bg-red-900/30'
+                                                    }`}
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>
@@ -1295,7 +1313,7 @@ export default function LessonDetail() {
                                         ))}
                                         <Button
                                             onClick={addOption}
-                                            className="mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                                            className="mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                                         >
                                             Add Option
                                         </Button>
@@ -1306,7 +1324,7 @@ export default function LessonDetail() {
                                         <div>
                                             <Label
                                                 htmlFor="starterCode"
-                                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default"
                                             >
                                                 Starter Code
                                             </Label>
@@ -1316,13 +1334,13 @@ export default function LessonDetail() {
                                                 value={currentQuiz.starterCode}
                                                 onChange={handleQuizInputChange}
                                                 placeholder="Enter starter code"
-                                                className="min-h-[150px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                className="min-h-[150px] w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                             />
                                         </div>
                                         <div>
                                             <Label
                                                 htmlFor="expectedOutput"
-                                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default"
                                             >
                                                 Expected Output
                                             </Label>
@@ -1332,13 +1350,13 @@ export default function LessonDetail() {
                                                 value={currentQuiz.expectedOutput}
                                                 onChange={handleQuizInputChange}
                                                 placeholder="Enter expected output"
-                                                className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                             />
                                         </div>
                                         <div>
                                             <Label
                                                 htmlFor="language"
-                                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default"
                                             >
                                                 Language
                                             </Label>
@@ -1348,12 +1366,12 @@ export default function LessonDetail() {
                                                 value={currentQuiz.language}
                                                 onChange={handleQuizInputChange}
                                                 placeholder="Enter programming language"
-                                                className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                             />
                                         </div>
                                         {currentQuiz.testCases?.map((testCase, index) => (
                                             <div key={index} className="space-y-2">
-                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                     Test Case {index + 1}
                                                 </Label>
                                                 <Input
@@ -1363,7 +1381,7 @@ export default function LessonDetail() {
                                                         handleQuizInputChange(e, index, 'input')
                                                     }
                                                     placeholder="Input"
-                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                 />
                                                 <Input
                                                     name="testCases"
@@ -1376,14 +1394,18 @@ export default function LessonDetail() {
                                                         )
                                                     }
                                                     placeholder="Expected Output"
-                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                                                    className="w-full rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm cursor-text"
                                                 />
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => removeTestCase(index)}
                                                     disabled={currentQuiz.testCases!.length <= 1}
-                                                    className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
+                                                    className={`text-red-500 rounded-lg transition-colors cursor-pointer ${
+                                                        currentQuiz.testCases!.length <= 1
+                                                            ? 'opacity-50 cursor-not-allowed'
+                                                            : 'hover:bg-red-100 dark:hover:bg-red-900/30'
+                                                    }`}
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>
@@ -1391,7 +1413,7 @@ export default function LessonDetail() {
                                         ))}
                                         <Button
                                             onClick={addTestCase}
-                                            className="mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                                            className="mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                                         >
                                             Add Test Case
                                         </Button>
@@ -1401,7 +1423,7 @@ export default function LessonDetail() {
                         </div>
                         <Button
                             onClick={handleEditQuiz}
-                            className="mt-4 w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md"
+                            className="mt-4 w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                         >
                             Update Quiz
                         </Button>

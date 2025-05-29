@@ -72,11 +72,11 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
         cell: ({ row }) => (
             <div className="flex items-center gap-3">
                 <Avatar className="w-9 h-9">
-                    <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium">
+                    <AvatarFallback className="bg-blue-100 dark:bg-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] font-medium cursor-default">
                         {(row.getValue('name') as string).charAt(0)}
                     </AvatarFallback>
                 </Avatar>
-                <span className="text-gray-900 dark:text-gray-100 font-medium">
+                <span className="text-gray-900 dark:text-gray-100 font-medium text-base cursor-default">
                     {row.getValue('name') as string}
                 </span>
             </div>
@@ -86,7 +86,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
         accessorKey: 'email',
         header: 'Email',
         cell: ({ row }) => (
-            <span className="text-gray-700 dark:text-gray-300">
+            <span className="text-gray-700 dark:text-gray-300 text-base cursor-default">
                 {row.getValue('email') as string}
             </span>
         ),
@@ -102,7 +102,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                             variant="outline"
                             size="sm"
                             title="Thêm đánh giá"
-                            className="flex gap-2 border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors"
+                            className="flex gap-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-colors rounded-lg cursor-pointer"
                         >
                             <PlusIcon className="w-4 h-4" />
                             Thêm
@@ -110,7 +110,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                     </DialogTrigger>
                     <DialogContent className="bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
-                            <DialogTitle className="text-gray-900 dark:text-white text-lg font-semibold">
+                            <DialogTitle className="text-gray-900 dark:text-white text-xl font-semibold cursor-default">
                                 Thêm đánh giá cho {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
@@ -124,7 +124,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                             variant="outline"
                             size="sm"
                             title="Xem chi tiết đánh giá"
-                            className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg cursor-pointer"
                         >
                             <EyeIcon className="w-4 h-4" />
                             Xem chi tiết
@@ -132,7 +132,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                     </DialogTrigger>
                     <DialogContent className="max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
-                            <DialogTitle className="text-gray-900 dark:text-white text-lg font-semibold">
+                            <DialogTitle className="text-gray-900 dark:text-white text-xl font-semibold cursor-default">
                                 Đánh giá cho {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
@@ -150,7 +150,7 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
         accessorKey: 'mentor.fullName',
         header: 'Người đánh giá',
         cell: ({ row }) => (
-            <span className="text-gray-900 dark:text-gray-100 font-medium">
+            <span className="text-gray-900 dark:text-gray-100 font-medium text-base cursor-default">
                 {row.original.mentor?.fullName || 'N/A'}
             </span>
         ),
@@ -159,14 +159,16 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
         accessorKey: 'comment',
         header: 'Nhận xét',
         cell: ({ row }) => (
-            <span className="text-gray-700 dark:text-gray-300">{row.getValue('comment')}</span>
+            <span className="text-gray-700 dark:text-gray-300 text-base cursor-default">
+                {row.getValue('comment')}
+            </span>
         ),
     },
     {
         accessorKey: 'createdAt',
         header: 'Ngày',
         cell: ({ row }) => (
-            <span className="text-gray-700 dark:text-gray-300">
+            <span className="text-gray-700 dark:text-gray-300 text-base cursor-default">
                 {new Date(row.getValue('createdAt')).toLocaleDateString('vi-VN', {
                     day: '2-digit',
                     month: '2-digit',
@@ -179,7 +181,7 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
         accessorKey: 'rating',
         header: 'Điểm',
         cell: ({ row }) => (
-            <span className="text-yellow-600 dark:text-yellow-400 font-semibold">
+            <span className="text-yellow-600 dark:text-yellow-400 font-semibold text-base cursor-default">
                 {row.getValue('rating')}/5
             </span>
         ),
@@ -319,16 +321,16 @@ export default function MentorsPage() {
         <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
             {/* Mentors Section */}
             <section className="mb-12">
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white cursor-default">
                     Danh sách Mentor
                 </h2>
                 {loadingMentors && (
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-6">
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
                         Đang tải danh sách mentor...
                     </p>
                 )}
                 {errorMentors && (
-                    <p className="text-center text-red-500 dark:text-red-400 py-6">
+                    <p className="text-center text-red-500 dark:text-red-400 py-6 text-base font-medium cursor-default">
                         {errorMentors}
                     </p>
                 )}
@@ -345,7 +347,7 @@ export default function MentorsPage() {
                                             {headerGroup.headers.map((header) => (
                                                 <TableHead
                                                     key={header.id}
-                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left"
+                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left text-base cursor-default"
                                                 >
                                                     {flexRender(
                                                         header.column.columnDef.header,
@@ -361,7 +363,7 @@ export default function MentorsPage() {
                                         mentorTable.getRowModel().rows.map((row) => (
                                             <TableRow
                                                 key={row.id}
-                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-default"
                                             >
                                                 {row.getVisibleCells().map((cell) => (
                                                     <TableCell key={cell.id} className="py-4 px-6">
@@ -377,7 +379,7 @@ export default function MentorsPage() {
                                         <TableRow>
                                             <TableCell
                                                 colSpan={mentorColumns.length}
-                                                className="py-10 text-center text-gray-500 dark:text-gray-400"
+                                                className="py-10 text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default"
                                             >
                                                 Không tìm thấy mentor.
                                             </TableCell>
@@ -390,32 +392,32 @@ export default function MentorsPage() {
                         {/* Pagination Controls for Mentors */}
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                     Số mục mỗi trang:
                                 </span>
                                 <Select
                                     value={mentorPageSize.toString()}
                                     onValueChange={handleMentorPageSizeChange}
                                 >
-                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md">
+                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] cursor-pointer">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
                                         <SelectItem
                                             value="10"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             10
                                         </SelectItem>
                                         <SelectItem
                                             value="20"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             20
                                         </SelectItem>
                                         <SelectItem
                                             value="50"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             50
                                         </SelectItem>
@@ -430,11 +432,11 @@ export default function MentorsPage() {
                                             onClick={() =>
                                                 handleMentorPageChange(mentorCurrentPage - 1)
                                             }
-                                            className={`${
+                                            className={`px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer ${
                                                 mentorCurrentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : ''
-                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
                                         />
                                     </PaginationItem>
 
@@ -443,11 +445,11 @@ export default function MentorsPage() {
                                             <PaginationLink
                                                 onClick={() => handleMentorPageChange(page)}
                                                 isActive={mentorCurrentPage === page}
-                                                className={`${
+                                                className={
                                                     mentorCurrentPage === page
-                                                        ? 'bg-blue-500 text-white dark:bg-blue-600'
-                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                } px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors`}
+                                                        ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
+                                                        : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
+                                                }
                                             >
                                                 {page}
                                             </PaginationLink>
@@ -459,11 +461,11 @@ export default function MentorsPage() {
                                             onClick={() =>
                                                 handleMentorPageChange(mentorCurrentPage + 1)
                                             }
-                                            className={`${
+                                            className={`px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer ${
                                                 mentorCurrentPage === mentorTotalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : ''
-                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
                                         />
                                     </PaginationItem>
                                 </PaginationContent>
@@ -475,19 +477,19 @@ export default function MentorsPage() {
 
             {/* Review History Section */}
             <section>
-                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white cursor-default">
                     Lịch sử đánh giá
                 </h2>
-                <p className="mb-6 text-gray-600 dark:text-gray-400">
+                <p className="mb-6 text-gray-600 dark:text-gray-400 text-base font-medium cursor-default">
                     Phần này cho phép bạn xem lại lịch sử các hoạt động đánh giá QAQC.
                 </p>
                 {loadingReviews && (
-                    <p className="text-center text-gray-500 dark:text-gray-400 py-6">
+                    <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
                         Đang tải danh sách đánh giá...
                     </p>
                 )}
                 {errorReviews && (
-                    <p className="text-center text-red-500 dark:text-red-400 py-6">
+                    <p className="text-center text-red-500 dark:text-red-400 py-6 text-base font-medium cursor-default">
                         {errorReviews}
                     </p>
                 )}
@@ -504,7 +506,7 @@ export default function MentorsPage() {
                                             {headerGroup.headers.map((header) => (
                                                 <TableHead
                                                     key={header.id}
-                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left"
+                                                    className="text-gray-900 dark:text-gray-100 font-semibold bg-gray-100 dark:bg-gray-700 py-4 px-6 text-left text-base cursor-default"
                                                 >
                                                     {flexRender(
                                                         header.column.columnDef.header,
@@ -520,7 +522,7 @@ export default function MentorsPage() {
                                         reviewTable.getRowModel().rows.map((row) => (
                                             <TableRow
                                                 key={row.id}
-                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-default"
                                             >
                                                 {row.getVisibleCells().map((cell) => (
                                                     <TableCell key={cell.id} className="py-4 px-6">
@@ -536,7 +538,7 @@ export default function MentorsPage() {
                                         <TableRow>
                                             <TableCell
                                                 colSpan={reviewColumns.length}
-                                                className="py-10 text-center text-gray-500 dark:text-gray-400"
+                                                className="py-10 text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default"
                                             >
                                                 Không tìm thấy đánh giá.
                                             </TableCell>
@@ -549,32 +551,32 @@ export default function MentorsPage() {
                         {/* Pagination Controls for Review History */}
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                     Số mục mỗi trang:
                                 </span>
                                 <Select
                                     value={reviewPageSize.toString()}
                                     onValueChange={handleReviewPageSizeChange}
                                 >
-                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md">
+                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] cursor-pointer">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
                                         <SelectItem
                                             value="10"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             10
                                         </SelectItem>
                                         <SelectItem
                                             value="20"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             20
                                         </SelectItem>
                                         <SelectItem
                                             value="50"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
                                         >
                                             50
                                         </SelectItem>
@@ -589,11 +591,11 @@ export default function MentorsPage() {
                                             onClick={() =>
                                                 handleReviewPageChange(reviewCurrentPage - 1)
                                             }
-                                            className={`${
+                                            className={`px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer ${
                                                 reviewCurrentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : ''
-                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
                                         />
                                     </PaginationItem>
 
@@ -602,11 +604,11 @@ export default function MentorsPage() {
                                             <PaginationLink
                                                 onClick={() => handleReviewPageChange(page)}
                                                 isActive={reviewCurrentPage === page}
-                                                className={`${
+                                                className={
                                                     reviewCurrentPage === page
-                                                        ? 'bg-blue-500 text-white dark:bg-blue-600'
-                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                } px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors`}
+                                                        ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
+                                                        : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
+                                                }
                                             >
                                                 {page}
                                             </PaginationLink>
@@ -618,11 +620,11 @@ export default function MentorsPage() {
                                             onClick={() =>
                                                 handleReviewPageChange(reviewCurrentPage + 1)
                                             }
-                                            className={`${
+                                            className={`px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer ${
                                                 reviewCurrentPage === reviewTotalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : ''
-                                            } px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 transition-colors`}
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
                                         />
                                     </PaginationItem>
                                 </PaginationContent>

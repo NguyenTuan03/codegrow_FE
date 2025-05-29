@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,14 +21,14 @@ import { MoreHorizontal } from 'lucide-react';
 import ViewDetailUser from '@/app/(routes)/admin/account/ViewDetailUser';
 import DeleteUser from '@/app/(routes)/admin/account/DeleteUser';
 import UpdateUser from '@/app/(routes)/admin/account/UpdateUser';
-import { getUser } from '@/lib/services/admin/getuser'; // Import API
+import { getUser } from '@/lib/services/admin/getuser';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { RemoveUser } from '@/lib/services/admin/removeuser';
 
 import { useRouter } from 'next/navigation';
-import { CreateAccount } from '@/lib/services/admin/createaccount'; // Import API
+import { CreateAccount } from '@/lib/services/admin/createaccount';
 import CreateNewUser from '@/app/(routes)/admin/account/CreateNewUser';
-import { UpdateAccount } from '@/lib/services/admin/updateaccount'; // Import API
+import { UpdateAccount } from '@/lib/services/admin/updateaccount';
 import { toast } from '@/components/ui/use-toast';
 
 interface Account {
@@ -47,11 +48,11 @@ export default function Account() {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const [modal, setModal] = useState('');
-    const router = useRouter(); // Sử dụng router từ Next.js
+    const router = useRouter();
 
     const fetchApi = async () => {
         try {
-            const response = await getUser(); // Gọi API lấy danh sách tài khoản
+            const response = await getUser();
             setAccounts(response.metadata.users);
         } catch (error) {
             console.error('Error fetching accounts:', error);
@@ -60,18 +61,18 @@ export default function Account() {
 
     const fetchUserDetail = async (id: string) => {
         try {
-            const userDetail = await getUserDetail(id); // Gọi API lấy chi tiết người dùng
+            const userDetail = await getUserDetail(id);
             console.log(`User detail for ID ${id}:`, userDetail);
 
-            setSelectedAccount(userDetail.metadata); // Lưu thông tin chi tiết vào state
-            setModal('view'); // Mở modal hiển thị chi tiết
+            setSelectedAccount(userDetail.metadata);
+            setModal('view');
             toast({
                 title: 'Success',
                 content: 'User details fetched successfully.',
                 variant: 'default',
                 duration: 2000,
             });
-            router.refresh(); // Tải lại trang sau khi lấy thông tin chi tiết thành công
+            router.refresh();
         } catch (error) {
             console.error('❌ Error fetching user details:', error);
             toast({
@@ -82,18 +83,19 @@ export default function Account() {
             });
         }
     };
+
     const handleDelete = async (id: string) => {
         try {
-            const token = localStorage.getItem('token'); // Lấy token từ localStorage
-            const response = await RemoveUser(id, token!); // Gọi API xóa tài khoản
+            const token = localStorage.getItem('token');
+            const response = await RemoveUser(id, token!);
             if (response?.status === 200) {
-                setModal(''); // Đóng modal trước
+                setModal('');
                 toast({
                     title: 'Success',
                     description: 'User deleted successfully.',
                     variant: 'default',
                 });
-                router.refresh(); // Tải lại trang sau khi xóa thành công
+                router.refresh();
             } else {
                 toast({
                     title: 'Error',
@@ -110,16 +112,17 @@ export default function Account() {
             });
         }
     };
+
     useEffect(() => {
-        fetchApi(); // Fetch accounts khi component được mount
+        fetchApi();
     }, []);
+
     const handleUpdate = async (id: string, updatedData: Partial<Account>) => {
         try {
             console.log(`Updating user with ID: ${id}`, updatedData);
-            const token = localStorage.getItem('token') || ''; // Lấy token từ localStorage
+            const token = localStorage.getItem('token') || '';
             console.log('Session ID:', token);
 
-            // Gọi API UpdateAccount với các tham số được kiểm tra
             const result = await UpdateAccount(
                 token,
                 id,
@@ -130,7 +133,6 @@ export default function Account() {
 
             console.log('✅ User updated successfully:', result);
 
-            // Cập nhật danh sách tài khoản
             setAccounts((prevAccounts) =>
                 prevAccounts.map((account) =>
                     account._id === id ? { ...account, ...updatedData } : account,
@@ -144,8 +146,7 @@ export default function Account() {
                     variant: 'default',
                     duration: 2000,
                 });
-                router.refresh(); // Tải lại trang sau khi cập nhật thành công
-                // Trả về kết quả để có thể sử dụng tiếp nếu cần
+                router.refresh();
                 setModal('');
             } else {
                 console.error('❌ Error updating user:', result);
@@ -158,8 +159,7 @@ export default function Account() {
             }
         } catch (error) {
             console.error('❌ Error updating user:', error);
-
-            throw error; // Ném lại lỗi để xử lý tiếp ở nơi gọi hàm
+            throw error;
         }
     };
 
@@ -171,9 +171,8 @@ export default function Account() {
     }) => {
         try {
             console.log('Creating new user:', newData);
-            const token = localStorage.getItem('token') || ''; // Lấy token từ localStorage
+            const token = localStorage.getItem('token') || '';
 
-            // Gọi API CreateUser
             const response = await CreateAccount(
                 token,
                 newData.fullName,
@@ -184,7 +183,6 @@ export default function Account() {
 
             console.log('✅ User created successfully:', response);
 
-            // Cập nhật danh sách tài khoản
             setAccounts((prevAccounts) => [...prevAccounts, response.metadata]);
             toast({
                 title: 'Success',
@@ -192,21 +190,22 @@ export default function Account() {
                 variant: 'default',
                 duration: 2000,
             });
-            router.refresh(); // Tải lại trang sau khi tạo thành công
-            setModal(''); // Đóng modal
+            router.refresh();
+            setModal('');
         } catch (error: unknown) {
             console.error('❌ Error creating user:', error);
         }
     };
+
     return (
         <div className="p-6 md:p-10 min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-600 dark:text-gray-100">
+                    <h1 className="text-2xl font-bold text-gray-600 dark:text-gray-100 cursor-default">
                         Account Management
                     </h1>
                     <Button
-                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white dark:bg-blue-700 dark:hover:bg-blue-600"
+                        className="bg-[#657ED4] hover:bg-[#5A6BBE] text-white dark:bg-blue-700 dark:hover:bg-blue-600 cursor-pointer"
                         onClick={() => setModal('create')}
                     >
                         Create Account
@@ -225,11 +224,11 @@ export default function Account() {
                     <TableBody>
                         {accounts.map((account) => (
                             <TableRow key={account._id}>
-                                <TableCell>{account.fullName}</TableCell>
-                                <TableCell>{account.email}</TableCell>
+                                <TableCell className="cursor-default">{account.fullName}</TableCell>
+                                <TableCell className="cursor-default">{account.email}</TableCell>
                                 <TableCell>
                                     <span
-                                        className={`px-2 py-1 rounded-full text-sm ${
+                                        className={`px-2 py-1 rounded-full text-sm cursor-default ${
                                             account.role === 'mentor'
                                                 ? 'bg-[#657ED4] text-[#ffffff] dark:bg-blue-700 dark:text-white'
                                                 : account.role === 'customer'
@@ -245,7 +244,7 @@ export default function Account() {
                                         <DropdownMenuTrigger asChild>
                                             <Button
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 dark:text-gray-300"
+                                                className="h-8 w-8 p-0 dark:text-gray-300 cursor-pointer"
                                             >
                                                 <MoreHorizontal className="h-4 w-4" />
                                             </Button>
@@ -256,6 +255,7 @@ export default function Account() {
                                         >
                                             <DropdownMenuItem
                                                 onClick={() => fetchUserDetail(account._id)}
+                                                className="cursor-pointer"
                                             >
                                                 View Details
                                             </DropdownMenuItem>
@@ -265,6 +265,7 @@ export default function Account() {
                                                     setSelectedAccount(account);
                                                     setModal('update');
                                                 }}
+                                                className="cursor-pointer"
                                             >
                                                 Edit
                                             </DropdownMenuItem>
@@ -273,7 +274,7 @@ export default function Account() {
                                                     setSelectedAccount(account);
                                                     setModal('delete');
                                                 }}
-                                                className="text-red-500 dark:text-red-400"
+                                                className="text-red-500 dark:text-red-400 cursor-pointer"
                                             >
                                                 Delete
                                             </DropdownMenuItem>

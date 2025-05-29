@@ -47,7 +47,7 @@ export default function ServiceTicketReplyForm({
         resolver: zodResolver(replySchema),
         defaultValues: {
             qaqcReply: initialReply,
-            status: 'resolved', // Default to "resolved"
+            status: 'resolved',
         },
     });
 
@@ -86,18 +86,20 @@ export default function ServiceTicketReplyForm({
                     name="qaqcReply"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="font-semibold text-gray-800 dark:text-gray-200">
+                            <FormLabel className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-default">
                                 Your Reply
                             </FormLabel>
                             <FormControl>
                                 <Textarea
                                     placeholder="Write your response..."
-                                    className="bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
+                                    className={`bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 resize-none h-32 cursor-text ${
+                                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                     disabled={isSubmitting}
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500 dark:text-red-400 text-base cursor-default" />
                         </FormItem>
                     )}
                 />
@@ -106,7 +108,7 @@ export default function ServiceTicketReplyForm({
                     name="status"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="font-semibold text-gray-800 dark:text-gray-200">
+                            <FormLabel className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-default">
                                 Status
                             </FormLabel>
                             <Select
@@ -115,16 +117,30 @@ export default function ServiceTicketReplyForm({
                                 disabled={isSubmitting}
                             >
                                 <FormControl>
-                                    <SelectTrigger className="bg-gray-50 dark:bg-gray-700 dark:text-gray-200">
+                                    <SelectTrigger
+                                        className={`bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 cursor-pointer ${
+                                            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
+                                    >
                                         <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="resolved">Resolved</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg">
+                                    <SelectItem
+                                        value="resolved"
+                                        className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium text-base cursor-pointer"
+                                    >
+                                        Resolved
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="rejected"
+                                        className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium text-base cursor-pointer"
+                                    >
+                                        Rejected
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
+                            <FormMessage className="text-red-500 dark:text-red-400 text-base cursor-default" />
                         </FormItem>
                     )}
                 />
@@ -132,7 +148,9 @@ export default function ServiceTicketReplyForm({
                     <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500"
+                        className={`bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg px-6 py-2 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:outline-none transition-all duration-200 cursor-pointer hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-base font-medium ${
+                            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                     >
                         {isSubmitting ? 'Sending...' : 'Send Reply'}
                     </Button>

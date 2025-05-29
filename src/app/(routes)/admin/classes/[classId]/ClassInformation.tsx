@@ -566,7 +566,7 @@ export default function ClassInfo({
                         </div>
                         <div className="mt-6">
                             <Button
-                                className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-md"
+                                className="w-full cursor-pointer sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-md"
                                 onClick={handleJoinMeeting}
                                 disabled={!classData.linkMeet}
                                 aria-label={

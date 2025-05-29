@@ -198,7 +198,7 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                 </div>
                 <div className="mt-6">
                     <Button
-                        className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] hover:bg-[#34574d] dark-bg-[#5AD3AF] dark-hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                        className="w-full cursor-pointer sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] hover:bg-[#34574d] dark-bg-[#5AD3AF] dark-hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
                         onClick={handleJoinMeeting}
                         aria-label={
                             classData.linkMeet ? 'Join meeting' : 'No meeting link available'

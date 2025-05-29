@@ -79,7 +79,7 @@ export default function AdminCoursesPage() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 8;
+    const itemsPerPage = 8; // Matches the backend limit
     const router = useRouter();
 
     const fetchCategories = async () => {
@@ -122,7 +122,7 @@ export default function AdminCoursesPage() {
     const fetchCourses = async (page: number = 1) => {
         try {
             setLoading(true);
-            const data: ApiResponse = await GetCourses(page, limit);
+            const data: ApiResponse = await GetCourses(page, itemsPerPage);
             console.log('Fetched courses:', JSON.stringify(data, null, 2));
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
@@ -181,6 +181,7 @@ export default function AdminCoursesPage() {
         );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -190,10 +191,10 @@ export default function AdminCoursesPage() {
                 {/* Header with Date and Time */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                             Course Management
                         </h1>
-                        <p className="text-gray-600 text-xl dark:text-gray-400 mt-2 font-medium">
+                        <p className="text-gray-600 text-xl dark:text-gray-400 mt-2 font-medium cursor-default">
                             Manage and organize all courses in your platform
                         </p>
                     </div>
@@ -237,10 +238,10 @@ export default function AdminCoursesPage() {
                                 <div className="mx-auto w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                                     <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2 cursor-default">
                                     No courses available
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6 font-medium">
+                                <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6 font-medium cursor-default">
                                     Create your first course to get started
                                 </p>
                                 <Button
@@ -271,17 +272,17 @@ export default function AdminCoursesPage() {
                                                     backgroundPosition: 'center',
                                                 }}
                                             >
-                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm cursor-default">
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
                                                 </Badge>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
-                                                <h4 className="font-semibold text-xl line-clamp-2 text-[#657ED4] dark:text-[#5AD3AF]">
+                                                <h4 className="font-semibold text-xl line-clamp-2 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                                                     {course.title}
                                                 </h4>
-                                                <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
+                                                <p className="text-base text-gray-600 dark:text-gray-400 font-medium cursor-default">
                                                     by{' '}
                                                     {typeof course.author === 'object'
                                                         ? course.author
@@ -289,16 +290,16 @@ export default function AdminCoursesPage() {
                                                 </p>
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1">
-                                                <p className="text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 font-medium">
+                                                <p className="text-base text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 font-medium cursor-default">
                                                     {course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-base">
+                                                    <span className="font-bold text-base cursor-default">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                                                        <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                                             {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
@@ -306,11 +307,15 @@ export default function AdminCoursesPage() {
                                                 <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 font-medium">
                                                     <div className="flex items-center">
                                                         <Users className="h-4 w-4 mr-1 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                        <span>{course.enrolledCount} enrolled</span>
+                                                        <span className="cursor-default">
+                                                            {course.enrolledCount} enrolled
+                                                        </span>
                                                     </div>
                                                     <div className="flex items-center">
                                                         <BookOpen className="h-4 w-4 mr-1 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                        <span>{course.lessons} lessons</span>
+                                                        <span className="cursor-default">
+                                                            {course.lessons} lessons
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </CardContent>
@@ -345,7 +350,7 @@ export default function AdminCoursesPage() {
                                                         className={
                                                             currentPage === 1
                                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -359,8 +364,8 @@ export default function AdminCoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#5AD3AF] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
-                                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] rounded-full cursor-pointer'
+                                                                    : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                             }
                                                         >
                                                             {page}
@@ -375,7 +380,7 @@ export default function AdminCoursesPage() {
                                                         className={
                                                             currentPage === totalPages
                                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>

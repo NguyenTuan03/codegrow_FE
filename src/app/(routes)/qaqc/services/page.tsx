@@ -65,7 +65,6 @@ export default function SupportPage() {
             const response = await GetServicesTicket(page, limit);
             console.log('API Response:', response);
             if (response?.metadata?.tickets && Array.isArray(response.metadata.tickets)) {
-                // Normalize status to lowercase for consistency
                 const normalizedTickets = response.metadata.tickets.map(
                     (ticket: ServiceTicket) => ({
                         ...ticket,
@@ -138,7 +137,7 @@ export default function SupportPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] cursor-default"></div>
             </div>
         );
     }
@@ -148,37 +147,37 @@ export default function SupportPage() {
             <div className="max-w-6xl mx-auto space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                             Service Tickets
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-gray-600 dark:text-gray-400 text-base mt-2 font-medium cursor-default">
                             Manage and respond to customer service requests
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <Select onValueChange={handleStatusFilterChange} value={statusFilter}>
-                            <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                            <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer">
                                 <SelectValue placeholder="Filter by status" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg">
                                 <SelectItem
                                     value="All"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                                 >
                                     All Tickets
                                 </SelectItem>
                                 <SelectItem
                                     value="open"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                                 >
                                     <span className="flex items-center">
-                                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                        <span className="w-2 h-2 rounded-full bg-[#657ED4] dark:bg-[#5AD3AF] mr-2"></span>
                                         Open
                                     </span>
                                 </SelectItem>
                                 <SelectItem
                                     value="resolved"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                                 >
                                     <span className="flex items-center">
                                         <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
@@ -187,7 +186,7 @@ export default function SupportPage() {
                                 </SelectItem>
                                 <SelectItem
                                     value="rejected"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                                 >
                                     <span className="flex items-center">
                                         <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
@@ -199,7 +198,7 @@ export default function SupportPage() {
                         <Button
                             onClick={() => fetchTickets(currentPage)}
                             variant="outline"
-                            className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            className="border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                             aria-label="Refresh tickets"
                         >
                             <RefreshCw className="h-4 w-4 mr-2" />
@@ -226,10 +225,10 @@ export default function SupportPage() {
                                 />
                             </svg>
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                        <h3 className="text-xl font-medium text-gray-900 dark:text-white cursor-default">
                             No tickets found
                         </h3>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <p className="mt-1 text-base text-gray-500 dark:text-gray-400 font-medium cursor-default">
                             {statusFilter === 'All'
                                 ? 'There are currently no service tickets.'
                                 : `No ${statusFilter} tickets found.`}
@@ -241,19 +240,19 @@ export default function SupportPage() {
                             <Table>
                                 <TableHeader className="bg-gray-50 dark:bg-gray-700">
                                     <TableRow>
-                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium py-4">
+                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium py-4 text-base cursor-default">
                                             Sender
                                         </TableHead>
-                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium">
+                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium text-base cursor-default">
                                             Message Preview
                                         </TableHead>
-                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium">
+                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium text-base cursor-default">
                                             Status
                                         </TableHead>
-                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium">
+                                        <TableHead className="text-gray-600 dark:text-gray-300 font-medium text-base cursor-default">
                                             Date Created
                                         </TableHead>
-                                        <TableHead className="w-10"></TableHead>
+                                        <TableHead className="w-10 cursor-default"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -266,23 +265,23 @@ export default function SupportPage() {
                                             >
                                                 <TableCell className="py-4">
                                                     <div className="flex items-center">
-                                                        <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium mr-3">
+                                                        <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 dark:bg-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] font-medium mr-3 cursor-default">
                                                             {ticket.sender.fullName
                                                                 .charAt(0)
                                                                 .toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <p className="font-medium text-gray-900 dark:text-white">
+                                                            <p className="font-medium text-gray-900 dark:text-white text-base cursor-default">
                                                                 {ticket.sender.fullName}
                                                             </p>
-                                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                            <p className="text-base text-gray-500 dark:text-gray-400 font-medium cursor-default">
                                                                 {ticket.sender.email}
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="py-4">
-                                                    <p className="text-gray-800 dark:text-gray-200 line-clamp-2">
+                                                    <p className="text-gray-800 dark:text-gray-200 line-clamp-2 text-base cursor-default">
                                                         {ticket.message}
                                                     </p>
                                                 </TableCell>
@@ -292,15 +291,21 @@ export default function SupportPage() {
                                                             ticket.status === 'rejected'
                                                                 ? 'secondary'
                                                                 : ticket.status === 'resolved'
-                                                                  ? 'secondary' // Map "success" to "default"
+                                                                  ? 'default'
                                                                   : 'default'
                                                         }
-                                                        className="capitalize"
+                                                        className={`capitalize text-base cursor-default ${
+                                                            ticket.status === 'rejected'
+                                                                ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                                : ticket.status === 'resolved'
+                                                                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                        }`}
                                                     >
                                                         {ticket.status}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-gray-600 dark:text-gray-400">
+                                                <TableCell className="py-4 text-gray-600 dark:text-gray-400 text-base font-medium cursor-default">
                                                     {new Date(ticket.createdAt).toLocaleDateString(
                                                         'en-US',
                                                         {
@@ -312,9 +317,9 @@ export default function SupportPage() {
                                                 </TableCell>
                                                 <TableCell className="py-4 text-right">
                                                     {expandedRow === ticket._id ? (
-                                                        <ChevronUp className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                                        <ChevronUp className="h-5 w-5 text-gray-500 dark:text-gray-400 cursor-pointer" />
                                                     ) : (
-                                                        <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                                        <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400 cursor-pointer" />
                                                     )}
                                                 </TableCell>
                                             </TableRow>
@@ -324,23 +329,23 @@ export default function SupportPage() {
                                                         <div className="bg-gray-50 dark:bg-gray-700/30 px-6 py-4">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                                 <div>
-                                                                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                                                    <h4 className="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2 cursor-default">
                                                                         SENDER DETAILS
                                                                     </h4>
                                                                     <div className="space-y-2">
-                                                                        <p className="text-gray-900 dark:text-white">
+                                                                        <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Name:
                                                                             </span>{' '}
                                                                             {ticket.sender.fullName}
                                                                         </p>
-                                                                        <p className="text-gray-900 dark:text-white">
+                                                                        <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Email:
                                                                             </span>{' '}
                                                                             {ticket.sender.email}
                                                                         </p>
-                                                                        <p className="text-gray-900 dark:text-white">
+                                                                        <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Phone:
                                                                             </span>{' '}
@@ -350,12 +355,12 @@ export default function SupportPage() {
                                                                     </div>
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                                                    <h4 className="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2 cursor-default">
                                                                         TICKET DETAILS
                                                                     </h4>
                                                                     <div className="space-y-2">
-                                                                        <p className="text-gray-900 dark:text-white">
-                                                                            <span className="font-medium">
+                                                                        <p className="text-gray-900 dark:text-white text-base">
+                                                                            <span className="font-medium cursor-default">
                                                                                 Status:
                                                                             </span>
                                                                             <Badge
@@ -365,15 +370,23 @@ export default function SupportPage() {
                                                                                         ? 'default'
                                                                                         : ticket.status ===
                                                                                             'resolved'
-                                                                                          ? 'default' // Map "success" to "default"
+                                                                                          ? 'default'
                                                                                           : 'destructive'
                                                                                 }
-                                                                                className="ml-2 capitalize"
+                                                                                className={`ml-2 capitalize text-base cursor-default ${
+                                                                                    ticket.status ===
+                                                                                    'open'
+                                                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                                                        : ticket.status ===
+                                                                                            'resolved'
+                                                                                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                                                }`}
                                                                             >
                                                                                 {ticket.status}
                                                                             </Badge>
                                                                         </p>
-                                                                        <p className="text-gray-900 dark:text-white">
+                                                                        <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Created:
                                                                             </span>{' '}
@@ -383,7 +396,7 @@ export default function SupportPage() {
                                                                         </p>
                                                                         {ticket.updatedAt !==
                                                                             ticket.createdAt && (
-                                                                            <p className="text-gray-900 dark:text-white">
+                                                                            <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                                 <span className="font-medium">
                                                                                     Last Updated:
                                                                                 </span>{' '}
@@ -397,11 +410,11 @@ export default function SupportPage() {
                                                             </div>
 
                                                             <div className="mt-6">
-                                                                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                                                <h4 className="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2 cursor-default">
                                                                     MESSAGE
                                                                 </h4>
                                                                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                                                                    <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line">
+                                                                    <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line text-base cursor-default">
                                                                         {ticket.message}
                                                                     </p>
                                                                 </div>
@@ -409,11 +422,11 @@ export default function SupportPage() {
 
                                                             {ticket.qaqcReply && (
                                                                 <div className="mt-6">
-                                                                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                                                    <h4 className="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2 cursor-default">
                                                                         PREVIOUS REPLY
                                                                     </h4>
-                                                                    <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                                                                        <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line">
+                                                                    <div className="bg-blue-50 dark:bg-[#5AD3AF] p-4 rounded-lg border border-[#657ED4] dark:border-[#5AD3AF]">
+                                                                        <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line text-base cursor-default">
                                                                             {ticket.qaqcReply}
                                                                         </p>
                                                                     </div>
@@ -452,11 +465,11 @@ export default function SupportPage() {
                                         <PaginationItem>
                                             <PaginationPrevious
                                                 onClick={() => handlePageChange(currentPage - 1)}
-                                                className={
+                                                className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer ${
                                                     currentPage === 1
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }
+                                                        ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                        : ''
+                                                }`}
                                             />
                                         </PaginationItem>
                                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -477,8 +490,8 @@ export default function SupportPage() {
                                                         isActive={currentPage === pageNum}
                                                         className={
                                                             currentPage === pageNum
-                                                                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                                                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer'
+                                                                : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer'
                                                         }
                                                     >
                                                         {pageNum}
@@ -489,11 +502,11 @@ export default function SupportPage() {
                                         <PaginationItem>
                                             <PaginationNext
                                                 onClick={() => handlePageChange(currentPage + 1)}
-                                                className={
+                                                className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer ${
                                                     currentPage === totalPages
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }
+                                                        ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                        : ''
+                                                }`}
                                             />
                                         </PaginationItem>
                                     </PaginationContent>

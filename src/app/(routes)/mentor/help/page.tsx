@@ -68,8 +68,8 @@ interface ServiceTicket {
 const supportSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     message: z.string().min(1, 'Message is required'),
-    courseId: z.string().optional(), // Make courseId truly optional without validation
-    classId: z.string().optional(), // Make classId truly optional without validation
+    courseId: z.string().optional(),
+    classId: z.string().optional(),
 });
 
 export default function SupportPage() {
@@ -84,8 +84,8 @@ export default function SupportPage() {
         defaultValues: {
             title: '',
             message: '',
-            courseId: '', // Default to empty string
-            classId: '', // Default to empty string
+            courseId: '',
+            classId: '',
         },
     });
 
@@ -143,10 +143,11 @@ export default function SupportPage() {
             setLoading(false);
         }
     };
+
     const handleGetAllClass = async () => {
         try {
             const response = await GetClass();
-            console.log('API Response  class:', response);
+            console.log('API Response class:', response);
             setClasses(response.metadata.classes || []);
         } catch (error) {
             console.error('Failed to fetch service tickets:', error);
@@ -172,7 +173,7 @@ export default function SupportPage() {
                 token,
                 title: values.title,
                 message: values.message,
-                courseId: values.courseId || '', // If courseId is undefined, send an empty string
+                courseId: values.courseId || '',
                 classId: values.classId || '',
             });
             toast({
@@ -197,7 +198,7 @@ export default function SupportPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] cursor-default"></div>
             </div>
         );
     }
@@ -207,7 +208,7 @@ export default function SupportPage() {
             <div className="max-w-6xl mx-auto space-y-12">
                 {/* Support Request Form */}
                 <div className="space-y-8">
-                    <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400">
+                    <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] cursor-default">
                         📨 Request Support
                     </h2>
                     <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -218,19 +219,23 @@ export default function SupportPage() {
                                     name="title"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                <Book className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-default">
+                                                <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                 Title
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter the title of your issue"
-                                                    className="border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                                                    className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 cursor-text ${
+                                                        isSubmitting
+                                                            ? 'opacity-50 cursor-not-allowed'
+                                                            : ''
+                                                    }`}
                                                     disabled={isSubmitting}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
+                                            <FormMessage className="text-red-500 dark:text-red-400 cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -239,28 +244,26 @@ export default function SupportPage() {
                                     name="courseId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                <Book className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-default">
+                                                <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                 Course (Optional)
                                             </FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
-                                                value={field.value || ''} // Ensure value is controlled
+                                                value={field.value || ''}
                                                 disabled={isSubmitting || courses.length === 0}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger
-                                                        className={`
-                                                            border border-gray-300 dark:border-gray-600
-                                                            bg-gray-50 dark:bg-gray-700
-                                                            text-gray-900 dark:text-gray-100
-                                                            rounded-lg
-                                                            focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                                                            focus:border-transparent
-                                                            transition-all duration-200
-                                                            ${courses.length === 0 ? 'text-gray-400' : ''}
-                                                            ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
-                                                        `}
+                                                        className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 cursor-pointer ${
+                                                            courses.length === 0
+                                                                ? 'text-gray-400 cursor-not-allowed'
+                                                                : ''
+                                                        } ${
+                                                            isSubmitting
+                                                                ? 'opacity-50 cursor-not-allowed'
+                                                                : ''
+                                                        }`}
                                                     >
                                                         <SelectValue
                                                             placeholder={
@@ -271,32 +274,19 @@ export default function SupportPage() {
                                                         />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent
-                                                    className="
-                                                        bg-white dark:bg-gray-800
-                                                        border border-gray-300 dark:border-gray-600
-                                                        rounded-lg shadow-lg
-                                                        max-h-60 overflow-y-auto
-                                                    "
-                                                >
+                                                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                                     {courses.map((course) => (
                                                         <SelectItem
                                                             key={course._id}
                                                             value={course._id}
-                                                            className="
-                                                                hover:bg-gray-100 dark:hover:bg-gray-700
-                                                                focus:bg-gray-100 dark:focus:bg-gray-700
-                                                                text-gray-900 dark:text-gray-100
-                                                                transition-colors duration-200
-                                                                py-2 px-4
-                                                            "
+                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4 cursor-pointer"
                                                         >
                                                             {course.title}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
+                                            <FormMessage className="text-red-500 dark:text-red-400 cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -305,28 +295,26 @@ export default function SupportPage() {
                                     name="classId"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                <Book className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-default">
+                                                <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                 Class (Optional)
                                             </FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
-                                                value={field.value || ''} // Ensure value is controlled
+                                                value={field.value || ''}
                                                 disabled={isSubmitting || classes.length === 0}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger
-                                                        className={`
-                                                            border border-gray-300 dark:border-gray-600
-                                                            bg-gray-50 dark:bg-gray-700
-                                                            text-gray-900 dark:text-gray-100
-                                                            rounded-lg
-                                                            focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                                                            focus:border-transparent
-                                                            transition-all duration-200
-                                                            ${classes.length === 0 ? 'text-gray-400' : ''}
-                                                            ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}
-                                                        `}
+                                                        className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 cursor-pointer ${
+                                                            classes.length === 0
+                                                                ? 'text-gray-400 cursor-not-allowed'
+                                                                : ''
+                                                        } ${
+                                                            isSubmitting
+                                                                ? 'opacity-50 cursor-not-allowed'
+                                                                : ''
+                                                        }`}
                                                     >
                                                         <SelectValue
                                                             placeholder={
@@ -337,32 +325,19 @@ export default function SupportPage() {
                                                         />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent
-                                                    className="
-                                                        bg-white dark:bg-gray-800
-                                                        border border-gray-300 dark:border-gray-600
-                                                        rounded-lg shadow-lg
-                                                        max-h-60 overflow-y-auto
-                                                    "
-                                                >
+                                                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                                     {classes.map((course) => (
                                                         <SelectItem
                                                             key={course._id}
                                                             value={course._id}
-                                                            className="
-                                                                hover:bg-gray-100 dark:hover:bg-gray-700
-                                                                focus:bg-gray-100 dark:focus:bg-gray-700
-                                                                text-gray-900 dark:text-gray-100
-                                                                transition-colors duration-200
-                                                                py-2 px-4
-                                                            "
+                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4 cursor-pointer"
                                                         >
                                                             {course.title}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
+                                            <FormMessage className="text-red-500 dark:text-red-400 cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -371,19 +346,23 @@ export default function SupportPage() {
                                     name="message"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="flex items-center text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                <MessageSquare className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200 cursor-default">
+                                                <MessageSquare className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                 Message
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="Describe your issue..."
-                                                    className="border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-none h-32"
+                                                    className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 resize-none h-32 cursor-text ${
+                                                        isSubmitting
+                                                            ? 'opacity-50 cursor-not-allowed'
+                                                            : ''
+                                                    }`}
                                                     disabled={isSubmitting}
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
+                                            <FormMessage className="text-red-500 dark:text-red-400 cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -391,19 +370,11 @@ export default function SupportPage() {
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="
-                                            bg-gradient-to-r from-blue-500 to-purple-500
-                                            dark:from-blue-600 dark:to-purple-600
-                                            text-white
-                                            rounded-lg
-                                            px-6 py-2
-                                            hover:from-blue-600 hover:to-purple-600
-                                            dark:hover:from-blue-700 dark:hover:to-purple-700
-                                            focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                                            focus:outline-none
-                                            transition-all duration-200
-                                            flex items-center
-                                        "
+                                        className={`bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] text-white rounded-lg px-6 py-2 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:outline-none transition-all duration-200 flex items-center cursor-pointer ${
+                                            isSubmitting
+                                                ? 'opacity-50 cursor-not-allowed'
+                                                : 'hover:from-[#424c70] hover:to-[#3a4a80] dark:hover:from-[#4ac2a0] dark:hover:bg-[#3a9c80]'
+                                        }`}
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -445,24 +416,12 @@ export default function SupportPage() {
                 {/* Service Tickets Table */}
                 <div className="space-y-8">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400">
+                        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] cursor-default">
                             📜 My Service Tickets
                         </h2>
                         <Button
                             onClick={fetchTickets}
-                            className="
-                                bg-gradient-to-r from-blue-500 to-purple-500
-                                dark:from-blue-600 dark:to-purple-600
-                                text-white
-                                rounded-lg
-                                px-6 py-2
-                                hover:from-blue-600 hover:to-purple-600
-                                dark:hover:from-blue-700 dark:hover:to-purple-700
-                                focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
-                                focus:outline-none
-                                transition-all duration-200
-                                flex items-center
-                            "
+                            className="bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] text-white rounded-lg px-6 py-2 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:outline-none transition-all duration-200 flex items-center hover:from-[#424c70] hover:to-[#3a4a80] dark:hover:from-[#4ac2a0] dark:hover:bg-[#3a9c80] cursor-pointer"
                             aria-label="Refresh tickets"
                         >
                             <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
@@ -471,7 +430,7 @@ export default function SupportPage() {
                     </div>
                     {tickets.length === 0 ? (
                         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-                            <p className="text-lg text-gray-600 dark:text-gray-300">
+                            <p className="text-xl text-gray-600 dark:text-gray-300 font-medium cursor-default">
                                 No service tickets found.
                             </p>
                         </div>
@@ -480,25 +439,25 @@ export default function SupportPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-gray-100 dark:bg-gray-700">
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Title
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Message
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Course
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Reply By
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             QAQC Reply
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Status
                                         </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4 cursor-default">
                                             Created At
                                         </TableHead>
                                     </TableRow>
@@ -507,44 +466,41 @@ export default function SupportPage() {
                                     {tickets.map((ticket, index) => (
                                         <TableRow
                                             key={ticket._id}
-                                            className={`
-                                                ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}
-                                                hover:bg-gray-100 dark:hover:bg-gray-700
-                                                transition-colors duration-200
-                                            `}
+                                            className={`${
+                                                index % 2 === 0
+                                                    ? 'bg-white dark:bg-gray-800'
+                                                    : 'bg-gray-50 dark:bg-gray-750'
+                                            } hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-default`}
                                         >
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 cursor-default">
                                                 {ticket.title}
                                             </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 truncate max-w-xs">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 truncate max-w-xs cursor-default">
                                                 {ticket.message}
                                             </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 cursor-default">
                                                 {ticket.course?.title || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 cursor-default">
                                                 {ticket.replyBy?.fullName || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 cursor-default">
                                                 {ticket.qaqcReply || 'No reply yet'}
                                             </TableCell>
                                             <TableCell className="text-gray-800 dark:text-gray-200 py-4">
                                                 <span
-                                                    className={`
-                                                        inline-block px-3 py-1 rounded-full text-sm font-medium
-                                                        ${
-                                                            ticket.status === 'open'
-                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                                : ticket.status === 'resolved'
-                                                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                                                                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                        }
-                                                    `}
+                                                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium cursor-default ${
+                                                        ticket.status === 'open'
+                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                            : ticket.status === 'resolved'
+                                                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                    }`}
                                                 >
                                                     {ticket.status}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 cursor-default">
                                                 {new Date(ticket.createdAt).toLocaleString()}
                                             </TableCell>
                                         </TableRow>

@@ -61,7 +61,7 @@ export default function YourMentor() {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] flex items-center gap-1"
+                        className="text-[#657ED4] cursor-pointer dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] flex items-center gap-1"
                     >
                         View All
                         <ChevronRight className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function YourMentor() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-2 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full transition-all duration-200"
+                                                    className="gap-2 cursor-pointer border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full transition-all duration-200"
                                                 >
                                                     <EyeIcon className="h-4 w-4" />
                                                     Details

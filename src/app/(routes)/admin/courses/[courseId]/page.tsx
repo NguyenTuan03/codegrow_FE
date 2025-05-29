@@ -202,8 +202,16 @@ export default function CourseDetailPage() {
             // Log the response for debugging
             console.log('UpdateCourse Response in handleSave:', JSON.stringify(response, null, 2));
 
-            // Force a re-fetch of the course data to ensure the latest imgUrl is retrieved
-            await fetchCourseDetail();
+            // Update courseData with the new data from the response
+            const updatedCourseData: Course = {
+                ...formData,
+                imgUrl: response.metadata?.imgUrl || previewImage || formData.imgUrl,
+            };
+            setCourseData(updatedCourseData);
+            setFormData(updatedCourseData);
+            setPreviewImage(
+                typeof updatedCourseData.imgUrl === 'string' ? updatedCourseData.imgUrl : null,
+            );
 
             setIsEditing(false);
             setNewImgUrl(undefined);
@@ -295,39 +303,41 @@ export default function CourseDetailPage() {
                 >
                     <div className="relative z-10">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div className="flex items-center gap-3">
-                                {isEditing ? (
-                                    <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div className="flex items-center gap-3">
+                                    {isEditing ? (
+                                        <div className="flex items-center gap-4">
+                                            <h1 className="text-2xl sm:text-4xl font-bold">
+                                                Editing {formData?.title}
+                                            </h1>
+                                            <label
+                                                htmlFor="img-upload"
+                                                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
+                                            >
+                                                <ImagePlus className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                <span>Change Image</span>
+                                                <input
+                                                    id="img-upload"
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/gif"
+                                                    onChange={handleImageChange}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
+                                    ) : (
                                         <h1 className="text-2xl sm:text-4xl font-bold">
-                                            Editing {formData?.title}
+                                            {courseData.title}
                                         </h1>
-                                        <label
-                                            htmlFor="img-upload"
-                                            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
-                                        >
-                                            <ImagePlus className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                            <span>Change Image</span>
-                                            <input
-                                                id="img-upload"
-                                                type="file"
-                                                accept="image/jpeg,image/png,image/gif"
-                                                onChange={handleImageChange}
-                                                className="hidden"
-                                            />
-                                        </label>
-                                    </div>
-                                ) : (
-                                    <h1 className="text-2xl sm:text-4xl font-bold">
-                                        {courseData.title}
-                                    </h1>
-                                )}
+                                    )}
+                                </div>
                             </div>
                             <div className="flex gap-3">
                                 {isEditing ? (
                                     <>
                                         <button
                                             onClick={handleSave}
-                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md font-semibold"
+                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md font-semibold cursor-pointer"
                                             aria-label="Save changes"
                                         >
                                             <Save className="h-5 w-5 mr-2" />
@@ -335,7 +345,8 @@ export default function CourseDetailPage() {
                                         </button>
                                         <button
                                             onClick={handleCancel}
-                                            className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm font-medium"
+                                            className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm font-medium cursor-pointer"
+                                            aria-label="Cancel editing"
                                         >
                                             <X className="h-5 w-5 mr-2" />
                                             Cancel
@@ -345,14 +356,16 @@ export default function CourseDetailPage() {
                                     <>
                                         <button
                                             onClick={handleEdit}
-                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md"
+                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md cursor-pointer"
+                                            aria-label="Edit course"
                                         >
                                             <Pencil className="h-5 w-5 mr-2" />
                                             Update
                                         </button>
                                         <button
                                             onClick={handleDeleteClick}
-                                            className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md"
+                                            className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md cursor-pointer"
+                                            aria-label="Delete course"
                                         >
                                             <Trash2 className="h-5 w-5 mr-2" />
                                             Delete

@@ -11,7 +11,7 @@ import {
     CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Clock, User, Calendar } from 'lucide-react';
+import { Users, Clock, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -137,12 +137,6 @@ export default function Classes() {
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                     Available Classes
                 </h1>
-                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
-                    <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                    <span className="text-gray-800 dark:text-gray-200 font-medium">
-                        Thursday, May 29, 2025, 01:04 PM
-                    </span>
-                </div>
             </div>
 
             {loading ? (
