@@ -30,6 +30,7 @@ interface Course {
     author: string;
     isDeleted?: boolean;
     enrolledCount?: number;
+    imgUrl?: string;
 }
 
 interface Students {
@@ -178,6 +179,17 @@ export default function CourseDetailPage() {
                 {/* Course Header */}
                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                     <CardHeader className="p-6">
+                        <div
+                            className="relative h-48 overflow-hidden"
+                            style={{
+                                backgroundImage: courseData.imgUrl
+                                    ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${courseData.imgUrl})`
+                                    : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                backgroundColor: courseData.imgUrl ? 'transparent' : '#657ED4',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                            }}
+                        ></div>
                         <h1 className="text-4xl font-bold tracking-tight text-[#657ED4] dark:text-[#5AD3AF]">
                             {courseData.title}
                         </h1>

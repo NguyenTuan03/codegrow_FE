@@ -17,7 +17,6 @@ import {
     CarouselPrevious,
     CarouselNext,
 } from '@/components/ui/carousel';
-
 import { GetProgress } from '@/lib/services/api/progress';
 
 interface Category {
@@ -34,6 +33,7 @@ interface Course {
     author: { _id: string; fullName: string; email: string; role: string };
     category: string | Category;
     createdAt: string;
+    imgUrl?: string;
 }
 
 interface ApiResponse {
@@ -51,10 +51,8 @@ const HomePage = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [showChat, setShowChat] = useState(false);
-    // Store progress for each course as an object mapping courseId to progress percentage
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
 
-    // Fetch progress for a single course
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -67,12 +65,10 @@ const HomePage = () => {
             return progress;
         } catch (error) {
             console.error(`Error fetching progress for course ${courseId}:`, error);
-
-            return 0; // Default to 0 if there's an error
+            return 0;
         }
     };
 
-    // Fetch categories
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
@@ -82,12 +78,11 @@ const HomePage = () => {
         }
     };
 
-    // Fetch courses using GetCourses API
     const fetchCourses = async () => {
         try {
             setLoading(true);
-            const limit = 10; // Limit to 10 courses for the carousel
-            const data: ApiResponse = await GetCourses(1, limit); // Fetch first page
+            const limit = 10;
+            const data: ApiResponse = await GetCourses(1, limit);
             console.log('Fetched courses:', data);
 
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
@@ -104,7 +99,6 @@ const HomePage = () => {
 
                 setCourses(parsedCourses);
 
-                // Fetch progress for each course
                 const progressPromises = parsedCourses.map(async (course) => {
                     const progress = await fetchProgress(course._id);
                     return { courseId: course._id, progress };
@@ -127,26 +121,22 @@ const HomePage = () => {
             }
         } catch (error: unknown) {
             console.error('Error fetching courses:', error);
-
             setCourses([]);
         } finally {
             setLoading(false);
         }
     };
 
-    // Fetch categories on mount
     useEffect(() => {
         fetchCategories();
     }, []);
 
-    // Fetch courses only after categories are fetched
     useEffect(() => {
         if (categories.length > 0) {
             fetchCourses();
         }
     }, [categories]);
 
-    // Toggle chat visibility
     const toggleChat = () => {
         setShowChat((prev) => !prev);
         if (!showChat) {
@@ -158,19 +148,31 @@ const HomePage = () => {
         }
     };
 
+    const handleCarouselPrevious = () => {
+        console.log('Carousel Previous clicked');
+    };
+
+    const handleCarouselNext = () => {
+        console.log('Carousel Next clicked');
+    };
+
     return (
-        <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)]  relative">
+        <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                 <div className="md:col-span-8">
-                    <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:[#5AD3AF]">
-                        Welcome back, customer
-                    </h3>
-                    <p className="text-xl mb-2">
-                        Solve coding exercises and get mentored to develop fluency in your chosen
-                        programming languages
-                    </p>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:[#5AD3AF]">
+                                Welcome back, customer
+                            </h3>
+                            <p className="text-xl mb-2">
+                                Solve coding exercises and get mentored to develop fluency in your
+                                chosen programming languages
+                            </p>
+                        </div>
+                    </div>
                     <div className="font-bold text-2xl mt-5 mb-3">Where to start...</div>
-                    <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
                         {HOME_INTRODUCTION.map((item, index) => (
                             <Card
                                 key={index}
@@ -188,7 +190,7 @@ const HomePage = () => {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="text-center">
-                                    <p className="  text-base font-medium">{item.name}</p>
+                                    <p className="text-base font-medium">{item.name}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -222,21 +224,21 @@ const HomePage = () => {
                             </div>
                         </CardHeader>
                         <CardContent className="bg-gray-100 dark:bg-gray-700">
-                            <h2 className="text-2xl font-bold mb-2 ">Become a mentor</h2>
-                            <p className=" text-gray-500 dark:text-gray-300 mb-6  text-base">
+                            <h2 className="text-2xl font-bold mb-2">Become a mentor</h2>
+                            <p className="text-gray-500 dark:text-gray-300 mb-6 text-base">
                                 Mentoring is a great way to reinforce your own learning, and help
                                 students learn and discover the things they don’t know.
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button
-                                    className=" bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3  md:text-base"
+                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] text-xl hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 md:text-base cursor-pointer"
                                     onClick={toggleChat}
                                 >
                                     {showChat ? 'Close Chat' : 'Apply'}
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className=" border-[#657ED4] dark:border-[#5AD3AF] text-xl text-[#657ED4] dark:text-[#5AD3AF] px-6 py-3  md:text-base hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white font-semibold"
+                                    className="border-[#657ED4] dark:border-[#5AD3AF] text-xl text-[#657ED4] dark:text-[#5AD3AF] px-6 py-3 md:text-base hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white font-semibold cursor-pointer"
                                 >
                                     Read
                                 </Button>
@@ -276,20 +278,25 @@ const HomePage = () => {
                                     >
                                         <Card className="bg-white dark:bg-gray-600 shadow-sm h-full border-gray-100 dark:border-gray-700 rounded-xl flex flex-col">
                                             <CardHeader className="p-0">
-                                                <div className="relative w-full h-[200px]">
-                                                    <Image
-                                                        src="/courses.png"
-                                                        alt={course.title}
-                                                        fill
-                                                        className="object-cover rounded-t-xl"
-                                                    />
-                                                </div>
+                                                <div
+                                                    className="relative w-full h-[200px] overflow-hidden"
+                                                    style={{
+                                                        backgroundImage: course.imgUrl
+                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                            : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                        backgroundColor: course.imgUrl
+                                                            ? 'transparent'
+                                                            : '#657ED4',
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                    }}
+                                                ></div>
                                             </CardHeader>
                                             <CardContent className="p-4 flex flex-col flex-grow gap-3 min-h-[200px]">
-                                                <div className="text-xl md:text-2xl font-bold flex items-center gap-2 ">
+                                                <div className="text-xl md:text-2xl font-bold flex items-center gap-2">
                                                     {course.title}
                                                 </div>
-                                                <div className="text-base font-normal text-gray-600 dark:text-gray-300 mt-2  line-clamp-3 h-14">
+                                                <div className="text-base font-normal text-gray-600 dark:text-gray-300 mt-2 line-clamp-3 h-14">
                                                     {course.description.length > 100
                                                         ? course.description.slice(0, 100) + '...'
                                                         : course.description}
@@ -339,16 +346,20 @@ const HomePage = () => {
                                     </CarouselItem>
                                 ))}
                             </CarouselContent>
-                            <CarouselPrevious className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white" />
-                            <CarouselNext className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-black dark:hover:text-white" />
+                            <CarouselPrevious
+                                className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black cursor-pointer"
+                                onClick={handleCarouselPrevious}
+                            />
+                            <CarouselNext
+                                className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black cursor-pointer"
+                                onClick={handleCarouselNext}
+                            />
                         </Carousel>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-center   dark:border-gray-700 py-6">
-                    {' '}
+                <CardFooter className="flex justify-center dark:border-gray-700 py-6">
                     <Link href="/customer/courses" legacyBehavior>
-                        <Button className="text-center px-6 py-3  bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-base md:text-base font-semibold transition-colors duration-300">
-                            {' '}
+                        <Button className="text-center px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-base md:text-base font-semibold transition-colors duration-300 cursor-pointer">
                             View all courses
                         </Button>
                     </Link>
@@ -360,7 +371,6 @@ const HomePage = () => {
                     What you get from CODEGROW
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {' '}
                     {['1', '2', '3', '4'].map((_, index) => (
                         <div
                             key={index}
@@ -375,7 +385,6 @@ const HomePage = () => {
                                 />
                             </div>
                             <div className="font-bold text-xl md:text-xl mb-3">
-                                {' '}
                                 GOOD LEARNING PATH
                             </div>
                             <p className="text-xl md:text-base text-gray-500 dark:text-gray-300 leading-relaxed">

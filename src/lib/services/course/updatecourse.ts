@@ -8,6 +8,7 @@ export const UpdateCourse = async (
     price: string,
     author: string,
     category: string,
+    imgUrl?: File, // Optional, if you want to update the image
 ) => {
     try {
         const response = await httpRequest.put(
@@ -18,6 +19,7 @@ export const UpdateCourse = async (
                 price,
                 author,
                 category,
+                imgUrl, // Ensure this matches the backend expectation
             },
             {
                 headers: { Authorization: `Bearer ${token}` },

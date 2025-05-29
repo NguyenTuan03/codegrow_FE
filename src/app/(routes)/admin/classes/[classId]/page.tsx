@@ -9,8 +9,18 @@ import { UpdateClass } from '@/lib/services/class/updateclass';
 import { AssignStudent } from '@/lib/services/class/assignstudent';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetCourses } from '@/lib/services/course/getcourse';
-
-import { Pencil, Save, Trash2, X, BookOpen, Users, FileText, Award } from 'lucide-react';
+import {
+    Pencil,
+    Save,
+    Trash2,
+    X,
+    BookOpen,
+    Users,
+    FileText,
+    Award,
+    Edit,
+    Calendar,
+} from 'lucide-react';
 import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
 import Stream from './Stream';
@@ -41,6 +51,7 @@ interface Course {
     isDeleted?: boolean;
     enrolledCount?: number;
 }
+
 interface User {
     _id: string;
     email: string;
@@ -69,6 +80,7 @@ interface ClassItem {
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
+    imgUrl?: string | File;
     __v: number;
 }
 
@@ -93,7 +105,7 @@ interface EnrollmentRecord {
     isConsulted: boolean;
     isDeleted: boolean;
     enrolledAt: string;
-    fullName?: string; // Optional redundant fields
+    fullName?: string;
     email?: string;
     phone?: string;
     note?: string;
@@ -113,6 +125,8 @@ export default function ClassDetailPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [mentors, setMentors] = useState<Mentor[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const fetchCourse = async () => {
         try {
@@ -130,6 +144,7 @@ export default function ClassDetailPage() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to fetch courses',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setCourses([]);
         }
@@ -144,7 +159,7 @@ export default function ClassDetailPage() {
                 throw new Error('Invalid or missing users data');
             }
 
-            const mentors = response.metadata.users
+            const mentorsList = response.metadata.users
                 .filter((user: RawUser) => user.role === 'mentor')
                 .map((user: RawUser) => {
                     if (!user._id || !user.fullName) {
@@ -160,13 +175,15 @@ export default function ClassDetailPage() {
                 })
                 .filter((mentor: Mentor | null): mentor is Mentor => mentor !== null);
 
-            setMentors(mentors);
+            console.log('Fetched mentors:', JSON.stringify(mentorsList, null, 2));
+            setMentors(mentorsList);
         } catch (error) {
             console.error('Failed to fetch mentors:', error);
             toast({
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to load mentor list.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setMentors([]);
         } finally {
@@ -177,14 +194,14 @@ export default function ClassDetailPage() {
     const fetchStudents = async () => {
         try {
             setStudentsLoading(true);
-            const response = await GetListUserEnrollpedding(1, 10); // Fetch first page, 10 users
+            const response = await GetListUserEnrollpedding(1, 10);
 
             if (!response?.metadata || !Array.isArray(response.metadata)) {
                 throw new Error('Invalid or missing enrollment data');
             }
 
             const customers = response.metadata
-                .filter((record: EnrollmentRecord) => !record.isConsulted && !record.isDeleted) // Keep only pending and non-deleted records
+                .filter((record: EnrollmentRecord) => !record.isConsulted && !record.isDeleted)
                 .map((record: EnrollmentRecord) => {
                     const user = record.user;
                     if (!user._id || !user.fullName) {
@@ -207,12 +224,14 @@ export default function ClassDetailPage() {
                 description:
                     error instanceof Error ? error.message : 'Failed to load student list.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setStudents([]);
         } finally {
             setStudentsLoading(false);
         }
     };
+
     useEffect(() => {
         fetchCourse();
         fetchMentors();
@@ -239,6 +258,7 @@ export default function ClassDetailPage() {
 
                 const normalizedData: ClassItem = {
                     ...metadata,
+                    linkMeet: metadata.linkMeet || '', // Ensure linkMeet is always a string
                     students,
                     course: metadata.course
                         ? {
@@ -287,9 +307,13 @@ export default function ClassDetailPage() {
                         role: '',
                     },
                 };
-                console.log('Normalized data:', normalizedData);
+                console.log('Normalized class data:', JSON.stringify(normalizedData, null, 2));
                 setClassData(normalizedData);
                 setFormData(normalizedData);
+                // Set avatarPreview after classData is fetched
+                setAvatarPreview(
+                    typeof normalizedData.imgUrl === 'string' ? normalizedData.imgUrl : null,
+                );
             } catch (error) {
                 console.error('Failed to fetch class details:', error);
                 toast({
@@ -297,6 +321,7 @@ export default function ClassDetailPage() {
                     description:
                         error instanceof Error ? error.message : 'Failed to load class details',
                     variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
             } finally {
                 setLoading(false);
@@ -313,6 +338,8 @@ export default function ClassDetailPage() {
     const handleCancel = () => {
         setIsEditing(false);
         setFormData(classData);
+        setAvatarFile(undefined);
+        setAvatarPreview(typeof classData?.imgUrl === 'string' ? classData.imgUrl : null);
     };
 
     const handleSave = async () => {
@@ -321,11 +348,13 @@ export default function ClassDetailPage() {
                 title: 'Error',
                 description: 'Class data or ID is missing',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
 
-        const { title, course, mentor, description, maxStudents, status, schedule } = formData;
+        const { title, course, mentor, description, maxStudents, status, schedule, linkMeet } =
+            formData;
         if (
             !title ||
             !course._id ||
@@ -336,12 +365,14 @@ export default function ClassDetailPage() {
             !schedule.startDate ||
             !schedule.endDate ||
             !schedule.time ||
-            !schedule.daysOfWeek.length
+            !schedule.daysOfWeek.length ||
+            !linkMeet
         ) {
             toast({
                 title: 'Error',
                 description: 'Please fill in all required fields correctly',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             return;
         }
@@ -368,15 +399,29 @@ export default function ClassDetailPage() {
                 maxStudents,
                 status,
                 formattedSchedule,
+                linkMeet,
+                avatarFile,
             );
 
-            setClassData({ ...formData, schedule: formattedSchedule });
+            // Update classData with the new schedule and imgUrl
+            setClassData({
+                ...formData,
+                schedule: formattedSchedule,
+                imgUrl: avatarFile ? avatarPreview || formData.imgUrl : formData.imgUrl,
+            });
+            setFormData({
+                ...formData,
+                schedule: formattedSchedule,
+                imgUrl: avatarFile ? avatarPreview || formData.imgUrl : formData.imgUrl,
+            });
             setIsEditing(false);
+            setAvatarFile(undefined); // Reset avatarFile after saving
             toast({
                 title: 'Success',
                 description: 'Class updated successfully',
                 variant: 'default',
-                className: 'bg-[#5AD3AF] text-black',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
             router.refresh();
         } catch (error: unknown) {
@@ -385,6 +430,7 @@ export default function ClassDetailPage() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to update class',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
@@ -409,7 +455,8 @@ export default function ClassDetailPage() {
                 title: 'Success',
                 description: 'Class deleted successfully',
                 variant: 'default',
-                className: 'bg-[#5AD3AF] text-black',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
             setIsDeleteModalOpen(false);
             router.push('/admin/classes');
@@ -419,19 +466,20 @@ export default function ClassDetailPage() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to delete class',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
 
     const handleAddStudent = async (_id: string, fullName: string) => {
         try {
-            // Check if student is already in the class
             const isAlreadyAssigned = classData?.students.some((student) => student._id === _id);
             if (isAlreadyAssigned) {
                 toast({
                     title: 'Error',
                     description: 'This student is already assigned to the class.',
                     variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
                 return;
             }
@@ -461,7 +509,8 @@ export default function ClassDetailPage() {
                 );
                 toast({
                     title: 'Success',
-                    className: 'bg-[#5AD3AF] text-black',
+                    className:
+                        'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
                     description: 'Student added successfully',
                     variant: 'default',
                 });
@@ -469,7 +518,6 @@ export default function ClassDetailPage() {
                 setTimeout(() => {
                     setIsModalOpen(false);
                     router.refresh();
-
                     window.location.reload();
                 }, 2000);
             } else {
@@ -483,6 +531,7 @@ export default function ClassDetailPage() {
                 title: 'Error',
                 description: errorMessage,
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     };
@@ -516,6 +565,49 @@ export default function ClassDetailPage() {
         }
     };
 
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                toast({
+                    title: '❌ Invalid File Type',
+                    description: 'Please upload an image file (JPEG, PNG, or GIF).',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            // Validate file size (e.g., max 5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                toast({
+                    title: '❌ File Too Large',
+                    description: 'Please upload an image smaller than 5MB.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            setAvatarFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+
+            // Update formData with the new file
+            setFormData((prev) => (prev ? { ...prev, imgUrl: file } : prev));
+        } else {
+            setAvatarFile(undefined);
+            setAvatarPreview(typeof classData?.imgUrl === 'string' ? classData.imgUrl : null);
+            setFormData((prev) => (prev ? { ...prev, imgUrl: classData?.imgUrl } : prev));
+        }
+    };
+
     const handleDayChange = (day: string) => {
         if (!formData?.schedule) return;
 
@@ -532,14 +624,14 @@ export default function ClassDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 transition-opacity duration-300"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] transition-opacity duration-300"></div>
             </div>
         );
     }
 
     if (!classData || !classData.schedule) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-300 p-6">
+            <div className="text-center text-gray-600 dark:text-gray-400 p-6 font-medium">
                 Class not found or invalid data
             </div>
         );
@@ -553,66 +645,102 @@ export default function ClassDetailPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
-                <div className="relative bg-[#657ED4] dark-bg-[#5AD3AF] rounded-xl p-6 text-white mb-8">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        {isEditing ? (
-                            <h1 className=" sm:text-4xl font-bold tracking-tight">
-                                Editing {classData.title}
-                            </h1>
-                        ) : (
-                            <h1 className=" sm:text-4xl font-bold tracking-tight">
-                                {classData.title}
-                            </h1>
-                        )}
-                        <div className="flex gap-3">
-                            {isEditing ? (
-                                <>
-                                    <button
-                                        onClick={handleSave}
-                                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200"
-                                        aria-label="Save changes"
-                                    >
-                                        <Save className="h-5 w-5 mr-2" />
-                                        Save
-                                    </button>
-                                    <button
-                                        onClick={handleCancel}
-                                        className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200"
-                                        aria-label="Cancel editing"
-                                    >
-                                        <X className="h-5 w-5 mr-2" />
-                                        Cancel
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={handleEdit}
-                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
-                                        aria-label="Edit class"
-                                    >
-                                        <Pencil className="h-5 w-5 mr-2" />
-                                        Update
-                                    </button>
-                                    <button
-                                        onClick={handleDeleteClick}
-                                        className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
-                                        aria-label="Delete class"
-                                    >
-                                        <Trash2 className="h-5 w-5 mr-2" />
-                                        Delete
-                                    </button>
-                                </>
-                            )}
+                <div
+                    className="relative rounded-2xl p-6 text-white mb-8 shadow-lg overflow-hidden"
+                    style={{
+                        backgroundImage: avatarPreview
+                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${avatarPreview})`
+                            : 'linear-gradient(to right, #657ED4, #4a5da0)',
+                        backgroundColor: avatarPreview ? 'transparent' : '#657ED4',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        minHeight: '150px',
+                    }}
+                >
+                    <div className="relative z-10">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                {isEditing ? (
+                                    <div className="flex items-center gap-4">
+                                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                                            Editing {classData.title}
+                                        </h1>
+                                        <label
+                                            htmlFor="avatar-upload"
+                                            className="bg-white dark:bg-gray-700 p-2 rounded-full shadow-md cursor-pointer"
+                                        >
+                                            <Edit className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                            <input
+                                                id="avatar-upload"
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/gif"
+                                                onChange={handleAvatarChange}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+                                ) : (
+                                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                                        {classData.title}
+                                    </h1>
+                                )}
+                            </div>
+                            <div className="flex gap-3">
+                                {isEditing ? (
+                                    <>
+                                        <button
+                                            onClick={handleSave}
+                                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200 font-medium shadow-md"
+                                            aria-label="Save changes"
+                                        >
+                                            <Save className="h-5 w-5 mr-2" />
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={handleCancel}
+                                            className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200 font-medium shadow-md"
+                                            aria-label="Cancel editing"
+                                        >
+                                            <X className="h-5 w-5 mr-2" />
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEdit}
+                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 font-medium shadow-md"
+                                            aria-label="Edit class"
+                                        >
+                                            <Pencil className="h-5 w-5 mr-2" />
+                                            Update
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteClick}
+                                            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium shadow-md"
+                                            aria-label="Delete class"
+                                        >
+                                            <Trash2 className="h-5 w-5 mr-2" />
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <p className="mt-2 text-xl opacity-90 font-medium">
+                            Course: {classData.course.title || 'N/A'} | Mentor:{' '}
+                            {classData.mentor.fullName || 'N/A'}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Calendar className="h-5 w-5 text-white" />
+                            <span className="text-sm sm:text-base text-white font-medium opacity-90">
+                                Thursday, May 29, 2025, 11:05 AM
+                            </span>
                         </div>
                     </div>
-                    <p className="mt-2 text-base  opacity-90">
-                        Course: {classData.course.title || 'N/A'} | Mentor:{' '}
-                        {classData.mentor.fullName || 'N/A'}
-                    </p>
                 </div>
 
                 {/* Tabs */}
@@ -624,8 +752,8 @@ export default function ClassDetailPage() {
                                 onClick={() => setActiveTab(tab.name)}
                                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
                                     activeTab === tab.name
-                                        ? 'border-b-2 border-[#657ED4] text-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF]'
-                                        : 'text-gray-500 dard:border-[#5AD3AF] dark:text-[#5AD3AF]  hover:text-gray-700 dark:hover:text-gray-300'
+                                        ? 'border-b-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF]'
+                                        : 'text-gray-500 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                 }`}
                             >
                                 <tab.icon className="w-5 h-5" />
@@ -678,24 +806,24 @@ export default function ClassDetailPage() {
             {/* Delete Confirmation Modal */}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-                    <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
-                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-lg border border-gray-200 dark:border-gray-700">
+                        <h2 className="text-xl font-bold text-[#657ED4] dark:text-[#5AD3AF] mb-4">
                             Confirm Deletion
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        <p className="text-gray-600 dark:text-gray-400 mb-6 font-medium">
                             Are you sure you want to delete this class? This action cannot be
                             undone.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleCancelDelete}
-                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 font-medium"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200"
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium"
                             >
                                 Delete
                             </button>

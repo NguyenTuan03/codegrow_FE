@@ -7,8 +7,7 @@ import { viewDetail } from '@/lib/services/class/viewdetail';
 import ClassInfo from '@/app/(routes)/mentor/classes/[classId]/CLassInfor';
 import StudentsPanel from '@/app/(routes)/mentor/classes/[classId]/StudentPanel';
 import Post from './Post';
-
-import { BookOpen, Users, FileText, Award } from 'lucide-react';
+import { BookOpen, Users, FileText, Award, Calendar } from 'lucide-react';
 import MarksAttendance from './MarkAttendance';
 import Assignments from './Assignment';
 
@@ -50,6 +49,7 @@ interface ClassItem {
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
+    imgUrl?: string; // Added image field to ClassItem
     __v: number;
 }
 
@@ -113,6 +113,7 @@ export default function ClassDetailPage() {
                     description:
                         error instanceof Error ? error.message : 'Failed to load class details',
                     variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
             } finally {
                 setLoading(false);
@@ -132,7 +133,7 @@ export default function ClassDetailPage() {
 
     if (!classData || !classData.schedule) {
         return (
-            <div className="text-center text-gray-600 dark:text-gray-300 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+            <div className="text-center text-gray-600 dark:text-gray-400 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
                 Class not found or invalid data
             </div>
         );
@@ -146,17 +147,36 @@ export default function ClassDetailPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
-                <div className="relative bg-[#5AD3AF] rounded-xl p-6 text-white mb-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                        {classData.title}
-                    </h1>
-                    <p className="mt-2 text-sm sm:text-base opacity-90">
-                        Course: {classData.course.title || 'N/A'} | Mentor:{' '}
-                        {classData.mentor.fullName || 'N/A'}
-                    </p>
+                <div
+                    className="relative rounded-xl p-6 text-white mb-8 shadow-lg overflow-hidden"
+                    style={{
+                        backgroundImage: classData.imgUrl
+                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${classData.imgUrl})`
+                            : 'linear-gradient(to right, #5AD3AF, #657ED4)',
+                        backgroundColor: classData.imgUrl ? 'transparent' : '#5AD3AF',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        minHeight: '150px',
+                    }}
+                >
+                    <div className="relative z-10">
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                            {classData.title}
+                        </h1>
+                        <p className="mt-2 text-sm sm:text-base opacity-90 font-medium">
+                            Course: {classData.course.title || 'N/A'} | Mentor:{' '}
+                            {classData.mentor.fullName || 'N/A'}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <Calendar className="h-5 w-5 text-white" />
+                            <span className="text-sm sm:text-base text-white font-medium opacity-90">
+                                Thursday, May 29, 2025, 10:43 AM
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -168,8 +188,8 @@ export default function ClassDetailPage() {
                                 onClick={() => setActiveTab(tab.name)}
                                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
                                     activeTab === tab.name
-                                        ? 'border-b-2 border-[#5AD3AF] text-[#5AD3AF]'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                        ? 'border-b-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF]'
+                                        : 'text-gray-500 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                 }`}
                             >
                                 <tab.icon className="w-5 h-5" />

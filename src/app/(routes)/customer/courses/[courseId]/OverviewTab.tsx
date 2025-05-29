@@ -5,15 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import {
-    Loader2,
-    CheckCircle2,
-    PlayCircle,
-    BookOpen,
-    Code,
-    ChevronRight,
-    Calendar,
-} from 'lucide-react';
+import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
 import { GetProgress } from '@/lib/services/api/progress';
 
@@ -120,33 +112,8 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
         return progressData.completedQuizzes.includes(quizId);
     };
 
-    // Format the current date and time
-    const currentDateTime = new Date('2025-05-28T14:01:00+07:00').toLocaleString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Asia/Bangkok',
-    });
-
     return (
         <div className="space-y-8">
-            {/* Current Date and Time Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                    <h3 className="text-lg font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
-                        Current Date & Time
-                    </h3>
-                </div>
-                <p className="mt-2 text-base text-gray-600 dark:text-gray-400 font-medium">
-                    {currentDateTime}
-                </p>
-            </div>
-
             {/* Progress Section */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-2xl font-semibold text-[#657ED4] dark:text-[#5AD3AF] mb-4">
