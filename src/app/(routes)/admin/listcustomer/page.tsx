@@ -1,5 +1,5 @@
-// components/PendingEnrollmentsList.tsx
 'use client';
+
 import { useState, useEffect } from 'react';
 import {
     Table,
@@ -9,9 +9,19 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button'; // Uncommented Button import
+import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { getPendingEnrollments } from '@/lib/services/admin/getlistcus';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationPrevious,
+    PaginationNext,
+} from '@/components/ui/pagination';
 
 interface Enrollment {
     _id: string;
@@ -20,14 +30,16 @@ interface Enrollment {
     phone: string;
     note?: string;
     isConsulted: boolean;
-    createdAt?: string; // Added for date display
-    updatedAt?: string; // Added for date display
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export default function PendingEnrollmentsList() {
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5); // Number of items per page
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,7 +48,6 @@ export default function PendingEnrollmentsList() {
                 const res = await getPendingEnrollments();
                 console.log('Pending enrollments:', res);
 
-                // Map the response to the Enrollment interface
                 type RawEnrollment = {
                     _id: string;
                     user: {
@@ -57,8 +68,8 @@ export default function PendingEnrollmentsList() {
                     phone: item.phone || '',
                     note: item.note || '',
                     isConsulted: item.isConsulted,
-                    createdAt: item.enrolledAt, // Map enrolledAt to createdAt
-                    updatedAt: item.updatedAt || new Date().toISOString(), // Fallback to current date if not available
+                    createdAt: item.enrolledAt,
+                    updatedAt: item.updatedAt || new Date().toISOString(),
                 }));
 
                 setEnrollments(mappedEnrollments);
@@ -77,7 +88,6 @@ export default function PendingEnrollmentsList() {
         fetchData();
     }, []);
 
-    // Format date to a readable string
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -89,16 +99,13 @@ export default function PendingEnrollmentsList() {
         });
     };
 
-    // Placeholder for Approve action
     const handleApprove = async (enrollmentId: string) => {
         try {
-            // Simulate an API call to approve the enrollment
             toast({
                 title: 'Success',
                 description: `Enrollment ${enrollmentId} approved!`,
                 variant: 'default',
             });
-            // Remove the approved enrollment from the list
             setEnrollments(enrollments.filter((enrollment) => enrollment._id !== enrollmentId));
         } catch (err) {
             console.error('Error approving enrollment:', err);
@@ -110,16 +117,13 @@ export default function PendingEnrollmentsList() {
         }
     };
 
-    // Placeholder for Reject action
     const handleReject = async (enrollmentId: string) => {
         try {
-            // Simulate an API call to reject the enrollment
             toast({
                 title: 'Success',
                 description: `Enrollment ${enrollmentId} rejected!`,
                 variant: 'destructive',
             });
-            // Remove the rejected enrollment from the list
             setEnrollments(enrollments.filter((enrollment) => enrollment._id !== enrollmentId));
         } catch (err) {
             console.error('Error approving enrollment:', err);
@@ -131,97 +135,209 @@ export default function PendingEnrollmentsList() {
         }
     };
 
+    // Pagination logic
+    const totalPages = Math.ceil(enrollments.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentEnrollments = enrollments.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages && page !== currentPage) {
+            setCurrentPage(page);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+                <Loader2 className="h-12 w-12 text-blue-500 animate-spin cursor-default" />
             </div>
         );
     }
 
     if (error) {
-        return <div className="text-red-500 text-center p-4 bg-red-50 rounded-md">{error}</div>;
+        return (
+            <div className="text-center p-6 bg-red-50 dark:bg-red-900/50 rounded-lg shadow-md">
+                <p className="text-red-600 dark:text-red-400 font-medium cursor-default">{error}</p>
+            </div>
+        );
     }
 
     return (
-        <div className="p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Pending Enrollments</h2>
-            {enrollments.length === 0 ? (
-                <div className="text-center text-gray-500 py-6">No pending enrollments found.</div>
-            ) : (
-                <div className="rounded-md border overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="font-semibold text-gray-700">Name</TableHead>
-                                <TableHead className="font-semibold text-gray-700">Email</TableHead>
-                                <TableHead className="font-semibold text-gray-700">Phone</TableHead>
-                                <TableHead className="font-semibold text-gray-700">Note</TableHead>
-                                <TableHead className="font-semibold text-gray-700">
-                                    Consulted
-                                </TableHead>
-                                <TableHead className="font-semibold text-gray-700">
-                                    Enrolled At
-                                </TableHead>
-                                <TableHead className="font-semibold text-gray-700">
-                                    Actions
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {enrollments.map((enrollment) => (
-                                <TableRow key={enrollment._id} className="hover:bg-gray-50">
-                                    <TableCell className="text-gray-800">
-                                        {enrollment.fullName}
-                                    </TableCell>
-                                    <TableCell className="text-gray-800">
-                                        {enrollment.email}
-                                    </TableCell>
-                                    <TableCell className="text-gray-800">
-                                        {enrollment.phone || '-'}
-                                    </TableCell>
-                                    <TableCell className="max-w-xs truncate text-gray-600">
-                                        {enrollment.note || '-'}
-                                    </TableCell>
-                                    <TableCell className="text-gray-800">
-                                        <span
-                                            className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                                                enrollment.isConsulted
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
-                                            }`}
-                                        >
-                                            {enrollment.isConsulted ? 'Yes' : 'No'}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-gray-600">
-                                        {enrollment.createdAt
-                                            ? formatDate(enrollment.createdAt)
-                                            : '-'}
-                                    </TableCell>
-                                    <TableCell className="flex gap-2">
-                                        <Button
-                                            size="sm"
-                                            className="bg-green-600 hover:bg-green-700 text-white"
-                                            onClick={() => handleApprove(enrollment._id)}
-                                        >
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            className="bg-red-600 hover:bg-red-700 text-white"
-                                            onClick={() => handleReject(enrollment._id)}
-                                        >
-                                            Reject
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            )}
+        <div className="p-6">
+            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg">
+                <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+                    <CardTitle className="text-3xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-default">
+                        <span>Pending Enrollments</span>
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            ({enrollments.length})
+                        </span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                    {enrollments.length === 0 ? (
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <p className="text-lg font-medium cursor-default">
+                                No pending enrollments found.
+                            </p>
+                            <p className="text-sm mt-2 cursor-default">
+                                New enrollments will appear here when submitted.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50 dark:bg-gray-700">
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Name
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Email
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Phone
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Note
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Consulted
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Enrolled At
+                                            </TableHead>
+                                            <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200 py-4 cursor-default">
+                                                Actions
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {currentEnrollments.map((enrollment) => (
+                                            <TableRow
+                                                key={enrollment._id}
+                                                className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-default"
+                                            >
+                                                <TableCell className="text-gray-800 dark:text-gray-100 font-medium py-4 cursor-default">
+                                                    {enrollment.fullName}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-100 py-4 cursor-default">
+                                                    {enrollment.email}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-100 py-4 cursor-default">
+                                                    {enrollment.phone || '-'}
+                                                </TableCell>
+                                                <TableCell className="max-w-xs truncate text-gray-600 dark:text-gray-400 py-4 cursor-default">
+                                                    {enrollment.note || '-'}
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <span
+                                                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium cursor-default ${
+                                                            enrollment.isConsulted
+                                                                ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300'
+                                                                : 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300'
+                                                        }`}
+                                                    >
+                                                        {enrollment.isConsulted ? (
+                                                            <CheckCircle className="w-4 h-4 mr-1" />
+                                                        ) : (
+                                                            <XCircle className="w-4 h-4 mr-1" />
+                                                        )}
+                                                        {enrollment.isConsulted ? 'Yes' : 'No'}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-gray-600 dark:text-gray-400 py-4 cursor-default">
+                                                    {enrollment.createdAt
+                                                        ? formatDate(enrollment.createdAt)
+                                                        : '-'}
+                                                </TableCell>
+                                                <TableCell className="py-4 flex gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        className="bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-1 cursor-pointer"
+                                                        onClick={() =>
+                                                            handleApprove(enrollment._id)
+                                                        }
+                                                    >
+                                                        <CheckCircle className="w-4 h-4" />
+                                                        Approve
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        className="bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-1 cursor-pointer"
+                                                        onClick={() => handleReject(enrollment._id)}
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
+                                                        Reject
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="mt-6 flex justify-center">
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage - 1)
+                                                    }
+                                                    className={
+                                                        currentPage === 1
+                                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                    }
+                                                    aria-disabled={currentPage === 1}
+                                                />
+                                            </PaginationItem>
+
+                                            {Array.from(
+                                                { length: totalPages },
+                                                (_, i) => i + 1,
+                                            ).map((page) => (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        onClick={() => handlePageChange(page)}
+                                                        isActive={currentPage === page}
+                                                        className={
+                                                            currentPage === page
+                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] rounded-full cursor-pointer'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                        }
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            ))}
+
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage + 1)
+                                                    }
+                                                    className={
+                                                        currentPage === totalPages
+                                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                    }
+                                                    aria-disabled={currentPage === totalPages}
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

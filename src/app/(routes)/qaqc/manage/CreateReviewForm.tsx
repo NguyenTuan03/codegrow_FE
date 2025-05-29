@@ -67,17 +67,20 @@ export function CreateReviewForm({ mentorId }: { mentorId: string }) {
                     name="rating"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Rating (1-5)</FormLabel>
+                            <FormLabel className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-default">
+                                Rating (1-5)
+                            </FormLabel>
                             <FormControl>
                                 <Input
                                     type="number"
                                     min="1"
                                     max="5"
+                                    className="border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 cursor-text"
                                     {...field}
                                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500 dark:text-red-400 text-base cursor-default" />
                         </FormItem>
                     )}
                 />
@@ -86,15 +89,26 @@ export function CreateReviewForm({ mentorId }: { mentorId: string }) {
                     name="comment"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Comment</FormLabel>
+                            <FormLabel className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-default">
+                                Comment
+                            </FormLabel>
                             <FormControl>
-                                <Textarea {...field} />
+                                <Textarea
+                                    className="border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 resize-none h-32 cursor-text"
+                                    {...field}
+                                />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500 dark:text-red-400 text-base cursor-default" />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                    className={`bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg px-6 py-2 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:outline-none transition-all duration-200 cursor-pointer hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-base font-medium ${
+                        form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                >
                     {form.formState.isSubmitting ? 'Submitting...' : 'Submit Review'}
                 </Button>
             </form>

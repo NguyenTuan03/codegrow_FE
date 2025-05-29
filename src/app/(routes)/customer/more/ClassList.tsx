@@ -18,7 +18,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Calendar } from 'lucide-react';
 
 interface ClassItem {
     _id: string;
@@ -88,12 +87,6 @@ export default function CoursesList({
                 <h2 className="md:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] text-center sm:text-left">
                     Available Classes
                 </h2>
-                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
-                    <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                    <span className="text-gray-800 dark:text-gray-200 font-medium">
-                        Thursday, May 29, 2025, 01:30 PM
-                    </span>
-                </div>
             </div>
             <div className="relative">
                 <Carousel className="w-full">

@@ -241,7 +241,7 @@ export default function ContactForm() {
 
                     <Button
                         type="submit"
-                        className="rounded-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full px-4 py-2 text-sm font-semibold transition-colors duration-300"
+                        className="rounded-full cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white w-full px-4 py-2 text-sm font-semibold transition-colors duration-300"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Processing...' : 'Register Now'}

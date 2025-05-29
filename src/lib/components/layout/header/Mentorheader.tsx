@@ -84,14 +84,14 @@ export default function MentorHeader() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
+                        className="text-[#657ED4] cursor-pointer dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
                     >
                         <Plus className="h-5 w-5" />
                     </Button>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
+                        className="text-[#657ED4] cursor-pointer dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
                     >
                         <LayoutGrid className="h-5 w-5" />
                     </Button>
@@ -104,7 +104,7 @@ export default function MentorHeader() {
                                     <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                                 </div>
                             ) : (
-                                <Avatar className="w-8 h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
+                                <Avatar className="w-8  cursor-pointer h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
                                     <AvatarImage
                                         src={profileData?.avatar || '/default-avatar.png'}
                                         alt={profileData?.fullName}
@@ -116,26 +116,26 @@ export default function MentorHeader() {
                             )}
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="p-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg w-64 border border-gray-200 dark:border-gray-700 z-[60]">
-                            <p className="font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
+                            <p className="font-semibold  text-[#657ED4] dark:text-[#5AD3AF]">
                                 {profileData?.fullName || 'User Name'}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                                 {profileData?.email || 'user@example.com'}
                             </p>
                             <div className="mt-4">
-                                <DropdownMenuItem className="w-full text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                                <DropdownMenuItem className="w-full cursor-pointer text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
                                     <Link href="/mentor/profilementor" className="w-full">
                                         Profile Settings
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="w-full text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                                <DropdownMenuItem className="w-full text-sm cursor-pointer hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
                                     <Link href="/mentor/changepassword" className="w-full">
                                         Change Password
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="w-full text-sm mt-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                    className="w-full text-sm mt-2 cursor-pointer hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >
                                     Logout
                                 </DropdownMenuItem>

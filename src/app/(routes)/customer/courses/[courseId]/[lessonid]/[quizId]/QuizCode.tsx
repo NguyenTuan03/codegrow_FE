@@ -163,7 +163,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                     <Button
                         variant="outline"
                         onClick={handleBackToLesson}
-                        className="flex items-center gap-2 bg-white text-base dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-[#657ED4] dark:text-[#5AD3AF] rounded-full px-4 py-2 shadow-sm transition-all duration-200"
+                        className="flex cursor-pointer items-center gap-2 bg-white text-base dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-[#657ED4] dark:text-[#5AD3AF] rounded-full px-4 py-2 shadow-sm transition-all duration-200"
                         aria-label="Back to lesson detail"
                     >
                         <ArrowLeft className="h-5 w-5" />
@@ -200,7 +200,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors duration-200"
+                                            className="absolute cursor-pointer top-3 right-3 text-gray-400 hover:text-white transition-colors duration-200"
                                             onClick={handleCopyCode}
                                             aria-label="Copy starter code"
                                         >
@@ -248,7 +248,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                                     <Button
                                         onClick={handleSubmitCode}
                                         disabled={isSubmitting}
-                                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                                        className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                                         aria-label={
                                             isSubmitting ? 'Submitting code' : 'Submit code'
                                         }

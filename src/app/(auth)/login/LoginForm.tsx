@@ -19,17 +19,17 @@ import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { login } from '@/lib/services/auth/Login';
 import { useRouter } from 'next/navigation';
-
-import { LoginBody } from '@/schemaValidations/auth.schema';
-import { LoginBodyType } from '@/schemaValidations/auth.schema';
+import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
+
 interface ExtendedJwtPayload extends JwtPayload {
     _id: string;
     role: string;
     fullname: string;
     email: string;
 }
+
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -51,9 +51,8 @@ const LoginForm = () => {
         try {
             const response = await login(data.email, data.password);
             console.log('Login response:', response);
-            const token = response.metadata; // Lấy token từ response
-            localStorage.setItem('token', JSON.stringify(token)); // Lưu token vào localStorage
-            // Giải mã token và ánh xạ sang kiểu User
+            const token = response.metadata;
+            localStorage.setItem('token', JSON.stringify(token));
             const decoded = jwtDecode<ExtendedJwtPayload>(token);
             const user = {
                 id: decoded._id,
@@ -62,7 +61,7 @@ const LoginForm = () => {
                 email: decoded.email,
             };
             localStorage.setItem('user', JSON.stringify(user));
-            userAuth?.loginUser(user); // Lưu thông tin user và token vào AuthContext
+            userAuth?.loginUser(user);
             console.log('Decoded token:', decoded);
 
             toast({
@@ -83,6 +82,7 @@ const LoginForm = () => {
             setLoading(false);
         }
     };
+
     const handleGoogleLogin = async () => {
         if (googleLoading) return;
         setGoogleLoading(true);
@@ -106,10 +106,12 @@ const LoginForm = () => {
         >
             {/* Header */}
             <div className="text-center mb-6">
-                <h1 className="text-3xl font-bold text-[#5AD3AF] dark:text-[#5AD3AF]">
+                <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     Welcome Back
                 </h1>
-                <p className="text-sm text-[#000000] dark:text-gray-300">Log in to your account</p>
+                <p className="text-base text-gray-900 dark:text-gray-300 font-medium cursor-default">
+                    Log in to your account
+                </p>
             </div>
 
             {/* Form */}
@@ -122,7 +124,7 @@ const LoginForm = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-[#000000] dark:text-gray-300">
+                                    <FormLabel className="text-xl font-medium text-gray-900 dark:text-gray-100 cursor-default">
                                         Email Address
                                     </FormLabel>
                                     <FormControl>
@@ -130,10 +132,10 @@ const LoginForm = () => {
                                             {...field}
                                             placeholder="Enter your email"
                                             type="email"
-                                            className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         />
                                     </FormControl>
-                                    <FormMessage className="text-sm text-red-500" />
+                                    <FormMessage className="text-base text-red-500 dark:text-red-400 font-medium cursor-default" />
                                 </FormItem>
                             )}
                         />
@@ -144,7 +146,7 @@ const LoginForm = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-[#000000] dark:text-gray-300">
+                                    <FormLabel className="text-xl font-medium text-gray-900 dark:text-gray-100 cursor-default">
                                         Password
                                     </FormLabel>
                                     <FormControl>
@@ -153,7 +155,7 @@ const LoginForm = () => {
                                                 {...field}
                                                 placeholder="Enter your password"
                                                 type={showPassword ? 'text' : 'password'}
-                                                className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#5AD3AF] focus:border-[#5AD3AF] dark:focus:ring-[#5AD3AF] dark:focus:border-[#5AD3AF] pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                                className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                             />
                                             <div
                                                 onClick={() => setShowPassword(!showPassword)}
@@ -167,7 +169,7 @@ const LoginForm = () => {
                                             </div>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-sm text-red-500" />
+                                    <FormMessage className="text-base text-red-500 dark:text-red-400 font-medium cursor-default" />
                                 </FormItem>
                             )}
                         />
@@ -176,7 +178,9 @@ const LoginForm = () => {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-[#5AD3AF] hover:bg-[#6bbea6] text-white rounded-lg py-2"
+                            className={`w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white rounded-lg py-2 text-base font-medium cursor-pointer ${
+                                loading ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                         >
                             {loading ? 'Logging in...' : 'Log in'}
                         </Button>
@@ -185,19 +189,19 @@ const LoginForm = () => {
 
                 {/* Links */}
                 <div className="flex justify-between items-center mt-4">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <p className="text-base text-gray-700 dark:text-gray-300 font-medium cursor-default">
                         Don’t have an account?{' '}
                         <Link
                             href={Routes.register}
-                            className="text-[#657ED4] dark:text-[#7696ff] font-medium hover:text-[#485b99] dark:hover:text-[#657ED4] transition-colors duration-200 underline"
+                            className="text-[#657ED4] dark:text-[#5AD3AF] font-medium hover:text-[#424c70] dark:hover:text-[#4ac2a0] transition-colors duration-200 underline cursor-pointer"
                         >
                             Sign up
                         </Link>
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <p className="text-base text-gray-700 dark:text-gray-300 font-medium cursor-default">
                         <Link
                             href="/password"
-                            className="text-[#657ED4] dark:text-[#7696ff] underline font-medium hover:text-[#485b99] dark:hover:text-[#657ED4]"
+                            className="text-[#657ED4] dark:text-[#5AD3AF] underline font-medium hover:text-[#424c70] dark:hover:text-[#4ac2a0] cursor-pointer"
                         >
                             Forget your password?
                         </Link>
@@ -208,7 +212,9 @@ const LoginForm = () => {
             {/* Divider */}
             <div className="flex items-center w-full px-6 gap-4 mt-6">
                 <div className="border-t border-gray-300 dark:border-gray-600 flex-grow" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
+                <span className="text-base text-gray-500 dark:text-gray-400 font-medium cursor-default">
+                    or
+                </span>
                 <div className="border-t border-gray-300 dark:border-gray-600 flex-grow" />
             </div>
 
@@ -216,7 +222,9 @@ const LoginForm = () => {
             <div className="flex justify-center mt-4">
                 <Button
                     onClick={handleGoogleLogin}
-                    className="w-full max-w-sm bg-[#657ED4] hover:bg-[#485b99] text-white rounded-lg py-2 flex items-center justify-center gap-2"
+                    className={`w-full max-w-sm bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white rounded-lg py-2 flex items-center justify-center gap-2 text-base font-medium cursor-pointer ${
+                        googleLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                     disabled={googleLoading}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">

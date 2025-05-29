@@ -440,6 +440,7 @@ export default function SupportPage() {
                                         type="submit"
                                         disabled={isSubmitting}
                                         className="
+                                        cursor-pointer
                                             bg-[#657ED4] dark:bg-[#5AD3AF]
                                             hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]
                                             text-white
@@ -499,6 +500,7 @@ export default function SupportPage() {
                         <Button
                             onClick={fetchTickets}
                             className="
+                            cursor-pointer
                                 bg-[#657ED4] dark:bg-[#5AD3AF]
                                 hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]
                                 text-white
@@ -513,7 +515,7 @@ export default function SupportPage() {
                             "
                             aria-label="Refresh tickets"
                         >
-                            <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
+                            <RefreshCw className="h-5 w-5 mr-2 cursor-pointer animate-spin-slow" />
                             Refresh
                         </Button>
                     </div>

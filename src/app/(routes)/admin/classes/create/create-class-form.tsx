@@ -348,12 +348,12 @@ export default function CreateClassForm() {
                                         </FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <ImageIcon className="absolute left-3 top-1/2 cursor-pointer transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                 <Input
                                                     type="file"
                                                     accept="image/jpeg,image/png,image/gif"
                                                     onChange={handleImageUpload}
-                                                    className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                    className="pl-10 focus:ring-2 cursor-pointer focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                     disabled={loading}
                                                 />
                                             </div>
@@ -425,13 +425,13 @@ export default function CreateClassForm() {
                                                     >
                                                         <FormControl>
                                                             <div className="relative">
-                                                                <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                                <SelectTrigger className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
+                                                                <ClockIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                                <SelectTrigger className="pl-10 focus:ring-2 cursor-pointer focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
                                                                     <SelectValue placeholder="Select a time slot" />
                                                                 </SelectTrigger>
                                                             </div>
                                                         </FormControl>
-                                                        <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                                                        <SelectContent className="bg-white cursor-pointer dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                                                             {[
                                                                 {
                                                                     value: '07:00-09:00',
@@ -465,7 +465,7 @@ export default function CreateClassForm() {
                                                                 <SelectItem
                                                                     key={timeSlot.value}
                                                                     value={timeSlot.value}
-                                                                    className="hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
+                                                                    className="hover:bg-[#657ED4] cursor-pointer dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
                                                                 >
                                                                     {timeSlot.label}
                                                                 </SelectItem>
@@ -485,16 +485,16 @@ export default function CreateClassForm() {
                                             name="schedule.startDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
                                                         Start Date*
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="relative">
-                                                            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <CalendarIcon className="absolute cursor-pointer left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                             <Input
                                                                 type="date"
                                                                 {...field}
-                                                                className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                                 required
                                                             />
                                                         </div>
@@ -509,16 +509,16 @@ export default function CreateClassForm() {
                                             name="schedule.endDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
                                                         End Date*
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="relative">
-                                                            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <CalendarIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                             <Input
                                                                 type="date"
                                                                 {...field}
-                                                                className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                                 required
                                                             />
                                                         </div>
@@ -548,7 +548,7 @@ export default function CreateClassForm() {
                                                                     ? 'default'
                                                                     : 'outline'
                                                             }
-                                                            className={`rounded-full px-4 py-2 transition-all duration-200 font-medium ${
+                                                            className={`rounded-full cursor-pointer px-4 py-2 transition-all duration-200 font-medium ${
                                                                 field.value?.includes(day.value)
                                                                     ? 'bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white border-[#657ED4] dark:border-[#5AD3AF] hover:border-[#4a5da0] dark:hover:border-[#4ac2a0]'
                                                                     : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
@@ -613,13 +613,13 @@ export default function CreateClassForm() {
                                             type="button"
                                             variant="outline"
                                             onClick={() => router.back()}
-                                            className="px-6 rounded-lg border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 font-medium shadow-md"
+                                            className="px-6 cursor-pointer rounded-lg border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 font-medium shadow-md"
                                         >
                                             Cancel
                                         </Button>
                                         <Button
                                             type="submit"
-                                            className="px-6 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg shadow-md transition-all duration-200 font-medium"
+                                            className="px-6 cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]  text-white rounded-lg shadow-md transition-all duration-200 font-medium"
                                             disabled={loading || courseLoading}
                                         >
                                             {loading ? (

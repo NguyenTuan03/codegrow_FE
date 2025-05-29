@@ -26,7 +26,7 @@ type Profile = ProfileResType['data'];
 const ProfileForm = ({ profile }: { profile: Profile }) => {
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined); // Changed from File | null to File | undefined
+    const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(profile.avatar || null);
     const { toast } = useToast();
     const router = useRouter();
@@ -43,7 +43,6 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validate file type
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!validTypes.includes(file.type)) {
                 toast({
@@ -55,8 +54,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                 return;
             }
 
-            // Validate file size (e.g., max 5MB)
-            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            const maxSize = 5 * 1024 * 1024;
             if (file.size > maxSize) {
                 toast({
                     title: '❌ File Too Large',
@@ -92,14 +90,14 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                 values.fullName,
                 values.email,
                 values.role || '',
-                avatarFile, // Now correctly typed as File | undefined
+                avatarFile,
             );
 
             setIsEditing(false);
             setAvatarFile(undefined);
             setAvatarPreview(result.data?.avatar || profile.avatar || null);
             router.refresh();
-            window.location.reload(); // Full page reload
+            window.location.reload();
         } catch (error) {
             console.error('Error updating profile:', error);
         } finally {
@@ -113,10 +111,10 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                             Profile Management
                         </h1>
-                        <p className="text-base text-gray-600 dark:text-gray-400 mt-2 font-medium">
+                        <p className="text-xl text-gray-600 dark:text-gray-400 mt-2 font-medium cursor-default">
                             Update your profile information below.
                         </p>
                     </div>
@@ -127,15 +125,18 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                     <div className="bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] p-6 flex items-center space-x-6">
                         <div className="relative">
                             <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-700 shadow-lg">
-                                <AvatarImage src={avatarPreview || '/default-avatar.png'} />
-                                <AvatarFallback className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                                <AvatarImage
+                                    src={avatarPreview || '/default-avatar.png'}
+                                    className="cursor-default"
+                                />
+                                <AvatarFallback className="text-2xl font-semibold text-gray-800 dark:text-gray-100 cursor-default">
                                     {profile.fullName?.charAt(0) || 'U'}
                                 </AvatarFallback>
                             </Avatar>
                             {isEditing && (
                                 <label
                                     htmlFor="avatar-upload"
-                                    className="absolute bottom-0 right-0 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md cursor-pointer"
+                                    className="absolute bottom-0 text-base right-0 bg-white dark:bg-gray-700 p-2 rounded-full shadow-md cursor-pointer"
                                 >
                                     <Edit className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <input
@@ -149,8 +150,12 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                             )}
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-white">{profile.fullName}</h1>
-                            <p className="text-white/80 font-medium">{profile.role}</p>
+                            <h1 className="text-2xl font-bold text-white cursor-default">
+                                {profile.fullName}
+                            </h1>
+                            <p className="text-white/80 font-medium cursor-default">
+                                {profile.role}
+                            </p>
                         </div>
                     </div>
 
@@ -168,21 +173,21 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     name="fullName"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-700 dark:text-gray-200 font-semibold">
+                                            <FormLabel className="text-gray-700 text-base dark:text-gray-200 font-semibold cursor-default">
                                                 Full Name
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
                                                     disabled={!isEditing}
-                                                    className={`rounded-lg ${
+                                                    className={`rounded-lg text-base cursor-text ${
                                                         !isEditing
                                                             ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                                             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF]'
                                                     } transition-all duration-200`}
                                                 />
                                             </FormControl>
-                                            <FormMessage className="text-red-500 font-medium" />
+                                            <FormMessage className="text-red-500 font-medium cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -193,21 +198,21 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-700 dark:text-gray-200 font-semibold">
+                                            <FormLabel className="text-gray-700 text-base dark:text-gray-200 font-semibold cursor-default">
                                                 Email
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
                                                     disabled={!isEditing}
-                                                    className={`rounded-lg ${
+                                                    className={`rounded-lg cursor-text ${
                                                         !isEditing
                                                             ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                                             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF]'
                                                     } transition-all duration-200`}
                                                 />
                                             </FormControl>
-                                            <FormMessage className="text-red-500 font-medium" />
+                                            <FormMessage className="text-red-500 font-medium cursor-default" />
                                         </FormItem>
                                     )}
                                 />
@@ -218,7 +223,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                     name="role"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-700 dark:text-gray-200 font-semibold">
+                                            <FormLabel className="text-gray-700 text-base dark:text-gray-200 font-semibold cursor-default">
                                                 Role
                                             </FormLabel>
                                             <FormControl>
@@ -226,21 +231,21 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                     readOnly
                                                     {...field}
                                                     disabled={!isEditing}
-                                                    className={`rounded-lg ${
+                                                    className={`rounded-lg cursor-default ${
                                                         !isEditing
                                                             ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                                             : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF]'
                                                     } transition-all duration-200`}
                                                 />
                                             </FormControl>
-                                            <FormMessage className="text-red-500 font-medium" />
+                                            <FormMessage className="text-red-500 font-medium cursor-default" />
                                         </FormItem>
                                     )}
                                 />
 
                                 {/* Wallet */}
                                 <FormItem>
-                                    <FormLabel className="text-gray-700 dark:text-gray-200 font-semibold">
+                                    <FormLabel className="text-gray- text-base dark:text-gray-200 font-semibold cursor-default">
                                         Wallet
                                     </FormLabel>
                                     <FormControl>
@@ -248,9 +253,9 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                             <Input
                                                 value={profile.wallet}
                                                 readOnly
-                                                className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg"
+                                                className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg cursor-default"
                                             />
-                                            <span className="text-gray-500 dark:text-gray-400 font-medium">
+                                            <span className="text-gray-500 dark:text-gray-400 font-medium cursor-default">
                                                 VNĐ
                                             </span>
                                         </div>
@@ -265,7 +270,7 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                         <Button
                                             type="button"
                                             onClick={() => setIsEditing(true)}
-                                            className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md"
+                                            className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md cursor-pointer"
                                         >
                                             <Edit className="h-4 w-4 mr-2" />
                                             Edit Profile
@@ -281,14 +286,18 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                                 setAvatarPreview(profile.avatar || null);
                                                 form.reset();
                                             }}
-                                            className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md font-medium"
+                                            className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md font-medium cursor-pointer"
                                         >
                                             Cancel
                                         </Button>
                                         <Button
                                             type="submit"
                                             disabled={loading}
-                                            className="px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg transition-all duration-200 shadow-md font-medium disabled:opacity-70"
+                                            className={`px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg transition-all duration-200 shadow-md font-medium cursor-pointer ${
+                                                loading
+                                                    ? 'opacity-70 cursor-not-allowed'
+                                                    : 'hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]'
+                                            }`}
                                         >
                                             {loading ? (
                                                 <span className="flex items-center">

@@ -43,7 +43,7 @@ export default function ProfileMentor() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center min-h-[50vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 border-solid"></div>
-                    <p className="mt-4 text-indigo-700 font-medium">
+                    <p className="mt-4 text-2xl text-indigo-700 font-medium">
                         Loading your mentor profile...
                     </p>
                 </div>
@@ -79,7 +79,7 @@ export default function ProfileMentor() {
                         <div className="flex justify-center mb-4">
                             <div className="relative">
                                 <svg
-                                    className="w-16 h-16 text-indigo-600"
+                                    className="w-16 h-16 text-[#657ED4] dark:text-[#5AD3AF]"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -92,13 +92,15 @@ export default function ProfileMentor() {
                                         d="M5.121 18.879A3 3 0 018 17h8a3 3 0 012.879 1.879M15 11a3 3 0 11-6 0 3 3 0 016 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                                     />
                                 </svg>
-                                <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                                <span className="absolute -top-2 -right-2 text-[#657ED4] dark:text-[#5AD3AF] text-base font-bold rounded-full h-6 w-6 flex items-center justify-center">
                                     M
                                 </span>
                             </div>
                         </div>
-                        <h1 className="text-3xl font-bold text-indigo-800">Mentor Profile</h1>
-                        <p className="text-indigo-500 mt-2">
+                        <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
+                            Mentor Profile
+                        </h1>
+                        <p className="text-xl mt-2">
                             Showcase your expertise and manage your details
                         </p>
                     </div>

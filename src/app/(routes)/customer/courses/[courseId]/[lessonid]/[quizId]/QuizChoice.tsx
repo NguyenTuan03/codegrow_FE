@@ -112,10 +112,10 @@ export default function QuizChoice({ quiz }: QuizChoiceProps) {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-6 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+        <div className="max-w-8xl mx-auto p-4 md:p-6 space-y-6 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <Button
                 variant="ghost"
-                className="flex items-center gap-2 text-base text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] transition-colors duration-200"
+                className="flex cursor-pointer items-center gap-2 text-base text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] transition-colors duration-200"
                 onClick={() => router.back()}
             >
                 <ArrowLeft className="h-4 w-4" />
@@ -137,7 +137,7 @@ export default function QuizChoice({ quiz }: QuizChoiceProps) {
                             {quiz.options?.map((option: QuizOption, index: number) => (
                                 <div
                                     key={index}
-                                    className={`p-4 rounded-lg border-2 text-base cursor-pointer transition-all
+                                    className={`p-4 rounded-lg cursor-pointer border-2 text-base cursor-pointer transition-all
                                         ${
                                             selectedOptions.includes(option.text)
                                                 ? 'border-[#657ED4]  bg-[#657ED4]/10 dark:border-[#5AD3AF] dark:bg-[#5AD3AF]/10'
@@ -181,14 +181,14 @@ export default function QuizChoice({ quiz }: QuizChoiceProps) {
                                 setSubmitted(false);
                             }}
                             disabled={isSubmitting}
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-6 py-2 transition-all duration-200 font-medium"
+                            className="border-gray-300 cursor-pointer dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-6 py-2 transition-all duration-200 font-medium"
                         >
                             Clear
                         </Button>
                         <Button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 min-w-[120px] transition-all duration-200 font-medium"
+                            className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 min-w-[120px] transition-all duration-200 font-medium"
                         >
                             {isSubmitting ? (
                                 <span className="flex items-center gap-2">

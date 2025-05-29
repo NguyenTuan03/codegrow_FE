@@ -140,9 +140,9 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
                 <Button
                     variant="outline"
                     onClick={() => onNavigate(`/customer/courses`)}
-                    className="flex items-center gap-2 text-[#657ED4] dark:text-[#5AD3AF] border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center cursor-pointer gap-2 text-[#657ED4] dark:text-[#5AD3AF] border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                    <ChevronRight className="w-5 h-5 rotate-180" />
+                    <ChevronRight className="w-5  h-5 rotate-180" />
                     Back to Courses
                 </Button>
             </div>
@@ -197,7 +197,7 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
                                                 `/customer/courses/${courseId}/${lesson._id}`,
                                             )
                                         }
-                                        className="flex items-center gap-2 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 transition-all duration-200 shadow-sm"
+                                        className="flex cursor-pointer items-center gap-2 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 transition-all duration-200 shadow-sm"
                                     >
                                         {iconMap[lessonType]}
                                         {buttonTextMap[lessonType]}

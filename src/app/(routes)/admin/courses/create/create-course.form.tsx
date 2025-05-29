@@ -383,8 +383,8 @@ export default function CreateCourseForm() {
                                                     htmlFor="img-upload"
                                                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                                                 >
-                                                    <ImagePlus className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                    <span className="text-gray-700 dark:text-gray-300">
+                                                    <ImagePlus className="h-5 w-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    <span className="text-gray-700  dark:text-gray-300">
                                                         Upload Image
                                                     </span>
                                                     <input
@@ -412,13 +412,13 @@ export default function CreateCourseForm() {
                                         type="button"
                                         variant="outline"
                                         onClick={() => router.back()}
-                                        className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-6"
+                                        className="text-gray-700 cursor-pointer dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-6"
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
-                                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6"
+                                        className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6"
                                         disabled={loading || categoriesLoading}
                                     >
                                         {loading ? (

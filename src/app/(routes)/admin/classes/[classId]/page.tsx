@@ -9,18 +9,7 @@ import { UpdateClass } from '@/lib/services/class/updateclass';
 import { AssignStudent } from '@/lib/services/class/assignstudent';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetCourses } from '@/lib/services/course/getcourse';
-import {
-    Pencil,
-    Save,
-    Trash2,
-    X,
-    BookOpen,
-    Users,
-    FileText,
-    Award,
-    Edit,
-    Calendar,
-} from 'lucide-react';
+import { Pencil, Save, Trash2, X, BookOpen, Users, FileText, Award, Edit } from 'lucide-react';
 import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
 import Stream from './Stream';
@@ -125,7 +114,7 @@ export default function ClassDetailPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [mentors, setMentors] = useState<Mentor[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
+    const [imgUrl, setImgUrl] = useState<File | undefined>(undefined);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const fetchCourse = async () => {
@@ -258,7 +247,7 @@ export default function ClassDetailPage() {
 
                 const normalizedData: ClassItem = {
                     ...metadata,
-                    linkMeet: metadata.linkMeet || '', // Ensure linkMeet is always a string
+                    linkMeet: metadata.linkMeet || '',
                     students,
                     course: metadata.course
                         ? {
@@ -310,7 +299,6 @@ export default function ClassDetailPage() {
                 console.log('Normalized class data:', JSON.stringify(normalizedData, null, 2));
                 setClassData(normalizedData);
                 setFormData(normalizedData);
-                // Set avatarPreview after classData is fetched
                 setAvatarPreview(
                     typeof normalizedData.imgUrl === 'string' ? normalizedData.imgUrl : null,
                 );
@@ -338,7 +326,7 @@ export default function ClassDetailPage() {
     const handleCancel = () => {
         setIsEditing(false);
         setFormData(classData);
-        setAvatarFile(undefined);
+        setImgUrl(undefined);
         setAvatarPreview(typeof classData?.imgUrl === 'string' ? classData.imgUrl : null);
     };
 
@@ -389,7 +377,7 @@ export default function ClassDetailPage() {
                 endDate: new Date(schedule.endDate).toISOString(),
             };
 
-            await UpdateClass(
+            const response = await UpdateClass(
                 token,
                 classId,
                 title,
@@ -400,22 +388,22 @@ export default function ClassDetailPage() {
                 status,
                 formattedSchedule,
                 linkMeet,
-                avatarFile,
+                imgUrl,
             );
 
-            // Update classData with the new schedule and imgUrl
-            setClassData({
+            // Update classData with the new data from the response
+            const updatedClassData: ClassItem = {
                 ...formData,
                 schedule: formattedSchedule,
-                imgUrl: avatarFile ? avatarPreview || formData.imgUrl : formData.imgUrl,
-            });
-            setFormData({
-                ...formData,
-                schedule: formattedSchedule,
-                imgUrl: avatarFile ? avatarPreview || formData.imgUrl : formData.imgUrl,
-            });
+                imgUrl: response.metadata?.imgUrl || avatarPreview || formData.imgUrl, // Use the returned imgUrl if available
+            };
+            setClassData(updatedClassData);
+            setFormData(updatedClassData);
+            setAvatarPreview(
+                typeof updatedClassData.imgUrl === 'string' ? updatedClassData.imgUrl : null,
+            );
             setIsEditing(false);
-            setAvatarFile(undefined); // Reset avatarFile after saving
+            setImgUrl(undefined);
             toast({
                 title: 'Success',
                 description: 'Class updated successfully',
@@ -568,7 +556,6 @@ export default function ClassDetailPage() {
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validate file type
             const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!validTypes.includes(file.type)) {
                 toast({
@@ -580,8 +567,7 @@ export default function ClassDetailPage() {
                 return;
             }
 
-            // Validate file size (e.g., max 5MB)
-            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            const maxSize = 5 * 1024 * 1024;
             if (file.size > maxSize) {
                 toast({
                     title: '❌ File Too Large',
@@ -592,17 +578,16 @@ export default function ClassDetailPage() {
                 return;
             }
 
-            setAvatarFile(file);
+            setImgUrl(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setAvatarPreview(reader.result as string);
             };
             reader.readAsDataURL(file);
 
-            // Update formData with the new file
             setFormData((prev) => (prev ? { ...prev, imgUrl: file } : prev));
         } else {
-            setAvatarFile(undefined);
+            setImgUrl(undefined);
             setAvatarPreview(typeof classData?.imgUrl === 'string' ? classData.imgUrl : null);
             setFormData((prev) => (prev ? { ...prev, imgUrl: classData?.imgUrl } : prev));
         }
@@ -662,38 +647,40 @@ export default function ClassDetailPage() {
                 >
                     <div className="relative z-10">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
-                                {isEditing ? (
-                                    <div className="flex items-center gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div>
+                                    {isEditing ? (
+                                        <div className="flex items-center gap-4">
+                                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                                                Editing {classData.title}
+                                            </h1>
+                                            <label
+                                                htmlFor="avatar-upload"
+                                                className="bg-white dark:bg-gray-700 p-2 rounded-full shadow-md cursor-pointer"
+                                            >
+                                                <Edit className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                <input
+                                                    id="avatar-upload"
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/gif"
+                                                    onChange={handleAvatarChange}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
+                                    ) : (
                                         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                                            Editing {classData.title}
+                                            {classData.title}
                                         </h1>
-                                        <label
-                                            htmlFor="avatar-upload"
-                                            className="bg-white dark:bg-gray-700 p-2 rounded-full shadow-md cursor-pointer"
-                                        >
-                                            <Edit className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                            <input
-                                                id="avatar-upload"
-                                                type="file"
-                                                accept="image/jpeg,image/png,image/gif"
-                                                onChange={handleAvatarChange}
-                                                className="hidden"
-                                            />
-                                        </label>
-                                    </div>
-                                ) : (
-                                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                                        {classData.title}
-                                    </h1>
-                                )}
+                                    )}
+                                </div>
                             </div>
                             <div className="flex gap-3">
                                 {isEditing ? (
                                     <>
                                         <button
                                             onClick={handleSave}
-                                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200 font-medium shadow-md"
+                                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 transition-colors duration-200 font-medium shadow-md cursor-pointer"
                                             aria-label="Save changes"
                                         >
                                             <Save className="h-5 w-5 mr-2" />
@@ -701,7 +688,7 @@ export default function ClassDetailPage() {
                                         </button>
                                         <button
                                             onClick={handleCancel}
-                                            className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200 font-medium shadow-md"
+                                            className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition-colors duration-200 font-medium shadow-md cursor-pointer"
                                             aria-label="Cancel editing"
                                         >
                                             <X className="h-5 w-5 mr-2" />
@@ -712,7 +699,7 @@ export default function ClassDetailPage() {
                                     <>
                                         <button
                                             onClick={handleEdit}
-                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 font-medium shadow-md"
+                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 font-medium shadow-md cursor-pointer"
                                             aria-label="Edit class"
                                         >
                                             <Pencil className="h-5 w-5 mr-2" />
@@ -720,7 +707,7 @@ export default function ClassDetailPage() {
                                         </button>
                                         <button
                                             onClick={handleDeleteClick}
-                                            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium shadow-md"
+                                            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium shadow-md cursor-pointer"
                                             aria-label="Delete class"
                                         >
                                             <Trash2 className="h-5 w-5 mr-2" />
@@ -734,12 +721,6 @@ export default function ClassDetailPage() {
                             Course: {classData.course.title || 'N/A'} | Mentor:{' '}
                             {classData.mentor.fullName || 'N/A'}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
-                            <Calendar className="h-5 w-5 text-white" />
-                            <span className="text-sm sm:text-base text-white font-medium opacity-90">
-                                Thursday, May 29, 2025, 11:05 AM
-                            </span>
-                        </div>
                     </div>
                 </div>
 
@@ -750,7 +731,7 @@ export default function ClassDetailPage() {
                             <button
                                 key={tab.name}
                                 onClick={() => setActiveTab(tab.name)}
-                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 cursor-pointer ${
                                     activeTab === tab.name
                                         ? 'border-b-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF]'
                                         : 'text-gray-500 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
@@ -817,13 +798,13 @@ export default function ClassDetailPage() {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleCancelDelete}
-                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 font-medium"
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 font-medium cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium"
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-colors duration-200 font-medium cursor-pointer"
                             >
                                 Delete
                             </button>

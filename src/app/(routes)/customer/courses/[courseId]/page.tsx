@@ -155,12 +155,12 @@ export default function CourseLearningPage() {
 
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="flex flex-wrap justify-start gap-4 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-5">
+                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-5">
                         {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
                                 value={['overview', 'grades', 'notes', 'messages'][i]}
-                                className="py-4 px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
+                                className="py-4 cursor-pointer px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 {tab}
                             </TabsTrigger>
