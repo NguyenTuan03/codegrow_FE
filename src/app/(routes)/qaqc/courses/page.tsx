@@ -57,11 +57,10 @@ interface Course {
     price: number;
     enrolledCount: number;
     author: string;
-
     category: string | Category;
     createdAt: string;
     lessons: number;
-    rating?: number; // Will be updated with average rating from comments
+    rating?: number;
     imgUrl?: string;
 }
 
@@ -121,13 +120,13 @@ export default function CoursesPage() {
                 .filter((comment) => comment.rating !== undefined)
                 .map((comment) => comment.rating as number);
 
-            if (ratings.length === 0) return 0; // No ratings available
+            if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-            return Number(avgRating.toFixed(1)); // Round to 1 decimal place
+            return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
-            return 0; // Default to 0 if fetching fails
+            return 0;
         }
     };
 
@@ -135,7 +134,7 @@ export default function CoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-            console.log('Data from GetCourses:', data);
+            console.log('Data from GetCourses:', JSON.stringify(data, null, 2));
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -144,15 +143,13 @@ export default function CoursesPage() {
                             categoryObj = course.category as Category;
                         }
 
-                        // Fetch average rating from comments
                         const avgRating = await fetchCommentsAndCalculateRatings(course._id);
                         console.log('Average rating:', avgRating);
 
                         return {
                             ...course,
                             category: categoryObj || { _id: '', name: 'Uncategorized' },
-                            rating: avgRating || 4.5, // Fallback to 4.5 if no rating
-                            image: `/course-${Math.floor(Math.random() * 5) + 1}.jpg`, // Placeholder image
+                            rating: avgRating || 4.5,
                         };
                     }),
                 );
@@ -188,14 +185,11 @@ export default function CoursesPage() {
         if (categories.length > 0) {
             fetchCourses(currentPage);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, categories]);
 
-    // Filter and sort courses based on search, category, and sort option
     useEffect(() => {
         let filtered = [...courses];
 
-        // Filter by search query
         if (searchQuery) {
             filtered = filtered.filter(
                 (course) =>
@@ -204,7 +198,6 @@ export default function CoursesPage() {
             );
         }
 
-        // Filter by category
         if (selectedCategory !== 'all') {
             filtered = filtered.filter((course) =>
                 typeof course.category === 'object'
@@ -213,7 +206,6 @@ export default function CoursesPage() {
             );
         }
 
-        // Sort courses
         if (sortOption === 'price-asc') {
             filtered.sort((a, b) => a.price - b.price);
         } else if (sortOption === 'price-desc') {
@@ -228,6 +220,9 @@ export default function CoursesPage() {
     }, [searchQuery, selectedCategory, sortOption, courses]);
 
     const handlePageChange = (page: number) => {
+        console.log(
+            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
+        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -238,14 +233,16 @@ export default function CoursesPage() {
         <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
-                <div className="mb-10">
-                    <h1 className="text-4xl mb-5 font-bold  tracking-tight text-[#657ED4] dark:[#5AD3AF]">
-                        Discover Amazing Courses
-                    </h1>
-                    <p className="mt-3 text-xl  text-gray-600 dark:text-gray-300">
-                        Learn from the best instructors and enhance your skills with our curated
-                        courses.
-                    </p>
+                <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:[#5AD3AF]">
+                            Discover Amazing Courses
+                        </h1>
+                        <p className="mt-3 text-xl text-gray-600 dark:text-gray-300">
+                            Learn from the best instructors and enhance your skills with our curated
+                            courses.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Search and Filter Section */}
@@ -388,7 +385,7 @@ export default function CoursesPage() {
                                                     backgroundPosition: 'center',
                                                 }}
                                             >
-                                                <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
@@ -434,7 +431,7 @@ export default function CoursesPage() {
                                                 <Button
                                                     variant="default"
                                                     size="lg"
-                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md"
+                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md cursor-pointer"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         router.push(`/qaqc/courses/${course._id}`);
@@ -459,8 +456,8 @@ export default function CoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === 1
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -474,8 +471,8 @@ export default function CoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] rounded-full underline underline-offset-4'
-                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-full'
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] rounded-full underline underline-offset-4 cursor-pointer'
+                                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                             }
                                                         >
                                                             {page}
@@ -489,8 +486,8 @@ export default function CoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === totalPages
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
                                                         }
                                                     />
                                                 </PaginationItem>

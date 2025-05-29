@@ -12,7 +12,7 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users, BookOpen, Star, Edit, Calendar } from 'lucide-react';
+import { Users, BookOpen, Star, Edit } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
@@ -197,10 +197,6 @@ export default function AdminCoursesPage() {
                             Manage and organize all courses in your platform
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 text-[#657ED4] dark:text-[#5AD3AF] font-medium">
-                        <Calendar className="h-5 w-5" />
-                        <span>Thursday, May 29, 2025, 01:10 PM</span>
-                    </div>
                 </div>
 
                 {/* Create New Course Button */}
@@ -275,7 +271,7 @@ export default function AdminCoursesPage() {
                                                     backgroundPosition: 'center',
                                                 }}
                                             >
-                                                <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
