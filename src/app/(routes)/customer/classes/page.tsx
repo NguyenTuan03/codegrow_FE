@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { GetClass } from '@/lib/services/class/getclass';
-
 import {
     Card,
     CardHeader,
@@ -12,7 +11,7 @@ import {
     CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Clock, User } from 'lucide-react';
+import { Users, Clock, User, Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -60,7 +59,13 @@ export default function Classes() {
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            throw new Error('User data is missing');
+            toast({
+                title: 'Error',
+                description: 'User data is missing. Please log in.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+            return;
         }
 
         const user = JSON.parse(userData);
@@ -74,6 +79,7 @@ export default function Classes() {
                 title: 'Warning',
                 description: 'Please log in to access class features.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     }, []);
@@ -82,16 +88,22 @@ export default function Classes() {
         try {
             const data = await GetClass(page, limit);
             console.log('GetClass Response:', JSON.stringify(data, null, 2));
-            setClassesItems(data.metadata.classes);
-            setCurrentPage(data.metadata.page);
-            setTotalPages(data.metadata.totalPages);
+            if (data?.metadata?.classes) {
+                setClassesItems(data.metadata.classes);
+                setCurrentPage(data.metadata.page);
+                setTotalPages(data.metadata.totalPages);
+            } else {
+                throw new Error('No classes found in the response.');
+            }
         } catch (error) {
             console.error('Failed to fetch classes:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to fetch classes',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+            setClassesItems([]);
         } finally {
             setLoading(false);
         }
@@ -102,6 +114,9 @@ export default function Classes() {
     }, [currentPage]);
 
     const handlePageChange = (page: number) => {
+        console.log(
+            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
+        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
         }
@@ -117,11 +132,17 @@ export default function Classes() {
     };
 
     return (
-        <div className="p-6 sm:p-10 mx-auto py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="p-6 sm:p-10 mx-auto py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                     Available Classes
                 </h1>
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
+                    <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                    <span className="text-gray-800 dark:text-gray-200 font-medium">
+                        Thursday, May 29, 2025, 01:04 PM
+                    </span>
+                </div>
             </div>
 
             {loading ? (
@@ -131,27 +152,18 @@ export default function Classes() {
             ) : classesItems.length === 0 ? (
                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                     <CardHeader>
-                        <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             No Classes Found
                         </CardTitle>
-                        <CardDescription className="text-gray-600 dark:text-gray-400 text-base">
+                        <CardDescription className="text-gray-600 dark:text-gray-400 text-base font-medium">
                             It looks like there are no classes available at the moment.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Button
-                            onClick={() => router.push('/admin/classes/create')}
-                            className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 transition-colors duration-200"
-                        >
-                            Create a Class
-                        </Button>
-                    </CardContent>
                 </Card>
             ) : (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {classesItems.map((course) => {
-                            // Check if the current user's ID is in the class's students array
                             const isEnrolled = currentUserId
                                 ? course.students.includes(currentUserId)
                                 : false;
@@ -162,34 +174,38 @@ export default function Classes() {
                                     className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md transition-all duration-300 hover:shadow-xl"
                                 >
                                     <div
-                                        className={`h-40 ${course.bgColor || 'bg-gradient-to-r from-[#5AD3AF] to-[#4ac2a0]'} relative overflow-hidden rounded-t-xl`}
-                                    >
-                                        {course.imgUrl && (
-                                            <img
-                                                src={course.imgUrl}
-                                                alt={course.title}
-                                                className="w-full h-full object-cover opacity-80"
-                                            />
-                                        )}
-                                    </div>
+                                        className="h-40 relative overflow-hidden rounded-t-xl"
+                                        style={{
+                                            backgroundImage: course.imgUrl
+                                                ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                : course.bgColor
+                                                  ? course.bgColor
+                                                  : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                            backgroundColor: course.imgUrl
+                                                ? 'transparent'
+                                                : '#5AD3AF',
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                        }}
+                                    />
                                     <CardHeader className="pt-4">
-                                        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
+                                        <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-1">
                                             {course.title}
                                         </CardTitle>
-                                        <CardDescription className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm">
+                                        <CardDescription className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm font-medium">
                                             {course.description}
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-3">
                                         <div className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-[#5AD3AF]" />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.students.length} students
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-[#5AD3AF]" />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.mentor?.fullName || 'Unknown'}
                                             </span>
                                         </div>
@@ -198,14 +214,14 @@ export default function Classes() {
                                                 <Badge
                                                     key={day}
                                                     variant="outline"
-                                                    className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs"
+                                                    className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs font-medium"
                                                 >
                                                     {day}
                                                 </Badge>
                                             ))}
                                             <Badge
                                                 variant="outline"
-                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs"
+                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs font-medium"
                                             >
                                                 <Clock className="h-3 w-3 mr-1 inline" />
                                                 {course.schedule.time}
@@ -220,8 +236,8 @@ export default function Classes() {
                                             className={`${
                                                 isEnrolled
                                                     ? 'bg-[#5AD3AF] hover:bg-[#4ac2a0]'
-                                                    : 'bg-blue-600 hover:bg-blue-700'
-                                            } text-white rounded-lg px-4 py-2 transition-colors duration-200`}
+                                                    : 'bg-[#657ED4] hover:bg-[#4a5da0]'
+                                            } text-white rounded-lg px-4 py-2 transition-colors duration-200 font-medium shadow-md cursor-pointer`}
                                         >
                                             {isEnrolled ? 'View Details' : 'Enroll'}
                                         </Button>
@@ -240,7 +256,7 @@ export default function Classes() {
                                             onClick={() => handlePageChange(currentPage - 1)}
                                             className={
                                                 currentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
                                                     : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                             }
                                         />
@@ -253,7 +269,7 @@ export default function Classes() {
                                                     isActive={currentPage === page}
                                                     className={
                                                         currentPage === page
-                                                            ? 'bg-[#5AD3AF] text-white rounded-lg'
+                                                            ? 'bg-[#5AD3AF] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
                                                             : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                                     }
                                                 >
@@ -267,7 +283,7 @@ export default function Classes() {
                                             onClick={() => handlePageChange(currentPage + 1)}
                                             className={
                                                 currentPage === totalPages
-                                                    ? 'pointer-events-none opacity-50'
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
                                                     : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                             }
                                         />

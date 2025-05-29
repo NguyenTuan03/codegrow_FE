@@ -62,7 +62,7 @@ interface Course {
     createdAt: string;
     lessons: number;
     rating?: number; // Will be updated with average rating from comments
-    image?: string;
+    imgUrl?: string;
 }
 
 interface ApiResponse {
@@ -375,14 +375,20 @@ export default function CoursesPage() {
                                             key={course._id}
                                             className="group hover:shadow-md transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
                                         >
-                                            <div className="relative h-48 overflow-hidden">
-                                                {/* <img
-                                                    src={course.image || '/course-placeholder.jpg'}
-                                                    alt={course.title}
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                /> */}
+                                            <div
+                                                className="relative h-48 overflow-hidden"
+                                                style={{
+                                                    backgroundImage: course.imgUrl
+                                                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                        : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                    backgroundColor: course.imgUrl
+                                                        ? 'transparent'
+                                                        : '#657ED4',
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                }}
+                                            >
                                                 <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
-                                                    {' '}
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}

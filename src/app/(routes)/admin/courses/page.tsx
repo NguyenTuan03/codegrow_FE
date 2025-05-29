@@ -52,6 +52,7 @@ interface Course {
     category: string | Category;
     createdAt: string;
     lessons: number;
+    imgUrl?: string;
     status?: 'published' | 'draft' | 'archived';
     rating?: number;
 }
@@ -122,7 +123,7 @@ export default function AdminCoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-            console.log('Fetched courses:', data);
+            console.log('Fetched courses:', JSON.stringify(data, null, 2));
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -136,7 +137,6 @@ export default function AdminCoursesPage() {
 
                         return {
                             ...course,
-
                             category: categoryObj || { _id: '', name: 'Uncategorized' },
                             rating: avgRating || 5,
                         };
@@ -144,13 +144,13 @@ export default function AdminCoursesPage() {
                 );
 
                 setCourses(parsedCourses);
+                setCurrentPage(data.metadata.page);
+                setTotalPages(data.metadata.totalPages);
             } else {
                 throw new Error(
                     'No courses found. Please check your connection or try again later.',
                 );
             }
-            setCurrentPage(data.metadata.page);
-            setTotalPages(data.metadata.totalPages);
         } catch (error: unknown) {
             console.error('Failed to fetch courses:', error);
             toast({
@@ -176,6 +176,9 @@ export default function AdminCoursesPage() {
     }, [currentPage, categories]);
 
     const handlePageChange = (page: number) => {
+        console.log(
+            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
+        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
         }
@@ -194,20 +197,9 @@ export default function AdminCoursesPage() {
                             Manage and organize all courses in your platform
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
-                        <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                        <span className="text-gray-800 text-base dark:text-gray-200 font-medium">
-                            {new Date('2025-05-28T15:39:00+07:00').toLocaleString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true,
-                                timeZone: 'Asia/Bangkok',
-                            })}
-                        </span>
+                    <div className="flex items-center gap-2 text-[#657ED4] dark:text-[#5AD3AF] font-medium">
+                        <Calendar className="h-5 w-5" />
+                        <span>Thursday, May 29, 2025, 01:10 PM</span>
                     </div>
                 </div>
 
@@ -215,7 +207,7 @@ export default function AdminCoursesPage() {
                 <div className="flex justify-end mb-6">
                     <Button
                         onClick={() => router.push('/admin/courses/create')}
-                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md"
+                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md cursor-pointer"
                     >
                         Create New Course
                     </Button>
@@ -257,7 +249,7 @@ export default function AdminCoursesPage() {
                                 </p>
                                 <Button
                                     onClick={() => router.push('/admin/courses/create')}
-                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md"
+                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md cursor-pointer"
                                 >
                                     Create Course
                                 </Button>
@@ -270,16 +262,24 @@ export default function AdminCoursesPage() {
                                             key={course._id}
                                             className="hover:shadow-lg transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col h-full"
                                         >
-                                            <div className="relative">
-                                                <div className="h-40 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                                                    <div className="absolute top-2 left-2 space-x-2">
-                                                        <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
-                                                            {typeof course.category === 'object'
-                                                                ? course.category.name
-                                                                : 'Uncategorized'}
-                                                        </Badge>
-                                                    </div>
-                                                </div>
+                                            <div
+                                                className="h-40 relative overflow-hidden"
+                                                style={{
+                                                    backgroundImage: course.imgUrl
+                                                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                        : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                    backgroundColor: course.imgUrl
+                                                        ? 'transparent'
+                                                        : '#657ED4',
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                }}
+                                            >
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                    {typeof course.category === 'object'
+                                                        ? course.category.name
+                                                        : 'Uncategorized'}
+                                                </Badge>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
                                                 <h4 className="font-semibold text-xl line-clamp-2 text-[#657ED4] dark:text-[#5AD3AF]">
@@ -297,7 +297,7 @@ export default function AdminCoursesPage() {
                                                     {course.description}
                                                 </p>
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold  text-base">
+                                                    <span className="font-bold text-base">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
@@ -322,7 +322,7 @@ export default function AdminCoursesPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="flex-1 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black rounded-lg font-medium transition-all duration-200"
+                                                    className="flex-1 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black rounded-lg font-medium transition-all duration-200 cursor-pointer"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         router.push(`/admin/courses/${course._id}`);
@@ -348,8 +348,8 @@ export default function AdminCoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === 1
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200 font-medium'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -363,8 +363,8 @@ export default function AdminCoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] rounded-lg font-semibold'
-                                                                    : 'cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium'
+                                                                    ? 'bg-[#5AD3AF] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
+                                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                                             }
                                                         >
                                                             {page}
@@ -378,8 +378,8 @@ export default function AdminCoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === totalPages
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200 font-medium'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                                         }
                                                     />
                                                 </PaginationItem>

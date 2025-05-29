@@ -22,6 +22,7 @@ interface Course {
     author: string;
     category: { _id: string; name: string };
     createdAt: string;
+    imgUrl?: string;
 }
 
 export default function CourseLearningPage() {
@@ -40,7 +41,10 @@ export default function CourseLearningPage() {
         try {
             setLoading(true);
             const courseRes = await viewDetailCourses(courseId);
-            console.log('Course data:', courseRes);
+            console.log(
+                'Course data response from viewDetailCourses:',
+                JSON.stringify(courseRes, null, 2),
+            );
 
             if (courseRes.status === 200) {
                 const parsedCourse = {
@@ -49,8 +53,10 @@ export default function CourseLearningPage() {
                         typeof courseRes.metadata.category === 'string'
                             ? JSON.parse(courseRes.metadata.category)
                             : courseRes.metadata.category,
+                    imgUrl: courseRes.metadata.imgUrl || courseRes.metadata.image || undefined, // Fallback to image if imgUrl is missing
                 };
 
+                console.log('Parsed course data:', JSON.stringify(parsedCourse, null, 2));
                 setCourse(parsedCourse);
                 toast({
                     title: 'Thành công',

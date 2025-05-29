@@ -2,13 +2,7 @@ import { get } from '@/lib/util/HttpRequest';
 
 export const GetCourses = async (page: number = 1, limit: number = 6) => {
     try {
-        const token = localStorage.getItem('token');
-        const response = get('/course', {
-            params: { page, limit },
-            headers: {
-                Authorization: token ? `Bearer ${token}` : '',
-            },
-        });
+        const response = get(`/course?page=${page}&limit=${limit}`);
 
         return response; // Phản hồi: { message: string, status: number, metadata: { courses: Course[], page: number, totalPages: number } }
     } catch (error) {

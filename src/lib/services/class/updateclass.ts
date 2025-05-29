@@ -9,12 +9,15 @@ export const UpdateClass = async (
     description: string,
     maxStudents: number,
     status: string,
+
     schedule: {
         startDate: string;
         endDate: string;
         daysOfWeek: string[];
         time: string;
     },
+    linkMeet: string, // Make linkMeet required
+    imgUrl?: File, // Keep imgUrl as optional
 ) => {
     try {
         const response = await httpRequest.put(
@@ -27,6 +30,8 @@ export const UpdateClass = async (
                 maxStudents,
                 status,
                 schedule,
+                linkMeet,
+                imgUrl,
             },
             {
                 headers: { Authorization: `Bearer ${token}` },
