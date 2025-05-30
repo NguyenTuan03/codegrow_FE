@@ -386,31 +386,87 @@ const HomePage = () => {
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {['1', '2', '3', '4'].map((_, index) => (
-                        <div
-                            key={index}
-                            className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700"
-                        >
-                            <div className="relative w-full h-[140px] mb-4">
-                                <Image
-                                    src="/learning_path.png"
-                                    alt="Learning Path"
-                                    fill
-                                    className="object-contain"
-                                />
-                            </div>
-                            <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
-                                GOOD LEARNING PATH
-                            </div>
-                            <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
-                                The learning path is designed methodically, in detail, and in
-                                accordance with learning goals. A good roadmap will help make
-                                learning effective, not wasteful, not going down the wrong path, and
-                                wherever you learn, it will be useful.
-                            </p>
+                    {/* Structured Courses */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/structured_courses.png" // Ensure this image exists in the public directory
+                                alt="Structured Courses"
+                                fill
+                                className="object-contain"
+                            />
                         </div>
-                    ))}
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                            STRUCTURED COURSES
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                            Our courses are carefully designed to provide a clear and systematic
+                            learning path, ensuring you build skills step-by-step from beginner to
+                            advanced levels.
+                        </p>
+                    </div>
+
+                    {/* Personalized Mentorship */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/mentorship.png" // Ensure this image exists in the public directory
+                                alt="Personalized Mentorship"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                            PERSONALIZED MENTORSHIP
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                            Receive one-on-one guidance from expert mentors who tailor their advice
+                            to your learning needs, helping you overcome challenges and achieve your
+                            goals.
+                        </p>
+                    </div>
+
+                    {/* Hands-On Exercises */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/exercises.png" // Ensure this image exists in the public directory
+                                alt="Hands-On Exercises"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                            HANDS-ON EXERCISES
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                            Practice what you learn with real-world coding exercises, designed to
+                            reinforce your knowledge and build practical skills through active
+                            learning.
+                        </p>
+                    </div>
+
+                    {/* Community Support */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/community.png" // Ensure this image exists in the public directory
+                                alt="Community Support"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                            COMMUNITY SUPPORT
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                            Join a vibrant community of learners and mentors to share knowledge, ask
+                            questions, and get support, ensuring you never feel alone on your
+                            learning journey.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

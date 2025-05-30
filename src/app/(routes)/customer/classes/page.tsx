@@ -192,13 +192,13 @@ export default function Classes() {
                                     </CardHeader>
                                     <CardContent className="space-y-3">
                                         <div className="flex items-center gap-2">
-                                            <Users className="h-4 w-4 text-[#5AD3AF]" />
+                                            <Users className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.students.length} students
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-[#5AD3AF]" />
+                                            <User className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.mentor?.fullName || 'Unknown'}
                                             </span>
@@ -229,9 +229,9 @@ export default function Classes() {
                                             }
                                             className={`${
                                                 isEnrolled
-                                                    ? 'bg-[#5AD3AF] hover:bg-[#4ac2a0]'
-                                                    : 'bg-[#657ED4] hover:bg-[#4a5da0]'
-                                            } text-white rounded-lg px-4 py-2 transition-colors duration-200 font-medium shadow-md cursor-pointer`}
+                                                    ? 'bg-white dark:bg-gray-800 border-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] hover:text-white dark:hover:text-white'
+                                                    : 'bg-[#657ED4] dark:bg-[#5AD3AF] border-2 border-[#657ED4] dark:border-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0]'
+                                            } rounded-lg px-4 py-2 transition-colors duration-200 font-medium shadow-md cursor-pointer`}
                                         >
                                             {isEnrolled ? 'View Details' : 'Enroll'}
                                         </Button>
@@ -263,8 +263,8 @@ export default function Classes() {
                                                     isActive={currentPage === page}
                                                     className={
                                                         currentPage === page
-                                                            ? 'bg-[#5AD3AF] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
-                                                            : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                            ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
+                                                            : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                     }
                                                 >
                                                     {page}
@@ -278,7 +278,7 @@ export default function Classes() {
                                             className={
                                                 currentPage === totalPages
                                                     ? 'pointer-events-none opacity-50 cursor-not-allowed'
-                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                             }
                                         />
                                     </PaginationItem>
