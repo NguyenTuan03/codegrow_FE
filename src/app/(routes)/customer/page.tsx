@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { HOME_INTRODUCTION } from '@/lib/enum/home/Introduction';
 import Image from 'next/image';
@@ -10,15 +10,8 @@ import React, { useEffect, useState } from 'react';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { toast } from '@/components/ui/use-toast';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselPrevious,
-    CarouselNext,
-    CarouselApi,
-} from '@/components/ui/carousel';
 import { GetProgress } from '@/lib/services/api/progress';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 
 interface Category {
     _id: string;
@@ -47,13 +40,30 @@ interface ApiResponse {
     };
 }
 
+interface User {
+    _id: string;
+    fullName: string;
+    role: string;
+    wallet: number;
+    email: string;
+    enrolledCourses: Course[];
+    createdAt: string;
+    updatedAt: string;
+    dailyStreak: number;
+    totalXP: number;
+}
+
+interface ProgrammingSkill {
+    name: string;
+    icon: string;
+}
+
 const HomePage = () => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
-    const [api, setApi] = useState<CarouselApi | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const fetchProgress = async (courseId: string) => {
         try {
@@ -82,7 +92,6 @@ const HomePage = () => {
 
     const fetchCourses = async () => {
         try {
-            setLoading(true);
             const limit = 10;
             const data: ApiResponse = await GetCourses(1, limit);
             console.log('Fetched courses:', data);
@@ -124,13 +133,35 @@ const HomePage = () => {
         } catch (error: unknown) {
             console.error('Error fetching courses:', error);
             setCourses([]);
-        } finally {
-            setLoading(false);
+        }
+    };
+
+    const fetchUserDetail = async () => {
+        try {
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Bạn cần đăng nhập để xem thông tin chi tiết',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black',
+                });
+                return;
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
+
+            const userDetail = await getUserDetail(id);
+            console.log(`User detail for ID ${id}:`, userDetail);
+            setUser(userDetail.metadata);
+        } catch (error) {
+            console.error('❌ Error fetching user details:', error);
         }
     };
 
     useEffect(() => {
         fetchCategories();
+        fetchUserDetail();
     }, []);
 
     useEffect(() => {
@@ -151,17 +182,18 @@ const HomePage = () => {
         }
     };
 
-    const handleCarouselPrevious = () => {
-        if (api) {
-            api.scrollPrev();
-        }
-    };
-
-    const handleCarouselNext = () => {
-        if (api) {
-            api.scrollNext();
-        }
-    };
+    // Data for Popular Programming Skills
+    const programmingSkills: ProgrammingSkill[] = [
+        { name: 'Python', icon: '/icons8-python-48.png' },
+        { name: 'JavaScript', icon: '/icons8-javascript-96.png' },
+        { name: 'Data Structures', icon: '/icons8-data-migration-48.png' },
+        { name: 'React', icon: '/icons8-react-80.png' },
+        { name: 'Java', icon: '/icons8-java-94.png' },
+        { name: 'C++', icon: '/icons8-c-96.png' },
+        { name: 'TypeScript', icon: '/icons8-typescript-24.png' },
+        { name: 'Node.js', icon: '/icons8-node-js-48.png' },
+        { name: 'SQL', icon: '/icons8-sql-48.png' },
+    ];
 
     return (
         <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
@@ -170,15 +202,16 @@ const HomePage = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                             <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
-                                Welcome back, customer
+                                {user ? `Welcome back, ${user.fullName}` : 'Welcome back, customer'}
                             </h3>
-                            <p className="text-base mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
+
+                            <p className="text-xl mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 Solve coding exercises and get mentored to develop fluency in your
                                 chosen programming languages
                             </p>
                         </div>
                     </div>
-                    <div className="font-bold text-xl mt-5 mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                    <div className="font-bold text-2xl mt-5 mb-3 text-gray-900 dark:text-gray-100 cursor-default">
                         Where to start...
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-8">
@@ -208,7 +241,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 <div className="md:col-span-4">
-                    <div className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
+                    <div className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
                         Your track
                     </div>
                     <div className="flex flex-row items-center">
@@ -218,7 +251,7 @@ const HomePage = () => {
                                 value={courses.length > 0 ? courseProgress[courses[0]._id] || 0 : 0}
                                 className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
                             />
-                            <div className="text-base font-medium text-gray-900 dark:text-gray-300 cursor-default">
+                            <div className="text-xl font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 {courses.length > 0
                                     ? `${courseProgress[courses[0]._id] || 0}% completed`
                                     : 'No progress available'}
@@ -237,7 +270,7 @@ const HomePage = () => {
                             </div>
                         </CardHeader>
                         <CardContent className="bg-gray-100 dark:bg-gray-700">
-                            <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-100 cursor-default">
+                            <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100 cursor-default">
                                 Become a mentor
                             </h2>
                             <p className="text-base text-gray-500 dark:text-gray-300 mb-6 font-medium cursor-default">
@@ -262,125 +295,6 @@ const HomePage = () => {
                     </Card>
                 </div>
             </div>
-            <Card className="bg-white dark:bg-gray-700 border-gray-100 dark:border-gray-700 rounded-xl">
-                <CardHeader>
-                    <CardTitle className="text-4xl font-bold mb-2 text-center my-3 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
-                        All courses in CODEGROW
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {loading ? (
-                        <div className="flex justify-center items-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] cursor-default"></div>
-                        </div>
-                    ) : courses.length === 0 ? (
-                        <div className="text-center text-gray-600 dark:text-gray-300 p-6 text-base font-medium cursor-default">
-                            No courses available at the moment.
-                        </div>
-                    ) : (
-                        <Carousel
-                            setApi={setApi}
-                            opts={{
-                                align: 'start',
-                                loop: true,
-                            }}
-                            className="w-full max-w-full px-4 sm:px-6 lg:px-8"
-                        >
-                            <CarouselContent className="-ml-4">
-                                {courses.map((course, index) => (
-                                    <CarouselItem
-                                        key={index}
-                                        className="pl-4 basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3"
-                                    >
-                                        <Card className="bg-white dark:bg-gray-600 shadow-sm h-full border-gray-100 dark:border-gray-700 rounded-xl flex flex-col">
-                                            <CardHeader className="p-0">
-                                                <div
-                                                    className="relative w-full h-[200px] overflow-hidden"
-                                                    style={{
-                                                        backgroundImage: course.imgUrl
-                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
-                                                            : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
-                                                        backgroundColor: course.imgUrl
-                                                            ? 'transparent'
-                                                            : '#657ED4',
-                                                        backgroundSize: 'cover',
-                                                        backgroundPosition: 'center',
-                                                    }}
-                                                ></div>
-                                            </CardHeader>
-                                            <CardContent className="p-4 flex flex-col flex-grow gap-3 min-h-[200px]">
-                                                <div className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100 cursor-default">
-                                                    {course.title}
-                                                </div>
-                                                <div className="text-base font-medium text-gray-600 dark:text-gray-300 mt-2 line-clamp-3 h-14 cursor-default">
-                                                    {course.description.length > 100
-                                                        ? course.description.slice(0, 100) + '...'
-                                                        : course.description}
-                                                </div>
-                                                <div className="mt-auto">
-                                                    <Progress
-                                                        value={courseProgress[course._id] || 0}
-                                                        className="w-full bg-[#657ED4] dark:bg-[#5AD3AF]"
-                                                    />
-                                                    <div className="text-base font-medium text-gray-600 dark:text-gray-300 mt-1 cursor-default">
-                                                        {courseProgress[course._id] || 0}% completed
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-2 p-4 border-t border-gray-100 dark:border-gray-700">
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
-                                                    <Image
-                                                        src="/icons8-users-30.png"
-                                                        width={24}
-                                                        height={24}
-                                                        alt="Learners"
-                                                    />
-                                                    {course.enrolledCount}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
-                                                    <Image
-                                                        src="/tag.png"
-                                                        width={24}
-                                                        height={24}
-                                                        alt="Tag"
-                                                    />
-                                                    {typeof course.category === 'object'
-                                                        ? course.category.name
-                                                        : 'Uncategorized'}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 text-base font-medium cursor-default">
-                                                    <Image
-                                                        src="/dollar.png"
-                                                        width={24}
-                                                        height={24}
-                                                        alt="Dollar"
-                                                    />
-                                                    ${course.price.toFixed(2)}
-                                                </div>
-                                            </CardFooter>
-                                        </Card>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <CarouselPrevious
-                                className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black cursor-pointer"
-                                onClick={handleCarouselPrevious}
-                            />
-                            <CarouselNext
-                                className="hidden md:flex rounded-full border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black cursor-pointer"
-                                onClick={handleCarouselNext}
-                            />
-                        </Carousel>
-                    )}
-                </CardContent>
-                <CardFooter className="flex justify-center dark:border-gray-700 py-6">
-                    <Link href="/customer/courses" legacyBehavior>
-                        <Button className="text-center px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white text-base font-semibold transition-colors duration-300 cursor-pointer">
-                            View all courses
-                        </Button>
-                    </Link>
-                </CardFooter>
-            </Card>
 
             <div className="mt-8">
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
@@ -398,10 +312,10 @@ const HomePage = () => {
                                 className="object-contain"
                             />
                         </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
                             STRUCTURED COURSES
                         </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
                             Our courses are carefully designed to provide a clear and systematic
                             learning path, ensuring you build skills step-by-step from beginner to
                             advanced levels.
@@ -418,10 +332,10 @@ const HomePage = () => {
                                 className="object-contain"
                             />
                         </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
                             PERSONALIZED MENTORSHIP
                         </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
                             Receive one-on-one guidance from expert mentors who tailor their advice
                             to your learning needs, helping you overcome challenges and achieve your
                             goals.
@@ -438,10 +352,10 @@ const HomePage = () => {
                                 className="object-contain"
                             />
                         </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
                             HANDS-ON EXERCISES
                         </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
                             Practice what you learn with real-world coding exercises, designed to
                             reinforce your knowledge and build practical skills through active
                             learning.
@@ -458,13 +372,130 @@ const HomePage = () => {
                                 className="object-contain"
                             />
                         </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default">
+                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
                             COMMUNITY SUPPORT
                         </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default">
+                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
                             Join a vibrant community of learners and mentors to share knowledge, ask
                             questions, and get support, ensuring you never feel alone on your
                             learning journey.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Updated Component: Popular Programming Skills */}
+            <div className="mt-8">
+                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                    RoadMap Programming Skills
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                    {programmingSkills.map((skill, index) => (
+                        <div key={index} className="relative group">
+                            <Link
+                                href={`/customer/roadmap`}
+                                className="bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer"
+                            >
+                                <div className="relative w-[24px] h-[24px] mr-3">
+                                    <Image
+                                        src={skill.icon} // Ensure this image exists in the public directory
+                                        alt={skill.name}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <span className="text-gray-900 text-xl dark:text-gray-100 font-medium cursor-default">
+                                    {skill.name}
+                                </span>
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-center mt-6 mb-10">
+                    <Link href="/customer/roadmap">
+                        <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300 cursor-pointer">
+                            Explore More
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+            {/* New Section: Our Achievements */}
+            <div className="mt-8">
+                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                    Our Achievements
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    {/* Students Enrolled */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/icons8-students-64.png" // Ensure this image exists in the public directory
+                                alt="Students Enrolled"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                            10K+
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
+                            Students Enrolled
+                        </p>
+                    </div>
+
+                    {/* Courses Offered */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/icons8-course-assign-100.png" // Ensure this image exists in the public directory
+                                alt="Courses Offered"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                            50+
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
+                            Courses Offered
+                        </p>
+                    </div>
+
+                    {/* Mentors */}
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/icons8-expert-96.png" // Ensure this image exists in the public directory
+                                alt="Mentors"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                            200+
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
+                            Expert Mentors
+                        </p>
+                    </div>
+
+                    {/* Projects Completed */}
+                    <div className="bg-gray-100 mb-10 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                        <div className="relative w-full h-[140px] mb-4">
+                            <Image
+                                src="/icons8-class-80.png" // Ensure this image exists in the public directory
+                                alt="Projects Completed"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                            5K+
+                        </div>
+                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
+                            Classes Completed
                         </p>
                     </div>
                 </div>
