@@ -12,10 +12,11 @@ import { GetCourses } from '@/lib/services/course/getcourse';
 import { Pencil, Save, Trash2, X, BookOpen, Users, FileText, Award, Edit } from 'lucide-react';
 import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
-import Stream from './Stream';
+
 import Assignments from './Assigment';
 import MarksAttendance from './MarkAttendance';
 import { GetListUserEnrollpedding } from '@/lib/services/class/getlistuserenrollpedding';
+import ViewPosts from '@/components/ViewPost';
 
 interface Schedule {
     startDate: string;
@@ -760,7 +761,7 @@ export default function ClassDetailPage() {
                             />
                         </div>
                         <div className="lg:col-span-2">
-                            <Stream />
+                            <ViewPosts />
                         </div>
                     </div>
                 )}
