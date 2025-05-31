@@ -6,10 +6,11 @@ import { toast } from '@/components/ui/use-toast';
 import { viewDetail } from '@/lib/services/class/viewdetail';
 import ClassInfo from '@/app/(routes)/customer/classes/[...classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/customer/classes/[...classId]/StudentList';
-import Stream from './Stream';
+
 import { BookOpen, Users, FileText, Award } from 'lucide-react';
 import Assignments from './Assignment';
 import MarksAttendance from './MarkAttendance';
+import ViewPosts from '@/components/ViewPost';
 
 interface Schedule {
     startDate: string;
@@ -205,7 +206,7 @@ export default function ClassDetailPage() {
                             <ClassInfo classData={classData} />
                         </div>
                         <div className="lg:col-span-2">
-                            <Stream />
+                            <ViewPosts />
                         </div>
                     </div>
                 )}
