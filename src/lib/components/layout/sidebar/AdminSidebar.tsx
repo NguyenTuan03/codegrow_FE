@@ -1,8 +1,9 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { Users, User, Settings, Eye, Contact, Book } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
 import {
     Sidebar,
     SidebarContent,
@@ -22,23 +23,20 @@ import {
 
 export const AdminSidebar = () => {
     const [isClient, setIsClient] = useState(false);
-    const pathname = usePathname(); // Get the current route
+    const pathname = usePathname();
 
     useEffect(() => {
-        setIsClient(true); // Đảm bảo chỉ render trên client
+        setIsClient(true);
     }, []);
 
     if (!isClient) {
-        return null; // Tránh render trên server
+        return null;
     }
 
-    // Function to determine if a link or section is active
     const isActive = (href: string, isSection: boolean = false) => {
         const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
         const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
-        // For sections (e.g., "Users", "Classes"), check if the pathname starts with the href
-        // For specific links, check for an exact match or nested route
         return isSection
             ? normalizedPathname.startsWith(normalizedHref)
             : normalizedPathname === normalizedHref ||
@@ -51,7 +49,7 @@ export const AdminSidebar = () => {
             <SidebarContent>
                 {/* Header */}
                 <div className="flex items-center px-12 text-black dark:text-white">
-                    <h1 className="text-xl font-bold">CODEGROW</h1>
+                    <h1 className="text-xl font-bold cursor-default">CODEGROW</h1>
                 </div>
                 <div className="flex h-[60px] items-center border-b px-4 border-gray-200 dark:border-gray-700">
                     <Link href="/admin" className="w-full">
@@ -70,7 +68,7 @@ export const AdminSidebar = () => {
                     <Accordion type="multiple" className="w-full">
                         {/* Pages Section */}
                         <AccordionItem value="pages" className="border-b-0">
-                            <AccordionTrigger className="px-4 py-2 text-muted-foreground dark:text-gray-400 text-xs font-medium uppercase tracking-wide hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                            <AccordionTrigger className="px-4 py-2 text-muted-foreground dark:text-gray-400 text-xs font-medium uppercase tracking-wide hover:no-underline [&[data-state=open]>svg]:rotate-180 cursor-pointer">
                                 <div className="flex w-full items-center justify-between">
                                     Pages
                                 </div>
@@ -81,7 +79,7 @@ export const AdminSidebar = () => {
                                         {/* User Profile */}
                                         <AccordionItem value="user-profile" className="border-b-0">
                                             <AccordionTrigger
-                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ${
+                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 cursor-pointer ${
                                                     isActive('/admin/listcustomer', true) ||
                                                     isActive('/admin/users', true) ||
                                                     isActive('/admin/contact', true)
@@ -113,21 +111,6 @@ export const AdminSidebar = () => {
                                                             </Link>
                                                         </SidebarMenuButton>
                                                     </SidebarMenuItem>
-                                                    {/* <SidebarMenuItem>
-                                                        <SidebarMenuButton asChild>
-                                                            <Link
-                                                                href="/admin/users"
-                                                                className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive('/admin/users')
-                                                                        ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                <Users className="h-5 w-5" />
-                                                                Users
-                                                            </Link>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuItem> */}
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
@@ -150,7 +133,7 @@ export const AdminSidebar = () => {
                                         {/* Classes Section */}
                                         <AccordionItem value="classes" className="border-b-0">
                                             <AccordionTrigger
-                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ${
+                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 cursor-pointer ${
                                                     isActive('/admin/classes/create', true) ||
                                                     isActive('/admin/classes', true)
                                                         ? 'text-blue-600 dark:text-blue-400 font-semibold'
@@ -205,7 +188,7 @@ export const AdminSidebar = () => {
                                         {/* Courses Section */}
                                         <AccordionItem value="Courses" className="border-b-0">
                                             <AccordionTrigger
-                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 ${
+                                                className={`py-1 pl-2 pr-4 hover:no-underline [&[data-state=open]>svg]:rotate-180 cursor-pointer ${
                                                     isActive('/admin/courses/create', true) ||
                                                     isActive('/admin/courses', true)
                                                         ? 'text-blue-600 dark:text-blue-400 font-semibold'

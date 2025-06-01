@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { Pencil, Save, Trash2, X } from 'lucide-react';
+import { Pencil, Save, Trash2, X, ImagePlus } from 'lucide-react';
 import { viewDetailCourses } from '@/lib/services/course/viewdetailcourses';
 import { DeleteCourse } from '@/lib/services/course/deletecourse';
 import { UpdateCourse } from '@/lib/services/course/updatecourse';
@@ -25,6 +25,7 @@ interface Course {
     author: string;
     isDeleted?: boolean;
     enrolledCount?: number;
+    imgUrl?: string;
 }
 
 interface Students {
@@ -46,6 +47,8 @@ export default function CourseDetailPage() {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [newImgUrl, setNewImgUrl] = useState<File | undefined>(undefined);
     const router = useRouter();
     const [listStudents, setListStudents] = useState<Students[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -68,6 +71,7 @@ export default function CourseDetailPage() {
 
             setCourseData(course);
             setFormData(course);
+            setPreviewImage(course.imgUrl || null);
         } catch (error) {
             console.error('Failed to fetch course details:', error);
             toast({
@@ -126,6 +130,45 @@ export default function CourseDetailPage() {
     const handleCancel = () => {
         setIsEditing(false);
         setFormData(courseData);
+        setPreviewImage(courseData?.imgUrl || null);
+        setNewImgUrl(undefined);
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                toast({
+                    title: '❌ Invalid File Type',
+                    description: 'Please upload an image file (JPEG, PNG, or GIF).',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                toast({
+                    title: '❌ File Too Large',
+                    description: 'Please upload an image smaller than 5MB.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            setNewImgUrl(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setNewImgUrl(undefined);
+            setPreviewImage(courseData?.imgUrl || null);
+        }
     };
 
     const handleSave = async () => {
@@ -145,7 +188,7 @@ export default function CourseDetailPage() {
                 throw new Error('Authentication token is missing');
             }
 
-            await UpdateCourse(
+            const response = await UpdateCourse(
                 token,
                 courseId,
                 formData.title,
@@ -153,10 +196,25 @@ export default function CourseDetailPage() {
                 formData.price.toString(),
                 formData.author,
                 formData.category._id,
+                newImgUrl,
             );
 
-            setCourseData(formData);
+            // Log the response for debugging
+            console.log('UpdateCourse Response in handleSave:', JSON.stringify(response, null, 2));
+
+            // Update courseData with the new data from the response
+            const updatedCourseData: Course = {
+                ...formData,
+                imgUrl: response.metadata?.imgUrl || previewImage || formData.imgUrl,
+            };
+            setCourseData(updatedCourseData);
+            setFormData(updatedCourseData);
+            setPreviewImage(
+                typeof updatedCourseData.imgUrl === 'string' ? updatedCourseData.imgUrl : null,
+            );
+
             setIsEditing(false);
+            setNewImgUrl(undefined);
             toast({
                 title: 'Success',
                 description: 'Course updated successfully',
@@ -164,7 +222,6 @@ export default function CourseDetailPage() {
                 className:
                     'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
-            router.refresh();
         } catch (error: unknown) {
             console.error('Failed to update course:', error);
             toast({
@@ -231,59 +288,93 @@ export default function CourseDetailPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-7xl mx-auto p-6 sm:p-8">
-                {/* Header with Date and Time */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div className="flex items-center gap-3">
-                        {isEditing ? (
-                            <h1 className="text-2xl sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
-                                Editing {formData?.title}
-                            </h1>
-                        ) : (
-                            <h1 className="text-2xl sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
-                                {courseData.title}
-                            </h1>
-                        )}
+                {/* Header with Background Image */}
+                <div
+                    className="relative rounded-2xl p-6 text-white mb-8 shadow-lg overflow-hidden"
+                    style={{
+                        backgroundImage: previewImage
+                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${previewImage})`
+                            : 'linear-gradient(to right, #657ED4, #4a5da0)',
+                        backgroundColor: previewImage ? 'transparent' : '#657ED4',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        minHeight: '150px',
+                    }}
+                >
+                    <div className="relative z-10">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div className="flex items-center gap-3">
+                                    {isEditing ? (
+                                        <div className="flex items-center gap-4">
+                                            <h1 className="text-2xl sm:text-4xl font-bold">
+                                                Editing {formData?.title}
+                                            </h1>
+                                            <label
+                                                htmlFor="img-upload"
+                                                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
+                                            >
+                                                <ImagePlus className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                <span>Change Image</span>
+                                                <input
+                                                    id="img-upload"
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/gif"
+                                                    onChange={handleImageChange}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
+                                    ) : (
+                                        <h1 className="text-2xl sm:text-4xl font-bold">
+                                            {courseData.title}
+                                        </h1>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                {isEditing ? (
+                                    <>
+                                        <button
+                                            onClick={handleSave}
+                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md font-semibold cursor-pointer"
+                                            aria-label="Save changes"
+                                        >
+                                            <Save className="h-5 w-5 mr-2" />
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={handleCancel}
+                                            className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm font-medium cursor-pointer"
+                                            aria-label="Cancel editing"
+                                        >
+                                            <X className="h-5 w-5 mr-2" />
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEdit}
+                                            className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md cursor-pointer"
+                                            aria-label="Edit course"
+                                        >
+                                            <Pencil className="h-5 w-5 mr-2" />
+                                            Update
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteClick}
+                                            className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md cursor-pointer"
+                                            aria-label="Delete course"
+                                        >
+                                            <Trash2 className="h-5 w-5 mr-2" />
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex justify-end gap-3 mb-6">
-                    {isEditing ? (
-                        <>
-                            <button
-                                onClick={handleSave}
-                                className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md font-semibold"
-                                aria-label="Save changes"
-                            >
-                                <Save className="h-5 w-5 mr-2" />
-                                Save
-                            </button>
-                            <button
-                                onClick={handleCancel}
-                                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 shadow-sm font-medium"
-                            >
-                                <X className="h-5 w-5 mr-2" />
-                                Cancel
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                onClick={handleEdit}
-                                className="flex items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] transition-all duration-200 shadow-md"
-                            >
-                                <Pencil className="h-5 w-5 mr-2" />
-                                Update
-                            </button>
-                            <button
-                                onClick={handleDeleteClick}
-                                className="flex items-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 shadow-md"
-                            >
-                                <Trash2 className="h-5 w-5 mr-2" />
-                                Delete
-                            </button>
-                        </>
-                    )}
                 </div>
 
                 {/* Main Content */}

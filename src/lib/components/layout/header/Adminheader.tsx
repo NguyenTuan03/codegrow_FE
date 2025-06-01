@@ -135,12 +135,12 @@ export const AdminHeader = () => {
         <header className="fixed w-full top-0 left-0 right-0 z-50 shadow-sm border-b bg-gray-50 dark:bg-gray-900">
             <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
                 {/* Left side - Logo and Dropdowns */}
-                <div className="flex items-center gap-6 ">
+                <div className="flex items-center gap-6">
                     <div className="flex items-center gap-4">
                         {/* Report Dropdown */}
                         <Accordion type="single" collapsible className="w-auto">
                             <AccordionItem value="report" className="border-b-0">
-                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
+                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0 cursor-pointer">
                                     <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
                                         Report
                                     </div>
@@ -150,7 +150,7 @@ export const AdminHeader = () => {
                                         {reportItems.map((item) => (
                                             <Link key={item.name} href={item.href}>
                                                 <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer ${
                                                         isActiveLink(item.href)
                                                             ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
                                                             : 'text-gray-700 dark:text-gray-300'
@@ -169,7 +169,7 @@ export const AdminHeader = () => {
                         {/* Menu Dropdown */}
                         <Accordion type="single" collapsible className="w-auto">
                             <AccordionItem value="menu" className="border-b-0">
-                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
+                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0 cursor-pointer">
                                     <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
                                         Menu
                                     </div>
@@ -179,7 +179,7 @@ export const AdminHeader = () => {
                                         {menuItems.map((item) => (
                                             <Link key={item.name} href={item.href}>
                                                 <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
+                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer ${
                                                         isActiveLink(item.href)
                                                             ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
                                                             : 'text-gray-700 dark:text-gray-300'
@@ -204,7 +204,7 @@ export const AdminHeader = () => {
                         <input
                             type="text"
                             placeholder="Search in font"
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-all duration-200 cursor-text"
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                             value={searchQuery}
@@ -253,7 +253,7 @@ export const AdminHeader = () => {
                                     <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                                 </div>
                             ) : (
-                                <Avatar className="w-8 h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
+                                <Avatar className="w-8 h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow cursor-pointer">
                                     <AvatarImage
                                         src={profileData?.avatar || '/default-avatar.png'}
                                         alt={profileData?.fullName}
@@ -268,13 +268,13 @@ export const AdminHeader = () => {
                             className="w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-1"
                             align="end"
                         >
-                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium cursor-pointer">
                                 <User className="h-4 w-4" />
                                 <Link href="/admin/profileadmin" className="w-full">
                                     Profile
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium">
+                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium cursor-pointer">
                                 <Settings className="h-4 w-4" />
                                 <Link href="/admin/changepassword" className="w-full">
                                     Change Password
@@ -282,7 +282,7 @@ export const AdminHeader = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium cursor-pointer"
                             >
                                 <LogOut className="h-4 w-4" />
                                 Logout
@@ -291,7 +291,7 @@ export const AdminHeader = () => {
                     </DropdownMenu>
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" className="cursor-pointer">
                                 <Bell className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -302,7 +302,7 @@ export const AdminHeader = () => {
                             <div className="px-4 py-2 text-sm font-semibold text-[#657ED4] dark:text-[#5AD3AF]">
                                 Notifications
                             </div>
-                            <DropdownMenuItem className="px-4 py-2 font-medium">
+                            <DropdownMenuItem className="px-4 py-2 font-medium cursor-pointer">
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="text-gray-800 dark:text-gray-200">
                                         New user registered
@@ -312,7 +312,7 @@ export const AdminHeader = () => {
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="px-4 py-2 font-medium">
+                            <DropdownMenuItem className="px-4 py-2 font-medium cursor-pointer">
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="text-gray-800 dark:text-gray-200">
                                         System update completed
@@ -322,7 +322,7 @@ export const AdminHeader = () => {
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="px-4 py-2 font-medium">
+                            <DropdownMenuItem className="px-4 py-2 font-medium cursor-pointer">
                                 <div className="flex flex-col gap-1 text-sm">
                                     <span className="text-gray-800 dark:text-gray-200">
                                         You have 3 unread messages
@@ -332,7 +332,7 @@ export const AdminHeader = () => {
                                     </span>
                                 </div>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="justify-center text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] font-medium">
+                            <DropdownMenuItem className="justify-center text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] font-medium cursor-pointer">
                                 <Link href="#">View all</Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

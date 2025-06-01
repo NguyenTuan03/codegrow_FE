@@ -100,9 +100,9 @@ export default function StudentsPanel({
                 <div className="mt-6">
                     <Button
                         onClick={handleOpenModal}
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 w-full"
+                        className="flex cursor-pointer items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 w-full"
                     >
-                        <UserPlus className="h-5 w-5 mr-2" />
+                        <UserPlus className="h-5 w-5  mr-2" />
                         Add Student
                     </Button>
                 </div>
@@ -167,7 +167,7 @@ export default function StudentsPanel({
                                                                 student.fullName,
                                                             )
                                                         }
-                                                        className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+                                                        className="px-3 py-1 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
                                                     >
                                                         Add
                                                     </button>

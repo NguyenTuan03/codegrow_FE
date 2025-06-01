@@ -17,6 +17,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { GetReviewsByMentorId } from '@/lib/services/qaqc/getReviewDetail';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Star, User, Calendar } from 'lucide-react';
 
 // Reuse the GetReviewsByMentorId function and Review type
 type Review = {
@@ -51,7 +53,7 @@ export default function CoursesList() {
 
             const user = JSON.parse(userData);
 
-            const mentorId = user.id; // Assuming this is the mentor ID you want to use
+            const mentorId = user.id;
             if (!mentorId) {
                 setError('Mentor ID not found in local storage');
                 setLoading(false);
@@ -88,6 +90,7 @@ export default function CoursesList() {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handlePageSizeChange = (value: string) => {
@@ -107,136 +110,186 @@ export default function CoursesList() {
         return pages;
     };
 
+    const renderStars = (rating: number) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <Star
+                    key={i}
+                    className={`w-5 h-5 ${
+                        i <= rating
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-300 dark:text-gray-600'
+                    }`}
+                />,
+            );
+        }
+        return stars;
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#657ED4] dark:border-[#5AD3AF] border-solid cursor-default"></div>
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Review</h1>
-            {loading && (
-                <p className="text-center text-gray-500 dark:text-gray-400">Loading reviews...</p>
-            )}
-            {error && <p className="text-center text-red-500 dark:text-red-400">{error}</p>}
-            {!loading && !error && allReviews.length > 0 ? (
-                <>
-                    <div className="grid gap-6">
-                        {displayReviews.map((review) => (
-                            <div
-                                key={review._id}
-                                className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
-                            >
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    <strong className="text-gray-900 dark:text-white">
-                                        Comment:
-                                    </strong>{' '}
-                                    {review.comment}
-                                </p>
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    <strong className="text-gray-900 dark:text-white">
-                                        Rating:
-                                    </strong>{' '}
-                                    {review.rating}/5
-                                </p>
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    <strong className="text-gray-900 dark:text-white">
-                                        Reviewed by:
-                                    </strong>{' '}
-                                    {review.qaqc.fullName} ({review.qaqc.email})
-                                </p>
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    <strong className="text-gray-900 dark:text-white">
-                                        Created At:
-                                    </strong>{' '}
-                                    {new Date(review.createdAt).toLocaleString()}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Pagination Controls */}
-                    <div className="flex items-center justify-between mt-6">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                Items per page:
-                            </span>
-                            <Select
-                                value={pageSize.toString()}
-                                onValueChange={handlePageSizeChange}
-                            >
-                                <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
-                                    <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                                    <SelectItem
-                                        value="5"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        5
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="10"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        10
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="20"
-                                        className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        20
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+        <div className="max-w-5xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg">
+                <CardHeader className="border-b border-gray-200 dark:border-gray-700">
+                    <CardTitle className="text-3xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2 cursor-default">
+                        <span>Review Management</span>
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            ({allReviews.length})
+                        </span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                    {error && (
+                        <div className="text-center p-6 bg-red-50 dark:bg-red-900/50 rounded-lg shadow-md">
+                            <p className="text-red-600 dark:text-red-400 font-medium cursor-default">
+                                {error}
+                            </p>
                         </div>
-
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                        className={`${
-                                            currentPage === 1
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-
-                                {getPageNumbers().map((page) => (
-                                    <PaginationItem key={page}>
-                                        <PaginationLink
-                                            onClick={() => handlePageChange(page)}
-                                            isActive={currentPage === page}
-                                            className={`${
-                                                currentPage === page
-                                                    ? 'bg-blue-500 text-white dark:bg-blue-600'
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            } border-gray-300 dark:border-gray-600`}
-                                        >
-                                            {page}
-                                        </PaginationLink>
-                                    </PaginationItem>
+                    )}
+                    {!error && allReviews.length === 0 ? (
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <p className="text-lg font-medium cursor-default">
+                                No reviews found for this mentor.
+                            </p>
+                            <p className="text-sm mt-2 cursor-default">
+                                Reviews will appear here once submitted.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="grid gap-6">
+                                {displayReviews.map((review) => (
+                                    <div
+                                        key={review._id}
+                                        className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <User className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    <p className="text-gray-900 dark:text-gray-100 font-semibold cursor-default">
+                                                        {review.qaqc.fullName} ({review.qaqc.email})
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-1 mb-3">
+                                                    {renderStars(review.rating)}
+                                                    <span className="ml-2 text-gray-700 dark:text-gray-300 font-medium cursor-default">
+                                                        {review.rating}/5
+                                                    </span>
+                                                </div>
+                                                <p className="text-gray-800 dark:text-gray-200 mb-3 cursor-default">
+                                                    {review.comment}
+                                                </p>
+                                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    <Calendar className="h-4 w-4" />
+                                                    <span className="cursor-default">
+                                                        {new Date(
+                                                            review.createdAt,
+                                                        ).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ))}
+                            </div>
 
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                        className={`${
-                                            currentPage === totalPages
-                                                ? 'pointer-events-none opacity-50'
-                                                : ''
-                                        } text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600`}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
-                </>
-            ) : (
-                !loading &&
-                !error && (
-                    <p className="text-center text-gray-500 dark:text-gray-400">
-                        No reviews found for this mentor.
-                    </p>
-                )
-            )}
+                            {/* Pagination Controls */}
+                            {allReviews.length > 0 && (
+                                <div className="flex flex-col sm:flex-row items-center justify-between mt-8 gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-gray-700 dark:text-gray-300 font-medium cursor-default">
+                                            Items per page:
+                                        </span>
+                                        <Select
+                                            value={pageSize.toString()}
+                                            onValueChange={handlePageSizeChange}
+                                        >
+                                            <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer">
+                                                <SelectValue placeholder="Select" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg shadow-lg">
+                                                <SelectItem
+                                                    value="5"
+                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
+                                                >
+                                                    5
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="10"
+                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
+                                                >
+                                                    10
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="20"
+                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
+                                                >
+                                                    20
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage - 1)
+                                                    }
+                                                    className={`${
+                                                        currentPage === 1
+                                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                    } border-gray-300 dark:border-gray-600`}
+                                                />
+                                            </PaginationItem>
+
+                                            {getPageNumbers().map((page) => (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        onClick={() => handlePageChange(page)}
+                                                        isActive={currentPage === page}
+                                                        className={
+                                                            currentPage === page
+                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] rounded-full cursor-pointer'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                        }
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            ))}
+
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage + 1)
+                                                    }
+                                                    className={`${
+                                                        currentPage === totalPages
+                                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                    } border-gray-300 dark:border-gray-600`}
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

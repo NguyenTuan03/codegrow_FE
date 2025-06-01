@@ -89,7 +89,9 @@ const ChangePasswordForm = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div className="bg-gradient-to-r from-[#657ED4] to-[#5AD3AF] dark:from-[#5A6BBE] dark:to-[#4AC2A0] p-6 flex items-center gap-3">
                     <Lock className="w-6 h-6 text-white" />
-                    <h1 className="text-2xl font-bold text-white">Change Password</h1>
+                    <h1 className="text-2xl font-bold text-white cursor-default">
+                        Change Password
+                    </h1>
                 </div>
                 <Form {...form}>
                     <form
@@ -103,7 +105,7 @@ const ChangePasswordForm = () => {
                             name="oldPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold cursor-default">
                                         Old Password
                                     </FormLabel>
                                     <FormControl>
@@ -114,14 +116,14 @@ const ChangePasswordForm = () => {
                                                 type={
                                                     showPassword.oldPassword ? 'text' : 'password'
                                                 }
-                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200 cursor-text"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('oldPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200 cursor-pointer"
                                                 aria-label={
                                                     showPassword.oldPassword
                                                         ? 'Hide password'
@@ -136,7 +138,7 @@ const ChangePasswordForm = () => {
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-[#F76F8E] text-base font-medium" />
+                                    <FormMessage className="text-[#F76F8E] text-base font-medium cursor-default" />
                                 </FormItem>
                             )}
                         />
@@ -147,7 +149,7 @@ const ChangePasswordForm = () => {
                             name="newPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold cursor-default">
                                         New Password
                                     </FormLabel>
                                     <FormControl>
@@ -158,14 +160,14 @@ const ChangePasswordForm = () => {
                                                 type={
                                                     showPassword.newPassword ? 'text' : 'password'
                                                 }
-                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200 cursor-text"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('newPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200 cursor-pointer"
                                                 aria-label={
                                                     showPassword.newPassword
                                                         ? 'Hide password'
@@ -180,7 +182,7 @@ const ChangePasswordForm = () => {
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-[#F76F8E] text-base font-medium" />
+                                    <FormMessage className="text-[#F76F8E] text-base font-medium cursor-default" />
                                 </FormItem>
                             )}
                         />
@@ -191,7 +193,7 @@ const ChangePasswordForm = () => {
                             name="confirmPassword"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold">
+                                    <FormLabel className="text-[#657ED4] dark:text-[#5AD3AF] font-semibold cursor-default">
                                         Confirm Password
                                     </FormLabel>
                                     <FormControl>
@@ -204,14 +206,14 @@ const ChangePasswordForm = () => {
                                                         ? 'text'
                                                         : 'password'
                                                 }
-                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                className="pl-10 rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] text-gray-900 dark:text-gray-100 transition-all duration-200 cursor-text"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     togglePasswordVisibility('confirmPassword')
                                                 }
-                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
+                                                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200 cursor-pointer"
                                                 aria-label={
                                                     showPassword.confirmPassword
                                                         ? 'Hide password'
@@ -226,7 +228,7 @@ const ChangePasswordForm = () => {
                                             </button>
                                         </div>
                                     </FormControl>
-                                    <FormMessage className="text-[#F76F8E] text-base font-medium" />
+                                    <FormMessage className="text-[#F76F8E] text-base font-medium cursor-default" />
                                 </FormItem>
                             )}
                         />
@@ -238,14 +240,18 @@ const ChangePasswordForm = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.back()}
-                                    className="px-6 py-3 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg shadow-sm transition-colors duration-200 font-medium"
+                                    className="px-6 py-3 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg shadow-sm transition-colors duration-200 font-medium cursor-pointer"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg shadow-md transition-all duration-200 disabled:opacity-70 flex items-center gap-2 font-medium"
+                                    className={`px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 font-medium cursor-pointer ${
+                                        loading
+                                            ? 'opacity-70 cursor-not-allowed'
+                                            : 'hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]'
+                                    }`}
                                 >
                                     {loading ? (
                                         <span className="flex items-center">

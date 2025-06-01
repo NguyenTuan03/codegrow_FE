@@ -16,6 +16,7 @@ interface Course {
     author: string;
     category: { _id: string; name: string } | null;
     createdAt: string;
+    imgUrl?: string;
 }
 
 interface CourseHeaderProps {
@@ -52,6 +53,11 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
         fetchEnrolledCourses();
     }, [userAuth]);
 
+    // Log the course data to debug imgUrl
+    useEffect(() => {
+        console.log('CourseHeader course prop:', JSON.stringify(course, null, 2));
+    }, [course]);
+
     if (!course) {
         return (
             <div className="text-center text-gray-600 dark:text-gray-400 py-10 bg-white dark:bg-gray-800 rounded-xl shadow-md">
@@ -86,12 +92,17 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="relative h-48 bg-gradient-to-r dark:from-[#5AD3AF]/20 to-[#657ED4]/20 from-[#5AD3AF]/10 dark:to-[#657ED4]/10">
-                {/* Placeholder for course image or banner */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <BookOpen className="w-20 h-20 text-[#5AD3AF] opacity-20" />
-                </div>
-            </div>
+            <div
+                className="relative h-48 overflow-hidden"
+                style={{
+                    backgroundImage: course.imgUrl
+                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                        : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                    backgroundColor: course.imgUrl ? 'transparent' : '#657ED4',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}
+            ></div>
             <div className="p-6 sm:p-8 space-y-6">
                 {/* Course Title */}
                 <h1 className="sm:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] tracking-tight">
@@ -99,15 +110,14 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                 </h1>
 
                 {/* Course Meta Info */}
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm ">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
                     <div className="text-base flex items-center gap-2">
                         <Users className="w-5 h-5 text-[#657ED4]" />
                         <span>{course.enrolledCount} students enrolled</span>
                     </div>
-                    <div className=" text-base flex items-center gap-2">
+                    <div className="text-base flex items-center gap-2">
                         <BookOpen className="w-5 h-5 text-[#657ED4]" />
                         <span>Author: {course.author || 'Unknown'}</span>
-                        {/* <span>Instructor: {course.author || 'Unknown'}</span> */}
                     </div>
                     <div className="text-base flex items-center gap-2">
                         <span>Category: {course.category?.name || 'Uncategorized'}</span>
@@ -115,7 +125,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                 </div>
 
                 {/* Course Description */}
-                <p className="text-xl leading-relaxed ">{course.description}</p>
+                <p className="text-xl leading-relaxed">{course.description}</p>
 
                 {/* Price and Enrollment Status */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -136,7 +146,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                             <Button
                                 onClick={() => handleAlternativePayment('momo')}
                                 disabled={loading}
-                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                     loading ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                             >
@@ -146,7 +156,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                             <Button
                                 onClick={() => handleAlternativePayment('vnpay')}
                                 disabled={loading}
-                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                     loading ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                             >

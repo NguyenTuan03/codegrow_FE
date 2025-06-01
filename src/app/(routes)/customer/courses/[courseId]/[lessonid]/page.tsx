@@ -224,7 +224,7 @@ export default function LessonDetail() {
                             variant="outline"
                             size="icon"
                             onClick={() => router.push(`/customer/courses/${courseId}`)}
-                            className="rounded-full text-[#657ED4] border-[#657ED4] hover:bg-[#657ED4] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white transition-all duration-200"
+                            className="rounded-full cursor-pointer text-[#657ED4] border-[#657ED4] hover:bg-[#657ED4] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white transition-all duration-200"
                         >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
@@ -247,17 +247,17 @@ export default function LessonDetail() {
                 {/* Main Content */}
                 <div className="grid grid-cols-1 gap-8">
                     <Tabs defaultValue="content" className="w-full">
-                        <TabsList className="grid grid-cols-2 gap-4 mb-6 bg-gray-100 dark:bg-gray-800 p-2 rounded-lg">
+                        <TabsList className="grid grid-cols-2 gap-4 mb-6 bg-gray-100 cursor-pointer dark:bg-gray-800 p-2 rounded-lg">
                             <TabsTrigger
                                 value="content"
-                                className="flex items-center gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-[#657ED4] dark:data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg transition-all duration-200 font-medium text-base"
+                                className="flex items-center cursor-pointer gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-[#657ED4] dark:data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg transition-all duration-200 font-medium text-base"
                             >
                                 <BookOpen className="h-4 w-4 text-base" />
                                 Lesson Content
                             </TabsTrigger>
                             <TabsTrigger
                                 value="quizzes"
-                                className="flex items-center gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-[#657ED4] dark:data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg transition-all duration-200 font-medium text-base"
+                                className="flex items-center cursor-pointer gap-2 text-gray-700 dark:text-gray-300 data-[state=active]:bg-[#657ED4] dark:data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg transition-all duration-200 font-medium text-base"
                             >
                                 <ListChecks className="h-4 w-4" />
                                 Practice Quizzes ({quizzes.length})
@@ -273,7 +273,7 @@ export default function LessonDetail() {
                                         <iframe
                                             src={transformYouTubeUrl(lesson.videoUrl)}
                                             title="Lesson Video"
-                                            className="w-full h-full rounded-lg"
+                                            className="w-full h-full rounded-lg cursor-pointer"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
                                             onError={(e) => {
@@ -318,16 +318,16 @@ export default function LessonDetail() {
                                         )}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-4 p-6 gap-4">
+                                <CardFooter className="flex  justify-between border-t border-gray-200 dark:border-gray-700 pt-4 p-6 gap-4">
                                     <Button
                                         variant="outline"
                                         onClick={handleMarkAsCompleted}
                                         disabled={isMarked || isMarking}
                                         className={`${
                                             isMarked
-                                                ? 'bg-green-50 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700/30'
-                                                : 'text-[#657ED4] border-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white'
-                                        } rounded-lg px-6 py-2 transition-all duration-200 font-medium text-base`}
+                                                ? 'bg-green-50 cursor-pointer text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700/30'
+                                                : 'text-[#657ED4] cursor-pointer border-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white'
+                                        } rounded-lg px-6 py-2 transition-all cursor-pointer duration-200 font-medium text-base`}
                                     >
                                         {isMarking ? (
                                             <>
@@ -352,7 +352,7 @@ export default function LessonDetail() {
                                         onClick={() =>
                                             document.getElementById('quizzes-tab')?.click()
                                         }
-                                        className="text-[#657ED4] border-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-lg px-6 py-2 transition-all duration-200 font-medium text-base"
+                                        className="text-[#657ED4] border-[#657ED4] cursor-pointer dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-lg px-6 py-2 transition-all duration-200 font-medium text-base"
                                     >
                                         Continue to Quizzes
                                         <PanelRightOpen className="ml-2 h-4 w-4" />
@@ -412,7 +412,7 @@ export default function LessonDetail() {
                                             <CardFooter className="flex justify-end pt-2 pb-4">
                                                 <Button
                                                     onClick={() => handleTakeQuiz(quiz._id)}
-                                                    className="bg-[#657ED4] dark:bg-[#5AD3AF] text-base hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 transition-all duration-200 font-medium"
+                                                    className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] text-base hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 transition-all duration-200 font-medium"
                                                 >
                                                     {quiz.type === 'multiple_choice' ? (
                                                         <>

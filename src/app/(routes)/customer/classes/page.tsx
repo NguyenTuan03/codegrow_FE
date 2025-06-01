@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { GetClass } from '@/lib/services/class/getclass';
-
 import {
     Card,
     CardHeader,
@@ -53,14 +52,22 @@ export default function Classes() {
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 6;
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedClass, setSelectedClass] = useState<ClassItem | null>(null);
+    const limit = 6;
 
     // Fetch the current user's ID from localStorage (or your auth system)
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            throw new Error('User data is missing');
+            toast({
+                title: 'Error',
+                description: 'User data is missing. Please log in.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+            return;
         }
 
         const user = JSON.parse(userData);
@@ -74,6 +81,7 @@ export default function Classes() {
                 title: 'Warning',
                 description: 'Please log in to access class features.',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
         }
     }, []);
@@ -82,16 +90,22 @@ export default function Classes() {
         try {
             const data = await GetClass(page, limit);
             console.log('GetClass Response:', JSON.stringify(data, null, 2));
-            setClassesItems(data.metadata.classes);
-            setCurrentPage(data.metadata.page);
-            setTotalPages(data.metadata.totalPages);
+            if (data?.metadata?.classes) {
+                setClassesItems(data.metadata.classes);
+                setCurrentPage(data.metadata.page);
+                setTotalPages(data.metadata.totalPages);
+            } else {
+                throw new Error('No classes found in the response.');
+            }
         } catch (error) {
             console.error('Failed to fetch classes:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to fetch classes',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+            setClassesItems([]);
         } finally {
             setLoading(false);
         }
@@ -102,9 +116,22 @@ export default function Classes() {
     }, [currentPage]);
 
     const handlePageChange = (page: number) => {
+        console.log(
+            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
+        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
         }
+    };
+
+    const openModal = (classItem: ClassItem) => {
+        setSelectedClass(classItem);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedClass(null);
     };
 
     const handleClassAction = (classId: string, isEnrolled: boolean) => {
@@ -117,7 +144,7 @@ export default function Classes() {
     };
 
     return (
-        <div className="p-6 sm:p-10 mx-auto py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="p-6 sm:p-10 mx-auto py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                     Available Classes
@@ -131,27 +158,18 @@ export default function Classes() {
             ) : classesItems.length === 0 ? (
                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                     <CardHeader>
-                        <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             No Classes Found
                         </CardTitle>
-                        <CardDescription className="text-gray-600 dark:text-gray-400 text-base">
+                        <CardDescription className="text-gray-600 dark:text-gray-400 text-base font-medium">
                             It looks like there are no classes available at the moment.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <Button
-                            onClick={() => router.push('/admin/classes/create')}
-                            className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg px-6 py-2 transition-colors duration-200"
-                        >
-                            Create a Class
-                        </Button>
-                    </CardContent>
                 </Card>
             ) : (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {classesItems.map((course) => {
-                            // Check if the current user's ID is in the class's students array
                             const isEnrolled = currentUserId
                                 ? course.students.includes(currentUserId)
                                 : false;
@@ -162,34 +180,38 @@ export default function Classes() {
                                     className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md transition-all duration-300 hover:shadow-xl"
                                 >
                                     <div
-                                        className={`h-40 ${course.bgColor || 'bg-gradient-to-r from-[#5AD3AF] to-[#4ac2a0]'} relative overflow-hidden rounded-t-xl`}
-                                    >
-                                        {course.imgUrl && (
-                                            <img
-                                                src={course.imgUrl}
-                                                alt={course.title}
-                                                className="w-full h-full object-cover opacity-80"
-                                            />
-                                        )}
-                                    </div>
+                                        className="h-70 relative overflow-hidden rounded-t-xl"
+                                        style={{
+                                            backgroundImage: course.imgUrl
+                                                ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                : course.bgColor
+                                                  ? course.bgColor
+                                                  : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                            backgroundColor: course.imgUrl
+                                                ? 'transparent'
+                                                : '#5AD3AF',
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                        }}
+                                    />
                                     <CardHeader className="pt-4">
-                                        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
+                                        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 line-clamp-1">
                                             {course.title}
                                         </CardTitle>
-                                        <CardDescription className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm">
+                                        {/* <CardDescription className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm font-medium">
                                             {course.description}
-                                        </CardDescription>
+                                        </CardDescription> */}
                                     </CardHeader>
                                     <CardContent className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <Users className="h-4 w-4 text-[#5AD3AF]" />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        {/* <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.students.length} students
                                             </span>
-                                        </div>
+                                        </div> */}
                                         <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-[#5AD3AF]" />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <User className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                            <span className="text-xl text-gray-600 dark:text-gray-400 font-medium">
                                                 {course.mentor?.fullName || 'Unknown'}
                                             </span>
                                         </div>
@@ -198,14 +220,14 @@ export default function Classes() {
                                                 <Badge
                                                     key={day}
                                                     variant="outline"
-                                                    className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs"
+                                                    className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
                                                 >
                                                     {day}
                                                 </Badge>
                                             ))}
                                             <Badge
                                                 variant="outline"
-                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs"
+                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
                                             >
                                                 <Clock className="h-3 w-3 mr-1 inline" />
                                                 {course.schedule.time}
@@ -214,22 +236,124 @@ export default function Classes() {
                                     </CardContent>
                                     <CardFooter className="flex justify-between">
                                         <Button
-                                            onClick={() =>
-                                                handleClassAction(course._id, isEnrolled)
-                                            }
+                                            onClick={() => openModal(course)}
                                             className={`${
                                                 isEnrolled
-                                                    ? 'bg-[#5AD3AF] hover:bg-[#4ac2a0]'
-                                                    : 'bg-blue-600 hover:bg-blue-700'
-                                            } text-white rounded-lg px-4 py-2 transition-colors duration-200`}
+                                                    ? 'bg-white dark:bg-gray-800 border-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] hover:text-white dark:hover:text-white'
+                                                    : 'bg-[#657ED4] dark:bg-[#5AD3AF] border-2 border-[#657ED4] dark:border-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0]'
+                                            } rounded-lg px-4 py-2 transition-colors text-base duration-200 font-medium shadow-md cursor-pointer`}
                                         >
-                                            {isEnrolled ? 'View Details' : 'Enroll'}
+                                            {isEnrolled ? 'View Details' : 'Join Class'}
                                         </Button>
                                     </CardFooter>
                                 </Card>
                             );
                         })}
                     </div>
+
+                    {/* Modal for Class Details */}
+                    {isModalOpen && selectedClass && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-transparent">
+                            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 relative">
+                                <button
+                                    onClick={closeModal}
+                                    className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                                <div className="flex flex-col items-center space-y-6">
+                                    <div
+                                        className="relative h-70 w-full overflow-hidden rounded-t-xl mb-4"
+                                        style={{
+                                            backgroundImage: selectedClass.imgUrl
+                                                ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedClass.imgUrl})`
+                                                : selectedClass.bgColor
+                                                  ? selectedClass.bgColor
+                                                  : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                            backgroundColor: selectedClass.imgUrl
+                                                ? 'transparent'
+                                                : '#5AD3AF',
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                        }}
+                                    />
+                                    <h3 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default">
+                                        {selectedClass.title}
+                                    </h3>
+                                    <p className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-4 cursor-default">
+                                        {selectedClass.description}
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xl text-gray-600 dark:text-gray-300">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                            <span>{selectedClass.students.length} students</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <User className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                            <span>
+                                                Mentor:{' '}
+                                                {selectedClass.mentor?.fullName || 'Unknown'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {selectedClass.schedule.daysOfWeek.map((day) => (
+                                            <Badge
+                                                key={day}
+                                                variant="outline"
+                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
+                                            >
+                                                {day}
+                                            </Badge>
+                                        ))}
+                                        <Badge
+                                            variant="outline"
+                                            className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
+                                        >
+                                            <Clock className="h-4 w-4 mr-1 inline" />
+                                            {selectedClass.schedule.time}
+                                        </Badge>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-3 w-full">
+                                        {currentUserId &&
+                                        selectedClass.students.includes(currentUserId) ? (
+                                            <Button
+                                                onClick={() =>
+                                                    handleClassAction(selectedClass._id, true)
+                                                }
+                                                className="w-full text-base bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                            >
+                                                View Details
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() =>
+                                                    handleClassAction(selectedClass._id, false)
+                                                }
+                                                className="w-full text-base bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                            >
+                                                Join Class
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {totalPages > 1 && (
                         <div className="mt-12 flex justify-center">
@@ -240,7 +364,7 @@ export default function Classes() {
                                             onClick={() => handlePageChange(currentPage - 1)}
                                             className={
                                                 currentPage === 1
-                                                    ? 'pointer-events-none opacity-50'
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
                                                     : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
                                             }
                                         />
@@ -253,8 +377,8 @@ export default function Classes() {
                                                     isActive={currentPage === page}
                                                     className={
                                                         currentPage === page
-                                                            ? 'bg-[#5AD3AF] text-white rounded-lg'
-                                                            : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                            ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
+                                                            : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                     }
                                                 >
                                                     {page}
@@ -267,8 +391,8 @@ export default function Classes() {
                                             onClick={() => handlePageChange(currentPage + 1)}
                                             className={
                                                 currentPage === totalPages
-                                                    ? 'pointer-events-none opacity-50'
-                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF]'
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                             }
                                         />
                                     </PaginationItem>

@@ -203,28 +203,28 @@ const Customerheader = () => {
                             >
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/profilecustomer')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >
                                     <User2 className="w-4 h-4" />
                                     <span className="text-sm">Profile</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/changepassword')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >
                                     <Settings className="w-4 h-4" />
                                     <span className="text-sm">Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => router.push('/customer/support')}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >
                                     <HelpCircle className="w-4 h-4" />
                                     <span className="text-sm">Help Support</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >
                                     <LogOut className="w-4 h-4" />
                                     <span className="text-sm">Logout</span>

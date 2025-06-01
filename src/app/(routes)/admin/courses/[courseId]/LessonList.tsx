@@ -45,7 +45,7 @@ interface Lesson {
 
 interface LessonListProps {
     courseId: string;
-    coursePrice: number; // New prop to determine free or paid course
+    coursePrice: number;
 }
 
 export default function LessonList({ courseId, coursePrice }: LessonListProps) {
@@ -280,6 +280,12 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
         }
     };
 
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages && page !== currentPage) {
+            setCurrentPage(page);
+        }
+    };
+
     const handleViewDetails = (lessonId: string) => {
         console.log('Navigating to lesson details:', lessonId);
         router.push(`/admin/courses/${courseId}/${lessonId}`);
@@ -291,10 +297,10 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Lessons</h1>
-                    <div className="flex gap-3 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full sm:w-auto">
                         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                             <DialogTrigger asChild>
-                                <Button className="w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center gap-2">
+                                <Button className="w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center gap-2 cursor-pointer">
                                     <PlusCircle className="h-5 w-5" />
                                     Create Lesson
                                 </Button>
@@ -417,7 +423,8 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                         href={formData.videoUrl}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-[#657ED4] hover:underline"
+                                                        className="text-[#657ED4] hover:underline truncate max-w-[150px]"
+                                                        title={formData.videoUrl}
                                                     >
                                                         {formData.videoUrl.slice(0, 30) +
                                                             (formData.videoUrl.length > 30
@@ -431,7 +438,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                     onOpenChange={setIsUploadDialogOpen}
                                                 >
                                                     <DialogTrigger asChild>
-                                                        <Button className="mt-2 w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center gap-2">
+                                                        <Button className="mt-2 w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center gap-2 cursor-pointer">
                                                             <Upload className="h-5 w-5" />
                                                             Upload Video
                                                         </Button>
@@ -471,7 +478,11 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                                 disabled={
                                                                     !selectedFile || uploadLoading
                                                                 }
-                                                                className="w-full bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center justify-center gap-2"
+                                                                className={`w-full bg-[#657ED4] text-white flex items-center justify-center gap-2 cursor-pointer ${
+                                                                    !selectedFile || uploadLoading
+                                                                        ? 'opacity-50 cursor-not-allowed'
+                                                                        : 'hover:bg-[#424c70]'
+                                                                }`}
                                                             >
                                                                 {uploadLoading ? (
                                                                     <>
@@ -496,13 +507,13 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                             type="button"
                                             variant="outline"
                                             onClick={() => setIsCreateDialogOpen(false)}
-                                            className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                         >
                                             Cancel
                                         </Button>
                                         <Button
                                             type="submit"
-                                            className="bg-[#657ED4] hover:bg-[#424c70] text-white"
+                                            className="bg-[#657ED4] hover:bg-[#424c70] text-white cursor-pointer"
                                         >
                                             Create Lesson
                                         </Button>
@@ -584,7 +595,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                             href={lesson.videoUrl}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="text-[#657ED4] hover:underline truncate max-w-[150px]"
+                                                            className="text-[#657ED4] hover:underline truncate max-w-[150px] cursor-pointer"
                                                             title={lesson.videoUrl}
                                                         >
                                                             {lesson.videoUrl.slice(0, 20) +
@@ -609,7 +620,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="w-full bg-[#657ED4] hover:bg-[#424c70] text-white border-none dark:bg-[#657ED4] dark:hover:bg-[#424c70] dark:text-white"
+                                                    className="w-full bg-[#657ED4] hover:bg-[#424c70] text-white border-none dark:bg-[#657ED4] dark:hover:bg-[#424c70] dark:text-white cursor-pointer"
                                                     onClick={() => handleViewDetails(lesson._id)}
                                                 >
                                                     <Eye className="h-4 w-4 mr-2" />
@@ -627,12 +638,12 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                 <PaginationItem>
                                                     <PaginationPrevious
                                                         onClick={() =>
-                                                            setCurrentPage((prev) => prev - 1)
+                                                            handlePageChange(currentPage - 1)
                                                         }
                                                         className={
                                                             currentPage === 1
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer text-[#657ED4] hover:text-[#424c70]'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
                                                         }
                                                         aria-disabled={currentPage === 1}
                                                     />
@@ -644,12 +655,12 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                 ).map((page) => (
                                                     <PaginationItem key={page}>
                                                         <PaginationLink
-                                                            onClick={() => setCurrentPage(page)}
+                                                            onClick={() => handlePageChange(page)}
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] text-white hover:bg-[#424c70]'
-                                                                    : 'cursor-pointer text-[#657ED4] hover:text-[#424c70]'
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] cursor-pointer'
+                                                                    : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
                                                             }
                                                         >
                                                             {page}
@@ -660,12 +671,12 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                 <PaginationItem>
                                                     <PaginationNext
                                                         onClick={() =>
-                                                            setCurrentPage((prev) => prev + 1)
+                                                            handlePageChange(currentPage + 1)
                                                         }
                                                         className={
                                                             currentPage === totalPages
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer text-[#657ED4] hover:text-[#424c70]'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700'
                                                         }
                                                         aria-disabled={currentPage === totalPages}
                                                     />

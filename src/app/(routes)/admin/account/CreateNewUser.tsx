@@ -52,14 +52,16 @@ export default function CreateNewUser({
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Overlay with blur effect */}
             <div
-                className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm cursor-pointer"
                 onClick={onClose}
             />
 
             {/* Form Card */}
             <Card className="w-[500px] bg-gray-200 dark:bg-gray-800 dark:text-white relative z-10 gap-10 pointer-events-auto rounded-lg shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-xl font-bold">Create Account</CardTitle>
+                    <CardTitle className="text-xl font-bold cursor-default">
+                        Create Account
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -70,11 +72,11 @@ export default function CreateNewUser({
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
+                                        <FormLabel className="cursor-default">Full Name</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Enter full name"
-                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 cursor-text"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -89,12 +91,12 @@ export default function CreateNewUser({
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel className="cursor-default">Email</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Enter email"
                                                 type="email"
-                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                                                className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 cursor-text"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -109,19 +111,19 @@ export default function CreateNewUser({
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
+                                        <FormLabel className="cursor-default">Password</FormLabel>
                                         <FormControl>
                                             <div className="relative">
                                                 <Input
                                                     type={showPassword ? 'text' : 'password'}
                                                     placeholder="Enter password"
-                                                    className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+                                                    className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 cursor-text"
                                                     {...field}
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword((prev) => !prev)}
-                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-400"
+                                                    className="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-400 cursor-pointer"
                                                     tabIndex={-1}
                                                 >
                                                     {showPassword ? (
@@ -143,31 +145,31 @@ export default function CreateNewUser({
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Role</FormLabel>
+                                        <FormLabel className="cursor-default">Role</FormLabel>
                                         <FormControl>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                             >
-                                                <SelectTrigger className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 rounded-lg">
+                                                <SelectTrigger className="bg-gray-100 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 rounded-lg cursor-pointer">
                                                     <SelectValue placeholder="Select a role" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-white dark:bg-gray-800 dark:text-white shadow-lg rounded-lg">
                                                     <SelectItem
                                                         value="mentor"
-                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer"
                                                     >
                                                         Mentor
                                                     </SelectItem>
                                                     <SelectItem
                                                         value="customer"
-                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer"
                                                     >
                                                         Customer
                                                     </SelectItem>
                                                     <SelectItem
                                                         value="qaqc"
-                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700"
+                                                        className="hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer"
                                                     >
                                                         QAQC
                                                     </SelectItem>
@@ -184,14 +186,14 @@ export default function CreateNewUser({
                                 <Button
                                     variant="outline"
                                     type="button"
-                                    className="bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
+                                    className="bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"
                                     onClick={onClose}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="bg-blue-500 dark:bg-blue-700 text-white hover:bg-blue-600 dark:hover:bg-blue-600"
+                                    className="bg-blue-500 dark:bg-blue-700 text-white hover:bg-blue-600 dark:hover:bg-blue-600 cursor-pointer"
                                 >
                                     Create
                                 </Button>

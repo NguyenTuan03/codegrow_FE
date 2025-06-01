@@ -164,7 +164,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                             </div>
                                         </div>
                                         <Link href={`/customer/courses/${course._id}`}>
-                                            <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 text-xs transition-all duration-200 shadow-sm">
+                                            <Button className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 text-xs transition-all duration-200 shadow-sm">
                                                 {progress === 0
                                                     ? 'Start Course'
                                                     : 'Continue Course'}

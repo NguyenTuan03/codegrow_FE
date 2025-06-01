@@ -46,36 +46,36 @@ const MarksAttendance: React.FC<MarksAttendanceProps> = ({ students }) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-                <Award className="w-6 h-6 text-[#5AD3AF]" />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3 cursor-default">
+                <Award className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Grades & Attendance
             </h2>
             <div className="space-y-6">
                 {gradesAttendance.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-base">
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-xl font-medium cursor-default">
                         No grades or attendance data available.
                     </p>
                 ) : (
                     gradesAttendance.map((record, index) => (
                         <div
                             key={record.studentId}
-                            className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-md animate-fade-in"
+                            className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-md animate-fade-in cursor-default"
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                    <p className="font-semibold text-xl text-gray-900 dark:text-gray-100 cursor-default">
                                         {record.fullName}
                                     </p>
                                     <div className="mt-2 flex items-center gap-3">
-                                        <Award className="w-4 h-4 text-[#5AD3AF]" />
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <Award className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                        <p className="text-base text-gray-600 dark:text-gray-400 font-medium cursor-default">
                                             Grade: {record.grade}
                                         </p>
                                     </div>
                                     <div className="mt-1 flex items-center gap-3">
-                                        <Calendar className="w-4 h-4 text-[#5AD3AF]" />
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <Calendar className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                        <p className="text-base text-gray-600 dark:text-gray-400 font-medium cursor-default">
                                             Attendance: {record.attendance}
                                         </p>
                                     </div>

@@ -63,7 +63,7 @@ const Assignments: React.FC<AssignmentsProps> = ({ classId }) => {
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-3">
-                <FileText className="w-6 h-6 text-[#5AD3AF]" />
+                <FileText className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                 Assignments
             </h2>
             <div className="space-y-6">
@@ -80,10 +80,10 @@ const Assignments: React.FC<AssignmentsProps> = ({ classId }) => {
                         >
                             <div className="flex items-start justify-between mb-3">
                                 <div>
-                                    <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                    <p className="font-semibold text-xl text-gray-900 dark:text-gray-100">
                                         {assignment.postedBy}
                                     </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <p className="text-base text-gray-500 dark:text-gray-400 mt-1">
                                         Posted a new assignment: {assignment.title}
                                     </p>
                                     <p className="text-gray-700 dark:text-gray-300 mt-2 text-base">
@@ -94,14 +94,14 @@ const Assignments: React.FC<AssignmentsProps> = ({ classId }) => {
                             <div className="flex items-center justify-between flex-wrap gap-3">
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="w-4 h-4 text-[#5AD3AF]" />
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <Calendar className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                        <p className="text-base text-gray-600 dark:text-gray-400">
                                             Posted on: {assignment.date}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="w-4 h-4 text-[#5AD3AF]" />
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <Calendar className="w-4 h-4 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                        <p className="text-base text-gray-600 dark:text-gray-400">
                                             Due by: {assignment.dueDate}
                                         </p>
                                     </div>
@@ -111,13 +111,13 @@ const Assignments: React.FC<AssignmentsProps> = ({ classId }) => {
                                         href={assignment.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-blue-500 dark:text-blue-400 hover:underline text-sm flex items-center"
+                                        className="text-blue-500 dark:text-blue-400 hover:underline text-base flex items-center"
                                     >
                                         View Assignment
                                     </a>
                                     <Button
                                         onClick={() => handleTakeAssignment(assignment.id)}
-                                        className="bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white rounded-lg px-4 py-1 text-sm transition-colors duration-200"
+                                        className="bg-[#657ED4] dark:bg-[#5AD3AF] rounded-lg hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]  text-white px-4 py-1 text-sm transition-colors duration-200"
                                     >
                                         Take Assignment
                                     </Button>

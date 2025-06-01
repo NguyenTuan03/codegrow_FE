@@ -28,6 +28,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
+import { alternativePayment } from '@/lib/services/api/alternativePayment';
+
 interface Category {
     _id: string;
     name: string;
@@ -57,12 +60,11 @@ interface Course {
     price: number;
     enrolledCount: number;
     author: string;
-
     category: string | Category;
     createdAt: string;
     lessons: number;
-    rating?: number; // Will be updated with average rating from comments
-    image?: string;
+    rating?: number;
+    imgUrl?: string;
 }
 
 interface ApiResponse {
@@ -91,7 +93,11 @@ export default function CoursesPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortOption, setSortOption] = useState('default');
-    const limit = 8;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [enrolledCourses, setEnrolledCourses] = useState<{ _id: string }[]>([]);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const limit = 6;
     const router = useRouter();
 
     const fetchCategories = async () => {
@@ -121,13 +127,37 @@ export default function CoursesPage() {
                 .filter((comment) => comment.rating !== undefined)
                 .map((comment) => comment.rating as number);
 
-            if (ratings.length === 0) return 0; // No ratings available
+            if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-            return Number(avgRating.toFixed(1)); // Round to 1 decimal place
+            return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
-            return 0; // Default to 0 if fetching fails
+            return 0;
+        }
+    };
+
+    const fetchEnrolledCourses = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log('User is not authenticated');
+            return;
+        }
+
+        try {
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                console.log('User ID not found in localStorage');
+                return;
+            }
+            const user = JSON.parse(userId);
+            const res = await getUserDetail(user.id);
+            console.log('User detail response:', res);
+            if (res.status === 200) {
+                setEnrolledCourses(res.metadata.enrolledCourses || []);
+            }
+        } catch (error) {
+            console.error('Error fetching enrolled courses:', error);
         }
     };
 
@@ -135,7 +165,7 @@ export default function CoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-            console.log('Data from GetCourses:', data);
+            console.log('Data from GetCourses:', JSON.stringify(data, null, 2));
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -144,15 +174,13 @@ export default function CoursesPage() {
                             categoryObj = course.category as Category;
                         }
 
-                        // Fetch average rating from comments
                         const avgRating = await fetchCommentsAndCalculateRatings(course._id);
                         console.log('Average rating:', avgRating);
 
                         return {
                             ...course,
                             category: categoryObj || { _id: '', name: 'Uncategorized' },
-                            rating: avgRating || 4.5, // Fallback to 4.5 if no rating
-                            image: `/course-${Math.floor(Math.random() * 5) + 1}.jpg`, // Placeholder image
+                            rating: avgRating || 4.5,
                         };
                     }),
                 );
@@ -182,20 +210,18 @@ export default function CoursesPage() {
 
     useEffect(() => {
         fetchCategories();
+        fetchEnrolledCourses();
     }, []);
 
     useEffect(() => {
         if (categories.length > 0) {
             fetchCourses(currentPage);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, categories]);
 
-    // Filter and sort courses based on search, category, and sort option
     useEffect(() => {
         let filtered = [...courses];
 
-        // Filter by search query
         if (searchQuery) {
             filtered = filtered.filter(
                 (course) =>
@@ -204,7 +230,6 @@ export default function CoursesPage() {
             );
         }
 
-        // Filter by category
         if (selectedCategory !== 'all') {
             filtered = filtered.filter((course) =>
                 typeof course.category === 'object'
@@ -213,7 +238,6 @@ export default function CoursesPage() {
             );
         }
 
-        // Sort courses
         if (sortOption === 'price-asc') {
             filtered.sort((a, b) => a.price - b.price);
         } else if (sortOption === 'price-desc') {
@@ -228,9 +252,59 @@ export default function CoursesPage() {
     }, [searchQuery, selectedCategory, sortOption, courses]);
 
     const handlePageChange = (page: number) => {
+        console.log(
+            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
+        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const openModal = (course: Course) => {
+        setSelectedCourse(course);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedCourse(null);
+    };
+
+    const handleAlternativePayment = async (paymentMethod: string) => {
+        if (!selectedCourse) return;
+        try {
+            setPaymentLoading(true);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication token is missing');
+            }
+            const res = await alternativePayment({
+                token,
+                paymentMethod,
+                course: selectedCourse,
+            });
+            const { payUrl } = res.data.metadata;
+
+            if (payUrl) {
+                window.location.href = payUrl;
+            } else {
+                console.error('Không lấy được đường link thanh toán.');
+                toast({
+                    title: 'Error',
+                    description: 'Không lấy được đường link thanh toán.',
+                    variant: 'destructive',
+                });
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to process payment. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setPaymentLoading(false);
         }
     };
 
@@ -238,14 +312,16 @@ export default function CoursesPage() {
         <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
-                <div className="mb-10">
-                    <h1 className="text-4xl mb-5 font-bold  tracking-tight text-[#657ED4] dark:[#5AD3AF]">
-                        Discover Amazing Courses
-                    </h1>
-                    <p className="mt-3 text-xl  text-gray-600 dark:text-gray-300">
-                        Learn from the best instructors and enhance your skills with our curated
-                        courses.
-                    </p>
+                <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:[#5AD3AF]">
+                            Discover Amazing Courses
+                        </h1>
+                        <p className="mt-3 text-xl text-gray-600 dark:text-gray-300">
+                            Learn from the best instructors and enhance your skills with our curated
+                            courses.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Search and Filter Section */}
@@ -369,51 +445,57 @@ export default function CoursesPage() {
                             </div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                                     {filteredCourses.map((course) => (
                                         <Card
                                             key={course._id}
                                             className="group hover:shadow-md transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
                                         >
-                                            <div className="relative h-48 overflow-hidden">
-                                                {/* <img
-                                                    src={course.image || '/course-placeholder.jpg'}
-                                                    alt={course.title}
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                /> */}
-                                                <Badge className="absolute top-3 left-3 bg-white-200 text-black dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
-                                                    {' '}
+                                            <div
+                                                className="relative h-70 w-full overflow-hidden"
+                                                style={{
+                                                    backgroundImage: course.imgUrl
+                                                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
+                                                        : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                    backgroundColor: course.imgUrl
+                                                        ? 'transparent'
+                                                        : '#657ED4',
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                }}
+                                            >
+                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
                                                     {typeof course.category === 'object'
                                                         ? course.category.name
                                                         : 'Uncategorized'}
                                                 </Badge>
                                             </div>
                                             <CardHeader className="p-4 pb-2">
-                                                <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-17">
+                                                <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-10">
                                                     {course.title}
                                                 </h4>
-                                                <p className="text-xs md:text-base text-gray-500 dark:text-gray-400">
+                                                <p className="text-xl  text-gray-500 dark:text-gray-400">
                                                     by {course.author}
                                                 </p>
                                             </CardHeader>
-                                            <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[120px]">
-                                                <p className="text-xs md:text-base font-normal text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 h-15">
+                                            <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
+                                                {/* <p className="text-xs md:text-base font-normal text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 h-15">
                                                     {course.description.length > 50
                                                         ? course.description.slice(0, 50) + '...'
                                                         : course.description}
-                                                </p>
+                                                </p> */}
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-base md:text-base">
+                                                    <span className="font-bold text-xl ">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-xs md:text-base font-medium text-gray-700 dark:text-gray-300">
+                                                        <span className="text-xl md:text-xl font-medium text-gray-700 dark:text-gray-300">
                                                             {course.rating?.toFixed(1) || 'N/A'}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="mt-auto flex items-center justify-between text-xs md:text-base text-gray-500 dark:text-gray-400">
+                                                {/* <div className="mt-auto flex items-center justify-between text-xl md:text-xl text-gray-500 dark:text-gray-400">
                                                     <div className="flex items-center">
                                                         <Users className="h-4 w-4 mr-1" />
                                                         <span>{course.enrolledCount} learners</span>
@@ -422,19 +504,14 @@ export default function CoursesPage() {
                                                         <BookOpen className="h-4 w-4 mr-1" />
                                                         <span>{course.lessons} lessons</span>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </CardContent>
                                             <CardFooter className="p-4 pt-0">
                                                 <Button
                                                     variant="default"
                                                     size="lg"
-                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        router.push(
-                                                            `/customer/courses/${course._id}`,
-                                                        );
-                                                    }}
+                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md cursor-pointer"
+                                                    onClick={() => openModal(course)}
                                                 >
                                                     Enroll Now
                                                 </Button>
@@ -442,6 +519,170 @@ export default function CoursesPage() {
                                         </Card>
                                     ))}
                                 </div>
+
+                                {/* Modal for Course Details */}
+                                {isModalOpen && selectedCourse && (
+                                    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-transparent">
+                                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl   mx-4 p-8 relative">
+                                            <button
+                                                onClick={closeModal}
+                                                className="absolute cursor-pointer top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-6 w-6"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                    strokeWidth={2}
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <div className="flex flex-col items-center space-y-6">
+                                                <div
+                                                    className="relative h-100 w-full overflow-hidden rounded-t-xl mb-4"
+                                                    style={{
+                                                        backgroundImage: selectedCourse.imgUrl
+                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedCourse.imgUrl})`
+                                                            : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                        backgroundColor: selectedCourse.imgUrl
+                                                            ? 'transparent'
+                                                            : '#657ED4',
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                    }}
+                                                />
+                                                <h3 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default">
+                                                    {selectedCourse.title}
+                                                </h3>
+                                                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xl text-gray-600 dark:text-gray-300">
+                                                    <div className="flex items-center gap-2">
+                                                        <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                        <span>
+                                                            {selectedCourse.enrolledCount} students
+                                                            enrolled
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                        <span>
+                                                            Author:{' '}
+                                                            {selectedCourse.author || 'Unknown'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span>
+                                                            Category:{' '}
+                                                            {typeof selectedCourse.category ===
+                                                            'object'
+                                                                ? selectedCourse.category.name
+                                                                : 'Uncategorized'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed  mb-4 cursor-default">
+                                                    {selectedCourse.description}
+                                                </p>
+                                                <div className="flex items-center justify-between w-full mb-4">
+                                                    <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                                        ${selectedCourse.price.toFixed(2)}
+                                                    </span>
+                                                    <div className="flex items-center space-x-1">
+                                                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                                                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                                                            {selectedCourse.rating?.toFixed(1) ||
+                                                                'N/A'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between w-full mb-4 text-gray-500 dark:text-gray-400">
+                                                    <div className="flex items-center">
+                                                        <Users className="h-5 w-5 mr-1" />
+                                                        <span>
+                                                            {selectedCourse.enrolledCount} learners
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center">
+                                                        <BookOpen className="h-5 w-5 mr-1" />
+                                                        <span>
+                                                            {selectedCourse.lessons} lessons
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col sm:flex-row gap-3 w-full">
+                                                    {enrolledCourses.some(
+                                                        (enrolledCourse) =>
+                                                            enrolledCourse._id ===
+                                                            selectedCourse._id,
+                                                    ) ? (
+                                                        <Button
+                                                            variant="default"
+                                                            className="w-full  bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                                            onClick={() =>
+                                                                router.push(
+                                                                    `/customer/courses/${selectedCourse._id}`,
+                                                                )
+                                                            }
+                                                        >
+                                                            View Details
+                                                        </Button>
+                                                    ) : (
+                                                        <>
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleAlternativePayment('momo')
+                                                                }
+                                                                disabled={paymentLoading}
+                                                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                                                    paymentLoading
+                                                                        ? 'opacity-50 cursor-not-allowed'
+                                                                        : ''
+                                                                }`}
+                                                            >
+                                                                <img
+                                                                    src="/momoo.webp"
+                                                                    alt="MoMo"
+                                                                    className="h-6 w-6"
+                                                                />
+                                                                {paymentLoading
+                                                                    ? 'Đang xử lý...'
+                                                                    : 'Thanh toán MoMo'}
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() =>
+                                                                    handleAlternativePayment(
+                                                                        'vnpay',
+                                                                    )
+                                                                }
+                                                                disabled={paymentLoading}
+                                                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                                                    paymentLoading
+                                                                        ? 'opacity-50 cursor-not-allowed'
+                                                                        : ''
+                                                                }`}
+                                                            >
+                                                                <img
+                                                                    src="/vnpay.png"
+                                                                    alt="VNPay"
+                                                                    className="h-6 w-6"
+                                                                />
+                                                                {paymentLoading
+                                                                    ? 'Đang xử lý...'
+                                                                    : 'Thanh toán VNPay'}
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Pagination */}
                                 {totalPages > 1 && (
@@ -455,8 +696,8 @@ export default function CoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === 1
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                         }
                                                     />
                                                 </PaginationItem>
@@ -470,8 +711,8 @@ export default function CoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] rounded-full underline underline-offset-4'
-                                                                    : 'cursor-pointer text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-full'
+                                                                    ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
+                                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                             }
                                                         >
                                                             {page}
@@ -485,8 +726,8 @@ export default function CoursesPage() {
                                                         }
                                                         className={
                                                             currentPage === totalPages
-                                                                ? 'pointer-events-none opacity-50'
-                                                                : 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full'
+                                                                ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                         }
                                                     />
                                                 </PaginationItem>

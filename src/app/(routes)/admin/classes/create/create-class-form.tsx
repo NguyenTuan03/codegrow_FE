@@ -17,7 +17,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CreateClassBody } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
-import { CalendarIcon, ClockIcon, Link2Icon, UsersIcon } from 'lucide-react';
+import { CalendarIcon, ClockIcon, Link2Icon, UsersIcon, ImageIcon } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -30,10 +30,6 @@ import { CreateClass } from '@/lib/services/class/createclass';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { Skeleton } from '@/components/ui/skeleton';
 import { z } from 'zod';
-
-// Define a schema for the form that excludes the token field
-const CreateClassFormBody = CreateClassBody.omit({ token: true });
-type CreateClassFormBodyType = z.infer<typeof CreateClassFormBody>;
 
 interface Course {
     _id: string;
@@ -51,9 +47,14 @@ const daysOfWeekOptions = [
     { value: 'Sunday', label: 'Sunday' },
 ];
 
+const CreateClassFormBody = CreateClassBody.omit({ token: true, imgUrl: true });
+type CreateClassFormBodyType = z.infer<typeof CreateClassFormBody>;
+
 export default function CreateClassForm() {
     const [loading, setLoading] = useState(false);
     const [courseLoading, setCourseLoading] = useState(true);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [imgUrl, setImgUrl] = useState<File | undefined>(undefined);
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
 
@@ -73,20 +74,7 @@ export default function CreateClassForm() {
             linkMeet: '',
         },
     });
-    // const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
-    //         if (event.target && event.target.files && event.target.files[0]) {
-    //             const file = event.target.files[0];
-    //             const fileName = file.name;
-    //             const fileUrl = await uploadFile(fileName, file);
-
-    //             setPetData(prevData => ({
-    //                 ...prevData,
-    //                 petPhoto: fileUrl,
-    //             }));
-    //             setPreviewImage(fileUrl)
-    //         }
-    //     };
     const fetchCourse = async () => {
         try {
             setCourseLoading(true);
@@ -105,6 +93,7 @@ export default function CreateClassForm() {
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to fetch courses',
                 variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
             setCourses([]);
         } finally {
@@ -116,7 +105,55 @@ export default function CreateClassForm() {
         fetchCourse();
     }, []);
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                toast({
+                    title: '❌ Invalid File Type',
+                    description: 'Please upload an image file (JPEG, PNG, or GIF).',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                toast({
+                    title: '❌ File Too Large',
+                    description: 'Please upload an image smaller than 5MB.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            setImgUrl(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImgUrl(undefined);
+            setPreviewImage(null);
+        }
+    };
+
     const handleSubmit = async (data: CreateClassFormBodyType) => {
+        // Validate daysOfWeek before submission
+        if (!data.schedule.daysOfWeek || data.schedule.daysOfWeek.length === 0) {
+            toast({
+                title: 'Error',
+                description: 'Please select at least one day of the week for the class schedule.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+            return;
+        }
+
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
@@ -137,452 +174,489 @@ export default function CreateClassForm() {
                 endDate: data.schedule.endDate ? new Date(data.schedule.endDate).toISOString() : '',
             };
 
-            const payload = {
+            const result = await CreateClass(
                 token,
-                title: data.title,
-                courseId: data.courseId,
-                description: data.description || '',
-                maxStudents: data.maxStudents,
-                schedule: formattedSchedule,
-                linkMeet: data.linkMeet,
-            };
+                data.title,
+                data.courseId,
+                data.description || '',
+                data.maxStudents,
+                formattedSchedule,
+                data.linkMeet,
+                imgUrl,
+            );
 
-            console.log('Payload being sent to CreateClass:', payload);
-
-            const response = await CreateClass(payload);
-            console.log('Response from CreateClass:', response);
+            console.log('CreateClass Response:', result);
             toast({
-                description: 'Create Classes successful!',
-                className: 'bg-[#5AD3AF] text-black',
+                description: 'Class created successfully!',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
                 duration: 1000,
             });
 
             router.push('/admin/classes');
             router.refresh();
-        } catch (error: unknown) {
+        } catch (error) {
             console.error('Detailed error creating class:', {
                 error,
-                message: error instanceof Error ? error.message : 'Unknown error',
-                stack: error instanceof Error ? error.stack : undefined,
-            });
-
-            toast({
-                title: 'Error',
-                className: 'bg-[#F76F8E] text-black',
-                description: error instanceof Error ? error.message : 'An unknown error occurred',
-                variant: 'destructive',
             });
         } finally {
             setLoading(false);
         }
     };
+
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <Card className="border-0 shadow-lg">
-                <CardHeader className="border-b p-6">
-                    <CardTitle className="text-2xl font-bold text-gray-800">
-                        Create New Class
-                    </CardTitle>
-                    <p className="text-gray-600">Fill in the details below to create a new class</p>
-                </CardHeader>
-
-                <CardContent className="p-6">
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-                                console.log(
-                                    'Form validation errors:',
-                                    JSON.stringify(errors, null, 2),
-                                );
-                            })}
-                            className="space-y-6"
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 p-6">
+            {loading || courseLoading ? (
+                <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#657ED4] dark:border-[#5AD3AF] border-solid"></div>
+                    <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">
+                        Loading form data...
+                    </p>
+                </div>
+            ) : (
+                <div className="max-w-4xl mx-auto">
+                    <Card className="border-0 shadow-lg bg-white dark:bg-gray-800 rounded-2xl transform transition-all duration-300 hover:shadow-xl">
+                        <CardHeader
+                            className="border-b border-gray-200 dark:border-gray-700 p-6 relative overflow-hidden"
+                            style={{
+                                backgroundImage: previewImage
+                                    ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${previewImage})`
+                                    : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                backgroundColor: previewImage ? 'transparent' : '#657ED4',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                color: 'white',
+                                minHeight: '150px',
+                            }}
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Title */}
-                                <FormField
-                                    control={form.control}
-                                    name="title"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                Class Title*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Advanced Web Development"
-                                                    className="focus-visible:ring-2 focus-visible:ring-primary"
-                                                    required
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <div className="relative z-10">
+                                <CardTitle className="text-2xl font-bold text-white">
+                                    Create New Class
+                                </CardTitle>
 
-                                {/* Course ID */}
-                                <FormField
-                                    control={form.control}
-                                    name="courseId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                Course*
-                                            </FormLabel>
-                                            {courseLoading ? (
-                                                <Skeleton className="h-10 w-full" />
-                                            ) : (
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    defaultValue={field.value}
-                                                    value={field.value}
-                                                    required
-                                                >
+                                <p className="text-white mt-2 font-medium">
+                                    Fill in the details below to create a new class
+                                </p>
+                            </div>
+                        </CardHeader>
+
+                        <CardContent className="p-6">
+                            <Form {...form}>
+                                <form
+                                    onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+                                        console.log(
+                                            'Form validation errors:',
+                                            JSON.stringify(errors, null, 2),
+                                        );
+                                    })}
+                                    className="space-y-6"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Title */}
+                                        <FormField
+                                            control={form.control}
+                                            name="title"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                        Class Title*
+                                                    </FormLabel>
                                                     <FormControl>
-                                                        <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-primary">
-                                                            <SelectValue placeholder="Select a course" />
-                                                        </SelectTrigger>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Advanced Web Development"
+                                                            className="focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                            required
+                                                        />
                                                     </FormControl>
-                                                    <SelectContent className="bg-white dark:bg-gray-800">
-                                                        {courses.map((course) => (
-                                                            <SelectItem
-                                                                key={course._id}
-                                                                value={course._id}
-                                                            >
-                                                                {course.title}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                </FormItem>
                                             )}
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                                        />
 
-                            {/* Description */}
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
-                                            Description
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                placeholder="Describe the class content and objectives"
-                                                rows={3}
-                                                className="focus-visible:ring-2 focus-visible:ring-primary"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        <p className="text-sm text-gray-500">
-                                            Maximum 500 characters
-                                        </p>
-                                    </FormItem>
-                                )}
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Max Students */}
-                                <FormField
-                                    control={form.control}
-                                    name="maxStudents"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                Maximum Students*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                    <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={(e) => {
-                                                            const value = parseInt(e.target.value);
-                                                            field.onChange(
-                                                                isNaN(value) || value < 1
-                                                                    ? 1
-                                                                    : value > 30
-                                                                      ? 30
-                                                                      : value,
-                                                            );
-                                                        }}
-                                                        className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
-                                                        min="1"
-                                                        max="30"
-                                                        required
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                            <p className="text-sm text-gray-500">
-                                                Must be between 1 and 30
-                                            </p>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                {/* Time */}
-                                <FormField
-                                    control={form.control}
-                                    name="schedule.time"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                Class Time*
-                                            </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                value={field.value}
-                                                required
-                                            >
-                                                <FormControl>
-                                                    <div className="relative">
-                                                        <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                        <SelectTrigger className="pl-10 focus-visible:ring-2 focus-visible:ring-primary">
-                                                            <SelectValue placeholder="Select a time slot" />
-                                                        </SelectTrigger>
-                                                    </div>
-                                                </FormControl>
-                                                <SelectContent className="bg-white dark:bg-gray-800">
-                                                    {[
-                                                        {
-                                                            value: '07:00-09:00',
-                                                            label: '7:00 - 9:00',
-                                                        },
-                                                        {
-                                                            value: '09:00-11:00',
-                                                            label: '9:00 - 11:00',
-                                                        },
-                                                        {
-                                                            value: '11:00-13:00',
-                                                            label: '11:00 - 13:00',
-                                                        },
-                                                        {
-                                                            value: '13:00-15:00',
-                                                            label: '13:00 - 15:00',
-                                                        },
-                                                        {
-                                                            value: '15:00-17:00',
-                                                            label: '15:00 - 17:00',
-                                                        },
-                                                        {
-                                                            value: '17:00-19:00',
-                                                            label: '17:00 - 19:00',
-                                                        },
-                                                        {
-                                                            value: '19:00-21:00',
-                                                            label: '19:00 - 21:00',
-                                                        },
-                                                    ].map((timeSlot) => (
-                                                        <SelectItem
-                                                            key={timeSlot.value}
-                                                            value={timeSlot.value}
+                                        {/* Course ID */}
+                                        <FormField
+                                            control={form.control}
+                                            name="courseId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                        Course*
+                                                    </FormLabel>
+                                                    {courseLoading ? (
+                                                        <Skeleton className="h-10 w-full rounded-lg" />
+                                                    ) : (
+                                                        <Select
+                                                            onValueChange={field.onChange}
+                                                            defaultValue={field.value}
+                                                            value={field.value}
+                                                            required
                                                         >
-                                                            <span className="font-medium">
-                                                                {timeSlot.label}
-                                                            </span>
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                                                            <FormControl>
+                                                                <SelectTrigger className="focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
+                                                                    <SelectValue placeholder="Select a course" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                                                                {courses.map((course) => (
+                                                                    <SelectItem
+                                                                        key={course._id}
+                                                                        value={course._id}
+                                                                        className="hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
+                                                                    >
+                                                                        {course.title}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                            {/* Schedule Dates */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormField
-                                    control={form.control}
-                                    name="schedule.startDate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                Start Date*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                    <Input
-                                                        type="date"
+                                    {/* Description */}
+                                    <FormField
+                                        control={form.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    Description
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Textarea
                                                         {...field}
-                                                        className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
-                                                        required
+                                                        placeholder="Describe the class content and objectives"
+                                                        rows={3}
+                                                        className="focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                     />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                                </FormControl>
+                                                <FormMessage className="text-red-500 font-medium" />
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                                    Maximum 500 characters
+                                                </p>
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                <FormField
-                                    control={form.control}
-                                    name="schedule.endDate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-gray-700 font-medium">
-                                                End Date*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                    <Input
-                                                        type="date"
-                                                        {...field}
-                                                        className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
-                                                        required
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            {/* Days of Week */}
-                            <FormField
-                                control={form.control}
-                                name="schedule.daysOfWeek"
-                                render={({ field }) => (
+                                    {/* Image Upload */}
                                     <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
-                                            Class Days*
-                                        </FormLabel>
-                                        <div className="flex flex-wrap gap-2">
-                                            {daysOfWeekOptions.map((day) => (
-                                                <Button
-                                                    key={day.value}
-                                                    type="button"
-                                                    variant={
-                                                        field.value?.includes(day.value)
-                                                            ? 'default'
-                                                            : 'outline'
-                                                    }
-                                                    className={`rounded-full px-4 py-2 transition-all duration-200 ${
-                                                        field.value?.includes(day.value)
-                                                            ? 'bg-amber-200 hover:bg-gray-50 text-gray-700 border-amber-300 hover:border-primary/50'
-                                                            : 'bg-primary hover:bg-primary/90 text-gray-700 shadow-md'
-                                                    }`}
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        const currentDays = field.value || [];
-                                                        const newDays = currentDays.includes(
-                                                            day.value,
-                                                        )
-                                                            ? currentDays.filter(
-                                                                  (d) => d !== day.value,
-                                                              )
-                                                            : [...currentDays, day.value];
-                                                        field.onChange(newDays);
-                                                    }}
-                                                >
-                                                    {day.label}
-                                                </Button>
-                                            ))}
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            {/* Link Meet */}
-                            <FormField
-                                control={form.control}
-                                name="linkMeet"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-gray-700 font-medium">
-                                            Meeting Link*
+                                        <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                            Header Background Image
                                         </FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Link2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <ImageIcon className="absolute left-3 top-1/2 cursor-pointer transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                 <Input
-                                                    {...field}
-                                                    placeholder="https://meet.google.com/abc-xyz"
-                                                    className="pl-10 focus-visible:ring-2 focus-visible:ring-primary"
-                                                    required
+                                                    type="file"
+                                                    accept="image/jpeg,image/png,image/gif"
+                                                    onChange={handleImageUpload}
+                                                    className="pl-10 focus:ring-2 cursor-pointer focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                    disabled={loading}
                                                 />
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
-                                        <p className="text-sm text-gray-500">
-                                            Enter a valid meeting link (e.g., Google Meet, Zoom)
+                                        <FormMessage className="text-red-500 font-medium" />
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                            Upload an image to use as the header background (JPEG,
+                                            PNG, or GIF, max 5MB).
                                         </p>
                                     </FormItem>
-                                    //                          <div className="flex flex-col mb-4">
-                                    //     <div className="mb-4">
-                                    //         <label className="form-label label-upload cursor-pointer inline-flex items-center" htmlFor="label-upload">
-                                    //             <FcPlus className="mr-2" /> Ảnh thú cưng
-                                    //         </label>
-                                    //         <input type="file" hidden id="label-upload" onChange={(event) => handleUpload(event)} />
-                                    //     </div>
-                                    //     <div className="flex justify-center items-center">
-                                    //         {previewImage ? (
-                                    //             <img src={previewImage} alt="Preview" className="max-w-full h-auto" />
-                                    //         ) : (
-                                    //             <span>Ảnh thú cưng</span>
-                                    //         )}
-                                    //     </div>
-                                    // </div>
-                                )}
-                            />
-                            <div className="flex justify-end gap-4 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => router.back()}
-                                    className="px-6"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="px-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
-                                    disabled={loading || courseLoading}
-                                >
-                                    {loading ? (
-                                        <span className="flex items-center">
-                                            <svg
-                                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                ></path>
-                                            </svg>
-                                            Creating...
-                                        </span>
-                                    ) : (
-                                        'Create Class'
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Max Students */}
+                                        <FormField
+                                            control={form.control}
+                                            name="maxStudents"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                        Maximum Students*
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <Input
+                                                                type="number"
+                                                                {...field}
+                                                                onChange={(e) => {
+                                                                    const value = parseInt(
+                                                                        e.target.value,
+                                                                    );
+                                                                    field.onChange(
+                                                                        isNaN(value) || value < 1
+                                                                            ? 1
+                                                                            : value > 30
+                                                                              ? 30
+                                                                              : value,
+                                                                    );
+                                                                }}
+                                                                className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                min="1"
+                                                                max="30"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                                        Must be between 1 and 30
+                                                    </p>
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        {/* Time */}
+                                        <FormField
+                                            control={form.control}
+                                            name="schedule.time"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                        Class Time*
+                                                    </FormLabel>
+                                                    <Select
+                                                        onValueChange={field.onChange}
+                                                        defaultValue={field.value}
+                                                        value={field.value}
+                                                        required
+                                                    >
+                                                        <FormControl>
+                                                            <div className="relative">
+                                                                <ClockIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                                <SelectTrigger className="pl-10 focus:ring-2 cursor-pointer focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
+                                                                    <SelectValue placeholder="Select a time slot" />
+                                                                </SelectTrigger>
+                                                            </div>
+                                                        </FormControl>
+                                                        <SelectContent className="bg-white cursor-pointer dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                                                            {[
+                                                                {
+                                                                    value: '07:00-09:00',
+                                                                    label: '7:00 - 9:00',
+                                                                },
+                                                                {
+                                                                    value: '09:00-11:00',
+                                                                    label: '9:00 - 11:00',
+                                                                },
+                                                                {
+                                                                    value: '11:00-13:00',
+                                                                    label: '11:00 - 13:00',
+                                                                },
+                                                                {
+                                                                    value: '13:00-15:00',
+                                                                    label: '13:00 - 15:00',
+                                                                },
+                                                                {
+                                                                    value: '15:00-17:00',
+                                                                    label: '15:00 - 17:00',
+                                                                },
+                                                                {
+                                                                    value: '17:00-19:00',
+                                                                    label: '17:00 - 19:00',
+                                                                },
+                                                                {
+                                                                    value: '19:00-21:00',
+                                                                    label: '19:00 - 21:00',
+                                                                },
+                                                            ].map((timeSlot) => (
+                                                                <SelectItem
+                                                                    key={timeSlot.value}
+                                                                    value={timeSlot.value}
+                                                                    className="hover:bg-[#657ED4] cursor-pointer dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
+                                                                >
+                                                                    {timeSlot.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    {/* Schedule Dates */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <FormField
+                                            control={form.control}
+                                            name="schedule.startDate"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
+                                                        Start Date*
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <CalendarIcon className="absolute cursor-pointer left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <Input
+                                                                type="date"
+                                                                {...field}
+                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="schedule.endDate"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
+                                                        End Date*
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <CalendarIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <Input
+                                                                type="date"
+                                                                {...field}
+                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-medium" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    {/* Days of Week */}
+                                    <FormField
+                                        control={form.control}
+                                        name="schedule.daysOfWeek"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    Class Days*
+                                                </FormLabel>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {daysOfWeekOptions.map((day) => (
+                                                        <Button
+                                                            key={day.value}
+                                                            type="button"
+                                                            variant={
+                                                                field.value?.includes(day.value)
+                                                                    ? 'default'
+                                                                    : 'outline'
+                                                            }
+                                                            className={`rounded-full cursor-pointer px-4 py-2 transition-all duration-200 font-medium ${
+                                                                field.value?.includes(day.value)
+                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white border-[#657ED4] dark:border-[#5AD3AF] hover:border-[#4a5da0] dark:hover:border-[#4ac2a0]'
+                                                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
+                                                            }`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const currentDays =
+                                                                    field.value || [];
+                                                                const newDays =
+                                                                    currentDays.includes(day.value)
+                                                                        ? currentDays.filter(
+                                                                              (d) =>
+                                                                                  d !== day.value,
+                                                                          )
+                                                                        : [
+                                                                              ...currentDays,
+                                                                              day.value,
+                                                                          ];
+                                                                field.onChange(newDays);
+                                                            }}
+                                                        >
+                                                            {day.label}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                                <FormMessage className="text-red-500 font-medium" />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    {/* Link Meet */}
+                                    <FormField
+                                        control={form.control}
+                                        name="linkMeet"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    Meeting Link*
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Link2Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="https://meet.google.com/abc-xyz"
+                                                            className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage className="text-red-500 font-medium" />
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                                    Enter a valid meeting link (e.g., Google Meet,
+                                                    Zoom)
+                                                </p>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="flex justify-end gap-4 pt-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => router.back()}
+                                            className="px-6 cursor-pointer rounded-lg border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 font-medium shadow-md"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            className="px-6 cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]  text-white rounded-lg shadow-md transition-all duration-200 font-medium"
+                                            disabled={loading || courseLoading}
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center">
+                                                    <svg
+                                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        ></circle>
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                        ></path>
+                                                    </svg>
+                                                    Creating...
+                                                </span>
+                                            ) : (
+                                                'Create Class'
+                                            )}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Form>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }

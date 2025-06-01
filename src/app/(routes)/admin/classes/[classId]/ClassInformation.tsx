@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import {
     BookOpen,
     User,
@@ -116,11 +116,17 @@ export default function ClassInfo({
         }
     };
 
+    // Log mentor data for debugging
+    useEffect(() => {
+        console.log('Current formData.mentor:', formData?.mentor);
+        console.log('Available mentors:', JSON.stringify(mentors, null, 2));
+    }, [formData, mentors]);
+
     return (
         <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-lg">
                 <div className="flex items-center gap-3 mb-6">
-                    <BookOpen className="w-6 h-6 text-[#657ED4]" />
+                    <BookOpen className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                         Class Information
                     </h2>
@@ -132,7 +138,7 @@ export default function ClassInfo({
                                 htmlFor="title"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <BookOpen className="w-5 h-5 text-[#657ED4]" />
+                                <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Title
                             </label>
                             <Input
@@ -149,7 +155,7 @@ export default function ClassInfo({
                                 htmlFor="course"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <BookOpen className="w-5 h-5 text-[#5AD3AF]" />
+                                <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Course
                             </label>
                             <select
@@ -193,7 +199,7 @@ export default function ClassInfo({
                                 htmlFor="mentor"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <User className="w-5 h-5 text-[#5AD3AF]" />
+                                <User className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Mentor
                             </label>
                             <select
@@ -209,6 +215,7 @@ export default function ClassInfo({
                                             email: '',
                                             role: '',
                                         };
+                                        console.log('Selected mentor:', selectedMentor);
                                         setFormData({ ...formData, mentor: selectedMentor });
                                     }
                                 }}
@@ -229,7 +236,7 @@ export default function ClassInfo({
                                 htmlFor="description"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <FileText className="w-5 h-5 text-[#5AD3AF]" />
+                                <FileText className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Description
                             </label>
                             <Textarea
@@ -246,7 +253,7 @@ export default function ClassInfo({
                                 htmlFor="linkMeet"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <Link2 className="w-5 h-5 text-[#5AD3AF]" />
+                                <Link2 className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Meeting Link
                             </label>
                             <div className="relative">
@@ -260,7 +267,7 @@ export default function ClassInfo({
                                     placeholder="https://meet.google.com/abc-xyz"
                                 />
                             </div>
-                            <p className="text-base text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-base text-gray-500 dark:text-gray-400 mt-1 font-medium">
                                 Enter a valid meeting link (e.g., Google Meet, Zoom)
                             </p>
                         </div>
@@ -269,7 +276,7 @@ export default function ClassInfo({
                                 htmlFor="maxStudents"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <Users className="w-5 h-5 text-[#5AD3AF]" />
+                                <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Max Students
                             </label>
                             <Input
@@ -288,7 +295,7 @@ export default function ClassInfo({
                                 htmlFor="status"
                                 className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                             >
-                                <Award className="w-5 h-5 text-[#5AD3AF]" />
+                                <Award className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                 Status
                             </label>
                             <select
@@ -316,7 +323,7 @@ export default function ClassInfo({
                                     htmlFor="startDate"
                                     className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
-                                    <Calendar className="w-5 h-5 text-[#5AD3AF]" />
+                                    <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     Start Date
                                 </label>
                                 <Input
@@ -332,7 +339,7 @@ export default function ClassInfo({
                                     htmlFor="endDate"
                                     className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
-                                    <Calendar className="w-5 h-5 text-[#5AD3AF]" />
+                                    <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     End Date
                                 </label>
                                 <Input
@@ -348,7 +355,7 @@ export default function ClassInfo({
                                     htmlFor="time"
                                     className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2"
                                 >
-                                    <Clock className="w-5 h-5 text-[#5AD3AF]" />
+                                    <Clock className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                     Class Time
                                 </label>
                                 <Select
@@ -387,7 +394,7 @@ export default function ClassInfo({
                             <div>
                                 <fieldset>
                                     <legend className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-medium mb-2">
-                                        <Calendar className="w-5 h-5 text-[#5AD3AF]" />
+                                        <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
                                         Class Days
                                     </legend>
                                     <div className="flex flex-wrap gap-3">
@@ -408,7 +415,7 @@ export default function ClassInfo({
                                                     onChange={() => handleDayChange(day)}
                                                     className="h-4 w-4 text-[#5AD3AF] focus:ring-[#5AD3AF] border-gray-300 rounded"
                                                 />
-                                                <span>{day}</span>
+                                                <span className="font-medium">{day}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -419,7 +426,7 @@ export default function ClassInfo({
                 ) : (
                     <div className="space-y-6">
                         <div>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
+                            <p className="text-gray-700 dark:text-gray-400 leading-relaxed text-base font-medium">
                                 {classData.description || 'No description available.'}
                             </p>
                         </div>
@@ -430,7 +437,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Description
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.course.description
                                             ? classData.course.description.slice(0, 50) +
                                               (classData.course.description.length > 50
@@ -447,7 +454,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Price
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.course.price
                                             ? `${classData.course.price} VND`
                                             : 'N/A'}
@@ -461,7 +468,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Course Created At
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.course.createdAt
                                             ? new Date(
                                                   classData.course.createdAt,
@@ -477,7 +484,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Mentor
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.mentor.fullName || 'N/A'}
                                     </p>
                                 </div>
@@ -488,7 +495,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Max Students
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.maxStudents || 'N/A'}
                                     </p>
                                 </div>
@@ -499,7 +506,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Status
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.status || 'N/A'}
                                     </p>
                                 </div>
@@ -510,7 +517,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Start Date
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.schedule.startDate
                                             ? new Date(
                                                   classData.schedule.startDate,
@@ -525,7 +532,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         End Date
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.schedule.endDate
                                             ? new Date(
                                                   classData.schedule.endDate,
@@ -540,7 +547,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Class Time
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.schedule.time || 'N/A'}
                                     </p>
                                 </div>
@@ -551,7 +558,7 @@ export default function ClassInfo({
                                     <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                         Class Days
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 text-base">
+                                    <p className="text-gray-600 dark:text-gray-400 text-base font-medium">
                                         {classData.schedule.daysOfWeek?.join(', ') || 'N/A'}
                                     </p>
                                 </div>
@@ -559,7 +566,7 @@ export default function ClassInfo({
                         </div>
                         <div className="mt-6">
                             <Button
-                                className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] hover:bg-[#34574d] dark-bg-[#5AD3AF] dark-hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                                className="w-full cursor-pointer sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-md"
                                 onClick={handleJoinMeeting}
                                 disabled={!classData.linkMeet}
                                 aria-label={

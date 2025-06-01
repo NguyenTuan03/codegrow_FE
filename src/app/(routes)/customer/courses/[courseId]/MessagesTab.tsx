@@ -262,7 +262,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                 </div>
                 <div className="mt-4 flex justify-end">
                     <Button
-                        className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 transition-all duration-200 shadow-sm"
+                        className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-6 py-2 transition-all duration-200 shadow-sm"
                         onClick={() => postMessage(false)}
                         disabled={loading}
                     >

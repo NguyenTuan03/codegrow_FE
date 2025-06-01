@@ -8,26 +8,41 @@ export const UpdateCourse = async (
     price: string,
     author: string,
     category: string,
+    imgUrl?: File,
 ) => {
     try {
-        const response = await httpRequest.put(
-            `/course/${id}`,
-            {
-                title,
-                description,
-                price,
-                author,
-                category,
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('price', price);
+        formData.append('author', author);
+        formData.append('category', category);
+        if (imgUrl) {
+            formData.append('imgUrl', imgUrl);
+        }
+
+        // Log FormData entries for debugging
+        const formDataEntries: { [key: string]: string | { name: string; size: number } } = {};
+        for (const [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                formDataEntries[key] = { name: value.name, size: value.size };
+            } else {
+                formDataEntries[key] = value;
+            }
+        }
+        console.log('FormData Entries:', JSON.stringify(formDataEntries, null, 2));
+
+        const response = await httpRequest.put(`/course/${id}`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
             },
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            },
-        );
+        });
 
         console.log('✅ API Response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('❌ Error from UpdateCourses API:', error);
+        console.error('❌ Error from UpdateCourse API:', error);
         throw error;
     }
 };

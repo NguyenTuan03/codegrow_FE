@@ -66,7 +66,7 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
         <Card className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
             <CardHeader className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-3">
-                    <BookOpen className="w-6 h-6 text-[#5AD3AF]" />
+                    <BookOpen className="w-6 h-6 text-[#657ED4] dark:text-[#5AD3AF]" />
                     Class Information
                 </CardTitle>
             </CardHeader>
@@ -78,9 +78,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="flex items-start gap-3">
-                        <BookOpen className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Course
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -90,9 +90,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Users className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Mentor
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -102,9 +102,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Users className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Max Students
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -115,11 +115,11 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
 
                     <div className="flex items-start gap-3">
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Status
                             </h3>
                             <Badge
-                                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                className={`rounded-full px-3 py-1 text-base font-medium ${
                                     classData.status === 'Active'
                                         ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                                         : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
@@ -131,9 +131,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Start Date
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -152,9 +152,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 End Date
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -173,9 +173,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Clock className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Clock className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Class Time
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -185,9 +185,9 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                     </div>
 
                     <div className="flex items-start gap-3">
-                        <Calendar className="w-5 h-5 text-[#5AD3AF] mt-1" />
+                        <Calendar className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF] mt-1" />
                         <div>
-                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-sm">
+                            <h3 className="font-medium text-gray-700 dark:text-gray-200 text-base">
                                 Class Days
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -198,7 +198,7 @@ export default function ClassInfo({ classData }: ClassInfoProps) {
                 </div>
                 <div className="mt-6">
                     <Button
-                        className="w-full sm:w-auto rounded-lg px-6 py-3 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
+                        className="w-full cursor-pointer sm:w-auto rounded-lg px-6 py-3 bg-[#657ED4] hover:bg-[#34574d] dark-bg-[#5AD3AF] dark-hover:bg-[#4ac2a0] text-white font-medium flex items-center gap-2 transition-all duration-200 shadow-sm"
                         onClick={handleJoinMeeting}
                         aria-label={
                             classData.linkMeet ? 'Join meeting' : 'No meeting link available'
