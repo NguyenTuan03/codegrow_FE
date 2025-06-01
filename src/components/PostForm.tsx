@@ -137,7 +137,7 @@ const PostForm: React.FC = () => {
         }
 
         const user = JSON.parse(userData);
-        console.log(`[Saturday, May 31, 2025, 12:04 PM +07] User data:`, user);
+        console.log(` User data:`, user);
 
         const authorId = user.id;
         if (!authorId) {
@@ -151,7 +151,7 @@ const PostForm: React.FC = () => {
         }
 
         // Log form data for debugging
-        console.log(`[Saturday, May 31, 2025, 12:04 PM +07] Form Data Before Sending:`, {
+        console.log(` Form Data Before Sending:`, {
             title: title.trim(),
             content: content.trim(),
             courseId,
@@ -170,10 +170,7 @@ const PostForm: React.FC = () => {
                 tags: tags.trim() || undefined,
                 attachments: attachment || undefined,
             });
-            console.log(
-                `[Saturday, May 31, 2025, 12:04 PM +07] Post created successfully:`,
-                response,
-            );
+            console.log(`Post created successfully:`, response);
             toast({
                 title: 'Success',
                 description: 'Post created successfully!',

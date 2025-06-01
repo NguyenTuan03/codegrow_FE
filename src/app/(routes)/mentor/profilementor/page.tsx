@@ -25,7 +25,7 @@ export default function ProfileMentor() {
                 console.log(`User detail for ID ${id}:`, userDetail);
                 setProfileData(userDetail.metadata);
             } catch (error) {
-                console.error('❌ Error fetching user details:', error);
+                console.error(' ❌ Error fetching user details:', error);
                 toast({
                     description: 'Failed to retrieve profile. Please try again.',
                     variant: 'destructive',
@@ -39,18 +39,18 @@ export default function ProfileMentor() {
     }, [toast]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
             {loading ? (
                 <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 border-solid"></div>
-                    <p className="mt-4 text-2xl text-indigo-700 font-medium">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 dark:border-indigo-400 border-solid"></div>
+                    <p className="mt-4 text-2xl text-indigo-700 dark:text-indigo-300 font-medium">
                         Loading your mentor profile...
                     </p>
                 </div>
             ) : !profileData ? (
-                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white rounded-lg shadow-md p-8 max-w-md w-full">
+                <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 max-w-md w-full">
                     <svg
-                        className="w-16 h-16 text-red-500 mb-4"
+                        className="w-16 h-16 text-red-500 dark:text-red-400 mb-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -63,18 +63,18 @@ export default function ProfileMentor() {
                             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                     </svg>
-                    <p className="text-gray-700 text-lg font-medium text-center">
+                    <p className="text-gray-700 dark:text-gray-300 text-lg font-medium text-center">
                         Failed to load mentor profile. Please try again later.
                     </p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                        className="mt-6 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
                     >
                         Retry
                     </button>
                 </div>
             ) : (
-                <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+                <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
                     <div className="text-center mb-8">
                         <div className="flex justify-center mb-4">
                             <div className="relative">
@@ -100,7 +100,7 @@ export default function ProfileMentor() {
                         <h1 className="text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF]">
                             Mentor Profile
                         </h1>
-                        <p className="text-xl mt-2">
+                        <p className="text-xl mt-2 text-gray-700 dark:text-gray-300">
                             Showcase your expertise and manage your details
                         </p>
                     </div>

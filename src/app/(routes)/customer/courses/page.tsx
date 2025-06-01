@@ -20,14 +20,6 @@ import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { GetComment } from '@/lib/services/course/getComment';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
 
@@ -130,6 +122,7 @@ export default function CoursesPage() {
             if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+            console.log(`Average rating for course ${courseId}:`, avgRating);
             return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
@@ -175,7 +168,6 @@ export default function CoursesPage() {
                         }
 
                         const avgRating = await fetchCommentsAndCalculateRatings(course._id);
-                        console.log('Average rating:', avgRating);
 
                         return {
                             ...course,
@@ -297,7 +289,7 @@ export default function CoursesPage() {
                 });
             }
         } catch (error) {
-            console.error('Payment error:', error);
+            console.error(' Payment error:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to process payment. Please try again.',
@@ -326,85 +318,51 @@ export default function CoursesPage() {
 
                 {/* Search and Filter Section */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+                    {/* Search Input */}
                     <div className="relative w-full sm:w-1/2 lg:w-1/3">
                         <Input
                             type="text"
                             placeholder="Search courses..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] focus:border-transparent transition-all duration-300 shadow-sm"
+                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
+
+                    {/* Filter and Sort Dropdowns */}
                     <div className="flex items-center gap-4">
+                        {/* Category Filter */}
                         <div className="flex items-center gap-2">
-                            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                <SelectTrigger
-                                    className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
-                                    aria-label="Filter by Category"
-                                >
-                                    <SelectValue placeholder="Filter by Category" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
-                                    <SelectItem
-                                        value="all"
-                                        className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                        All Categories
-                                    </SelectItem>
-                                    {categories.map((category) => (
-                                        <SelectItem
-                                            key={category._id}
-                                            value={category._id}
-                                            className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                        >
-                                            {category.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <Select value={sortOption} onValueChange={setSortOption}>
-                            <SelectTrigger
-                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
-                                aria-label="Sort By"
+                            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300 flex-shrink-0" />
+                            <select
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
+                                aria-label="Filter by Category"
                             >
-                                <SelectValue placeholder="Sort By" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
-                                <SelectItem
-                                    value="default"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Default
-                                </SelectItem>
-                                <SelectItem
-                                    value="price-asc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Price: Low to High
-                                </SelectItem>
-                                <SelectItem
-                                    value="price-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Price: High to Low
-                                </SelectItem>
-                                <SelectItem
-                                    value="rating-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Rating: High to Low
-                                </SelectItem>
-                                <SelectItem
-                                    value="enrolled-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
-                                >
-                                    Popularity
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                                <option value="all">Filter by Category</option>
+                                {categories.map((category) => (
+                                    <option key={category._id} value={category._id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Sort Options */}
+                        <select
+                            value={sortOption}
+                            onChange={(e) => setSortOption(e.target.value)}
+                            className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
+                            aria-label="Sort By"
+                        >
+                            <option value="default">Sort By</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="rating-desc">Rating: High to Low</option>
+                            <option value="enrolled-desc">Popularity</option>
+                        </select>
                     </div>
                 </div>
 
@@ -479,11 +437,6 @@ export default function CoursesPage() {
                                                 </p>
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
-                                                {/* <p className="text-xs md:text-base font-normal text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 h-15">
-                                                    {course.description.length > 50
-                                                        ? course.description.slice(0, 50) + '...'
-                                                        : course.description}
-                                                </p> */}
                                                 <div className="flex items-center justify-between mb-3">
                                                     <span className="font-bold text-xl ">
                                                         ${course.price.toFixed(2)}
@@ -495,16 +448,6 @@ export default function CoursesPage() {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {/* <div className="mt-auto flex items-center justify-between text-xl md:text-xl text-gray-500 dark:text-gray-400">
-                                                    <div className="flex items-center">
-                                                        <Users className="h-4 w-4 mr-1" />
-                                                        <span>{course.enrolledCount} learners</span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <BookOpen className="h-4 w-4 mr-1" />
-                                                        <span>{course.lessons} lessons</span>
-                                                    </div>
-                                                </div> */}
                                             </CardContent>
                                             <CardFooter className="p-4 pt-0">
                                                 <Button

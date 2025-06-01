@@ -69,23 +69,27 @@ export default function AnalyticsPage() {
     };
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6">Analytics</h1>
+        <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+            <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Analytics</h1>
 
             {/* Top Section: Performance, Attendance, and To Do */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 {/* Average Group Performance */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-lg font-semibold mb-4">Average Group Performance</h2>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                        Average Group Performance
+                    </h2>
                     <div className="flex items-center justify-center relative">
                         <div
-                            className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100"
+                            className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700"
                             style={{
                                 background: getPerformanceGradient(),
                             }}
                         >
-                            <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center">
-                                <span className="text-2xl font-bold">{performance.average}</span>
+                            <div className="h-24 w-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                    {performance.average}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -93,7 +97,7 @@ export default function AnalyticsPage() {
                         {performance.breakdown.map((segment, index) => (
                             <div key={index} className="flex items-center">
                                 <div className={`h-4 w-4 rounded-full ${segment.color} mr-2`}></div>
-                                <span className="text-sm">
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
                                     {segment.range}: {segment.count} students
                                 </span>
                             </div>
@@ -101,7 +105,7 @@ export default function AnalyticsPage() {
                     </div>
                     <Button
                         variant="link"
-                        className="mt-3 text-blue-600 hover:underline text-sm p-0"
+                        className="mt-3 text-blue-600 dark:text-blue-400 hover:underline text-sm p-0"
                         aria-label="Export performance data as CSV"
                     >
                         Export CSV
@@ -109,23 +113,27 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Average Students Attendance */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-lg font-semibold mb-4">Average Students Attendance</h2>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                        Average Students Attendance
+                    </h2>
                     <div className="flex items-center justify-center relative">
                         <div
-                            className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100"
+                            className="h-32 w-32 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700"
                             style={{
-                                background: `conic-gradient(#22c55e 0deg ${attendance.average * 3.6}deg, #e5e7eb ${attendance.average * 3.6}deg 360deg)`,
+                                background: `conic-gradient(#22c55e 0deg ${attendance.average * 3.6}deg, #e5e7eb 0deg ${attendance.average * 3.6}deg 360deg)`,
                             }}
                         >
-                            <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center">
-                                <span className="text-2xl font-bold">{attendance.average}</span>
+                            <div className="h-24 w-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                    {attendance.average}
+                                </span>
                             </div>
                         </div>
                     </div>
                     <Button
                         variant="link"
-                        className="mt-3 text-blue-600 hover:underline text-sm p-0"
+                        className="mt-3 text-blue-600 dark:text-blue-400 hover:underline text-sm p-0"
                         aria-label="Export attendance data"
                     >
                         Export
@@ -133,8 +141,10 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* To Do */}
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-lg font-semibold mb-4">To Do</h2>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                        To Do
+                    </h2>
                     <div className="space-y-3">
                         {toDo.map((item, index) => (
                             <div key={index} className="flex items-center">
@@ -143,9 +153,12 @@ export default function AnalyticsPage() {
                                     id={`todo-${index}`}
                                     checked={item.completed}
                                     onChange={() => {}}
-                                    className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                                    className="h-4 w-4 text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 rounded"
                                 />
-                                <label htmlFor={`todo-${index}`} className="ml-3 text-sm">
+                                <label
+                                    htmlFor={`todo-${index}`}
+                                    className="ml-3 text-sm text-gray-700 dark:text-gray-300"
+                                >
                                     {item.task}
                                 </label>
                             </div>
@@ -155,49 +168,66 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Hometasks to Check */}
-            <div className="bg-white p-4 rounded-lg shadow">
-                <h2 className="text-lg font-semibold mb-4">Hometasks to Check</h2>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                    Hometasks to Check
+                </h2>
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-sm">
                         <thead>
-                            <tr className="border-b">
-                                <th className="p-3">Progress</th>
-                                <th className="p-3">Name</th>
-                                <th className="p-3">Subject</th>
-                                <th className="p-3">Grade</th>
-                                <th className="p-3">Group</th>
-                                <th className="p-3">Count</th>
-                                <th className="p-3">Deadline</th>
-                                <th className="p-3">Status</th>
+                            <tr className="border-b border-gray-200 dark:border-gray-600">
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Progress</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Name</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Subject</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Grade</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Group</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Count</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Deadline</th>
+                                <th className="p-3 text-gray-900 dark:text-gray-100">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {hometasks.map((task, index) => (
-                                <tr key={index} className="border-b hover:bg-gray-50">
+                                <tr
+                                    key={index}
+                                    className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
                                     <td className="p-3">
                                         <div
-                                            className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center relative"
+                                            className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center relative"
                                             style={{
-                                                background: `conic-gradient(#3b82f6 0deg ${task.progress * 3.6}deg, #e5e7eb ${task.progress * 3.6}deg 360deg)`,
+                                                background: `conic-gradient(#3b82f6 0deg ${task.progress * 3.6}deg, #e5e7eb 0deg ${task.progress * 3.6}deg 360deg)`,
                                             }}
                                         >
-                                            <div className="h-6 w-6 bg-white rounded-full flex items-center justify-center text-xs">
+                                            <div className="h-6 w-6 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-xs text-gray-900 dark:text-gray-100">
                                                 {task.progress}%
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="p-3">{task.name}</td>
-                                    <td className="p-3">{task.subject}</td>
-                                    <td className="p-3">{task.grade}</td>
-                                    <td className="p-3">{task.group}</td>
-                                    <td className="p-3">{task.count} of 30</td>
-                                    <td className="p-3">{task.deadline}</td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.name}
+                                    </td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.subject}
+                                    </td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.grade}
+                                    </td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.group}
+                                    </td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.count} of 30
+                                    </td>
+                                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                                        {task.deadline}
+                                    </td>
                                     <td className="p-3">
                                         <span
                                             className={`text-xs px-2 py-1 rounded ${
                                                 task.status === 'Ready to check'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-orange-100 text-orange-800'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
+                                                    : 'bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100'
                                             }`}
                                         >
                                             {task.status}

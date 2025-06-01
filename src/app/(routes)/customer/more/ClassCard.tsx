@@ -36,7 +36,7 @@ export default function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
 
     return (
-        <Card className="relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 min-h-[440px] flex flex-col">
+        <Card className="relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 h-[440px] flex flex-col">
             <div
                 className="h-40 relative overflow-hidden rounded-t-xl flex items-center justify-center text-white"
                 style={{
@@ -55,7 +55,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                 </h3>
             </div>
 
-            <CardContent className="p-4 space-y-4 flex-grow">
+            <CardContent className="p-4 space-y-4 flex-grow flex flex-col">
                 <p className="text-base text-gray-600 dark:text-gray-400 line-clamp-2 min-h-[40px] text-left font-medium">
                     {course.description}
                 </p>
@@ -94,10 +94,10 @@ export default function CourseCard({ course }: CourseCardProps) {
                 </div>
             </CardContent>
 
-            <CardFooter className="flex justify-end p-4 pt-0">
+            <CardFooter className="p-4 pt-0">
                 <Button
                     size="sm"
-                    className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-4 py-2 transition-colors duration-300 font-medium shadow-md cursor-pointer"
+                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg px-4 py-2 transition-colors duration-300 font-medium shadow-md cursor-pointer"
                     onClick={() => router.push(`/customer/classes`)}
                 >
                     View Details

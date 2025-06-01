@@ -15,24 +15,74 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import Image from 'next/image';
 import { RegisterClass } from '@/lib/services/api/registerclass';
 
 // List of a few provinces and cities in Vietnam
 const cities = [
-    { value: 'Hà Nội', label: 'Hà Nội' },
-    { value: 'Hồ Chí Minh', label: 'Hồ Chí Minh' },
-    { value: 'Đà Nẵng', label: 'Đà Nẵng' },
-    { value: 'Hải Phòng', label: 'Hải Phòng' },
+    { value: 'An Giang', label: 'An Giang' },
+    { value: 'Bà Rịa - Vũng Tàu', label: 'Bà Rịa - Vũng Tàu' },
+    { value: 'Bắc Giang', label: 'Bắc Giang' },
+    { value: 'Bắc Kạn', label: 'Bắc Kạn' },
+    { value: 'Bạc Liêu', label: 'Bạc Liêu' },
+    { value: 'Bắc Ninh', label: 'Bắc Ninh' },
+    { value: 'Bến Tre', label: 'Bến Tre' },
+    { value: 'Bình Định', label: 'Bình Định' },
+    { value: 'Bình Dương', label: 'Bình Dương' },
+    { value: 'Bình Phước', label: 'Bình Phước' },
+    { value: 'Bình Thuận', label: 'Bình Thuận' },
+    { value: 'Cà Mau', label: 'Cà Mau' },
     { value: 'Cần Thơ', label: 'Cần Thơ' },
-    { value: 'Nha Trang', label: 'Nha Trang' },
+    { value: 'Cao Bằng', label: 'Cao Bằng' },
+    { value: 'Đà Nẵng', label: 'Đà Nẵng' },
+    { value: 'Đắk Lắk', label: 'Đắk Lắk' },
+    { value: 'Đắk Nông', label: 'Đắk Nông' },
+    { value: 'Điện Biên', label: 'Điện Biên' },
+    { value: 'Đồng Nai', label: 'Đồng Nai' },
+    { value: 'Đồng Tháp', label: 'Đồng Tháp' },
+    { value: 'Gia Lai', label: 'Gia Lai' },
+    { value: 'Hà Giang', label: 'Hà Giang' },
+    { value: 'Hà Nam', label: 'Hà Nam' },
+    { value: 'Hà Nội', label: 'Hà Nội' },
+    { value: 'Hà Tĩnh', label: 'Hà Tĩnh' },
+    { value: 'Hải Dương', label: 'Hải Dương' },
+    { value: 'Hải Phòng', label: 'Hải Phòng' },
+    { value: 'Hậu Giang', label: 'Hậu Giang' },
+    { value: 'Hòa Bình', label: 'Hòa Bình' },
+    { value: 'Hưng Yên', label: 'Hưng Yên' },
+    { value: 'Khánh Hòa', label: 'Khánh Hòa' },
+    { value: 'Kiên Giang', label: 'Kiên Giang' },
+    { value: 'Kon Tum', label: 'Kon Tum' },
+    { value: 'Lai Châu', label: 'Lai Châu' },
+    { value: 'Lâm Đồng', label: 'Lâm Đồng' },
+    { value: 'Lạng Sơn', label: 'Lạng Sơn' },
+    { value: 'Lào Cai', label: 'Lào Cai' },
+    { value: 'Long An', label: 'Long An' },
+    { value: 'Nam Định', label: 'Nam Định' },
+    { value: 'Nghệ An', label: 'Nghệ An' },
+    { value: 'Ninh Bình', label: 'Ninh Bình' },
+    { value: 'Ninh Thuận', label: 'Ninh Thuận' },
+    { value: 'Phú Thọ', label: 'Phú Thọ' },
+    { value: 'Phú Yên', label: 'Phú Yên' },
+    { value: 'Quảng Bình', label: 'Quảng Bình' },
+    { value: 'Quảng Nam', label: 'Quảng Nam' },
+    { value: 'Quảng Ngãi', label: 'Quảng Ngãi' },
+    { value: 'Quảng Ninh', label: 'Quảng Ninh' },
+    { value: 'Quảng Trị', label: 'Quảng Trị' },
+    { value: 'Sóc Trăng', label: 'Sóc Trăng' },
+    { value: 'Sơn La', label: 'Sơn La' },
+    { value: 'Tây Ninh', label: 'Tây Ninh' },
+    { value: 'Thái Bình', label: 'Thái Bình' },
+    { value: 'Thái Nguyên', label: 'Thái Nguyên' },
+    { value: 'Thanh Hóa', label: 'Thanh Hóa' },
+    { value: 'Thừa Thiên Huế', label: 'Thừa Thiên Huế' },
+    { value: 'Tiền Giang', label: 'Tiền Giang' },
+    { value: 'TP Hồ Chí Minh', label: 'TP Hồ Chí Minh' },
+    { value: 'Trà Vinh', label: 'Trà Vinh' },
+    { value: 'Tuyên Quang', label: 'Tuyên Quang' },
+    { value: 'Vĩnh Long', label: 'Vĩnh Long' },
+    { value: 'Vĩnh Phúc', label: 'Vĩnh Phúc' },
+    { value: 'Yên Bái', label: 'Yên Bái' },
 ];
 
 const formSchema = z.object({
@@ -85,6 +135,8 @@ export default function ContactForm() {
                 values.note?.trim() || '',
             );
 
+            console.log('Registration successful:', res);
+
             toast({
                 title: 'Success!',
                 description: res.message || 'Your registration was submitted successfully',
@@ -134,7 +186,7 @@ export default function ContactForm() {
                         name="fullName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="sr-only ">Full Name</FormLabel>
+                                <FormLabel className="sr-only">Full Name</FormLabel>
                                 <FormControl>
                                     <Input
                                         className={inputStyle}
@@ -195,25 +247,38 @@ export default function ContactForm() {
                             <FormItem>
                                 <FormLabel className="sr-only">City</FormLabel>
                                 <FormControl>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        value={field.value}
-                                        disabled={isSubmitting}
-                                    >
-                                        <SelectTrigger
-                                            className="w-full rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#657ED4] dark:focus-visible:ring-[#5AD3AF]"
+                                    <div className="relative">
+                                        <select
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            disabled={isSubmitting}
+                                            className="w-full rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 text-gray-500 dark:text-gray-200 font-semibold px-4 py-2 pr-10 focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer appearance-none"
                                             aria-label="Select City"
                                         >
-                                            <SelectValue placeholder="Select City" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                            <option value="">Select City</option>
                                             {cities.map((city) => (
-                                                <SelectItem key={city.value} value={city.value}>
+                                                <option key={city.value} value={city.value}>
                                                     {city.label}
-                                                </SelectItem>
+                                                </option>
                                             ))}
-                                        </SelectContent>
-                                    </Select>
+                                        </select>
+                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                            <svg
+                                                className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M19 9l-7 7-7-7"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
                                 </FormControl>
                                 <FormMessage className="text-red-500 dark:text-red-400 text-base mt-1" />
                             </FormItem>

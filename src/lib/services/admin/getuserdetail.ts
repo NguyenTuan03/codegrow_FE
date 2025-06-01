@@ -8,6 +8,5 @@ export const getUserDetail = async (id: string) => {
         return res.data;
     } catch (error) {
         console.log(error);
-        throw error;
     }
 };

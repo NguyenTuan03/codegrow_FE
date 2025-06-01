@@ -69,14 +69,14 @@ const HomePage = () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                throw new Error('Authentication token is missing');
+                return 0; // Return 0 progress if not logged in
             }
             const response = await GetProgress(token, courseId);
-            console.log(`Progress response for course ${courseId}:`, response);
+            console.log(` Progress response for course ${courseId}:`, response);
             const progress = response.metadata?.progress ?? 0;
             return progress;
         } catch (error) {
-            console.error(`Error fetching progress for course ${courseId}:`, error);
+            console.log(`Error fetching progress for course ${courseId}:`, error);
             return 0;
         }
     };
@@ -84,9 +84,10 @@ const HomePage = () => {
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
+            console.log('Fetched categories:', data);
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
-            console.error('Failed to fetch categories:', error);
+            console.log('Failed to fetch categories:', error);
         }
     };
 
@@ -131,7 +132,7 @@ const HomePage = () => {
                 );
             }
         } catch (error: unknown) {
-            console.error('Error fetching courses:', error);
+            console.log(' Error fetching courses:', error);
             setCourses([]);
         }
     };
@@ -140,22 +141,19 @@ const HomePage = () => {
         try {
             const userId = localStorage.getItem('user');
             if (!userId) {
-                toast({
-                    title: 'Lỗi',
-                    description: 'Bạn cần đăng nhập để xem thông tin chi tiết',
-                    variant: 'destructive',
-                    className: 'bg-[#F76F8E] text-white dark:text-black',
-                });
+                // Don't show a toast for non-logged-in users on the homepage
+                setUser(null);
                 return;
             }
             const user = JSON.parse(userId);
             const id = user.id;
 
             const userDetail = await getUserDetail(id);
-            console.log(`User detail for ID ${id}:`, userDetail);
+
             setUser(userDetail.metadata);
         } catch (error) {
-            console.error('❌ Error fetching user details:', error);
+            console.log(' Error fetching user detail:', error);
+            setUser(null);
         }
     };
 
@@ -202,7 +200,9 @@ const HomePage = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                             <h3 className="text-4xl mb-5 font-bold text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
-                                {user ? `Welcome back, ${user.fullName}` : 'Welcome back, customer'}
+                                {user?.fullName
+                                    ? `Welcome back, ${user.fullName}`
+                                    : 'Welcome back, customer'}
                             </h3>
 
                             <p className="text-xl mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
@@ -248,12 +248,14 @@ const HomePage = () => {
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4 text-xl">
                             <Progress
-                                value={courses.length > 0 ? courseProgress[courses[0]._id] || 0 : 0}
+                                value={
+                                    courses.length > 0 ? courseProgress[courses[0]?._id] || 0 : 0
+                                }
                                 className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
                             />
                             <div className="text-xl font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 {courses.length > 0
-                                    ? `${courseProgress[courses[0]._id] || 0}% completed`
+                                    ? `${courseProgress[courses[0]?._id] || 0}% completed`
                                     : 'No progress available'}
                             </div>
                         </div>
@@ -296,7 +298,7 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-15 mb-15">
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
@@ -306,7 +308,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/structured_courses.png" // Ensure this image exists in the public directory
+                                src="/structured_courses.png"
                                 alt="Structured Courses"
                                 fill
                                 className="object-contain"
@@ -326,7 +328,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/mentorship.png" // Ensure this image exists in the public directory
+                                src="/mentorship.png"
                                 alt="Personalized Mentorship"
                                 fill
                                 className="object-contain"
@@ -346,7 +348,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/exercises.png" // Ensure this image exists in the public directory
+                                src="/exercises.png"
                                 alt="Hands-On Exercises"
                                 fill
                                 className="object-contain"
@@ -366,7 +368,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/community.png" // Ensure this image exists in the public directory
+                                src="/community.png"
                                 alt="Community Support"
                                 fill
                                 className="object-contain"
@@ -385,7 +387,7 @@ const HomePage = () => {
             </div>
 
             {/* Updated Component: Popular Programming Skills */}
-            <div className="mt-8">
+            <div className="mt-15 mb-15">
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     RoadMap Programming Skills
                 </h3>
@@ -399,7 +401,7 @@ const HomePage = () => {
                             >
                                 <div className="relative w-[24px] h-[24px] mr-3">
                                     <Image
-                                        src={skill.icon} // Ensure this image exists in the public directory
+                                        src={skill.icon}
                                         alt={skill.name}
                                         fill
                                         className="object-contain"
@@ -421,7 +423,7 @@ const HomePage = () => {
                 </div>
             </div>
             {/* New Section: Our Achievements */}
-            <div className="mt-8">
+            <div className="mt-8 mb-15">
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     Our Achievements
                 </h3>
@@ -431,7 +433,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/icons8-students-64.png" // Ensure this image exists in the public directory
+                                src="/icons8-students-64.png"
                                 alt="Students Enrolled"
                                 fill
                                 className="object-contain"
@@ -449,7 +451,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/icons8-course-assign-100.png" // Ensure this image exists in the public directory
+                                src="/icons8-course-assign-100.png"
                                 alt="Courses Offered"
                                 fill
                                 className="object-contain"
@@ -467,7 +469,7 @@ const HomePage = () => {
                     <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/icons8-expert-96.png" // Ensure this image exists in the public directory
+                                src="/icons8-expert-96.png"
                                 alt="Mentors"
                                 fill
                                 className="object-contain"
@@ -482,11 +484,11 @@ const HomePage = () => {
                     </div>
 
                     {/* Projects Completed */}
-                    <div className="bg-gray-100 mb-10 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
                         <div className="relative w-full h-[140px] mb-4">
                             <Image
-                                src="/icons8-class-80.png" // Ensure this image exists in the public directory
-                                alt="Projects Completed"
+                                src="/icons8-class-80.png"
+                                alt="Mentors"
                                 fill
                                 className="object-contain"
                             />

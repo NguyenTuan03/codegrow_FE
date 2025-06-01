@@ -18,7 +18,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import Link from 'next/link';
 
 export default function Classes() {
     interface ClassItem {
@@ -77,14 +76,7 @@ export default function Classes() {
     const fetchClasses = async (page: number = 1) => {
         try {
             const data = await GetClass(page, limit);
-            console.log('Fetched classes:', data);
-
-            // Filter classes where mentor is null or mentor._id matches currentUserId
-            const filteredClasses = data.metadata.classes.filter((classItem: ClassItem) => {
-                return classItem.mentor === null || classItem.mentor?._id === currentUserId;
-            });
-
-            setClassesItems(filteredClasses);
+            setClassesItems(data.metadata.classes);
             setCurrentPage(data.metadata.page);
             setTotalPages(data.metadata.totalPages);
         } catch (error) {
@@ -103,7 +95,7 @@ export default function Classes() {
     const handleAssignMentor = async (classId: string) => {
         try {
             const token = localStorage.getItem('token');
-            console.log('Token:', token);
+            console.log('token:', token);
             const user = localStorage.getItem('user');
             if (!token || !user) {
                 throw new Error('Authentication token or user ID is missing');
@@ -111,7 +103,7 @@ export default function Classes() {
 
             const parsedUser = JSON.parse(user);
             const userId = parsedUser.id;
-            console.log(' User ID:', userId);
+            console.log('User ID:', userId);
 
             const response = await AssignMentor(token, classId, userId);
             console.log('Response:', response);
@@ -143,7 +135,7 @@ export default function Classes() {
 
     useEffect(() => {
         fetchClasses(currentPage);
-    }, [currentPage, currentUserId]);
+    }, [currentPage]);
 
     if (!currentUserId) {
         return (
@@ -192,12 +184,10 @@ export default function Classes() {
                     </div>
                 ) : classesItems.length === 0 ? (
                     <div className="text-center text-gray-600 dark:text-gray-400 py-12">
-                        <p className="text-lg font-medium">
-                            No classes available for you at the moment.
-                        </p>
+                        <p className="text-lg font-medium">No classes available at the moment.</p>
                         <Button
                             onClick={() => fetchClasses(1)}
-                            className="cursor-pointer mt-4 rounded-full px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
+                            className=" cursor-pointer mt-4 rounded-full px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
                         >
                             Refresh
                         </Button>
@@ -290,6 +280,10 @@ export default function Classes() {
                                                 >
                                                     View Details
                                                 </Button>
+                                            ) : course.mentor ? (
+                                                <p className="text-base text-gray-500 dark:text-gray-400 font-medium">
+                                                    Assigned to {course.mentor.fullName}
+                                                </p>
                                             ) : (
                                                 <Button
                                                     variant="outline"
@@ -305,13 +299,7 @@ export default function Classes() {
                                 );
                             })}
                         </div>
-                        <div className="flex justify-center mt-6 mb-10">
-                            <Link href="/mentor/allclasses">
-                                <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300 cursor-pointer">
-                                    Explore More
-                                </Button>
-                            </Link>
-                        </div>
+
                         {/* Pagination */}
                         {totalPages > 1 && (
                             <div className="mt-8 flex justify-center">
@@ -323,7 +311,7 @@ export default function Classes() {
                                                 className={
                                                     currentPage === 1
                                                         ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400  hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
+                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
                                                 }
                                             />
                                         </PaginationItem>
@@ -336,8 +324,8 @@ export default function Classes() {
                                                         isActive={currentPage === page}
                                                         className={
                                                             currentPage === page
-                                                                ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-full'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400  hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 rounded-full'
+                                                                ? 'bg-[#5AD3AF] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-full'
+                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 rounded-full'
                                                         }
                                                     >
                                                         {page}
@@ -352,7 +340,7 @@ export default function Classes() {
                                                 className={
                                                     currentPage === totalPages
                                                         ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
+                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
                                                 }
                                             />
                                         </PaginationItem>
