@@ -9,13 +9,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { GetReviewsByMentorId } from '@/lib/services/qaqc/getReviewDetail';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, User, Calendar } from 'lucide-react';
@@ -64,10 +57,10 @@ export default function CoursesList() {
             try {
                 const token = localStorage.getItem('token') || '';
                 const reviews = await GetReviewsByMentorId(mentorId, token);
-                console.log('Fetched reviews:', reviews);
+                console.log(' Fetched reviews:', reviews);
                 setAllReviews(reviews);
             } catch (error) {
-                console.error('Error fetching reviews:', error);
+                console.error(' Error fetching reviews:', error);
                 setError('Failed to load reviews. Please try again.');
                 setAllReviews([]);
             } finally {
@@ -209,34 +202,35 @@ export default function CoursesList() {
                                         <span className="text-sm text-gray-700 dark:text-gray-300 font-medium cursor-default">
                                             Items per page:
                                         </span>
-                                        <Select
-                                            value={pageSize.toString()}
-                                            onValueChange={handlePageSizeChange}
-                                        >
-                                            <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer">
-                                                <SelectValue placeholder="Select" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg shadow-lg">
-                                                <SelectItem
-                                                    value="5"
-                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
+                                        <div className="relative">
+                                            <select
+                                                value={pageSize.toString()}
+                                                onChange={(e) =>
+                                                    handlePageSizeChange(e.target.value)
+                                                }
+                                                className="w-[100px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer appearance-none px-3 py-2 pr-8"
+                                            >
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                            </select>
+                                            <span className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                                <svg
+                                                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg"
                                                 >
-                                                    5
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value="10"
-                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                                >
-                                                    10
-                                                </SelectItem>
-                                                <SelectItem
-                                                    value="20"
-                                                    className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                                >
-                                                    20
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M19 9l-7 7-7-7"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <Pagination>

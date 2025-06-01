@@ -155,7 +155,7 @@ export default function CourseLearningPage() {
 
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent border-b border-gray-200 dark:border-gray-700 p-5">
+                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent  border-gray-200 dark:border-gray-700 p-5">
                         {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}

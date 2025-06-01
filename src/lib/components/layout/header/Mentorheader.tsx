@@ -68,7 +68,9 @@ export default function MentorHeader() {
             router.push('/');
         }
     };
-
+    const handleCreatePost = () => {
+        router.push('/mentor/classes');
+    };
     return (
         <header className="fixed w-full top-0 left-0 right-0 z-50 bg-gray-50 dark:bg-gray-900 shadow-sm border-b h-16 px-6">
             <div className="max-w-7xl mx-auto flex items-center justify-between h-full">
@@ -85,6 +87,7 @@ export default function MentorHeader() {
                         variant="ghost"
                         size="icon"
                         className="text-[#657ED4] cursor-pointer dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
+                        onClick={handleCreatePost}
                     >
                         <Plus className="h-5 w-5" />
                     </Button>

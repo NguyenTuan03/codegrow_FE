@@ -62,7 +62,7 @@ const Customerheader = () => {
                 console.log(`User detail for ID ${id}:`, userDetail);
                 setProfileData(userDetail.metadata);
             } catch (error) {
-                console.error('❌ Error fetching user details:', error);
+                console.log('❌ Error fetching user details:', error);
             } finally {
                 setLoading(false);
             }
