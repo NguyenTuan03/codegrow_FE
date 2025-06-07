@@ -23,6 +23,10 @@ export const CUSTOMER_HEADER = [
         name: 'Process',
         href: '/customer/process',
     },
+    {
+        name: 'Chat',
+        href: '/chat',
+    },
     // {
     //     name: 'Project',
     //     href: '/customer/project',

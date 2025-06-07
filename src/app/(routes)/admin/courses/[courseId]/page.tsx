@@ -201,7 +201,7 @@ export default function CourseDetailPage() {
 
             // Log the response for debugging
             console.log('UpdateCourse Response in handleSave:', JSON.stringify(response, null, 2));
-
+            
             // Update courseData with the new data from the response
             const updatedCourseData: Course = {
                 ...formData,

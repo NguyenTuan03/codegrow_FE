@@ -1,64 +1,47 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
+'use client';
+import ChatContainer from '@/lib/components/chat/ChatContainer';
+import NoChatSelected from '@/lib/components/chat/NoChatSelected';
+import Sidebar from '@/lib/components/chat/Sidebar';
+import { Auth } from '@/lib/components/context/AuthContext';
+import { getUsersMessage } from '@/lib/services/chat/getUsers';
+import React, { useContext, useEffect, useState } from 'react';
 interface IUserRef {
     current?: any;
 }
-const Chat = () => {
-    const [messages, setMessages] = useState([]);
-    const [sendMessage, setSendMessage] = useState('');
-    const [socketId, setSocketId] = useState('');
-    const socketRef = useRef<IUserRef>(null);
-
+const ChatPage = () => {
+    const { selectedUser } = useContext(Auth);
+    console.log(selectedUser);
+    
+    const [users, setUsers] = useState([]);
     useEffect(() => {
-        socketRef.current = io('http://localhost:8888');
+        const fetchUsers = async () => {
+            try {
+                const res = await getUsersMessage();
 
-        socketRef.current.on('connect', () => {
-            setSocketId(socketRef.current.id);
-            console.log('🟢 Connected:', socketRef.current.id);
-        });
-
-        socketRef.current.on('receive_message', (data) => {
-            setMessages((prev) => [...prev, data]);
-        });
-
-        return () => {
-            socketRef.current.disconnect();
+                if (res?.status === 200) {
+                    setUsers(res.data.metadata);
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
         };
+
+        fetchUsers();
     }, []);
-    const handleSendMessage = () => {
-        if (sendMessage.trim() === '') return;
-
-        const messageData = {
-            id: socketId,
-            text: sendMessage,
-            time: new Date(),
-        };
-
-        socketRef.current.emit('send_message', messageData);
-        setMessages((prev) => [...prev, messageData]);
-        setSendMessage('');
-  };
     return (
-        <div>
-      <div>
-        <h3>Socket ID: {socketId}</h3>
-        <div style={{ border: '1px solid gray', padding: 8, height: 200, overflowY: 'scroll' }}>
-          {messages.map((msg, index) => (
-            <div key={index}>
-              <strong>{msg.id === socketId ? 'Me' : 'User'}:</strong> {msg.text}
+        <>
+            <div className="bg-blend-color">
+                <div className="flex items-center justify-center">
+                    <div className="bg-amber-100 rounded-lg shadow-2xl w-full h-[calc(100vh-64px)]">
+                        <div className="flex h-full rounded-lg overflow-hidden w-full">
+                            <Sidebar users={users} setUsers={setUsers} />
+                            {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+                        </div>
+                    </div>
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
-      <input
-        value={sendMessage}
-        onChange={(e) => setSendMessage(e.target.value)}
-        placeholder="Nhập tin nhắn..."
-      />
-      <button onClick={handleSendMessage}>Gửi</button>
-    </div>
-    )
+        </>
+    );
 };
 
-export default Chat;
+export default ChatPage;
