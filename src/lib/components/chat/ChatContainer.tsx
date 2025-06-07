@@ -12,8 +12,8 @@ const ChatContainer = () => {
         subscribeToMessages,
         selectedUser,
         unsubscribeFromMessages,
-    } = useContext(Auth);    
-    
+    } = useContext(Auth);
+
     const messageEndRef = useRef(null);
     console.log('messages ', messages);
 
@@ -33,29 +33,41 @@ const ChatContainer = () => {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
     return (
         <div className="flex-1 flex flex-col overflow-auto">
             <ChatHeader />
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4" id="scrollContainer">
+            <div
+                className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-gray-800"
+                id="scrollContainer"
+            >
                 {messages.map((message) => (
                     <div
                         key={message?._id}
-                        className={`flex ${message.senderId === userAuth?.id ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${
+                            message.senderId === userAuth?.id ? 'justify-end' : 'justify-start'
+                        }`}
                     >
-                        <div className="flex items-end gap-2 max-w-[70%]">                            
+                        <div className="flex items-end gap-2 max-w-[70%]">
                             {message.senderId !== userAuth?._id && (
                                 <img
-                                    className="w-10 h-10 rounded-full border"
+                                    className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
                                     src={selectedUser.avatar || '/user_ava.png'}
                                     alt="receiver"
                                 />
-                            )}                            
+                            )}
                             <div>
-                                <div className="text-xs text-gray-500 mb-1">
+                                <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">
                                     {formatMessageTime(message.createAt)}
                                 </div>
-                                <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded-xl">
+                                <div
+                                    className={`p-2 rounded-xl ${
+                                        message.senderId === userAuth?.id
+                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                                    }`}
+                                >
                                     {message.image && (
                                         <img
                                             src={message.image}
@@ -65,10 +77,10 @@ const ChatContainer = () => {
                                     )}
                                     {message.text && <p>{message.text}</p>}
                                 </div>
-                            </div>                            
+                            </div>
                             {message.senderId === userAuth?._id && (
                                 <img
-                                    className="w-10 h-10 rounded-full border"
+                                    className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
                                     src={userAuth.avatar || '/user_ava.png'}
                                     alt="sender"
                                 />

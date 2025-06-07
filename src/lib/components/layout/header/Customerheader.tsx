@@ -119,7 +119,7 @@ const Customerheader = () => {
 
     return (
         <div
-            className={`flex w-full h-[80px] px-6 items-center border-b shadow-sm fixed top-0 left-0 right-0 z-50 ${
+            className={`flex w-full h-[80px]  px-6 items-center border-b shadow-sm fixed top-0  left-0 right-0 z-50 ${
                 resolvedTheme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
             }`}
         >
@@ -187,7 +187,7 @@ const Customerheader = () => {
                         </div>
                         <DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>
-                                <Avatar className="w-8 h-8 border-2 border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
+                                <Avatar className="w-8 h-8 border-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] border-[#657ED4] dark:border-[#5AD3AF] shadow-md hover:shadow-lg transition-shadow">
                                     <AvatarImage
                                         src={profileData.avatar || '/default-avatar.png'}
                                         alt={profileData.fullName}

@@ -114,9 +114,9 @@ export const AdminSidebar = () => {
                                                     <SidebarMenuItem>
                                                         <SidebarMenuButton asChild>
                                                             <Link
-                                                                href="/admin/contact"
+                                                                href="/chat"
                                                                 className={`flex items-center gap-2 px-2 py-1 text-base hover:underline cursor-pointer dark:text-gray-300 dark:hover:text-blue-400 ${
-                                                                    isActive('/admin/contact')
+                                                                    isActive('/chat')
                                                                         ? 'text-blue-600 dark:text-blue-400 font-semibold underline underline-offset-4'
                                                                         : ''
                                                                 }`}
