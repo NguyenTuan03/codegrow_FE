@@ -11,6 +11,8 @@ export const UpdateCourse = async (
     imgUrl?: File,
 ) => {
     try {
+        console.log(token);
+        
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);

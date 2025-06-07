@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client';
 import React, { ReactNode, useContext } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import MentorSidebar from '@/lib/components/layout/sidebar/MentorSidebar';
 import QAQCSidebar from '@/lib/components/layout/sidebar/QAQCSidebar';
@@ -59,6 +59,8 @@ const Layout = ({ children }: Props) => {
 
     // Correct header height based on role (h-16 = 64px for Admin and Mentor, h-[60px] = 60px for QAQC)
     const headerHeight = role === 'qaqc' ? 60 : 64; // Match actual header heights
+    const pathname = usePathname();
+    const isChatPage = pathname === '/chat';
 
     return (
         <div className="flex min-h-screen w-full">
@@ -74,7 +76,7 @@ const Layout = ({ children }: Props) => {
                 {hasSidebarAndHeader && <header className="w-full">{renderHeader()}</header>}
                 <main
                     className={`flex-1 w-full overflow-auto flex justify-center ${
-                        hasSidebarAndHeader ? 'px-4' : ''
+                        (hasSidebarAndHeader && !isChatPage) ? 'px-4' : ''
                     }`} // Center content and add padding for roles with a sidebar
                     style={{
                         paddingTop: hasSidebarAndHeader ? `${headerHeight}px` : 0, // Apply padding only for roles with a header
@@ -83,7 +85,7 @@ const Layout = ({ children }: Props) => {
                     <div className="w-full max-w-8xl">{children}</div>{' '}
                     {/* Constrain content width for centering */}
                 </main>
-                <Footer />
+                {!isChatPage && <Footer />}
             </div>
         </div>
     );
