@@ -1,7 +1,7 @@
 'use client';
 import { Users } from 'lucide-react';
-import Image from 'next/image';
-import React, { useContext, useEffect, useState } from 'react';
+
+import React, { useContext, useState } from 'react';
 import { Auth } from '../context/AuthContext';
 
 type Props = {
@@ -23,17 +23,17 @@ const Sidebar = ({ users = [], setUsers }: Props) => {
                         <Users className="size-6" />
                         <span className="font-medium hidden lg:block">Contacts</span>
                     </div>
-                    <div className="mt-3 hidden lg:flex items-center gap-2">
-                        <label className="cursor-pointer flex items-center gap-2">
+                    <div className="mt-3  hidden lg:flex items-center gap-2">
+                        <label className="cursor-pointer  flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 checked={showOnlineOnly}
                                 onChange={(e) => setShowOnlineOnly(e.target.checked)}
-                                className="checkbox checkbox-sm"
+                                className="checkbox bg-white checkbox-sm"
                             />
-                            <span className="text-sm">Show online only</span>
+                            <span className="text-sm ">Show online only</span>
                         </label>
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-xs text-zinc-500 ">
                             ({onlineUsers.length - 1} online)
                         </span>
                     </div>
@@ -45,8 +45,8 @@ const Sidebar = ({ users = [], setUsers }: Props) => {
                             onClick={() => setSelectedUser(user)}
                             className={`
                                 w-full p-3 flex items-center gap-3
-                                hover:bg-base-300 transition-colors
-                                ${selectedUser?._id === user._id ? 'bg-base-300 ring-1 ring-base-300' : ''}
+                                hover:bg-gray-500 transition-colors
+                                ${selectedUser?._id === user._id ? 'bg-gray-500 ring-1 ring-base-300' : ''}
                             `}
                         >
                             <div className="relative mx-auto lg:mx-0">

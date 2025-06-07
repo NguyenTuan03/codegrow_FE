@@ -112,7 +112,7 @@ export default function MentorSidebar() {
 
     const otherItems = [
         { href: '/mentor/analytics', icon: BarChart2, label: 'Analytics' },
-        { href: '/mentor/messages', icon: Mail, label: 'Messages', badge: 3 },
+        { href: '/chat', icon: Mail, label: 'Messages', badge: 3 },
         { href: '/mentor/help', icon: HelpCircle, label: 'Help Center' },
     ];
 
