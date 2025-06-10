@@ -59,7 +59,7 @@ const ChatPage = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-navy-900 to-navy-700 mt-18 dark:from-navy-900 dark:to-navy-700">
+        <div className="bg-gradient-to-br from-navy-900 to-navy-700 mt-18 dark:from-navy-900 dark:to-navy-700">
             {/* Conditionally render header based on role */}
             {role === 'admin' && <AdminHeader />}
             {role === 'customer' && <Customerheader />}
@@ -72,16 +72,13 @@ const ChatPage = () => {
             )}
 
             <div className="flex items-center justify-center">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full h-[calc(100vh-64px)]">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full h-[calc(100vh-72px)]">
                     <div className="flex h-full rounded-lg overflow-hidden w-full">
                         <Sidebar users={users} setUsers={setUsers} />
                         {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
                     </div>
                 </div>
             </div>
-
-            {/* Common footer */}
-            <Footer />
         </div>
     );
 };
