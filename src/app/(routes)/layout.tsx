@@ -61,7 +61,6 @@ const Layout = ({ children }: Props) => {
     const headerHeight = role === 'qaqc' ? 60 : 64; // Match actual header heights
     const pathname = usePathname();
     const isChatPage = pathname === '/chat';
-
     return (
         <div className="flex min-h-screen w-full">
             {/* Render Sidebar only for roles that need it */}
