@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Course {
     _id: string;
@@ -21,11 +22,23 @@ interface Course {
     category?: Category[] | Category | null;
     createdAt: string;
     enrolledCount: number;
+    totalLessons?: number; // Hypothetical total lessons
+    totalQuizzes?: number; // Hypothetical total quizzes
 }
 
 interface Category {
     _id: string;
     name: string;
+}
+
+interface ProgressResponse {
+    message: string;
+    status: number;
+    metadata: {
+        progress?: number;
+        completedLessons: string[]; // Array of completed lesson IDs
+        completedQuizzes: string[]; // Array of completed quiz IDs
+    };
 }
 
 interface CourseInProgressProps {
@@ -35,17 +48,41 @@ interface CourseInProgressProps {
 export default function CourseInProgress({ enrollCourse }: CourseInProgressProps) {
     const [progressData, setProgressData] = useState<{ [key: string]: number }>({});
     const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
 
-    const fetchProgress = async (courseId: string) => {
+    const fetchProgress = async (courseId: string, course: Course) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return { courseId, progress: 0 };
             }
-            const response = await GetProgress(token, courseId);
+            const tokenuser = JSON.parse(token);
+
+            console.log('token', tokenuser);
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                throw new Error('User ID not found in localStorage');
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
+            const response: ProgressResponse = await GetProgress(tokenuser, courseId, id);
             console.log('Progress response:', response);
-            const progress = response.metadata?.progress ?? 0;
-            return { courseId, progress };
+
+            const { completedLessons = [], completedQuizzes = [] } = response.metadata || {};
+            const totalLessons = course.totalLessons || 0; // Hypothetical default
+            const totalQuizzes = course.totalQuizzes || 0; // Hypothetical default
+            const totalItems = totalLessons + totalQuizzes;
+            const completedItems = completedLessons.length + completedQuizzes.length;
+            const calculatedProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+
+            return { courseId, progress: calculatedProgress };
         } catch (error) {
             console.error(`Error fetching progress for course ${courseId}:`, error);
             toast({
@@ -61,7 +98,9 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
     useEffect(() => {
         const loadProgress = async () => {
             setLoading(true);
-            const progressPromises = enrollCourse.map((course) => fetchProgress(course._id));
+            const progressPromises = enrollCourse.map((course) =>
+                fetchProgress(course._id, course),
+            );
             const results = await Promise.all(progressPromises);
             const progressMap = results.reduce(
                 (acc, { courseId, progress }) => {

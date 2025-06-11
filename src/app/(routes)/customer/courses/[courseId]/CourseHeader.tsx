@@ -42,7 +42,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
 
             try {
                 const res = await getUserDetail(userAuth.id);
-                console.log('User detail response:', res);
+
                 if (res.status === 200) {
                     setEnrolledCourses(res.metadata.enrolledCourses || []);
                 }
@@ -54,9 +54,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
     }, [userAuth]);
 
     // Log the course data to debug imgUrl
-    useEffect(() => {
-        console.log('CourseHeader course prop:', JSON.stringify(course, null, 2));
-    }, [course]);
+    useEffect(() => {}, [course]);
 
     if (!course) {
         return (

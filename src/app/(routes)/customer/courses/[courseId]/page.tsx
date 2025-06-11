@@ -30,8 +30,10 @@ export default function CourseLearningPage() {
     const { courseId } = useParams<{ courseId: string }>();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
-    const [progressPercentage, setProgressPercentage] = useState(0);
-    const [completedModules, setCompletedModules] = useState<{ [key: string]: boolean }>({});
+    const [progress, setProgress] = useState(0);
+    const [completedLessons, setCompletedLessons] = useState<{ [key: string]: boolean }>({});
+    const [completedQuizzes, setCompletedQuizzes] = useState<{ [key: string]: boolean }>({});
+    const [lastLesson, setLastLesson] = useState<string | null>(null);
 
     const handleNavigation = (path: string) => {
         router.push(path);
@@ -41,10 +43,6 @@ export default function CourseLearningPage() {
         try {
             setLoading(true);
             const courseRes = await viewDetailCourses(courseId);
-            console.log(
-                'Course data response from viewDetailCourses:',
-                JSON.stringify(courseRes, null, 2),
-            );
 
             if (courseRes.status === 200) {
                 const parsedCourse = {
@@ -53,10 +51,9 @@ export default function CourseLearningPage() {
                         typeof courseRes.metadata.category === 'string'
                             ? JSON.parse(courseRes.metadata.category)
                             : courseRes.metadata.category,
-                    imgUrl: courseRes.metadata.imgUrl || courseRes.metadata.image || undefined, // Fallback to image if imgUrl is missing
+                    imgUrl: courseRes.metadata.imgUrl || courseRes.metadata.image || undefined,
                 };
 
-                console.log('Parsed course data:', JSON.stringify(parsedCourse, null, 2));
                 setCourse(parsedCourse);
                 toast({
                     title: 'Thành công',
@@ -94,17 +91,45 @@ export default function CourseLearningPage() {
             router.push('/login');
             return;
         }
+        const tokenuser = JSON.parse(token);
 
+        console.log('token', tokenuser);
+        const userId = localStorage.getItem('user');
+        if (!userId) {
+            throw new Error('User ID not found in localStorage');
+        }
+        const user = JSON.parse(userId);
+        const id = user.id;
         try {
-            const progress = await GetProgress(token, courseId);
+            const progress = await GetProgress(tokenuser, courseId, id || ''); // Keep original call
             console.log('Progress:', progress);
 
-            if (progress?.percentage !== undefined) {
-                setProgressPercentage(progress.percentage);
-            }
-
-            if (progress?.completedModules) {
-                setCompletedModules(progress.completedModules);
+            if (progress?.status === 200 && progress.metadata) {
+                setProgress(progress.metadata.progress || 0); // Set progress (0-100)
+                setCompletedLessons(
+                    progress.metadata.completedLessons.reduce(
+                        (acc: { [key: string]: boolean }, lessonId: string) => ({
+                            ...acc,
+                            [lessonId]: true,
+                        }),
+                        {},
+                    ),
+                ); // Map completedLessons
+                setCompletedQuizzes(
+                    progress.metadata.completedQuizzes.reduce(
+                        (acc: { [key: string]: boolean }, quizId: string) => ({
+                            ...acc,
+                            [quizId]: true,
+                        }),
+                        {},
+                    ),
+                ); // Map completedQuizzes
+                setLastLesson(progress.metadata.lastLesson); // Set lastLesson
+            } else {
+                setProgress(0);
+                setCompletedLessons({});
+                setCompletedQuizzes({});
+                setLastLesson(null);
             }
         } catch (error) {
             console.error('Không thể tải tiến độ:', error);
@@ -155,7 +180,7 @@ export default function CourseLearningPage() {
 
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent  border-gray-200 dark:border-gray-700 p-5">
+                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent border-gray-200 dark:border-gray-700 p-5">
                         {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
@@ -169,8 +194,10 @@ export default function CourseLearningPage() {
 
                     <TabsContent value="overview">
                         <OverviewTab
-                            progressPercentage={progressPercentage}
-                            completedModules={completedModules}
+                            progress={progress}
+                            completedLessons={completedLessons}
+                            completedQuizzes={completedQuizzes}
+                            lastLesson={lastLesson}
                             onNavigate={handleNavigation}
                             courseId={courseId}
                         />

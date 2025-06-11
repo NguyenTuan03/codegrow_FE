@@ -12,6 +12,7 @@ import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
+import { useRouter } from 'next/navigation';
 
 interface Category {
     _id: string;
@@ -64,17 +65,73 @@ const HomePage = () => {
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
-
+    const router = useRouter();
+    const [progress, setProgress] = useState(0);
+    const [completedLessons, setCompletedLessons] = useState<{ [key: string]: boolean }>({});
+    const [completedQuizzes, setCompletedQuizzes] = useState<{ [key: string]: boolean }>({});
+    const [lastLesson, setLastLesson] = useState<string | null>(null);
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                return 0; // Return 0 progress if not logged in
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
-            const response = await GetProgress(token, courseId);
-            console.log(` Progress response for course ${courseId}:`, response);
-            const progress = response.metadata?.progress ?? 0;
-            return progress;
+            const tokenuser = JSON.parse(token);
+
+            console.log('token', tokenuser);
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                throw new Error('User ID not found in localStorage');
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
+            try {
+                const progress = await GetProgress(tokenuser, courseId, id || ''); // Keep original call
+                console.log('Progress:', progress);
+
+                if (progress?.status === 200 && progress.metadata) {
+                    setProgress(progress.metadata.progress || 0); // Set progress (0-100)
+                    setCompletedLessons(
+                        progress.metadata.completedLessons.reduce(
+                            (acc: { [key: string]: boolean }, lessonId: string) => ({
+                                ...acc,
+                                [lessonId]: true,
+                            }),
+                            {},
+                        ),
+                    ); // Map completedLessons
+                    setCompletedQuizzes(
+                        progress.metadata.completedQuizzes.reduce(
+                            (acc: { [key: string]: boolean }, quizId: string) => ({
+                                ...acc,
+                                [quizId]: true,
+                            }),
+                            {},
+                        ),
+                    ); // Map completedQuizzes
+                    setLastLesson(progress.metadata.lastLesson); // Set lastLesson
+                } else {
+                    setProgress(0);
+                    setCompletedLessons({});
+                    setCompletedQuizzes({});
+                    setLastLesson(null);
+                }
+            } catch (error) {
+                console.error('Không thể tải tiến độ:', error);
+                toast({
+                    title: 'Lỗi',
+                    description: 'Không thể tải dữ liệu tiến độ.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+            }
         } catch (error) {
             console.log(`Error fetching progress for course ${courseId}:`, error);
             return 0;
@@ -119,7 +176,7 @@ const HomePage = () => {
                 const progressResults = await Promise.all(progressPromises);
                 const progressMap = progressResults.reduce(
                     (acc, { courseId, progress }) => {
-                        acc[courseId] = progress;
+                        acc[courseId] = progress ?? 0;
                         return acc;
                     },
                     {} as { [courseId: string]: number },
@@ -248,14 +305,12 @@ const HomePage = () => {
                         <Image src={'/C.png'} width={40} height={40} alt="C" />
                         <div className="flex flex-col ml-4 text-xl">
                             <Progress
-                                value={
-                                    courses.length > 0 ? courseProgress[courses[0]?._id] || 0 : 0
-                                }
+                                value={progress > 0 ? progress : 0}
                                 className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
                             />
                             <div className="text-xl font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 {courses.length > 0
-                                    ? `${courseProgress[courses[0]?._id] || 0}% completed`
+                                    ? `${progress || 0}% completed`
                                     : 'No progress available'}
                             </div>
                         </div>
