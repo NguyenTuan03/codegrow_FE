@@ -7,7 +7,6 @@ import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
-import { GetProgress } from '@/lib/services/api/progress';
 
 interface Lesson {
     _id: string;
@@ -22,64 +21,38 @@ interface Lesson {
     updatedAt?: string;
 }
 
-interface ProgressData {
-    completedLessons: string[];
-    completedQuizzes: string[];
-    lastLesson: string | null;
-    progress: number;
-}
-
 interface OverviewTabProps {
-    progressPercentage: number;
-    completedModules: { [key: string]: boolean };
+    progress: number; // Replaced progressPercentage
+    completedLessons: { [key: string]: boolean }; // Replaced completedModules
+    completedQuizzes: { [key: string]: boolean };
+    lastLesson: string | null;
     onNavigate: (path: string) => void;
     courseId: string;
 }
 
-export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) {
+export default function OverviewTab({
+    progress,
+    completedLessons,
+    completedQuizzes,
+    lastLesson,
+    onNavigate,
+    courseId,
+}: OverviewTabProps) {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [loading, setLoading] = useState(true);
-    const [progressData, setProgressData] = useState<ProgressData>({
-        completedLessons: [],
-        completedQuizzes: [],
-        lastLesson: null,
-        progress: 0,
-    });
 
     const loadData = async () => {
         try {
             setLoading(true);
-
-            // Load lessons
             const lessonsData = await GetLessons(courseId);
             if (lessonsData?.status === 200 && Array.isArray(lessonsData.metadata)) {
                 setLessons(lessonsData.metadata);
-            }
-            const userId = localStorage.getItem('user');
-            if (!userId) {
-                throw new Error('User ID not found in localStorage');
-            }
-            const user = JSON.parse(userId);
-            const id = user.id;
-            // Load progress
-            const token = localStorage.getItem('token');
-            if (token) {
-                const progressResponse = await GetProgress(token, id, courseId);
-                console.log(progressResponse, 'Progress response from GetProgress');
-                if (progressResponse?.status === 200) {
-                    setProgressData({
-                        completedLessons: progressResponse.metadata.completedLessons || [],
-                        completedQuizzes: progressResponse.metadata.completedQuizzes || [],
-                        lastLesson: progressResponse.metadata.lastLesson || null,
-                        progress: progressResponse.metadata.progress || 0,
-                    });
-                }
             }
         } catch (error) {
             console.error('Error loading data:', error);
             toast({
                 title: 'Error',
-                description: 'Failed to load lesson data',
+                description: 'Failed to load course data',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
@@ -100,8 +73,8 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
 
     const iconMap = {
         video: <PlayCircle className="w-5 h-5" />,
-        reading: <BookOpen className="w-5 h-5 " />,
-        practice: <Code className="w-5 h-5 " />,
+        reading: <BookOpen className="w-5 h-5" />,
+        practice: <Code className="w-5 h-5" />,
     };
 
     const buttonTextMap = {
@@ -111,11 +84,11 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
     };
 
     const isLessonCompleted = (lessonId: string) => {
-        return progressData.completedLessons.includes(lessonId);
+        return completedLessons[lessonId] || false;
     };
 
     const isQuizCompleted = (quizId: string) => {
-        return progressData.completedQuizzes.includes(quizId);
+        return completedQuizzes[quizId] || false;
     };
 
     return (
@@ -127,15 +100,15 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
                 </h3>
                 <div className="flex items-center gap-4 mb-2">
                     <Progress
-                        value={progressData.progress}
+                        value={progress}
                         className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&>div]:bg-[#657ED4] dark:[&>div]:bg-[#5AD3AF]"
                     />
                     <span className="text-base font-medium text-gray-700 dark:text-gray-300">
-                        {Math.round(progressData.progress)}%
+                        {Math.round(progress)}%
                     </span>
                 </div>
                 <div className="text-base text-gray-600 dark:text-gray-400 font-medium">
-                    {progressData.completedLessons.length} of {lessons.length} lessons completed
+                    {Object.keys(completedLessons).length} of {lessons.length} lessons completed
                 </div>
             </div>
 
@@ -148,7 +121,7 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
                     onClick={() => onNavigate(`/customer/courses`)}
                     className="flex items-center cursor-pointer gap-2 text-[#657ED4] dark:text-[#5AD3AF] border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                    <ChevronRight className="w-5  h-5 rotate-180" />
+                    <ChevronRight className="w-5 h-5 rotate-180" />
                     Back to Courses
                 </Button>
             </div>

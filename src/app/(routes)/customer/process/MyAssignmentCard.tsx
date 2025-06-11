@@ -12,6 +12,7 @@ import { Submissioned } from '@/lib/services/api/submissioned';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 interface Props {
     user: {
@@ -44,13 +45,18 @@ export default function MyAssignmentCard({ user }: Props) {
     const handleSubmission = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
-            console.error('Token not found');
-            return;
+            toast({
+                title: 'Lỗi',
+                description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
         }
+        const tokenuser = token ? JSON.parse(token) : null;
 
         try {
             setLoading(true);
-            const response = await Submissioned(token);
+            const response = await Submissioned(tokenuser);
             console.log('Response:', response);
             const userSubmissions = response.metadata.filter(
                 (submission: Submission) => submission.user === user._id,

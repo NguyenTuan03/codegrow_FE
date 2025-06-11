@@ -13,7 +13,6 @@ export const GetProgress = async (token: string, userId: string, courseId: strin
         });
         return res.data;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 };
