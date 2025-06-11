@@ -94,9 +94,14 @@ export default function CourseLearningPage() {
             router.push('/login');
             return;
         }
-
+        const userId = localStorage.getItem('user');
+        if (!userId) {
+            throw new Error('User ID not found in localStorage');
+        }
+        const user = JSON.parse(userId);
+        const id = user.id;
         try {
-            const progress = await GetProgress(token, courseId);
+            const progress = await GetProgress(token, courseId, id || '');
             console.log('Progress:', progress);
 
             if (progress?.percentage !== undefined) {

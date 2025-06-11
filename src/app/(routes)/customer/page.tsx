@@ -71,7 +71,7 @@ const HomePage = () => {
             if (!token) {
                 return 0; // Return 0 progress if not logged in
             }
-            const response = await GetProgress(token, courseId);
+            const response = await GetProgress(token, courseId, user?._id || '');
             console.log(` Progress response for course ${courseId}:`, response);
             const progress = response.metadata?.progress ?? 0;
             return progress;

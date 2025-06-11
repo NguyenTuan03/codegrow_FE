@@ -55,11 +55,17 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
             if (lessonsData?.status === 200 && Array.isArray(lessonsData.metadata)) {
                 setLessons(lessonsData.metadata);
             }
-
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                throw new Error('User ID not found in localStorage');
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
             // Load progress
             const token = localStorage.getItem('token');
             if (token) {
-                const progressResponse = await GetProgress(token, courseId);
+                const progressResponse = await GetProgress(token, id, courseId);
+                console.log(progressResponse, 'Progress response from GetProgress');
                 if (progressResponse?.status === 200) {
                     setProgressData({
                         completedLessons: progressResponse.metadata.completedLessons || [],
@@ -73,7 +79,7 @@ export default function OverviewTab({ onNavigate, courseId }: OverviewTabProps) 
             console.error('Error loading data:', error);
             toast({
                 title: 'Error',
-                description: 'Failed to load course data',
+                description: 'Failed to load lesson data',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
