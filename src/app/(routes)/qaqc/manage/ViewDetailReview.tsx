@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { GetReviewsByMentorId } from '@/lib/services/qaqc/getReviewDetail';
+import { toast } from '@/components/ui/use-toast';
 
 type Review = {
     _id: string;
@@ -46,8 +47,21 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
             setLoading(true);
 
             try {
-                const token = localStorage.getItem('token') || '';
-                const reviews = await GetReviewsByMentorId(mentorId, token);
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    toast({
+                        title: 'Lỗi',
+                        description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                        variant: 'destructive',
+                        className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                    });
+
+                    return;
+                }
+                const tokenuser = JSON.parse(token);
+                console.log('Token user:', tokenuser);
+                const reviews = await GetReviewsByMentorId(mentorId, tokenuser);
                 setAllReviews(reviews);
             } catch (error) {
                 console.error('Error fetching reviews:', error);

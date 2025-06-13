@@ -184,12 +184,22 @@ export default function CourseDetailPage() {
 
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const response = await UpdateCourse(
-                token,
+                tokenuser,
                 courseId,
                 formData.title,
                 formData.description,
@@ -201,7 +211,7 @@ export default function CourseDetailPage() {
 
             // Log the response for debugging
             console.log('UpdateCourse Response in handleSave:', JSON.stringify(response, null, 2));
-            
+
             // Update courseData with the new data from the response
             const updatedCourseData: Course = {
                 ...formData,
@@ -244,11 +254,21 @@ export default function CourseDetailPage() {
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication token is missing');
-            }
 
-            await DeleteCourse(courseId, token);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            await DeleteCourse(courseId, tokenuser);
             toast({
                 title: 'Success',
                 description: 'Course deleted successfully',

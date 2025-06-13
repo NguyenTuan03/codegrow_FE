@@ -115,15 +115,19 @@ const PostForm: React.FC = () => {
         }
 
         const token = localStorage.getItem('token');
+
         if (!token) {
             toast({
-                title: 'Authentication Error',
-                description: 'Authentication token is missing. Please log in.',
+                title: 'Lỗi',
+                description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+
             return;
         }
+        const tokenuser = JSON.parse(token);
+        console.log('Token user:', tokenuser);
 
         const userData = localStorage.getItem('user');
         if (!userData) {
@@ -162,7 +166,7 @@ const PostForm: React.FC = () => {
 
         try {
             const response = await CreatePost({
-                token,
+                token: tokenuser,
                 title: title.trim(),
                 content: content.trim(),
                 courseId,

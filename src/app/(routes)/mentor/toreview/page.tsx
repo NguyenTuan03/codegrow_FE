@@ -12,6 +12,7 @@ import {
 import { GetReviewsByMentorId } from '@/lib/services/qaqc/getReviewDetail';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, User, Calendar } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 // Reuse the GetReviewsByMentorId function and Review type
 type Review = {
@@ -55,8 +56,21 @@ export default function CoursesList() {
 
             setLoading(true);
             try {
-                const token = localStorage.getItem('token') || '';
-                const reviews = await GetReviewsByMentorId(mentorId, token);
+                const token = localStorage.getItem('token');
+
+                if (!token) {
+                    toast({
+                        title: 'Lỗi',
+                        description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                        variant: 'destructive',
+                        className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                    });
+
+                    return;
+                }
+                const tokenuser = JSON.parse(token);
+                console.log('Token user:', tokenuser);
+                const reviews = await GetReviewsByMentorId(mentorId, tokenuser);
                 console.log(' Fetched reviews:', reviews);
                 setAllReviews(reviews);
             } catch (error) {

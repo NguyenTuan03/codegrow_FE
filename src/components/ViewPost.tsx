@@ -83,22 +83,28 @@ const ViewPosts: React.FC = () => {
     const fetchPosts = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token') || '';
-            if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
-            }
+            const token = localStorage.getItem('token');
 
-            const response = await GetPosts(token);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            const response = await GetPosts(tokenuser);
             if (response?.metadata?.posts && response.metadata.posts.length > 0) {
                 const enrichedPosts = await Promise.all(
                     response.metadata.posts.map(async (post: Post) => {
                         try {
                             // Fetch author details
                             const authorResponse = await getUserDetail(post.author);
-                            console.log(
-                                '[Saturday, May 31, 2025, 12:18 PM +07] Check author:',
-                                authorResponse,
-                            );
+                            console.log('', authorResponse);
 
                             // Fetch course details
                             const courseResponse = await viewDetailCourses(post.course._id);
@@ -124,10 +130,7 @@ const ViewPosts: React.FC = () => {
                                 course: courseDetails, // Use detailed course info
                             };
                         } catch (error) {
-                            console.error(
-                                `[Saturday, May 31, 2025, 12:18 PM +07] Failed to fetch details for post ${post._id}:`,
-                                error,
-                            );
+                            console.error(`Failed to fetch details for post ${post._id}:`, error);
                             return {
                                 ...post,
                                 author: {
@@ -147,15 +150,12 @@ const ViewPosts: React.FC = () => {
                     }),
                 );
                 setPosts(enrichedPosts);
-                console.log(
-                    `[Saturday, May 31, 2025, 12:18 PM +07] Fetched posts with author and course details:`,
-                    enrichedPosts,
-                );
+                console.log(`Fetched posts with author and course details:`, enrichedPosts);
             } else {
                 setPosts([]);
             }
         } catch (error) {
-            console.error(`[Saturday, May 31, 2025, 12:18 PM +07] Failed to fetch posts:`, error);
+            console.error(`Failed to fetch posts:`, error);
             toast({
                 title: 'Error',
                 description: 'Failed to fetch posts. Please try again.',

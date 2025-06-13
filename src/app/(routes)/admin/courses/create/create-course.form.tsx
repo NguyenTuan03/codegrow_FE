@@ -121,16 +121,18 @@ export default function CreateCourseForm() {
 
             if (!token) {
                 toast({
-                    title: 'Authentication Error',
-                    description: 'Authentication token is missing. Please log in.',
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
                     variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-                setLoading(false);
+                router.push('/login');
                 return;
             }
-
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             const response = await CreateCourse({
-                token,
+                token: tokenuser,
                 title: data.title,
                 description: data.description || '',
                 price: data.price,

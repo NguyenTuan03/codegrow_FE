@@ -231,9 +231,19 @@ export default function LessonDetail() {
     const handleCreateQuiz = async () => {
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('No authentication token found');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             if (!currentQuiz.questionText?.trim()) {
                 throw new Error('Question text cannot be empty');
@@ -258,7 +268,7 @@ export default function LessonDetail() {
             }
 
             const quizData = {
-                token,
+                token: tokenuser,
                 lesson: lessonId,
                 type: quizType,
                 questionText: currentQuiz.questionText || '',
@@ -299,11 +309,21 @@ export default function LessonDetail() {
         if (!editingQuizId) return;
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('No authentication token found');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             const quizData = {
-                token,
+                token: tokenuser,
                 id: editingQuizId,
                 questionText: currentQuiz.questionText || '',
                 explanation: currentQuiz.explanation || undefined,
@@ -343,11 +363,21 @@ export default function LessonDetail() {
     const handleDeleteQuiz = async (quizId: string) => {
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
 
-            const response = await DeleteQuiz(token, quizId);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            const response = await DeleteQuiz(tokenuser, quizId);
             console.log('DeleteQuiz response:', response);
             if (response.status === 201) {
                 toast({

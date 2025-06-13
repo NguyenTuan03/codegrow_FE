@@ -22,9 +22,21 @@ export default function Meeting() {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
-                console.log('token:', token);
+
+                if (!token) {
+                    toast({
+                        title: 'Lỗi',
+                        description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                        variant: 'destructive',
+                        className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                    });
+                    router.push('/login');
+                    return;
+                }
+                const tokenuser = JSON.parse(token);
+                console.log('Token user:', tokenuser);
                 const user = localStorage.getItem('user');
-                if (!token || !user) {
+                if (!tokenuser || !user) {
                     throw new Error('Authentication token or user ID is missing');
                 }
 
@@ -35,7 +47,7 @@ export default function Meeting() {
                 // Retrieve fullName directly from localStorage
                 const storedFullName = parsedUser.fullname || 'User'; // Use 'fullname' to match decoded token field
                 setFullName(storedFullName);
-                setToken(token);
+                setToken(tokenuser);
             } catch (error) {
                 const errorMessage =
                     error instanceof Error

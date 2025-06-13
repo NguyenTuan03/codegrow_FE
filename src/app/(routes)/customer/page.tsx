@@ -125,12 +125,6 @@ const HomePage = () => {
                 }
             } catch (error) {
                 console.error('Không thể tải tiến độ:', error);
-                toast({
-                    title: 'Lỗi',
-                    description: 'Không thể tải dữ liệu tiến độ.',
-                    variant: 'destructive',
-                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                });
             }
         } catch (error) {
             console.log(`Error fetching progress for course ${courseId}:`, error);

@@ -120,14 +120,23 @@ export default function ContactForm() {
         try {
             setIsSubmitting(true);
 
-            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const token = localStorage.getItem('token');
 
             if (!token) {
-                throw new Error('Authentication required. Please log in.');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const res = await RegisterClass(
-                token,
+                tokenuser,
                 values.fullName.trim(),
                 values.email.trim().toLowerCase(),
                 values.phone.trim(),
