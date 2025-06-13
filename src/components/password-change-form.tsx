@@ -56,16 +56,22 @@ const ChangePasswordForm = () => {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('token') || '';
-            const result = await ChangePassword(token, values.oldPassword, values.newPassword);
+            const token = localStorage.getItem('token');
 
-            toast({
-                title: '🎉 Password changed successfully',
-                description: result.message || 'Your password has been updated.',
-                className:
-                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
-            });
-
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+            const result = await ChangePassword(tokenuser, values.oldPassword, values.newPassword);
+            console.log('Change password result:', result);
             form.reset();
             router.refresh();
         } catch (error) {

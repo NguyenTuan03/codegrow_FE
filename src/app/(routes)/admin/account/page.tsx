@@ -87,7 +87,19 @@ export default function Account() {
     const handleDelete = async (id: string) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await RemoveUser(id, token!);
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            const response = await RemoveUser(id, tokenuser!);
             if (response?.status === 200) {
                 setModal('');
                 toast({
@@ -120,11 +132,22 @@ export default function Account() {
     const handleUpdate = async (id: string, updatedData: Partial<Account>) => {
         try {
             console.log(`Updating user with ID: ${id}`, updatedData);
-            const token = localStorage.getItem('token') || '';
-            console.log('Session ID:', token);
+            const token = localStorage.getItem('token');
 
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             const result = await UpdateAccount(
-                token,
+                tokenuser,
                 id,
                 updatedData.fullName || '',
                 updatedData.email || '',
@@ -171,10 +194,22 @@ export default function Account() {
     }) => {
         try {
             console.log('Creating new user:', newData);
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
 
             const response = await CreateAccount(
-                token,
+                tokenuser,
                 newData.fullName,
                 newData.email,
                 newData.password,

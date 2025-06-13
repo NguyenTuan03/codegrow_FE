@@ -171,12 +171,22 @@ export default function SupportPage() {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token not found');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             await SendSupportService({
-                token,
+                token: tokenuser,
                 title: values.title,
                 message: values.message,
                 courseId: values.courseId || '',

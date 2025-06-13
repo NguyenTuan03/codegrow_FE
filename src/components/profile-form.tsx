@@ -82,10 +82,23 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             const id = profile._id;
             const result = await UpdateAccount(
-                token,
+                tokenuser,
                 id,
                 values.fullName,
                 values.email,

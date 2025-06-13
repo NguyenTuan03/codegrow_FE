@@ -368,9 +368,19 @@ export default function ClassDetailPage() {
 
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const formattedSchedule = {
                 ...schedule,
@@ -379,7 +389,7 @@ export default function ClassDetailPage() {
             };
 
             const response = await UpdateClass(
-                token,
+                tokenuser,
                 classId,
                 title,
                 course._id,
@@ -435,11 +445,21 @@ export default function ClassDetailPage() {
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication token is missing');
-            }
 
-            await DeleteClass(classId, token);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            await DeleteClass(classId, tokenuser);
             toast({
                 title: 'Success',
                 description: 'Class deleted successfully',
@@ -474,13 +494,22 @@ export default function ClassDetailPage() {
             }
 
             const token = localStorage.getItem('token');
-            console.log('Token:', token);
+
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             console.log('Assigning student:', { studentId: _id, classId, fullName });
-            const response = await AssignStudent(token, classId, _id);
+            const response = await AssignStudent(tokenuser, classId, _id);
             console.log('AssignStudent Response:', response);
             window.location.reload();
             if (response.status === '200') {

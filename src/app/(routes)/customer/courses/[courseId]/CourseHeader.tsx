@@ -6,6 +6,7 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Users, BookOpen } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 interface Course {
     _id: string;
@@ -66,9 +67,23 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
 
     const handleAlternativePayment = async (paymentMethod: string) => {
         try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             setLoading(true);
             const res = await alternativePayment({
-                token: localStorage.getItem('token'),
+                token: tokenuser,
                 paymentMethod,
                 course,
             });

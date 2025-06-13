@@ -55,11 +55,21 @@ export default function ServiceTicketReplyForm({
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication token not found');
-            }
 
-            await ReplyService(token, ticketId, values.qaqcReply, values.status);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            await ReplyService(tokenuser, ticketId, values.qaqcReply, values.status);
             toast({
                 title: 'Success',
                 description: 'Reply sent successfully',

@@ -2,12 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { useState, FormEvent } from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 type Account = {
     _id: string;
     fullName: string;
     email: string;
     role: 'mentor' | 'customer' | 'admin';
+    avatar?: string; // Added avatar field to the Account type
 };
 
 export default function UpdateUser({
@@ -45,7 +47,21 @@ export default function UpdateUser({
                 onClick={(e) => e.stopPropagation()}
             >
                 <h2 className="text-xl font-bold mb-4 cursor-default">Update Account</h2>
-                <div className="space-y-4">
+                <div className="space-y-6">
+                    {/* Avatar Section */}
+                    <div className="flex justify-center mb-4">
+                        <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-700 shadow-lg">
+                            <AvatarImage
+                                src={account.avatar || '/default-avatar.png'}
+                                alt={`${account.fullName}'s avatar`}
+                                className="cursor-default"
+                            />
+                            <AvatarFallback className="text-2xl font-semibold text-gray-800 dark:text-gray-100 cursor-default">
+                                {account.fullName.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
+
                     {/* Full Name Field */}
                     <input
                         type="text"

@@ -159,8 +159,17 @@ export default function CreateClassForm() {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             if (data.maxStudents < 1 || data.maxStudents > 30) {
                 throw new Error('Max students must be between 1 and 30.');
@@ -175,7 +184,7 @@ export default function CreateClassForm() {
             };
 
             const result = await CreateClass(
-                token,
+                tokenuser,
                 data.title,
                 data.courseId,
                 data.description || '',

@@ -103,9 +103,20 @@ export default function Classes() {
     const handleAssignMentor = async (classId: string) => {
         try {
             const token = localStorage.getItem('token');
-            console.log('Token:', token);
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
             const user = localStorage.getItem('user');
-            if (!token || !user) {
+            if (!tokenuser || !user) {
                 throw new Error('Authentication token or user ID is missing');
             }
 
@@ -113,7 +124,7 @@ export default function Classes() {
             const userId = parsedUser.id;
             console.log(' User ID:', userId);
 
-            const response = await AssignMentor(token, classId, userId);
+            const response = await AssignMentor(tokenuser, classId, userId);
             console.log('Response:', response);
 
             toast({

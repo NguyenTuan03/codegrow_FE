@@ -268,11 +268,21 @@ export default function CoursesPage() {
         try {
             setPaymentLoading(true);
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             const res = await alternativePayment({
-                token,
+                token: tokenuser,
                 paymentMethod,
                 course: selectedCourse,
             });

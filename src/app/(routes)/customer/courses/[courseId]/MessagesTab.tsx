@@ -69,9 +69,19 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
     const fetchMessages = async () => {
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication required');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const response = await GetComment(courseId);
             if (!response || !response.metadata) {
@@ -187,9 +197,19 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication required');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             console.log('📢 postMessage called with:', {
                 isReply,
@@ -199,7 +219,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             });
 
             await CreateComment({
-                token,
+                token: tokenuser,
                 courseId,
                 rating: commentRating ?? 0,
                 comment: content,

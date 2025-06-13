@@ -24,18 +24,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Eye, Upload, PlusCircle } from 'lucide-react';
+import { Eye, Upload, PlusCircle } from 'lucide-react';
 import { CreateLesson } from '@/lib/services/lessons/createLesson';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
-import { GenerateUploadUrl } from '@/lib/services/lessons/generateuploadurl';
-import { UploadVideo } from '@/lib/services/lessons/uploadvideo';
 
 interface Lesson {
     _id: string;
     title: string;
     content?: string;
     status?: string;
-    videoUrl?: string;
+    free_url?: string;
     videoKey?: string;
     quiz?: string[];
     order: number;
@@ -54,17 +52,15 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-    const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         content: '',
         order: 0,
-        videoUrl: '',
-        videoKey: '',
+        free_url: '',
         quiz: [] as string[],
     });
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [uploadLoading, setUploadLoading] = useState(false);
+    const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+
     const router = useRouter();
 
     const isFreeCourse = coursePrice === 0;
@@ -82,7 +78,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                         title: lesson.title,
                         content: lesson.content,
                         status: lesson.status,
-                        videoUrl: lesson.videoUrl,
+                        free_url: lesson.free_url,
                         videoKey: lesson.videoKey,
                         quiz: lesson.quiz,
                         order: lesson.order,
@@ -118,96 +114,46 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                 title: '',
                 content: '',
                 order: 0,
-                videoUrl: '',
-                videoKey: '',
+                free_url: '',
                 quiz: [],
             });
+            setSelectedVideo(null);
         }
     }, [isCreateDialogOpen]);
-
-    useEffect(() => {
-        if (!isUploadDialogOpen) {
-            setSelectedFile(null);
-            setUploadLoading(false);
-        }
-    }, [isUploadDialogOpen]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setSelectedFile(e.target.files[0]);
-        }
-    };
-
-    const handleFileUpload = async (): Promise<boolean> => {
-        if (!selectedFile) {
-            toast({
-                title: 'Error',
-                description: 'Please select a file to upload',
-                variant: 'destructive',
-            });
-            return false;
-        }
-
-        try {
-            setUploadLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication token is missing');
+    const handleVideoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+            if (!validTypes.includes(file.type)) {
+                toast({
+                    title: '❌ Invalid File Type',
+                    description: 'Please upload a video file (MP4, WebM, or OGG).',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
             }
 
-            const uploadData = await GenerateUploadUrl({
-                token,
-                fileName: selectedFile.name,
-                fileType: selectedFile.type,
-            });
-
-            if (!uploadData || !uploadData.metadata || !uploadData.metadata.uploadUrl) {
-                throw new Error('Failed to generate upload URL');
+            const maxSize = 50 * 1024 * 1024; // 50MB limit
+            if (file.size > maxSize) {
+                toast({
+                    title: '❌ File Too Large',
+                    description: 'Please upload a video smaller than 50MB.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
             }
 
-            const uploadUrl = uploadData.metadata.uploadUrl;
-            const videoKey = uploadData.metadata.key;
-            const publicUrl = uploadData.metadata.publicUrl;
-            console.log('uploadUrl', uploadData);
-            if (uploadData.status === 201) {
-                const response = await UploadVideo(selectedFile.type, uploadUrl);
-                if (response.status !== 200) {
-                    throw new Error('Failed to upload video');
-                }
-            } else {
-                throw new Error('Failed to generate upload URL with status 201');
-            }
-
-            setFormData((prev) => ({
-                ...prev,
-                videoUrl: publicUrl,
-                videoKey: videoKey,
-            }));
-
-            toast({
-                title: 'Success',
-                description: 'Video uploaded successfully',
-                variant: 'default',
-                className: 'bg-[#657ED4] text-white',
-            });
-
-            setSelectedFile(null);
-            return true;
-        } catch (error) {
-            console.error('Failed to upload file:', error);
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to upload video',
-                variant: 'destructive',
-            });
-            return false;
-        } finally {
-            setUploadLoading(false);
+            setSelectedVideo(file);
+        } else {
+            setSelectedVideo(null);
         }
     };
 
@@ -215,14 +161,21 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                throw new Error('Authentication token is missing');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
             }
-
+            const tokenuser = JSON.parse(token);
             if (
                 isFreeCourse &&
-                formData.videoUrl &&
+                formData.free_url &&
                 !/^https?:\/\/(www\.)?(youtube\.com|player\.vimeo\.com|youtu\.be)/.test(
-                    formData.videoUrl,
+                    formData.free_url,
                 )
             ) {
                 toast({
@@ -233,7 +186,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                 return;
             }
 
-            if (!isFreeCourse && !formData.videoUrl) {
+            if (!isFreeCourse && !selectedVideo) {
                 toast({
                     title: 'Error',
                     description: 'Please upload a video for this paid course.',
@@ -243,13 +196,13 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
             }
 
             await CreateLesson({
-                token,
+                token: tokenuser,
                 course: courseId,
                 title: formData.title,
                 content: formData.content,
                 order: formData.order,
-                videoUrl: formData.videoUrl || undefined,
-                videoKey: isFreeCourse ? undefined : formData.videoKey || undefined,
+                video: !isFreeCourse ? (selectedVideo ?? undefined) : undefined,
+                free_url: isFreeCourse ? formData.free_url : undefined,
                 quiz: formData.quiz.length > 0 ? formData.quiz : undefined,
             });
 
@@ -264,10 +217,10 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                 title: '',
                 content: '',
                 order: 0,
-                videoUrl: '',
-                videoKey: '',
+                free_url: '',
                 quiz: [],
             });
+            setSelectedVideo(null);
             setIsCreateDialogOpen(false);
             loadLessons();
         } catch (error) {
@@ -395,15 +348,15 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                     {isFreeCourse ? (
                                         <div>
                                             <Label
-                                                htmlFor="videoUrl"
+                                                htmlFor="free_url"
                                                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
                                             >
                                                 Video URL
                                             </Label>
                                             <Input
-                                                id="videoUrl"
-                                                name="videoUrl"
-                                                value={formData.videoUrl}
+                                                id="free_url"
+                                                name="free_url"
+                                                value={formData.free_url}
                                                 onChange={handleInputChange}
                                                 placeholder="Enter video URL (e.g., YouTube link)..."
                                                 className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
@@ -417,88 +370,31 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                             >
                                                 Video
                                             </Label>
-                                            {formData.videoUrl ? (
-                                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                                    <a
-                                                        href={formData.videoUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-[#657ED4] hover:underline truncate max-w-[150px]"
-                                                        title={formData.videoUrl}
-                                                    >
-                                                        {formData.videoUrl.slice(0, 30) +
-                                                            (formData.videoUrl.length > 30
-                                                                ? '...'
-                                                                : '')}
-                                                    </a>
-                                                </p>
-                                            ) : (
-                                                <Dialog
-                                                    open={isUploadDialogOpen}
-                                                    onOpenChange={setIsUploadDialogOpen}
+                                            <div className="flex items-center gap-4">
+                                                <label
+                                                    htmlFor="video-upload"
+                                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                                                 >
-                                                    <DialogTrigger asChild>
-                                                        <Button className="mt-2 w-full sm:w-auto bg-[#657ED4] hover:bg-[#424c70] text-white flex items-center gap-2 cursor-pointer">
-                                                            <Upload className="h-5 w-5" />
-                                                            Upload Video
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg">
-                                                        <DialogHeader>
-                                                            <DialogTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                                                Upload Video
-                                                            </DialogTitle>
-                                                        </DialogHeader>
-                                                        <div className="space-y-4 mt-4">
-                                                            <div>
-                                                                <Label
-                                                                    htmlFor="video-upload"
-                                                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                                                                >
-                                                                    Select Video
-                                                                </Label>
-                                                                <Input
-                                                                    id="video-upload"
-                                                                    type="file"
-                                                                    accept="video/*"
-                                                                    onChange={handleFileSelect}
-                                                                    className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
-                                                                />
-                                                            </div>
-                                                            <Button
-                                                                onClick={async () => {
-                                                                    const success =
-                                                                        await handleFileUpload();
-                                                                    if (success) {
-                                                                        setIsUploadDialogOpen(
-                                                                            false,
-                                                                        );
-                                                                    }
-                                                                }}
-                                                                disabled={
-                                                                    !selectedFile || uploadLoading
-                                                                }
-                                                                className={`w-full bg-[#657ED4] text-white flex items-center justify-center gap-2 cursor-pointer ${
-                                                                    !selectedFile || uploadLoading
-                                                                        ? 'opacity-50 cursor-not-allowed'
-                                                                        : 'hover:bg-[#424c70]'
-                                                                }`}
-                                                            >
-                                                                {uploadLoading ? (
-                                                                    <>
-                                                                        <Loader2 className="h-5 w-5 animate-spin" />
-                                                                        Uploading...
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <Upload className="h-5 w-5" />
-                                                                        Upload Video
-                                                                    </>
-                                                                )}
-                                                            </Button>
-                                                        </div>
-                                                    </DialogContent>
-                                                </Dialog>
+                                                    <Upload className="h-5 w-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    <span className="text-gray-700 dark:text-gray-300">
+                                                        Upload Video
+                                                    </span>
+                                                    <input
+                                                        id="video-upload"
+                                                        type="file"
+                                                        accept="video/mp4,video/webm,video/ogg"
+                                                        onChange={handleVideoUpload}
+                                                        className="hidden"
+                                                    />
+                                                </label>
+                                            </div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                                Optional: Upload a video (MP4, WebM, OGG, max 50MB)
+                                            </p>
+                                            {selectedVideo && (
+                                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                                    {selectedVideo.name}
+                                                </p>
                                             )}
                                         </div>
                                     )}
@@ -589,17 +485,17 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                 <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                                     <span>Order: {lesson.order}</span>
                                                 </div>
-                                                {lesson.videoUrl && (
+                                                {lesson.free_url && (
                                                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                                         <a
-                                                            href={lesson.videoUrl}
+                                                            href={lesson.free_url}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="text-[#657ED4] hover:underline truncate max-w-[150px] cursor-pointer"
-                                                            title={lesson.videoUrl}
+                                                            title={lesson.free_url}
                                                         >
-                                                            {lesson.videoUrl.slice(0, 20) +
-                                                                (lesson.videoUrl.length > 20
+                                                            {lesson.free_url.slice(0, 20) +
+                                                                (lesson.free_url.length > 20
                                                                     ? '...'
                                                                     : '')}
                                                         </a>
