@@ -38,6 +38,7 @@ interface Lesson {
     content?: string;
     videoUrl?: string;
     videoKey?: string;
+    free_url?: string; // Added free_url to interface
     order: number;
 }
 
@@ -546,7 +547,26 @@ export default function LessonDetail() {
                                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                         Video
                                     </Label>
-                                    {lesson?.videoUrl ? (
+                                    {lesson?.free_url ? (
+                                        <div className="relative aspect-video">
+                                            <iframe
+                                                src={transformYouTubeUrl(lesson.free_url)}
+                                                title="Lesson Video"
+                                                className="w-full h-full rounded-lg shadow-md"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                                onError={(e) => {
+                                                    console.error('Iframe error:', e);
+                                                    toast({
+                                                        title: 'Error',
+                                                        description:
+                                                            'Failed to load video. Please check the URL.',
+                                                        variant: 'destructive',
+                                                    });
+                                                }}
+                                            ></iframe>
+                                        </div>
+                                    ) : lesson?.videoUrl ? (
                                         <div className="relative aspect-video">
                                             <iframe
                                                 src={transformYouTubeUrl(lesson.videoUrl)}

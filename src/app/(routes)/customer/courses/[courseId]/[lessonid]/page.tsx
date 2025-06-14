@@ -33,7 +33,8 @@ interface Lesson {
     _id: string;
     title: string;
     content?: string;
-    videoUrl?: string;
+    videoUrl?: string; // For watching lessons
+    free_url?: string; // For watching lessons
     videoKey?: string;
     order: number;
 }
@@ -267,29 +268,48 @@ export default function LessonDetail() {
                         {/* Lesson Content Tab */}
                         <TabsContent value="content" className="space-y-6">
                             {/* Video Section */}
-                            {lesson.videoUrl && (
-                                <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-                                    <div className="bg-gray-900 aspect-video relative flex items-center justify-center">
-                                        <iframe
-                                            src={transformYouTubeUrl(lesson.videoUrl)}
-                                            title="Lesson Video"
-                                            className="w-full h-full rounded-lg cursor-pointer"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                            onError={(e) => {
-                                                console.error('Iframe error:', e);
-                                                toast({
-                                                    title: 'Error',
-                                                    description:
-                                                        'Failed to load video. Please ensure the URL is valid.',
-                                                    variant: 'destructive',
-                                                    className:
-                                                        'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                                                });
-                                            }}
-                                        ></iframe>
-                                    </div>
-                                </Card>
+                            {lesson?.free_url ? (
+                                <div className="relative aspect-video">
+                                    <iframe
+                                        src={transformYouTubeUrl(lesson.free_url)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg shadow-md"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please check the URL.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
+                                    ></iframe>
+                                </div>
+                            ) : lesson?.videoUrl ? (
+                                <div className="relative aspect-video">
+                                    <iframe
+                                        src={transformYouTubeUrl(lesson.videoUrl)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg shadow-md"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please check the URL.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
+                                    ></iframe>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
+                                    No video available
+                                </p>
                             )}
 
                             {/* Lesson Content */}
@@ -451,496 +471,3 @@ export default function LessonDetail() {
         </div>
     );
 }
-// 'use client';
-
-// import { useState, useEffect } from 'react';
-// import { useRouter, useParams } from 'next/navigation';
-// import { Button } from '@/components/ui/button';
-// import { toast } from '@/components/ui/use-toast';
-// import {
-//   Loader2,
-//   BookOpen,
-//   CheckCircle,
-//   ArrowLeft,
-//   Play,
-//   Code,
-//   ListChecks,
-//   Info,
-//   PanelRightOpen,
-//   PlayCircle,
-// } from 'lucide-react';
-// import { viewDetailLesson } from '@/lib/services/lessons/getdetailllesson';
-// import { GetQuiz } from '@/lib/services/quizs/getquiz';
-// import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-// import { Badge } from '@/components/ui/badge';
-// import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// import { MarkLesson } from '@/lib/services/api/markalesson';
-
-// interface Lesson {
-//   _id: string;
-//   title: string;
-//   content?: string;
-//   videoUrl?: string; // For watching lessons
-//   videoKey?: string;
-//   order: number;
-//   type: 'reading' | 'watching'; // Explicit type field
-//   urlMaterial?: string; // For reading lessons
-//   description?: string; // For reading lessons
-// }
-
-// interface Option {
-//   text: string;
-//   isCorrect: boolean;
-// }
-
-// interface TestCase {
-//   input: string;
-//   expectedOutput: string;
-// }
-
-// interface Quiz {
-//   _id: string;
-//   lesson: string;
-//   type: 'multiple_choice' | 'coding';
-//   questionText: string;
-//   explanation: string;
-//   options?: Option[];
-//   starterCode?: string;
-//   expectedOutput?: string;
-//   language?: string;
-//   testCases?: TestCase[];
-// }
-
-// export default function LessonDetail() {
-//   const [lesson, setLesson] = useState<Lesson | null>(null);
-//   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [isMarked, setIsMarked] = useState(false);
-//   const [isMarking, setIsMarking] = useState(false);
-//   const router = useRouter();
-//   const params = useParams();
-//   const lessonId = params.lessonid as string;
-//   const courseId = params.courseId as string;
-
-//   // Helper function to transform YouTube URL into embed format
-//   const transformYouTubeUrl = (url: string): string => {
-//     try {
-//       const urlObj = new URL(url);
-//       let videoId: string | null = null;
-
-//       // Handle standard YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
-//       if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
-//         videoId = urlObj.searchParams.get('v');
-//       }
-//       // Handle shortened YouTube URL (e.g., https://youtu.be/VIDEO_ID)
-//       else if (urlObj.hostname.includes('youtu.be')) {
-//         videoId = urlObj.pathname.split('/')[1];
-//       }
-
-//       if (videoId) {
-//         return `https://www.youtube.com/embed/${videoId}`;
-//       }
-
-//       // If URL is already in embed format or not a YouTube URL, return as-is
-//       if (urlObj.pathname.includes('/embed/')) {
-//         return url;
-//       }
-
-//       // Return original URL if transformation fails (e.g., for Vimeo or other providers)
-//       return url;
-//     } catch (error) {
-//       console.error('Failed to transform YouTube URL:', error);
-//       return url; // Fallback to original URL
-//     }
-//   };
-
-//   // Load lesson details (without quizzes)
-//   const loadLessonDetails = async () => {
-//     try {
-//       setLoading(true);
-//       const response = await viewDetailLesson(lessonId);
-//       console.log('viewDetailLesson response:', response);
-
-//       const lessonData = response.metadata;
-//       setLesson(lessonData);
-//       console.log('Lesson details loaded:', lessonData);
-//     } catch (error) {
-//       toast({
-//         title: 'Error',
-//         description: error instanceof Error ? error.message : 'Failed to load lesson details',
-//         variant: 'destructive',
-//       });
-//     }
-//   };
-
-//   // Load all quizzes for the lesson
-//   const loadAllQuiz = async () => {
-//     try {
-//       const response = await GetQuiz(lessonId);
-//       console.log('GetQuiz response:', response);
-
-//       const quizData = response.metadata || [];
-//       setQuizzes(quizData);
-//     } catch (error) {
-//       setQuizzes([]);
-//       toast({
-//         title: 'Error',
-//         description: error instanceof Error ? error.message : 'Failed to load quizzes',
-//         variant: 'destructive',
-//       });
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleMarkAsCompleted = async () => {
-//     try {
-//       const token = localStorage.getItem('token') || '';
-//       setIsMarking(true);
-//       await MarkLesson(token, lessonId, courseId);
-//       setIsMarked(true);
-//       toast({
-//         title: 'Success',
-//         description: 'Lesson marked as completed!',
-//         variant: 'default',
-//         className: 'bg-[#5AD3AF] text-black',
-//       });
-//     } catch (error) {
-//       toast({
-//         title: 'Error',
-//         description:
-//           error instanceof Error ? error.message : 'Failed to mark lesson as completed',
-//         variant: 'destructive',
-//       });
-//     } finally {
-//       setIsMarking(false);
-//     }
-//   };
-
-//   // Load lesson and quizzes on mount
-//   useEffect(() => {
-//     console.log('Lesson ID:', lessonId);
-
-//     const fetchData = async () => {
-//       await loadLessonDetails();
-//       await loadAllQuiz();
-//     };
-//     fetchData();
-//   }, [lessonId]);
-
-//   // Handle "Take" quiz button
-//   const handleTakeQuiz = (quizId: string) => {
-//     router.push(`/customer/courses/${courseId}/${lessonId}/${quizId}`);
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-//         <Loader2 className="h-12 w-12 animate-spin text-[#5AD3AF] mb-4" />
-//         <p className="text-[#657ED4] dark:text-[#5AD3AF] font-medium">Loading lesson content...</p>
-//       </div>
-//     );
-//   }
-
-//   if (!lesson) {
-//     return (
-//       <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-//         <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-//           <Info className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-//           <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300">
-//             Lesson Not Found
-//           </h3>
-//           <p className="mt-2 text-gray-600 dark:text-gray-400">
-//             The lesson you are looking for doesn’t seem to exist.
-//           </p>
-//           <Button
-//             onClick={() => router.push(`/customer/courses/${courseId}`)}
-//             className="mt-6 bg-[#657ED4] hover:bg-[#5068C2] text-white rounded-lg px-6 py-2"
-//           >
-//             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Course
-//           </Button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-//       <div className="max-w-6xl mx-auto space-y-8">
-//         {/* Lesson Header */}
-//         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
-//           <div className="flex items-center gap-4">
-//             <Button
-//               variant="outline"
-//               size="icon"
-//               onClick={() => router.push(`/customer/courses/${courseId}`)}
-//               className="rounded-full text-[#5AD3AF] border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:text-[#5AD3AF] dark:border-[#5AD3AF] dark:hover:bg-[#5AD3AF] dark:hover:text-white"
-//             >
-//               <ArrowLeft className="h-5 w-5" />
-//             </Button>
-//             <div className="flex items-center gap-3">
-//               <div className="w-1.5 h-8 bg-[#5AD3AF] rounded-full" />
-//               <div>
-//                 <div className="flex items-center gap-3">
-//                   <Badge className="bg-[#5AD3AF]/10 text-[#5AD3AF] dark:bg-[#5AD3AF]/20 dark:text-[#5AD3AF] font-medium">
-//                     Lesson {lesson.order}
-//                   </Badge>
-//                   <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-//                     {lesson.title}
-//                   </h1>
-//                 </div>
-//                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-//                   {lesson.type.charAt(0).toUpperCase() + lesson.type.slice(1)} Lesson
-//                 </p>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Main Content */}
-//         <div className="grid grid-cols-1 gap-8">
-//           <Tabs defaultValue="content" className="w-full">
-//             <TabsList className="grid grid-cols-2 gap-4 mb-6 bg-gray-100 dark:bg-gray-800 p-2 rounded-lg">
-//               <TabsTrigger
-//                 value="content"
-//                 className="flex items-center gap-2 data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg"
-//               >
-//                 <BookOpen className="h-4 w-4" />
-//                 Lesson Content
-//               </TabsTrigger>
-//               <TabsTrigger
-//                 value="quizzes"
-//                 className="flex items-center gap-2 data-[state=active]:bg-[#5AD3AF] data-[state=active]:text-white rounded-lg"
-//               >
-//                 <ListChecks className="h-4 w-4" />
-//                 Practice Quizzes ({quizzes.length})
-//               </TabsTrigger>
-//             </TabsList>
-
-//             {/* Lesson Content Tab */}
-//             <TabsContent value="content" className="space-y-6">
-//               {/* Video or Reading Material Section */}
-//               {lesson.type === 'watching' && lesson.videoUrl ? (
-//                 <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-//                   <div className="bg-gray-900 aspect-video relative flex items-center justify-center">
-//                     <iframe
-//                       src={transformYouTubeUrl(lesson.videoUrl)}
-//                       title="Lesson Video"
-//                       className="w-full h-full rounded-lg"
-//                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-//                       allowFullScreen
-//                       onError={(e) => {
-//                         console.error('Iframe error:', e);
-//                         toast({
-//                           title: 'Error',
-//                           description: 'Failed to load video. Please ensure the URL is valid.',
-//                           variant: 'destructive',
-//                         });
-//                       }}
-//                     ></iframe>
-//                   </div>
-//                 </Card>
-//               ) : lesson.type === 'reading' ? (
-//                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-//                   <CardHeader className="pb-3">
-//                     <CardTitle className="text-xl text-[#5AD3AF] flex items-center gap-2">
-//                       <BookOpen className="h-5 w-5" />
-//                       Reading Material
-//                     </CardTitle>
-//                     <CardDescription className="text-gray-600 dark:text-gray-400">
-//                       Access the reading material and its description below.
-//                     </CardDescription>
-//                   </CardHeader>
-//                   <CardContent className="space-y-4">
-//                     <div className="space-y-2">
-//                       <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-//                         Reading Material URL
-//                       </Label>
-//                       {lesson.urlMaterial ? (
-//                         <a
-//                           href={lesson.urlMaterial}
-//                           target="_blank"
-//                           rel="noopener noreferrer"
-//                           className="text-[#5AD3AF] hover:underline truncate max-w-[300px] block text-sm"
-//                         >
-//                           {lesson.urlMaterial.length > 50
-//                             ? lesson.urlMaterial.slice(0, 50) + '...'
-//                             : lesson.urlMaterial}
-//                         </a>
-//                       ) : (
-//                         <p className="text-sm text-gray-600 dark:text-gray-400">
-//                           No reading material URL available
-//                         </p>
-//                       )}
-//                     </div>
-//                     <div className="space-y-2">
-//                       <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-//                         Description
-//                       </Label>
-//                       <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-//                         <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
-//                           {lesson.description || 'No description available'}
-//                         </p>
-//                       </div>
-//                     </div>
-//                   </CardContent>
-//                 </Card>
-//               ) : (
-//                 <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-//                   <CardContent className="p-6">
-//                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-//                       No video or reading material available for this lesson.
-//                     </p>
-//                   </CardContent>
-//                 </Card>
-//               )}
-
-//               {/* Lesson Content */}
-//               <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-//                 <CardHeader className="pb-3">
-//                   <CardTitle className="text-xl text-[#5AD3AF] flex items-center gap-2">
-//                     <BookOpen className="h-5 w-5" />
-//                     Lesson Materials
-//                   </CardTitle>
-//                   <CardDescription className="text-gray-600 dark:text-gray-400">
-//                     Read through the content carefully to prepare for the practice quizzes.
-//                   </CardDescription>
-//                 </CardHeader>
-//                 <CardContent className="p-6">
-//                   <div className="prose prose-slate dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed">
-//                     {lesson.content ? (
-//                       <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
-//                     ) : (
-//                       <p className="text-gray-500 dark:text-gray-400 italic">
-//                         No written content available for this lesson. Please refer to the{' '}
-//                         {lesson.type === 'watching' ? 'video' : 'reading material'}.
-//                       </p>
-//                     )}
-//                   </div>
-//                 </CardContent>
-//                 <CardFooter className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-4 p-6 gap-4">
-//                   <Button
-//                     variant="outline"
-//                     onClick={handleMarkAsCompleted}
-//                     disabled={isMarked || isMarking}
-//                     className={`${
-//                       isMarked
-//                         ? 'bg-green-50 text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700/30'
-//                         : 'text-[#5AD3AF] border-[#5AD3AF] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white'
-//                     } rounded-lg px-6 py-2`}
-//                   >
-//                     {isMarking ? (
-//                       <>
-//                         <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-t-transparent border-current"></span>
-//                         Marking...
-//                       </>
-//                     ) : isMarked ? (
-//                       <>
-//                         <CheckCircle className="mr-2 h-4 w-4" />
-//                         Completed
-//                       </>
-//                     ) : (
-//                       <>
-//                         <CheckCircle className="mr-2 h-4 w-4" />
-//                         Mark as Completed
-//                       </>
-//                     )}
-//                   </Button>
-
-//                   <Button
-//                     variant="outline"
-//                     onClick={() => document.getElementById('quizzes-tab')?.click()}
-//                     className="text-[#657ED4] border-[#657ED4] dark:text-[#657ED4] dark:border-[#657ED4] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#657ED4] dark:hover:text-white rounded-lg px-6 py-2"
-//                   >
-//                     Continue to Quizzes
-//                     <PanelRightOpen className="ml-2 h-4 w-4" />
-//                   </Button>
-//                 </CardFooter>
-//               </Card>
-//             </TabsContent>
-
-//             {/* Quizzes Tab (unchanged) */}
-//             <TabsContent value="quizzes" id="quizzes-tab" className="space-y-6">
-//               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-//                 {quizzes.length > 0 ? (
-//                   quizzes.map((quiz) => (
-//                     <Card
-//                       key={quiz._id}
-//                       className="overflow-hidden border transition-shadow hover:shadow-md"
-//                     >
-//                       <CardHeader className="bg-gray-50 dark:bg-gray-800/50 pb-4">
-//                         <div className="flex justify-between items-start">
-//                           <Badge
-//                             className={`${
-//                               quiz.type === 'multiple_choice'
-//                                 ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300'
-//                                 : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
-//                             } mb-2`}
-//                           >
-//                             {quiz.type === 'multiple_choice' ? (
-//                               <>
-//                                 <ListChecks className="h-3 w-3 mr-1" /> Multiple Choice
-//                               </>
-//                             ) : (
-//                               <>
-//                                 <Code className="h-3 w-3 mr-1" /> Coding Challenge
-//                               </>
-//                             )}
-//                           </Badge>
-//                         </div>
-//                         <CardTitle className="text-lg font-semibold line-clamp-2">
-//                           {quiz.questionText}
-//                         </CardTitle>
-//                       </CardHeader>
-//                       <CardContent className="pt-4">
-//                         {quiz.type === 'multiple_choice' ? (
-//                           <p className="text-gray-600 dark:text-gray-400 text-sm">
-//                             Multiple choice quiz with {quiz.options?.length || 0} options
-//                           </p>
-//                         ) : (
-//                           <p className="text-gray-600 dark:text-gray-400 text-sm">
-//                             Coding challenge in {quiz.language} with{' '}
-//                             {quiz.testCases?.length || 0} test cases
-//                           </p>
-//                         )}
-//                       </CardContent>
-//                       <CardFooter className="flex justify-end pt-2 pb-4">
-//                         <Button
-//                           onClick={() => handleTakeQuiz(quiz._id)}
-//                           className="bg-[#657ED4] hover:bg-[#4F65C0] text-white dark:bg-[#5AD3AF] dark:hover:bg-[#41B596] dark:text-gray-900"
-//                         >
-//                           {quiz.type === 'multiple_choice' ? (
-//                             <>
-//                               Take Quiz <CheckCircle className="ml-2 h-4 w-4" />
-//                             </>
-//                           ) : (
-//                             <>
-//                               Solve Challenge <Play className="ml-2 h-4 w-4" />
-//                             </>
-//                           )}
-//                         </Button>
-//                       </CardFooter>
-//                     </Card>
-//                   ))
-//                 ) : (
-//                   <Card className="col-span-full">
-//                     <CardHeader>
-//                       <CardTitle className="text-center text-gray-500 dark:text-gray-400">
-//                         No Quizzes Available
-//                       </CardTitle>
-//                     </CardHeader>
-//                     <CardContent>
-//                       <p className="text-center text-gray-500 dark:text-gray-400">
-//                         There are no practice quizzes for this lesson yet.
-//                       </p>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-//               </div>
-//             </TabsContent>
-//           </Tabs>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

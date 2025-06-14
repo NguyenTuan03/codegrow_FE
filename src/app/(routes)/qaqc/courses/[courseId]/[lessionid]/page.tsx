@@ -35,7 +35,8 @@ interface Lesson {
     _id: string;
     title: string;
     content?: string;
-    videoUrl?: string;
+    videoUrl?: string; // For watching lessons
+    free_url?: string;
     videoKey?: string;
     quiz?: Quiz[];
     status: 'pending' | 'done';
@@ -404,35 +405,48 @@ export default function LessonDetail() {
                             <Label className="text-base font-semibold text-gray-700 dark:text-gray-200">
                                 Video
                             </Label>
-                            {lesson.videoUrl ? (
-                                <Card className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-                                    <div className="bg-gray-900 aspect-video relative flex items-center justify-center">
-                                        <iframe
-                                            src={transformYouTubeUrl(lesson.videoUrl)}
-                                            title="Lesson Video"
-                                            className="w-full h-full rounded-lg"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                            onError={(e) => {
-                                                console.error('Iframe error:', e);
-                                                toast({
-                                                    title: 'Error',
-                                                    description:
-                                                        'Failed to load video. Please ensure the URL is valid.',
-                                                    variant: 'destructive',
-                                                    className:
-                                                        'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                                                });
-                                            }}
-                                        ></iframe>
-                                    </div>
-                                </Card>
+                            {lesson?.free_url ? (
+                                <div className="relative aspect-video">
+                                    <iframe
+                                        src={transformYouTubeUrl(lesson.free_url)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg shadow-md"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please check the URL.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
+                                    ></iframe>
+                                </div>
+                            ) : lesson?.videoUrl ? (
+                                <div className="relative aspect-video">
+                                    <iframe
+                                        src={transformYouTubeUrl(lesson.videoUrl)}
+                                        title="Lesson Video"
+                                        className="w-full h-full rounded-lg shadow-md"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onError={(e) => {
+                                            console.error('Iframe error:', e);
+                                            toast({
+                                                title: 'Error',
+                                                description:
+                                                    'Failed to load video. Please check the URL.',
+                                                variant: 'destructive',
+                                            });
+                                        }}
+                                    ></iframe>
+                                </div>
                             ) : (
-                                <Card className="p-4 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 rounded-lg text-center">
-                                    <p className="text-gray-500 dark:text-gray-400 italic font-medium">
-                                        No video available
-                                    </p>
-                                </Card>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
+                                    No video available
+                                </p>
                             )}
                         </div>
                     </div>
