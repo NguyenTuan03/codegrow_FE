@@ -2,6 +2,7 @@ import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
     label: string;
+    description?: string;
 };
 
 export const FEnodes: Node<Partial<CustomNodeData>>[] = [
