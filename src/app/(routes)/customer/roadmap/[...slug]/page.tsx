@@ -161,7 +161,19 @@ const Page = () => {
         roadmapData['React'] ||
         roadmapData['Java'] ||
         roadmapData['Backend'] ||
-        roadmapData['Devops'];
+        roadmapData['Devops'] ||
+        roadmapData['AIDataScientist'] ||
+        roadmapData['Android'] ||
+        roadmapData['IOS'] ||
+        roadmapData['QA'] ||
+        roadmapData['PostgreSQL'] ||
+        roadmapData['CyberSecurity'] ||
+        roadmapData['MLOps'] ||
+        roadmapData['ProductManager'] ||
+        roadmapData['BlockChain'] ||
+        roadmapData['TechnicalWriter'] ||
+        roadmapData['UIDesign'] ||
+        roadmapData['DeveloperRelations'];
 
     const handleBackClick = () => {
         router.push('/customer/roadmap');
