@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,7 @@ import { GetComment } from '@/lib/services/course/getComment';
 import { Input } from '@/components/ui/input';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
+import { debounce } from 'lodash';
 
 interface Category {
     _id: string;
@@ -299,7 +300,7 @@ export default function CoursesPage() {
                 });
             }
         } catch (error) {
-            console.error(' Payment error:', error);
+            console.error('Payment error:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to process payment. Please try again.',
@@ -310,13 +311,36 @@ export default function CoursesPage() {
         }
     };
 
+    // Sử dụng useCallback để tối ưu hóa debounce
+    const debouncedSearch = useCallback(
+        debounce((searchTerm) => {
+            if (!searchTerm) {
+                setFilteredCourses(courses); // Khôi phục danh sách gốc nếu không có từ khóa
+                return;
+            }
+            const filtered = courses.filter(
+                (course) =>
+                    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    course.description.toLowerCase().includes(searchTerm.toLowerCase()),
+            );
+            setFilteredCourses(filtered); // Cập nhật danh sách đã lọc
+        }, 300), // Độ trễ 300ms
+        [courses], // Phụ thuộc vào courses để lọc trên dữ liệu hiện tại
+    );
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setSearchQuery(value); // Cập nhật trạng thái tìm kiếm
+        debouncedSearch(value); // Gọi hàm debounce với giá trị mới
+    };
+
     return (
         <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
                 <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:[#5AD3AF]">
+                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:text-[#5AD3AF]">
                             Discover Amazing Courses
                         </h1>
                         <p className="mt-3 text-xl text-gray-600 dark:text-gray-300">
@@ -334,8 +358,8 @@ export default function CoursesPage() {
                             type="text"
                             placeholder="Search courses..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm"
+                            onChange={handleSearchChange}
+                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
@@ -442,13 +466,13 @@ export default function CoursesPage() {
                                                 <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-10">
                                                     {course.title}
                                                 </h4>
-                                                <p className="text-xl  text-gray-500 dark:text-gray-400">
+                                                <p className="text-xl text-gray-500 dark:text-gray-400">
                                                     by {course.author}
                                                 </p>
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
                                                 <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-xl ">
+                                                    <span className="font-bold text-xl">
                                                         ${course.price.toFixed(2)}
                                                     </span>
                                                     <div className="flex items-center space-x-1">
@@ -476,7 +500,7 @@ export default function CoursesPage() {
                                 {/* Modal for Course Details */}
                                 {isModalOpen && selectedCourse && (
                                     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-transparent">
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl   mx-4 p-8 relative">
+                                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 relative">
                                             <button
                                                 onClick={closeModal}
                                                 className="absolute cursor-pointer top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
@@ -538,7 +562,7 @@ export default function CoursesPage() {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <p className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed  mb-4 cursor-default">
+                                                <p className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed mb-4 cursor-default">
                                                     {selectedCourse.description}
                                                 </p>
                                                 <div className="flex items-center justify-between w-full mb-4">
@@ -576,7 +600,7 @@ export default function CoursesPage() {
                                                     ) ? (
                                                         <Button
                                                             variant="default"
-                                                            className="w-full  bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
                                                             onClick={() =>
                                                                 router.push(
                                                                     `/customer/courses/${selectedCourse._id}`,

@@ -2,14 +2,23 @@
 
 import { get } from '@/lib/util/HttpRequest';
 
-export const GetServicesTicketMine = async () => {
+export const GetServicesTicketMine = async (page = 1, limit = 10) => {
     try {
         const token = localStorage.getItem('token');
-        const res = await get(`/services/ticket/mine`, {
-            headers: {
-                Authorization: token ? `Bearer ${token}` : '',
+
+        if (!token) {
+            return;
+        }
+        const tokenuser = JSON.parse(token);
+
+        const res = await get(
+            `/services/ticket/mine?page=${page}&limit=${limit}&expand=repliedBy`,
+            {
+                headers: {
+                    Authorization: token ? `Bearer ${tokenuser}` : '',
+                },
             },
-        });
+        );
 
         return res;
     } catch (error) {

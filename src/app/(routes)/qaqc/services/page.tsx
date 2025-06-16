@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { GetServicesTicket } from '@/lib/services/services/getallservice';
@@ -40,6 +41,7 @@ interface ServiceTicket {
     createdAt: string;
     updatedAt: string;
 }
+
 interface Sender {
     _id: string;
     fullName: string;
@@ -57,7 +59,7 @@ export default function SupportPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
-    const limit = 10;
+    const limit = 3;
 
     const fetchTickets = async (page: number = 1) => {
         try {
@@ -167,12 +169,12 @@ export default function SupportPage() {
                                     All Tickets
                                 </SelectItem>
                                 <SelectItem
-                                    value="open"
+                                    value="pending"
                                     className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
                                 >
                                     <span className="flex items-center">
-                                        <span className="w-2 h-2 rounded-full bg-[#657ED4] dark:bg-[#5AD3AF] mr-2"></span>
-                                        Open
+                                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                        Pending
                                     </span>
                                 </SelectItem>
                                 <SelectItem
@@ -257,9 +259,9 @@ export default function SupportPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredTickets.map((ticket) => (
-                                        <>
+                                        <React.Fragment key={ticket._id}>
                                             <TableRow
-                                                key={ticket._id}
+                                                key={`${ticket._id}-main`}
                                                 onClick={() => toggleRow(ticket._id)}
                                                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
                                             >
@@ -324,7 +326,10 @@ export default function SupportPage() {
                                                 </TableCell>
                                             </TableRow>
                                             {expandedRow === ticket._id && (
-                                                <TableRow className="border-b border-gray-200 dark:border-gray-700">
+                                                <TableRow
+                                                    key={`${ticket._id}-expanded`}
+                                                    className="border-b border-gray-200 dark:border-gray-700"
+                                                >
                                                     <TableCell colSpan={5} className="p-0">
                                                         <div className="bg-gray-50 dark:bg-gray-700/30 px-6 py-4">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -366,7 +371,7 @@ export default function SupportPage() {
                                                                             <Badge
                                                                                 variant={
                                                                                     ticket.status ===
-                                                                                    'open'
+                                                                                    'pending'
                                                                                         ? 'default'
                                                                                         : ticket.status ===
                                                                                             'resolved'
@@ -375,7 +380,7 @@ export default function SupportPage() {
                                                                                 }
                                                                                 className={`ml-2 capitalize text-base cursor-default ${
                                                                                     ticket.status ===
-                                                                                    'open'
+                                                                                    'pending'
                                                                                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                                                                                         : ticket.status ===
                                                                                             'resolved'
@@ -452,7 +457,7 @@ export default function SupportPage() {
                                                     </TableCell>
                                                 </TableRow>
                                             )}
-                                        </>
+                                        </React.Fragment>
                                     ))}
                                 </TableBody>
                             </Table>

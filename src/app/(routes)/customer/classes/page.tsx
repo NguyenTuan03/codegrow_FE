@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { GetClass } from '@/lib/services/class/getclass';
 import {
     Card,
@@ -11,7 +11,7 @@ import {
     CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Clock, User } from 'lucide-react';
+import { Users, Clock, User, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import { debounce } from 'lodash';
+import { Input } from '@/components/ui/input';
 
 interface ClassItem {
     _id: string;
@@ -50,6 +52,7 @@ export default function Classes() {
     const [classesItems, setClassesItems] = useState<ClassItem[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -57,7 +60,7 @@ export default function Classes() {
     const [selectedClass, setSelectedClass] = useState<ClassItem | null>(null);
     const limit = 6;
 
-    // Fetch the current user's ID from localStorage (or your auth system)
+    // Fetch the current user's ID from localStorage
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
@@ -91,7 +94,7 @@ export default function Classes() {
             const data = await GetClass(page, limit);
             console.log('GetClass Response:', JSON.stringify(data, null, 2));
             if (data?.metadata?.classes) {
-                setClassesItems(data.metadata.classes);
+                setClassesItems(data.metadata.classes); // Lưu danh sách gốc
                 setCurrentPage(data.metadata.page);
                 setTotalPages(data.metadata.totalPages);
             } else {
@@ -143,12 +146,43 @@ export default function Classes() {
         }
     };
 
+    // Sử dụng useCallback để tối ưu hóa debounce
+    const debouncedSearch = useCallback(
+        debounce((searchTerm) => {
+            if (!searchTerm) {
+                fetchClasses(currentPage); // Lấy lại danh sách gốc nếu không có từ khóa
+                return;
+            }
+            const filteredClasses = classesItems.filter((classItem) =>
+                classItem.title.toLowerCase().includes(searchTerm.toLowerCase()),
+            );
+            setClassesItems(filteredClasses); // Cập nhật danh sách với kết quả lọc
+        }, 300), // Độ trễ 300ms
+        [classesItems, currentPage], // Phụ thuộc vào classesItems và currentPage
+    );
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value;
+        setSearchQuery(value); // Cập nhật trạng thái tìm kiếm
+        debouncedSearch(value); // Gọi hàm debounce với giá trị mới
+    };
+
     return (
         <div className="p-6 sm:p-10 mx-auto py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                     Available Classes
                 </h1>
+                <div className="relative w-full sm:w-1/2 lg:w-1/3">
+                    <Input
+                        type="text"
+                        placeholder="Search by class name"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
             </div>
 
             {loading ? (
@@ -198,17 +232,8 @@ export default function Classes() {
                                         <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 line-clamp-1">
                                             {course.title}
                                         </CardTitle>
-                                        {/* <CardDescription className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm font-medium">
-                                            {course.description}
-                                        </CardDescription> */}
                                     </CardHeader>
                                     <CardContent className="space-y-3">
-                                        {/* <div className="flex items-center gap-2">
-                                            <Users className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                                                {course.students.length} students
-                                            </span>
-                                        </div> */}
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span className="text-xl text-gray-600 dark:text-gray-400 font-medium">

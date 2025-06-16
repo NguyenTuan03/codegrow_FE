@@ -5,9 +5,14 @@ import { get } from '@/lib/util/HttpRequest';
 export const GetServicesTicket = async (page = 1, limit = 10) => {
     try {
         const token = localStorage.getItem('token');
+
+        if (!token) {
+            return;
+        }
+        const tokenuser = JSON.parse(token);
         const res = await get(`/services/ticket?page=${page}&limit=${limit}&expand=sender`, {
             headers: {
-                Authorization: token ? `Bearer ${token}` : '',
+                Authorization: token ? `Bearer ${tokenuser}` : '',
             },
         });
 

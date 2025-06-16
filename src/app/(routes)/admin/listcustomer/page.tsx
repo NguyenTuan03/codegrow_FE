@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { getPendingEnrollments } from '@/lib/services/admin/getlistcus';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Search } from 'lucide-react';
 import {
     Pagination,
     PaginationContent,
@@ -33,58 +33,58 @@ interface Enrollment {
     createdAt?: string;
     updatedAt?: string;
 }
-
+import { debounce } from 'lodash';
+import { Input } from '@/components/ui/input';
 export default function PendingEnrollmentsList() {
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5); // Number of items per page
+    const [searchQuery, setSearchQuery] = useState(''); // Thêm trạng thái tìm kiếm
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const res = await getPendingEnrollments();
+            console.log('Pending enrollments:', res);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const res = await getPendingEnrollments();
-                console.log('Pending enrollments:', res);
-
-                type RawEnrollment = {
-                    _id: string;
-                    user: {
-                        fullName: string;
-                        email: string;
-                    };
-                    phone?: string;
-                    note?: string;
-                    isConsulted: boolean;
-                    enrolledAt?: string;
-                    updatedAt?: string;
+            type RawEnrollment = {
+                _id: string;
+                user: {
+                    fullName: string;
+                    email: string;
                 };
+                phone?: string;
+                note?: string;
+                isConsulted: boolean;
+                enrolledAt?: string;
+                updatedAt?: string;
+            };
 
-                const mappedEnrollments = (res.metadata as RawEnrollment[]).map((item) => ({
-                    _id: item._id,
-                    fullName: item.user.fullName,
-                    email: item.user.email,
-                    phone: item.phone || '',
-                    note: item.note || '',
-                    isConsulted: item.isConsulted,
-                    createdAt: item.enrolledAt,
-                    updatedAt: item.updatedAt || new Date().toISOString(),
-                }));
+            const mappedEnrollments = (res.metadata as RawEnrollment[]).map((item) => ({
+                _id: item._id,
+                fullName: item.user.fullName,
+                email: item.user.email,
+                phone: item.phone || '',
+                note: item.note || '',
+                isConsulted: item.isConsulted,
+                createdAt: item.enrolledAt,
+                updatedAt: item.updatedAt || new Date().toISOString(),
+            }));
 
-                setEnrollments(mappedEnrollments);
-            } catch (err) {
-                setError(`Failed to load enrollments: ${err}`);
-                toast({
-                    title: 'Error',
-                    description: 'Could not fetch pending enrollments',
-                    variant: 'destructive',
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
+            setEnrollments(mappedEnrollments);
+        } catch (err) {
+            setError(`Failed to load enrollments: ${err}`);
+            toast({
+                title: 'Error',
+                description: 'Could not fetch pending enrollments',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -162,7 +162,25 @@ export default function PendingEnrollmentsList() {
             </div>
         );
     }
-
+    const debouncedSearch = debounce((query: string) => {
+        setCurrentPage(1); // Reset to first page on new search
+        if (query.trim() === '') {
+            fetchData(); // Re-fetch original enrollments
+            return;
+        } else {
+            const filteredEnrollments = enrollments.filter(
+                (enrollment) =>
+                    enrollment.fullName.toLowerCase().includes(query.toLowerCase()) ||
+                    enrollment.email.toLowerCase().includes(query.toLowerCase()),
+            );
+            setEnrollments(filteredEnrollments);
+        }
+    }, 300);
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value;
+        setSearchQuery(value); // Update search query state
+        debouncedSearch(value); // Debounced search
+    };
     return (
         <div className="p-6">
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg">
@@ -173,6 +191,16 @@ export default function PendingEnrollmentsList() {
                             ({enrollments.length})
                         </span>
                     </CardTitle>
+                    <div className="mt-4 relative w-full sm:w-1/2 lg:w-1/3">
+                        <Input
+                            type="text"
+                            placeholder="Search by name or email..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            className="pl-10 pr-4 py-2 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 shadow-sm"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    </div>
                 </CardHeader>
                 <CardContent className="pt-6">
                     {enrollments.length === 0 ? (
