@@ -26,13 +26,19 @@ interface ReviewItem {
 export const GetAllReview = async ({ page = 1, limit = 10 }: GetAllReviewParams = {}) => {
     try {
         const token = localStorage.getItem('token');
+
+        if (!token) {
+            return;
+        }
+        const tokenuser = JSON.parse(token);
+
         const response: GetAllReviewResponse = await get(`/classrooms/review/mentor`, {
             params: {
                 page,
                 limit,
             },
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${tokenuser}`,
             },
         });
 

@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { GetServicesTicketMine } from '@/lib/services/services/getservicemine';
 import { SendSupportService } from '@/lib/services/services/sendsupportservice';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Book, MessageSquare, Send, Calendar } from 'lucide-react';
+import { RefreshCw, Book, MessageSquare, Send, Search } from 'lucide-react';
 import {
     Form,
     FormControl,
@@ -32,22 +32,24 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { GetClass } from '@/lib/services/class/getclass';
+import { debounce } from 'lodash';
 
 interface Course {
     _id: string;
     title: string;
-}
-
-interface ReplyBy {
-    _id: string;
-    fullName: string;
-    role: string;
-    email: string;
 }
 
 interface ServiceTicket {
@@ -55,11 +57,12 @@ interface ServiceTicket {
     title: string;
     message: string;
     course: Course;
-    replyBy?: ReplyBy;
+    repliedBy?: string; // Changed to string to match API response
     qaqcReply?: string;
     status: string;
     createdAt: string;
     updatedAt: string;
+    replyByFullName?: string; // Added to store fetched fullName
 }
 
 interface Class {
@@ -76,11 +79,17 @@ const supportSchema = z.object({
 
 export default function SupportPage() {
     const [tickets, setTickets] = useState<ServiceTicket[]>([]);
+    const [filteredTickets, setFilteredTickets] = useState<ServiceTicket[]>([]);
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<Course[]>([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const router = useRouter();
     const [classes, setClasses] = useState<Class[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchQuery, setSearchQuery] = useState('');
+    const limit = 6; // Number of tickets per page
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof supportSchema>>({
         resolver: zodResolver(supportSchema),
         defaultValues: {
@@ -94,7 +103,6 @@ export default function SupportPage() {
     const handleGetAllClass = async () => {
         try {
             const response = await GetClass();
-            console.log('API Response class:', response);
             setClasses(response.metadata.classes || []);
         } catch (error) {
             console.error('Failed to fetch classes:', error);
@@ -104,8 +112,6 @@ export default function SupportPage() {
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -126,8 +132,6 @@ export default function SupportPage() {
             const id = user.id;
             const userDetail = await getUserDetail(id);
             setCourses(userDetail.metadata?.enrolledCourses || []);
-            console.log('User enrolled courses:', userDetail.metadata?.enrolledCourses);
-            console.log(`User detail for ID ${id}:`, userDetail);
         } catch (error) {
             console.error('Failed to fetch user courses:', error);
             toast({
@@ -139,20 +143,49 @@ export default function SupportPage() {
         }
     };
 
-    const fetchTickets = async () => {
+    const fetchTickets = async (page: number = 1) => {
         try {
             setLoading(true);
-            const response = await GetServicesTicketMine();
+            const response = await GetServicesTicketMine(page, limit);
             console.log('API Response:', response);
+
             if (response?.metadata && Array.isArray(response.metadata)) {
-                const normalizedTickets = response.metadata.map((ticket: ServiceTicket) => ({
-                    ...ticket,
-                    description: ticket.message,
-                    status: ticket.status.toLowerCase(),
-                }));
+                const normalizedTickets = await Promise.all(
+                    response.metadata.map(async (ticket: ServiceTicket) => {
+                        let replyByFullName: string | undefined;
+                        if (ticket.repliedBy) {
+                            try {
+                                const userDetail = await getUserDetail(ticket.repliedBy);
+                                console.log(
+                                    `Fetched user details for ID ${ticket.repliedBy}:`,
+                                    userDetail,
+                                );
+                                replyByFullName = userDetail.metadata?.fullName || 'Unknown';
+                            } catch (error) {
+                                console.error(
+                                    `Failed to fetch user details for ID ${ticket.repliedBy}:`,
+                                    error,
+                                );
+                                replyByFullName = 'Unknown';
+                            }
+                        }
+                        return {
+                            ...ticket,
+                            description: ticket.message,
+                            status: ticket.status.toLowerCase(),
+                            replyByFullName,
+                        };
+                    }),
+                );
                 setTickets(normalizedTickets);
+                setFilteredTickets(normalizedTickets);
+                // Fallback to client-side pagination if metadata lacks page/totalPages
+                setCurrentPage(response.metadata.page || page);
+                setTotalPages(
+                    response.metadata.totalPages || Math.ceil(response.metadata.length / limit),
+                );
             } else {
-                throw new Error('Invalid response from API');
+                throw new Error('Invalid response format from API');
             }
         } catch (error) {
             console.error('Failed to fetch service tickets:', error);
@@ -162,6 +195,9 @@ export default function SupportPage() {
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+            setTickets([]);
+            setFilteredTickets([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
@@ -171,11 +207,10 @@ export default function SupportPage() {
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-
             if (!token) {
                 toast({
-                    title: 'Lỗi',
-                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    title: 'Error',
+                    description: 'Token not found. Please log in again.',
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
@@ -183,8 +218,6 @@ export default function SupportPage() {
                 return;
             }
             const tokenuser = JSON.parse(token);
-            console.log('Token user:', tokenuser);
-
             await SendSupportService({
                 token: tokenuser,
                 title: values.title,
@@ -199,7 +232,7 @@ export default function SupportPage() {
                     'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
             form.reset();
-            fetchTickets();
+            fetchTickets(1); // Reset to page 1 after new ticket submission
         } catch (error) {
             console.error('Failed to submit support request:', error);
             toast({
@@ -213,11 +246,45 @@ export default function SupportPage() {
         }
     };
 
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages && page !== currentPage) {
+            setCurrentPage(page);
+            fetchTickets(page);
+        }
+    };
+
+    useEffect(() => {
+        let filtered = [...tickets];
+        if (searchQuery) {
+            filtered = filtered.filter(
+                (ticket) =>
+                    ticket.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    ticket.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (ticket.course?.title &&
+                        ticket.course.title.toLowerCase().includes(searchQuery.toLowerCase())),
+            );
+        }
+        setFilteredTickets(filtered);
+    }, [searchQuery, tickets]);
+
+    const debouncedSearch = useCallback(
+        debounce((searchTerm) => {
+            setSearchQuery(searchTerm);
+            setCurrentPage(1); // Reset to first page on search
+        }, 300),
+        [],
+    );
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        debouncedSearch(value);
+    };
+
     useEffect(() => {
         fetchUserCourses();
-        fetchTickets();
+        fetchTickets(currentPage);
         handleGetAllClass();
-    }, []);
+    }, [currentPage]);
 
     if (loading) {
         return (
@@ -230,27 +297,12 @@ export default function SupportPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto space-y-12">
-                {/* Header Section with Current Date and Time */}
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="flex items-center gap-3">
                         <h1 className="text-4xl font-extrabold text-[#657ED4] dark:text-[#5AD3AF]">
                             Support Center
                         </h1>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md border border-gray-200 dark:border-gray-700">
-                        <Calendar className="h-5 w-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                        <span className="text-gray-800 dark:text-gray-200 font-medium">
-                            {new Date('2025-05-28T15:27:00+07:00').toLocaleString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true,
-                                timeZone: 'Asia/Bangkok',
-                            })}
-                        </span>
                     </div>
                 </div>
 
@@ -450,7 +502,6 @@ export default function SupportPage() {
                                         type="submit"
                                         disabled={isSubmitting}
                                         className="
-                                        cursor-pointer
                                             bg-[#657ED4] dark:bg-[#5AD3AF]
                                             hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]
                                             text-white
@@ -503,128 +554,212 @@ export default function SupportPage() {
 
                 {/* Service Tickets Table Section */}
                 <div className="space-y-6">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                         <h2 className="text-3xl font-bold text-[#657ED4] dark:text-[#5AD3AF] flex items-center gap-2">
                             📜 My Service Tickets
                         </h2>
-                        <Button
-                            onClick={fetchTickets}
-                            className="
-                            cursor-pointer
-                                bg-[#657ED4] dark:bg-[#5AD3AF]
-                                hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]
-                                text-white
-                                rounded-full
-                                px-6 py-2
-                                focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF]
-                                focus:outline-none
-                                transition-all duration-200
-                                flex items-center
-                                font-medium
-                                shadow-md
-                            "
-                            aria-label="Refresh tickets"
-                        >
-                            <RefreshCw className="h-5 w-5 mr-2 cursor-pointer animate-spin-slow" />
-                            Refresh
-                        </Button>
+                        <div className="flex items-center gap-3">
+                            <div className="relative w-full sm:w-64">
+                                <Input
+                                    type="text"
+                                    placeholder="Search tickets..."
+                                    onChange={handleSearchChange}
+                                    className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                                />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            </div>
+                            <Button
+                                onClick={() => fetchTickets(currentPage)}
+                                className="
+                                    bg-[#657ED4] dark:bg-[#5AD3AF]
+                                    hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]
+                                    text-white
+                                    rounded-full
+                                    px-6 py-2
+                                    focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF]
+                                    focus:outline-none
+                                    transition-all duration-200
+                                    flex items-center
+                                    font-medium
+                                    shadow-md
+                                "
+                                aria-label="Refresh tickets"
+                            >
+                                <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
+                                Refresh
+                            </Button>
+                        </div>
                     </div>
-                    {tickets.length === 0 ? (
+                    {filteredTickets.length === 0 ? (
                         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
                             <p className="text-xl text-gray-600 dark:text-gray-400 font-medium">
-                                No service tickets found.
+                                {searchQuery
+                                    ? 'No tickets match your search.'
+                                    : 'No service tickets found.'}
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-x-auto border border-gray-200 dark:border-gray-700">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-gray-100 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Title
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Message
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Course
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Reply By
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            QAQC Reply
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Status
-                                        </TableHead>
-                                        <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
-                                            Created At
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {tickets.map((ticket, index) => (
-                                        <TableRow
-                                            key={ticket._id}
-                                            className={`
-                                                ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/30'}
-                                                hover:bg-gray-100 dark:hover:bg-gray-700
-                                                transition-colors duration-200
-                                                border-b border-gray-200 dark:border-gray-700
-                                            `}
-                                        >
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
-                                                {ticket.title}
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 truncate max-w-xs font-medium">
-                                                {ticket.message}
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
-                                                {ticket.course?.title || 'N/A'}
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
-                                                {ticket.replyBy?.fullName || 'N/A'}
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
-                                                {ticket.qaqcReply || 'No reply yet'}
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4">
-                                                <span
-                                                    className={`
-                                                        inline-block px-3 py-1 rounded-full text-sm font-medium
-                                                        ${
-                                                            ticket.status === 'open'
-                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                                                                : ticket.status === 'resolved'
-                                                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                                                                  : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
-                                                        }
-                                                    `}
-                                                >
-                                                    {ticket.status.charAt(0).toUpperCase() +
-                                                        ticket.status.slice(1)}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
-                                                {new Date(ticket.createdAt).toLocaleString(
-                                                    'en-US',
-                                                    {
-                                                        weekday: 'short',
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                        hour12: true,
-                                                    },
-                                                )}
-                                            </TableCell>
+                        <>
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-x-auto border border-gray-200 dark:border-gray-700">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-100 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Title
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Message
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Course
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Reply By
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                QAQC Reply
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Status
+                                            </TableHead>
+                                            <TableHead className="text-gray-800 dark:text-gray-200 font-semibold py-4">
+                                                Created At
+                                            </TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredTickets.map((ticket, index) => (
+                                            <TableRow
+                                                key={ticket._id}
+                                                className={`
+                                                    ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/30'}
+                                                    hover:bg-gray-100 dark:hover:bg-gray-700
+                                                    transition-colors duration-200
+                                                    border-b border-gray-200 dark:border-gray-700
+                                                `}
+                                            >
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
+                                                    {ticket.title}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 truncate max-w-xs font-medium">
+                                                    {ticket.message}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
+                                                    {ticket.course?.title || 'N/A'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
+                                                    {ticket.replyByFullName || 'N/A'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
+                                                    {ticket.qaqcReply || 'No reply yet'}
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4">
+                                                    <span
+                                                        className={`
+                                                            inline-block px-3 py-1 rounded-full text-sm font-medium
+                                                            ${
+                                                                ticket.status === 'open'
+                                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                                                    : ticket.status === 'resolved'
+                                                                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                                                      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
+                                                            }
+                                                        `}
+                                                    >
+                                                        {ticket.status.charAt(0).toUpperCase() +
+                                                            ticket.status.slice(1)}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-gray-800 dark:text-gray-200 py-4 font-medium">
+                                                    {new Date(ticket.createdAt).toLocaleString(
+                                                        'en-US',
+                                                        {
+                                                            weekday: 'short',
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            hour12: true,
+                                                        },
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            {totalPages > 1 && (
+                                <div className="mt-8 flex justify-center">
+                                    <Pagination>
+                                        <PaginationContent>
+                                            <PaginationItem>
+                                                <PaginationPrevious
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage - 1)
+                                                    }
+                                                    className={`
+                                                        text-[#657ED4] dark:text-[#5AD3AF]
+                                                        hover:text-[#424c70] dark:hover:text-[#4ac2a0]
+                                                        hover:bg-gray-100 dark:hover:bg-gray-700
+                                                        px-3 py-1 rounded-md
+                                                        transition-colors
+                                                        ${currentPage === 1 ? 'pointer-events-none opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                                                    `}
+                                                />
+                                            </PaginationItem>
+                                            {Array.from(
+                                                { length: Math.min(5, totalPages) },
+                                                (_, i) => {
+                                                    let pageNum;
+                                                    if (totalPages <= 5) {
+                                                        pageNum = i + 1;
+                                                    } else if (currentPage <= 3) {
+                                                        pageNum = i + 1;
+                                                    } else if (currentPage >= totalPages - 2) {
+                                                        pageNum = totalPages - 4 + i;
+                                                    } else {
+                                                        pageNum = currentPage - 2 + i;
+                                                    }
+                                                    return (
+                                                        <PaginationItem key={pageNum}>
+                                                            <PaginationLink
+                                                                onClick={() =>
+                                                                    handlePageChange(pageNum)
+                                                                }
+                                                                isActive={currentPage === pageNum}
+                                                                className={
+                                                                    currentPage === pageNum
+                                                                        ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer'
+                                                                        : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer'
+                                                                }
+                                                            >
+                                                                {pageNum}
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                    );
+                                                },
+                                            )}
+                                            <PaginationItem>
+                                                <PaginationNext
+                                                    onClick={() =>
+                                                        handlePageChange(currentPage + 1)
+                                                    }
+                                                    className={`
+                                                        text-[#657ED4] dark:text-[#5AD3AF]
+                                                        hover:text-[#424c70] dark:hover:text-[#4ac2a0]
+                                                        hover:bg-gray-100 dark:hover:bg-gray-700
+                                                        px-3 py-1 rounded-md
+                                                        transition-colors
+                                                        ${currentPage === totalPages ? 'pointer-events-none opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                                                    `}
+                                                />
+                                            </PaginationItem>
+                                        </PaginationContent>
+                                    </Pagination>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

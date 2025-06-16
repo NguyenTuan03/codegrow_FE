@@ -74,6 +74,11 @@ const ChangePasswordForm = () => {
             console.log('Change password result:', result);
             form.reset();
             router.refresh();
+            toast({
+                title: '✅ Password changed successfully',
+                description: 'Your password has been changed successfully.',
+                className: 'bg-[#5AD3AF] text-white dark:text-black font-semibold',
+            });
         } catch (error) {
             console.error('Error changing password:', error);
             toast({

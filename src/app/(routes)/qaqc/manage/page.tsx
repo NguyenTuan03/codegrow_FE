@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { EyeIcon, PlusIcon } from 'lucide-react';
+import { EyeIcon, PlusIcon, Search } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     Table,
@@ -35,6 +35,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { debounce } from 'lodash';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetAllReview } from '@/lib/services/qaqc/getAllReview';
 import { CreateReviewForm } from './CreateReviewForm';
@@ -191,6 +193,7 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
 export default function MentorsPage() {
     const [allMentors, setAllMentors] = useState<MentorTableData[]>([]);
     const [mentorData, setMentorData] = useState<MentorTableData[]>([]);
+    const [allReviews, setAllReviews] = useState<ReviewItem[]>([]);
     const [reviewData, setReviewData] = useState<ReviewItem[]>([]);
     const [loadingMentors, setLoadingMentors] = useState(true);
     const [loadingReviews, setLoadingReviews] = useState(true);
@@ -202,6 +205,8 @@ export default function MentorsPage() {
     const [reviewCurrentPage, setReviewCurrentPage] = useState(1);
     const [reviewPageSize, setReviewPageSize] = useState(10);
     const [reviewTotalPages, setReviewTotalPages] = useState(1);
+    const [mentorSearchQuery, setMentorSearchQuery] = useState('');
+    const [reviewSearchQuery, setReviewSearchQuery] = useState('');
 
     const fetchMentors = async () => {
         try {
@@ -224,16 +229,6 @@ export default function MentorsPage() {
         }
     };
 
-    useEffect(() => {
-        const start = (mentorCurrentPage - 1) * mentorPageSize;
-        const end = start + mentorPageSize;
-        const paginatedMentors = allMentors.slice(start, end);
-        setMentorData(paginatedMentors);
-
-        const total = Math.ceil(allMentors.length / mentorPageSize);
-        setMentorTotalPages(total > 0 ? total : 1);
-    }, [allMentors, mentorCurrentPage, mentorPageSize]);
-
     const fetchReviews = async () => {
         try {
             setLoadingReviews(true);
@@ -242,11 +237,18 @@ export default function MentorsPage() {
                 limit: reviewPageSize,
             });
 
-            setReviewData(data.metadata.reviews || data.metadata);
-            const total =
-                data.metadata.totalPages ||
-                Math.ceil((data.metadata.totalItems || 0) / reviewPageSize);
-            setReviewTotalPages(total > 0 ? total : 1);
+            if (data && data.metadata) {
+                setAllReviews(data.metadata.reviews || data.metadata);
+                setReviewData(data.metadata.reviews || data.metadata);
+                const total =
+                    data.metadata.totalPages ||
+                    Math.ceil((data.metadata.totalItems || 0) / reviewPageSize);
+                setReviewTotalPages(total > 0 ? total : 1);
+            } else {
+                setAllReviews([]);
+                setReviewData([]);
+                setReviewTotalPages(1);
+            }
             setLoadingReviews(false);
         } catch (error) {
             setErrorReviews('Lỗi khi tải danh sách đánh giá');
@@ -263,6 +265,66 @@ export default function MentorsPage() {
         fetchReviews();
     }, [reviewCurrentPage, reviewPageSize]);
 
+    useEffect(() => {
+        let filteredMentors = [...allMentors];
+        if (mentorSearchQuery) {
+            filteredMentors = filteredMentors.filter(
+                (mentor) =>
+                    mentor.name.toLowerCase().includes(mentorSearchQuery.toLowerCase()) ||
+                    mentor.email.toLowerCase().includes(mentorSearchQuery.toLowerCase()),
+            );
+        }
+        const start = (mentorCurrentPage - 1) * mentorPageSize;
+        const end = start + mentorPageSize;
+        const paginatedMentors = filteredMentors.slice(start, end);
+        setMentorData(paginatedMentors);
+
+        const total = Math.ceil(filteredMentors.length / mentorPageSize);
+        setMentorTotalPages(total > 0 ? total : 1);
+    }, [allMentors, mentorCurrentPage, mentorPageSize, mentorSearchQuery]);
+
+    useEffect(() => {
+        let filteredReviews = [...allReviews];
+        if (reviewSearchQuery) {
+            filteredReviews = filteredReviews.filter(
+                (review) =>
+                    review.comment.toLowerCase().includes(reviewSearchQuery.toLowerCase()) ||
+                    (review.mentor?.fullName &&
+                        review.mentor.fullName
+                            .toLowerCase()
+                            .includes(reviewSearchQuery.toLowerCase())),
+            );
+        }
+        setReviewData(filteredReviews);
+        const total = Math.ceil(filteredReviews.length / reviewPageSize);
+        setReviewTotalPages(total > 0 ? total : 1);
+        setReviewCurrentPage(1);
+    }, [allReviews, reviewSearchQuery, reviewPageSize]);
+
+    const debouncedMentorSearch = useCallback(
+        debounce((searchTerm) => {
+            setMentorSearchQuery(searchTerm);
+        }, 300),
+        [],
+    );
+
+    const debouncedReviewSearch = useCallback(
+        debounce((searchTerm) => {
+            setReviewSearchQuery(searchTerm);
+        }, 300),
+        [],
+    );
+
+    const handleMentorSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        debouncedMentorSearch(value);
+    };
+
+    const handleReviewSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        debouncedReviewSearch(value);
+    };
+
     const mentorTable = useReactTable({
         data: mentorData,
         columns: mentorColumns,
@@ -276,7 +338,9 @@ export default function MentorsPage() {
     });
 
     const handleMentorPageChange = (page: number) => {
-        setMentorCurrentPage(page);
+        if (page >= 1 && page <= mentorTotalPages) {
+            setMentorCurrentPage(page);
+        }
     };
 
     const handleMentorPageSizeChange = (value: string) => {
@@ -297,7 +361,9 @@ export default function MentorsPage() {
     };
 
     const handleReviewPageChange = (page: number) => {
-        setReviewCurrentPage(page);
+        if (page >= 1 && page <= reviewTotalPages) {
+            setReviewCurrentPage(page);
+        }
     };
 
     const handleReviewPageSizeChange = (value: string) => {
@@ -324,6 +390,15 @@ export default function MentorsPage() {
                 <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white cursor-default">
                     Danh sách Mentor
                 </h2>
+                <div className="relative w-full sm:w-1/2 lg:w-1/3 mb-6">
+                    <Input
+                        type="text"
+                        placeholder="Tìm kiếm theo tên hoặc email..."
+                        onChange={handleMentorSearchChange}
+                        className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
                 {loadingMentors && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
                         Đang tải danh sách mentor...
@@ -483,6 +558,15 @@ export default function MentorsPage() {
                 <p className="mb-6 text-gray-600 dark:text-gray-400 text-base font-medium cursor-default">
                     Phần này cho phép bạn xem lại lịch sử các hoạt động đánh giá QAQC.
                 </p>
+                <div className="relative w-full sm:w-1/2 lg:w-1/3 mb-6">
+                    <Input
+                        type="text"
+                        placeholder="Tìm kiếm theo nhận xét hoặc tên mentor..."
+                        onChange={handleReviewSearchChange}
+                        className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div>
                 {loadingReviews && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
                         Đang tải danh sách đánh giá...

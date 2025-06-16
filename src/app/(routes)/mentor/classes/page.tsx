@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { GetClass } from '@/lib/services/class/getclass';
 import { format } from 'date-fns';
 import { Card, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Calendar, Clock } from 'lucide-react';
+import { Users, Calendar, Clock, Search, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -18,36 +18,40 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { debounce } from 'lodash';
+
+interface ClassItem {
+    _id: string;
+    title: string;
+    description: string;
+    students: string[];
+    schedule: {
+        startDate: string;
+        endDate: string;
+        daysOfWeek: string[];
+        time: string;
+    };
+    imgUrl?: string;
+    bgColor?: string;
+    mentor?: {
+        _id: string;
+        fullName: string;
+        email: string;
+    } | null;
+}
 
 export default function Classes() {
-    interface ClassItem {
-        _id: string;
-        title: string;
-        description: string;
-        students: string[];
-        schedule: {
-            startDate: string;
-            endDate: string;
-            daysOfWeek: string[];
-            time: string;
-        };
-        imgUrl?: string;
-        bgColor?: string;
-        mentor?: {
-            _id: string;
-            fullName: string;
-            email: string;
-        } | null;
-    }
-
     const [classesItems, setClassesItems] = useState<ClassItem[]>([]);
+    const [filteredClasses, setFilteredClasses] = useState<ClassItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 6; // Số lớp học mỗi trang
+    const [searchQuery, setSearchQuery] = useState('');
+    const limit = 6; // Number of classes per page
+    const router = useRouter();
 
     // Fetch current user ID from localStorage
     useEffect(() => {
@@ -56,7 +60,6 @@ export default function Classes() {
             if (!user) {
                 throw new Error('User data is missing');
             }
-
             const parsedUser = JSON.parse(user);
             setCurrentUserId(parsedUser.id);
         } catch (error) {
@@ -85,6 +88,7 @@ export default function Classes() {
             });
 
             setClassesItems(filteredClasses);
+            setFilteredClasses(filteredClasses); // Initialize filteredClasses
             setCurrentPage(data.metadata.page);
             setTotalPages(data.metadata.totalPages);
         } catch (error) {
@@ -103,7 +107,6 @@ export default function Classes() {
     const handleAssignMentor = async (classId: string) => {
         try {
             const token = localStorage.getItem('token');
-
             if (!token) {
                 toast({
                     title: 'Lỗi',
@@ -119,21 +122,16 @@ export default function Classes() {
             if (!tokenuser || !user) {
                 throw new Error('Authentication token or user ID is missing');
             }
-
             const parsedUser = JSON.parse(user);
             const userId = parsedUser.id;
-            console.log(' User ID:', userId);
 
-            const response = await AssignMentor(tokenuser, classId, userId);
-            console.log('Response:', response);
-
+            await AssignMentor(tokenuser, classId, userId);
             toast({
                 title: 'Success',
                 description: 'Mentor assigned successfully',
                 variant: 'default',
                 className: 'bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
-
             router.push(`/mentor/classes/${classId}`);
         } catch (error) {
             console.error('Error assigning mentor:', error);
@@ -149,11 +147,40 @@ export default function Classes() {
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
+            setSearchQuery(''); // Reset search query on page change
         }
     };
 
+    // Debounced search handler
+    const debouncedSearch = useCallback(
+        debounce((searchTerm: string) => {
+            setSearchQuery(searchTerm);
+        }, 300),
+        [],
+    );
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        debouncedSearch(value);
+    };
+
+    // Filter classes based on search query
     useEffect(() => {
-        fetchClasses(currentPage);
+        let filtered = [...classesItems];
+        if (searchQuery) {
+            filtered = filtered.filter(
+                (classItem) =>
+                    classItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    classItem.description.toLowerCase().includes(searchQuery.toLowerCase()),
+            );
+        }
+        setFilteredClasses(filtered);
+    }, [searchQuery, classesItems]);
+
+    useEffect(() => {
+        if (currentUserId) {
+            fetchClasses(currentPage);
+        }
     }, [currentPage, currentUserId]);
 
     if (!currentUserId) {
@@ -178,11 +205,10 @@ export default function Classes() {
             <div className="container mx-auto pt-12 pb-6">
                 <div className="text-center space-y-4">
                     <h1 className="text-4xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                        <span className="block text-[#657ED4] dark:[#5AD3AF] bg-clip-text ">
+                        <span className="block text-[#657ED4] dark:[#5AD3AF] bg-clip-text">
                             Manage Your Classes
                         </span>
                     </h1>
-
                     <p className="sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium">
                         Organize, assign mentors, and dive into your learning sessions with ease.
                     </p>
@@ -201,175 +227,230 @@ export default function Classes() {
                         </div>
                         <p className="mt-4 text-lg font-medium">Loading classes...</p>
                     </div>
-                ) : classesItems.length === 0 ? (
-                    <div className="text-center text-gray-600 dark:text-gray-400 py-12">
-                        <p className="text-lg font-medium">
-                            No classes available for you at the moment.
-                        </p>
-                        <Button
-                            onClick={() => fetchClasses(1)}
-                            className="cursor-pointer mt-4 rounded-full px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
-                        >
-                            Refresh
-                        </Button>
-                    </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {classesItems.map((course) => {
-                                const isAssignedMentor =
-                                    course.mentor && course.mentor._id === currentUserId;
-
-                                return (
-                                    <Card
-                                        key={course._id}
-                                        className="relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                                    >
-                                        {/* Header with Background Image */}
-                                        <div
-                                            className="h-36 w-full relative overflow-hidden rounded-t-xl"
-                                            style={{
-                                                backgroundImage: course.imgUrl
-                                                    ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${course.imgUrl})`
-                                                    : course.bgColor
-                                                      ? course.bgColor
-                                                      : 'linear-gradient(to right, #5AD3AF, #657ED4)',
-                                                backgroundColor: course.imgUrl
-                                                    ? 'transparent'
-                                                    : '#5AD3AF',
-                                                backgroundSize: 'cover',
-                                                backgroundPosition: 'center',
-                                            }}
-                                        >
-                                            <div className="absolute bottom-4 left-4 text-white">
-                                                <h3 className="text-2xl font-semibold line-clamp-1">
-                                                    {course.title}
-                                                </h3>
-                                            </div>
-                                        </div>
-
-                                        {/* Card Content */}
-                                        <CardContent className="pt-4 px-4 space-y-3">
-                                            <CardDescription className="line-clamp-2 text-gray-600 dark:text-gray-400 text-base font-medium">
-                                                {course.description}
-                                            </CardDescription>
-                                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
-                                                <Users className="h-4 w-4" />
-                                                <span>{course.students.length} students</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
-                                                <Calendar className="h-4 w-4" />
-                                                <span>
-                                                    {format(
-                                                        new Date(course.schedule.startDate),
-                                                        'MMM dd, yyyy',
-                                                    )}{' '}
-                                                    -{' '}
-                                                    {format(
-                                                        new Date(course.schedule.endDate),
-                                                        'MMM dd, yyyy',
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
-                                                <Clock className="h-4 w-4" />
-                                                <span>{course.schedule.time}</span>
-                                            </div>
-                                            <div className="flex flex-wrap gap-1">
-                                                {course.schedule.daysOfWeek.map((day) => (
-                                                    <Badge
-                                                        key={day}
-                                                        variant="outline"
-                                                        className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs font-medium"
-                                                    >
-                                                        {day}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        </CardContent>
-
-                                        {/* Card Footer */}
-                                        <CardFooter className="px-4 pb-4">
-                                            {isAssignedMentor ? (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="w-full cursor-pointer rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
-                                                    onClick={() =>
-                                                        router.push(`/mentor/classes/${course._id}`)
-                                                    }
-                                                >
-                                                    View Details
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="w-full cursor-pointer rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
-                                                    onClick={() => handleAssignMentor(course._id)}
-                                                >
-                                                    Assign Mentor
-                                                </Button>
-                                            )}
-                                        </CardFooter>
-                                    </Card>
-                                );
-                            })}
-                        </div>
-                        <div className="flex justify-center mt-6 mb-10">
-                            <Link href="/mentor/allclasses">
-                                <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300 cursor-pointer">
-                                    Explore More
-                                </Button>
-                            </Link>
-                        </div>
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="mt-8 flex justify-center">
-                                <Pagination>
-                                    <PaginationContent>
-                                        <PaginationItem>
-                                            <PaginationPrevious
-                                                onClick={() => handlePageChange(currentPage - 1)}
-                                                className={
-                                                    currentPage === 1
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400  hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
-                                                }
-                                            />
-                                        </PaginationItem>
-
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                            (page) => (
-                                                <PaginationItem key={page}>
-                                                    <PaginationLink
-                                                        onClick={() => handlePageChange(page)}
-                                                        isActive={currentPage === page}
-                                                        className={
-                                                            currentPage === page
-                                                                ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-full'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400  hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 rounded-full'
-                                                        }
-                                                    >
-                                                        {page}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            ),
-                                        )}
-
-                                        <PaginationItem>
-                                            <PaginationNext
-                                                onClick={() => handlePageChange(currentPage + 1)}
-                                                className={
-                                                    currentPage === totalPages
-                                                        ? 'pointer-events-none opacity-50'
-                                                        : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200'
-                                                }
-                                            />
-                                        </PaginationItem>
-                                    </PaginationContent>
-                                </Pagination>
+                        {/* Search Input */}
+                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                            <div className="relative w-full sm:w-64">
+                                <Input
+                                    type="text"
+                                    placeholder="Search classes..."
+                                    onChange={handleSearchChange}
+                                    className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                                />
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                             </div>
+                            <Button
+                                onClick={() => fetchClasses(currentPage)}
+                                className="rounded-lg px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
+                                aria-label="Refresh classes"
+                            >
+                                <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
+                                Refresh
+                            </Button>
+                        </div>
+
+                        {filteredClasses.length === 0 ? (
+                            <div className="text-center text-gray-600 dark:text-gray-400 py-12">
+                                <p className="text-lg font-medium">
+                                    {searchQuery
+                                        ? 'No classes match your search.'
+                                        : 'No classes available for you at the moment.'}
+                                </p>
+                                <Button
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        fetchClasses(1);
+                                    }}
+                                    className="mt-4 rounded-lg px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
+                                >
+                                    {searchQuery ? 'Clear Search' : 'Refresh'}
+                                </Button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {filteredClasses.map((course) => {
+                                        const isAssignedMentor =
+                                            course.mentor && course.mentor._id === currentUserId;
+
+                                        return (
+                                            <Card
+                                                key={course._id}
+                                                className="relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                                            >
+                                                {/* Header with Background Image */}
+                                                <div
+                                                    className="h-36 w-full relative overflow-hidden rounded-t-xl"
+                                                    style={{
+                                                        backgroundImage: course.imgUrl
+                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${course.imgUrl})`
+                                                            : course.bgColor
+                                                              ? course.bgColor
+                                                              : 'linear-gradient(to right, #5AD3AF, #657ED4)',
+                                                        backgroundColor: course.imgUrl
+                                                            ? 'transparent'
+                                                            : '#5AD3AF',
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                    }}
+                                                >
+                                                    <div className="absolute bottom-4 left-4 text-white">
+                                                        <h3 className="text-2xl font-semibold line-clamp-1">
+                                                            {course.title}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+
+                                                {/* Card Content */}
+                                                <CardContent className="pt-4 px-4 space-y-3">
+                                                    <CardDescription className="line-clamp-2 text-gray-600 dark:text-gray-400 text-base font-medium">
+                                                        {course.description}
+                                                    </CardDescription>
+                                                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
+                                                        <Users className="h-4 w-4" />
+                                                        <span>
+                                                            {course.students.length} students
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
+                                                        <Calendar className="h-4 w-4" />
+                                                        <span>
+                                                            {format(
+                                                                new Date(course.schedule.startDate),
+                                                                'MMM dd, yyyy',
+                                                            )}{' '}
+                                                            -{' '}
+                                                            {format(
+                                                                new Date(course.schedule.endDate),
+                                                                'MMM dd, yyyy',
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-base">
+                                                        <Clock className="h-4 w-4" />
+                                                        <span>{course.schedule.time}</span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {course.schedule.daysOfWeek.map((day) => (
+                                                            <Badge
+                                                                key={day}
+                                                                variant="outline"
+                                                                className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs font-medium"
+                                                            >
+                                                                {day}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+
+                                                {/* Card Footer */}
+                                                <CardFooter className="px-4 pb-4">
+                                                    {isAssignedMentor ? (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
+                                                            onClick={() =>
+                                                                router.push(
+                                                                    `/mentor/classes/${course._id}`,
+                                                                )
+                                                            }
+                                                        >
+                                                            View Details
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
+                                                            onClick={() =>
+                                                                handleAssignMentor(course._id)
+                                                            }
+                                                        >
+                                                            Assign Mentor
+                                                        </Button>
+                                                    )}
+                                                </CardFooter>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                                <div className="flex justify-center mt-6 mb-10">
+                                    <Link href="/mentor/allclasses">
+                                        <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300">
+                                            Explore More
+                                        </Button>
+                                    </Link>
+                                </div>
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="mt-8 flex justify-center">
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage - 1)
+                                                        }
+                                                        className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
+                                                            currentPage === 1
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : ''
+                                                        }`}
+                                                    />
+                                                </PaginationItem>
+                                                {Array.from(
+                                                    { length: Math.min(5, totalPages) },
+                                                    (_, i) => {
+                                                        let pageNum;
+                                                        if (totalPages <= 5) {
+                                                            pageNum = i + 1;
+                                                        } else if (currentPage <= 3) {
+                                                            pageNum = i + 1;
+                                                        } else if (currentPage >= totalPages - 2) {
+                                                            pageNum = totalPages - 4 + i;
+                                                        } else {
+                                                            pageNum = currentPage - 2 + i;
+                                                        }
+                                                        return (
+                                                            <PaginationItem key={pageNum}>
+                                                                <PaginationLink
+                                                                    onClick={() =>
+                                                                        handlePageChange(pageNum)
+                                                                    }
+                                                                    isActive={
+                                                                        currentPage === pageNum
+                                                                    }
+                                                                    className={
+                                                                        currentPage === pageNum
+                                                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors'
+                                                                            : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors'
+                                                                    }
+                                                                >
+                                                                    {pageNum}
+                                                                </PaginationLink>
+                                                            </PaginationItem>
+                                                        );
+                                                    },
+                                                )}
+                                                <PaginationItem>
+                                                    <PaginationNext
+                                                        onClick={() =>
+                                                            handlePageChange(currentPage + 1)
+                                                        }
+                                                        className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
+                                                            currentPage === totalPages
+                                                                ? 'pointer-events-none opacity-50'
+                                                                : ''
+                                                        }`}
+                                                    />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </>
                 )}
