@@ -71,13 +71,6 @@ const ChatContainer = () => {
                                     {message.text && <p>{message.text}</p>}
                                 </div>
                             </div>
-                            {message.senderId === userAuth?._id && (
-                                <img
-                                    className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
-                                    src={userAuth.avatar || '/user_ava.png'}
-                                    alt="sender"
-                                />
-                            )}
                         </div>
                     </div>
                 ))}
