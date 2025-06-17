@@ -1,12 +1,10 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
-import { alternativePayment } from '@/lib/services/api/alternativePayment';
-import { Button } from '@/components/ui/button';
+
 import { CheckCircle2, Users, BookOpen } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
 
 interface Course {
     _id: string;
@@ -25,8 +23,7 @@ interface CourseHeaderProps {
 }
 
 export default function CourseHeader({ course }: CourseHeaderProps) {
-    const [loading, setLoading] = useState(false);
-    const [enrolledCourses, setEnrolledCourses] = useState<{ _id: string }[]>([]);
+    // Removed unused enrolledCourses state
 
     const authContext = useContext(Auth);
     if (!authContext) {
@@ -42,11 +39,8 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
             }
 
             try {
-                const res = await getUserDetail(userAuth.id);
-
-                if (res.status === 200) {
-                    setEnrolledCourses(res.metadata.enrolledCourses || []);
-                }
+                await getUserDetail(userAuth.id);
+                // You can handle the result here if needed in the future
             } catch (error) {
                 console.error('Error fetching enrolled courses:', error);
             }
@@ -64,44 +58,6 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
             </div>
         );
     }
-
-    const handleAlternativePayment = async (paymentMethod: string) => {
-        try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                toast({
-                    title: 'Lỗi',
-                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
-                    variant: 'destructive',
-                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                });
-
-                return;
-            }
-            const tokenuser = JSON.parse(token);
-            console.log('Token user:', tokenuser);
-            setLoading(true);
-            const res = await alternativePayment({
-                token: tokenuser,
-                paymentMethod,
-                course,
-            });
-            const { payUrl } = res.data.metadata;
-
-            if (payUrl) {
-                window.location.href = payUrl;
-            } else {
-                console.error('Không lấy được đường link thanh toán.');
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const isEnrolled = enrolledCourses.some((enrolledCourse) => enrolledCourse._id === course._id);
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -149,35 +105,10 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
                         </span>
                     </p>
 
-                    {isEnrolled ? (
-                        <div className="flex items-center gap-2 text-lg font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 rounded-full px-4 py-2">
-                            <CheckCircle2 className="w-5 h-5" />
-                            Bạn đã tham gia khóa học này
-                        </div>
-                    ) : (
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Button
-                                onClick={() => handleAlternativePayment('momo')}
-                                disabled={loading}
-                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
-                                    loading ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                            >
-                                <img src="/momoo.webp" alt="MoMo" className="h-6 w-6" />
-                                {loading ? 'Đang xử lý...' : 'Thanh toán MoMo'}
-                            </Button>
-                            <Button
-                                onClick={() => handleAlternativePayment('vnpay')}
-                                disabled={loading}
-                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
-                                    loading ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                            >
-                                <img src="/vnpay.png" alt="VNPay" className="h-6 w-6" />
-                                {loading ? 'Đang xử lý...' : 'Thanh toán VNPay'}
-                            </Button>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2 text-lg font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 rounded-full px-4 py-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        Bạn đã tham gia khóa học này
+                    </div>
                 </div>
             </div>
         </div>

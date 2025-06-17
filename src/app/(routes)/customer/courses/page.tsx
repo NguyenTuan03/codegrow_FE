@@ -24,6 +24,8 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
 import { debounce } from 'lodash';
 
+import { enrollCourseFree } from '@/lib/services/api/enrollcourseFree';
+
 interface Category {
     _id: string;
     name: string;
@@ -93,10 +95,52 @@ export default function CoursesPage() {
     const limit = 6;
     const router = useRouter();
 
+    // New function to enroll in free courses
+    const enrollFreeCourse = async (courseId: string) => {
+        try {
+            setPaymentLoading(true);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Token không tồn tại. Vui lòng đăng nhập lại.');
+            }
+            const tokenuser = JSON.parse(token);
+
+            const response = await enrollCourseFree({
+                token: tokenuser,
+                course: { _id: courseId },
+            });
+
+            if (response.status === 200 || response.status === 201) {
+                toast({
+                    title: 'Success',
+                    description: 'Successfully enrolled in the free course!',
+                    className:
+                        'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
+                });
+                setEnrolledCourses([...enrolledCourses, { _id: courseId }]);
+                closeModal();
+                await fetchEnrolledCourses();
+            } else {
+                throw new Error('Failed to enroll in the course.');
+            }
+        } catch (error) {
+            console.error('Error enrolling in free course:', error);
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error ? error.message : 'Failed to enroll in the course.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
+
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
-            console.log('Data from GetAllCategory:', data);
+
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
@@ -123,7 +167,7 @@ export default function CoursesPage() {
             if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-            console.log(`Average rating for course ${courseId}:`, avgRating);
+
             return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
@@ -146,7 +190,7 @@ export default function CoursesPage() {
             }
             const user = JSON.parse(userId);
             const res = await getUserDetail(user.id);
-            console.log('User detail response:', res);
+
             if (res.status === 200) {
                 setEnrolledCourses(res.metadata.enrolledCourses || []);
             }
@@ -159,7 +203,7 @@ export default function CoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
-            console.log('Data from GetCourses:', JSON.stringify(data, null, 2));
+
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
                     data.metadata.courses.map(async (course: Course) => {
@@ -234,7 +278,7 @@ export default function CoursesPage() {
         if (sortOption === 'price-asc') {
             filtered.sort((a, b) => a.price - b.price);
         } else if (sortOption === 'price-desc') {
-            filtered.sort((a, b) => b.price - a.price);
+            filtered.sort((a, b) => b.price - b.price);
         } else if (sortOption === 'rating-desc') {
             filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         } else if (sortOption === 'enrolled-desc') {
@@ -245,9 +289,6 @@ export default function CoursesPage() {
     }, [searchQuery, selectedCategory, sortOption, courses]);
 
     const handlePageChange = (page: number) => {
-        console.log(
-            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
-        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -281,7 +322,7 @@ export default function CoursesPage() {
                 return;
             }
             const tokenuser = JSON.parse(token);
-            console.log('Token user:', tokenuser);
+
             const res = await alternativePayment({
                 token: tokenuser,
                 paymentMethod,
@@ -311,11 +352,10 @@ export default function CoursesPage() {
         }
     };
 
-    // Sử dụng useCallback để tối ưu hóa debounce
     const debouncedSearch = useCallback(
         debounce((searchTerm) => {
             if (!searchTerm) {
-                setFilteredCourses(courses); // Khôi phục danh sách gốc nếu không có từ khóa
+                setFilteredCourses(courses);
                 return;
             }
             const filtered = courses.filter(
@@ -323,15 +363,15 @@ export default function CoursesPage() {
                     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                     course.description.toLowerCase().includes(searchTerm.toLowerCase()),
             );
-            setFilteredCourses(filtered); // Cập nhật danh sách đã lọc
-        }, 300), // Độ trễ 300ms
-        [courses], // Phụ thuộc vào courses để lọc trên dữ liệu hiện tại
+            setFilteredCourses(filtered);
+        }, 300),
+        [courses],
     );
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setSearchQuery(value); // Cập nhật trạng thái tìm kiếm
-        debouncedSearch(value); // Gọi hàm debounce với giá trị mới
+        setSearchQuery(value);
+        debouncedSearch(value);
     };
 
     return (
@@ -609,6 +649,19 @@ export default function CoursesPage() {
                                                         >
                                                             View Details
                                                         </Button>
+                                                    ) : selectedCourse.price === 0 ? (
+                                                        <Button
+                                                            variant="default"
+                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                                            onClick={() =>
+                                                                enrollFreeCourse(selectedCourse._id)
+                                                            }
+                                                            disabled={paymentLoading}
+                                                        >
+                                                            {paymentLoading
+                                                                ? 'Đang xử lý...'
+                                                                : 'Enroll Course'}
+                                                        </Button>
                                                     ) : (
                                                         <>
                                                             <Button
@@ -616,7 +669,7 @@ export default function CoursesPage() {
                                                                     handleAlternativePayment('momo')
                                                                 }
                                                                 disabled={paymentLoading}
-                                                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                                                     paymentLoading
                                                                         ? 'opacity-50 cursor-not-allowed'
                                                                         : ''
@@ -638,7 +691,7 @@ export default function CoursesPage() {
                                                                     )
                                                                 }
                                                                 disabled={paymentLoading}
-                                                                className={`flex cursor-pointer items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
+                                                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
                                                                     paymentLoading
                                                                         ? 'opacity-50 cursor-not-allowed'
                                                                         : ''

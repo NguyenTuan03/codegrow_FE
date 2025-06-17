@@ -55,22 +55,15 @@ export default function CourseLearningPage() {
                 };
 
                 setCourse(parsedCourse);
-                toast({
-                    title: 'Thành công',
-                    description: 'Tải dữ liệu khóa học thành công',
-                    variant: 'default',
-                    className:
-                        'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
-                });
             } else {
                 throw new Error('Không thể tải dữ liệu khóa học');
             }
         } catch (error) {
             console.error('Lỗi khi tải dữ liệu khóa học:', error);
             toast({
-                title: 'Lỗi',
+                title: 'Error',
                 description:
-                    error instanceof Error ? error.message : 'Không thể tải dữ liệu khóa học',
+                    error instanceof Error ? error.message : 'Không thể tải dữ liệu khóa học.',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
@@ -93,38 +86,45 @@ export default function CourseLearningPage() {
         }
         const tokenuser = JSON.parse(token);
 
-        console.log('token', tokenuser);
         const userId = localStorage.getItem('user');
         if (!userId) {
-            throw new Error('User ID not found in localStorage');
+            toast({
+                title: 'Lỗi',
+                description: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+            router.push('/login');
+            return;
         }
         const user = JSON.parse(userId);
         const id = user.id;
-        try {
-            const progress = await GetProgress(tokenuser, courseId, id || ''); // Keep original call
-            console.log('Progress:', progress);
 
-            if (progress?.status === 200 && progress.metadata) {
-                setProgress(progress.metadata.progress || 0); // Set progress (0-100)
+        try {
+            const progressData = await GetProgress(tokenuser, id, courseId); // Fixed parameter order
+            console.log('Progress:', progressData);
+
+            if (progressData?.status === 200 && progressData.metadata) {
+                setProgress(progressData.metadata.progress || 0);
                 setCompletedLessons(
-                    progress.metadata.completedLessons.reduce(
+                    progressData.metadata.completedLessons.reduce(
                         (acc: { [key: string]: boolean }, lessonId: string) => ({
                             ...acc,
                             [lessonId]: true,
                         }),
                         {},
                     ),
-                ); // Map completedLessons
+                );
                 setCompletedQuizzes(
-                    progress.metadata.completedQuizzes.reduce(
+                    progressData.metadata.completedQuizzes.reduce(
                         (acc: { [key: string]: boolean }, quizId: string) => ({
                             ...acc,
                             [quizId]: true,
                         }),
                         {},
                     ),
-                ); // Map completedQuizzes
-                setLastLesson(progress.metadata.lastLesson); // Set lastLesson
+                );
+                setLastLesson(progressData.metadata.lastLesson);
             } else {
                 setProgress(0);
                 setCompletedLessons({});
@@ -133,12 +133,23 @@ export default function CourseLearningPage() {
             }
         } catch (error) {
             console.error('Không thể tải tiến độ:', error);
-            toast({
-                title: 'Lỗi',
-                description: 'Không thể tải dữ liệu tiến độ.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
+            if (error instanceof Error && error.message.includes('Phiên đăng nhập hết hạn')) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    description:
+                        error instanceof Error ? error.message : 'Không thể tải tiến độ khóa học.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+            }
         }
     };
 
@@ -180,12 +191,12 @@ export default function CourseLearningPage() {
 
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="flex cursor-pointer flex-wrap justify-start gap-4 mb-6 bg-transparent border-gray-200 dark:border-gray-700 p-5">
+                    <TabsList className="flex flex-wrap justify-start gap-4 mb-6 bg-transparent border-gray-200 dark:border-gray-700 p-5">
                         {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
                                 value={['overview', 'grades', 'notes', 'messages'][i]}
-                                className="py-4 cursor-pointer px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
+                                className="py-4 px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 {tab}
                             </TabsTrigger>
