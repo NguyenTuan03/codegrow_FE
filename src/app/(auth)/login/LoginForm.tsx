@@ -28,6 +28,7 @@ interface ExtendedJwtPayload extends JwtPayload {
     role: string;
     fullname: string;
     email: string;
+    avatar?: string;
 }
 
 const LoginForm = () => {
@@ -55,10 +56,13 @@ const LoginForm = () => {
             localStorage.setItem('token', JSON.stringify(token));
             const decoded = jwtDecode<ExtendedJwtPayload>(token);
             const user = {
+                _id: decoded._id,
                 id: decoded._id,
                 role: decoded.role,
+                fullName: decoded.fullname,
                 fullname: decoded.fullname,
                 email: decoded.email,
+                avatar: decoded.avatar || '', // Provide a default or decode if available
             };
             localStorage.setItem('user', JSON.stringify(user));
             userAuth?.loginUser(user);
