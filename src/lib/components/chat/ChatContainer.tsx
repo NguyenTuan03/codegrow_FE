@@ -3,12 +3,10 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import ChatHeader from './ChatHeader';
 import { Auth } from '../context/AuthContext';
-
 import { formatMessageTime } from '@/lib/utils';
 import MessageInput from './MessageInput';
 import Image from 'next/image';
 
-// Using Message from AuthContext
 const ChatContainer = () => {
     const authContext = useContext(Auth);
     const messageEndRef = useRef<HTMLDivElement | null>(null);
@@ -38,6 +36,15 @@ const ChatContainer = () => {
 
     const { userAuth, messages, selectedUser } = authContext;
 
+    const isValidExternalUrl = (url: string) => {
+        try {
+            const parsed = new URL(url);
+            return ['https:', 'http:'].includes(parsed.protocol);
+        } catch {
+            return false;
+        }
+    };
+
     return (
         <div className="flex-1 flex flex-col overflow-auto">
             <ChatHeader />
@@ -49,23 +56,30 @@ const ChatContainer = () => {
                 {messages.length > 0 ? (
                     messages.map((message) => (
                         <div
-                            key={message.id} // Using id from Message interface
-                            className={`flex ${
-                                message.senderId === userAuth?._id ? 'justify-end' : 'justify-start'
-                            }`}
+                            key={message.id}
+                            className={`flex ${message.senderId === userAuth?._id ? 'justify-end' : 'justify-start'}`}
                         >
                             <div className="flex items-end gap-2 max-w-[70%]">
-                                {message.senderId !== userAuth?._id && selectedUser?.avatar && (
-                                    <img
-                                        className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
-                                        src={selectedUser.avatar || '/user_ava.png'}
-                                        alt="receiver"
-                                    />
-                                )}
+                                {message.senderId !== userAuth?._id &&
+                                    selectedUser?.avatar &&
+                                    (isValidExternalUrl(selectedUser.avatar) ? (
+                                        <Image
+                                            src={selectedUser.avatar}
+                                            alt="receiver"
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full border border-gray-300 dark:border-gray-600"
+                                        />
+                                    ) : (
+                                        <img
+                                            src="/user_ava.png"
+                                            alt="receiver"
+                                            className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
+                                        />
+                                    ))}
                                 <div>
                                     <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">
-                                        {formatMessageTime(message.timestamp)}{' '}
-                                        {/* Using timestamp */}
+                                        {formatMessageTime(message.createAt)}
                                     </div>
                                     <div
                                         className={`p-2 rounded-xl ${
@@ -74,26 +88,45 @@ const ChatContainer = () => {
                                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
                                         }`}
                                     >
-                                        {message.image && message.image instanceof File && (
-                                            <Image
-                                                src={URL.createObjectURL(message.image)} // Handling File object
-                                                alt="Attachment"
-                                                width={200}
-                                                height={200}
-                                                className="max-w-[200px] rounded-md mb-2 object-contain"
-                                            />
-                                        )}
-                                        {message.content && <p>{message.content}</p>}{' '}
-                                        {/* Using content */}
+                                        {message.image &&
+                                            (typeof message.image === 'string' &&
+                                            isValidExternalUrl(message.image) ? (
+                                                <Image
+                                                    src={message.image}
+                                                    alt="Attachment"
+                                                    width={200}
+                                                    height={200}
+                                                    className="max-w-[200px] rounded-md mb-2 object-contain"
+                                                />
+                                            ) : (
+                                                message.image instanceof File && (
+                                                    <img
+                                                        src={URL.createObjectURL(message.image)}
+                                                        alt="Attachment"
+                                                        className="max-w-[200px] rounded-md mb-2 object-contain"
+                                                    />
+                                                )
+                                            ))}
+                                        {message.text && <p>{message.text}</p>}
                                     </div>
                                 </div>
-                                {message.senderId === userAuth?._id && userAuth?.avatar && (
-                                    <img
-                                        className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
-                                        src={userAuth.avatar || '/user_ava.png'}
-                                        alt="sender"
-                                    />
-                                )}
+                                {message.senderId === userAuth?._id &&
+                                    userAuth?.avatar &&
+                                    (isValidExternalUrl(userAuth.avatar) ? (
+                                        <Image
+                                            src={userAuth.avatar}
+                                            alt="sender"
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full border border-gray-300 dark:border-gray-600"
+                                        />
+                                    ) : (
+                                        <img
+                                            src="/user_ava.png"
+                                            alt="sender"
+                                            className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
+                                        />
+                                    ))}
                             </div>
                         </div>
                     ))
