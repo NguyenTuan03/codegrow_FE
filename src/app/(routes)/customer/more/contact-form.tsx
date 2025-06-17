@@ -167,9 +167,6 @@ export default function ContactForm() {
         }
     }
 
-    const inputStyle =
-        'rounded-full bg-gray-100 dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-800 dark:text-gray-200 font-semibold px-4 py-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#657ED4] dark:focus-visible:ring-[#5AD3AF]';
-
     return (
         <div className="p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
             <Image
@@ -198,7 +195,7 @@ export default function ContactForm() {
                                 <FormLabel className="sr-only">Full Name</FormLabel>
                                 <FormControl>
                                     <Input
-                                        className={inputStyle}
+                                        className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         placeholder="Full Name"
                                         {...field}
                                         disabled={isSubmitting}
@@ -217,7 +214,7 @@ export default function ContactForm() {
                                 <FormLabel className="sr-only">Email</FormLabel>
                                 <FormControl>
                                     <Input
-                                        className={inputStyle}
+                                        className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         placeholder="Email"
                                         type="email"
                                         {...field}
@@ -237,7 +234,7 @@ export default function ContactForm() {
                                 <FormLabel className="sr-only">Phone Number</FormLabel>
                                 <FormControl>
                                     <Input
-                                        className={inputStyle}
+                                        className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         placeholder="Phone Number"
                                         type="tel"
                                         {...field}
@@ -261,7 +258,7 @@ export default function ContactForm() {
                                             value={field.value}
                                             onChange={field.onChange}
                                             disabled={isSubmitting}
-                                            className="w-full rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 text-gray-500 dark:text-gray-200 font-semibold px-4 py-2 pr-10 focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer appearance-none"
+                                            className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text w-full pl-3 pr-10 py-2 appearance-none"
                                             aria-label="Select City"
                                         >
                                             <option value="">Select City</option>
@@ -271,6 +268,7 @@ export default function ContactForm() {
                                                 </option>
                                             ))}
                                         </select>
+
                                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                             <svg
                                                 className="w-4 h-4 text-gray-500 dark:text-gray-400"
@@ -302,7 +300,7 @@ export default function ContactForm() {
                                 <FormLabel className="sr-only">Additional Notes</FormLabel>
                                 <FormControl>
                                     <Input
-                                        className={inputStyle}
+                                        className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         placeholder="Additional Notes (Optional)"
                                         {...field}
                                         disabled={isSubmitting}

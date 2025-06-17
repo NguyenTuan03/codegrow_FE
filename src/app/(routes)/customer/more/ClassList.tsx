@@ -84,7 +84,7 @@ export default function CoursesList({
     return (
         <div className="relative py-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <h2 className="md:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] text-center sm:text-left">
+                <h2 className="md:text-4xl font-bold text-[#657ED4] dark:text-[#5AD3AF] text-center mx-auto">
                     Available Classes
                 </h2>
             </div>

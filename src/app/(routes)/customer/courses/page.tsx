@@ -12,7 +12,7 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
-import { Users, BookOpen, Star, Search, Filter } from 'lucide-react';
+import { Users, BookOpen, Star, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
@@ -443,15 +443,11 @@ export default function CoursesPage() {
                     {/* Filter and Sort Dropdowns */}
                     <div className="flex items-center gap-4">
                         {/* Category Filter */}
-                        <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            className="flex items-center gap-2 cursor-pointer"
-                        >
-                            <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300 flex-shrink-0" />
+                        <motion.div whileHover={{ scale: 1.02 }} className="relative w-[200px]">
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
+                                className="appearance-none w-full rounded-full border border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-4 pr-10 cursor-pointer"
                                 aria-label="Filter by Category"
                             >
                                 <option value="all">Filter by Category</option>
@@ -461,14 +457,30 @@ export default function CoursesPage() {
                                     </option>
                                 ))}
                             </select>
+                            {/* Custom Arrow */}
+                            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-300">
+                                <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </div>
                         </motion.div>
 
                         {/* Sort Options */}
-                        <motion.div whileHover={{ scale: 1.02 }} className="cursor-pointer">
+                        <motion.div whileHover={{ scale: 1.02 }} className="relative w-[200px]">
                             <select
                                 value={sortOption}
                                 onChange={(e) => setSortOption(e.target.value)}
-                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
+                                className="appearance-none w-full rounded-full border border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-4 pr-10 cursor-pointer"
                                 aria-label="Sort By"
                             >
                                 <option value="default">Sort By</option>
@@ -477,6 +489,22 @@ export default function CoursesPage() {
                                 <option value="rating-desc">Rating: High to Low</option>
                                 <option value="enrolled-desc">Popularity</option>
                             </select>
+                            {/* Custom Arrow */}
+                            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-300">
+                                <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </div>
                         </motion.div>
                     </div>
                 </motion.div>
