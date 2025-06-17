@@ -18,6 +18,7 @@ interface User {
     fullName: string;
     email: string;
 }
+
 interface Message {
     _id: string;
     senderId: string;
@@ -26,10 +27,12 @@ interface Message {
     receiverId?: string;
     createAt?: string;
 }
+
 interface SendMessage {
     text: string;
     image?: File | null;
 }
+
 interface AuthContextType {
     userAuth: User | null;
     setUserAuth: (user: User | null) => void;
@@ -57,6 +60,7 @@ const AuthContext = ({ children }: Props) => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
@@ -76,6 +80,7 @@ const AuthContext = ({ children }: Props) => {
             connectSocket(userAuth._id);
         }
     }, [userAuth]);
+
     const connectSocket = (userId: string) => {
         if (socket || !userId) return;
 
@@ -106,9 +111,7 @@ const AuthContext = ({ children }: Props) => {
             setOnlineUsers([]);
         }
     };
-    // useEffect(() => {
-    //     setupAxiosInterceptor();
-    //   }, []);
+
     const getUsers = async () => {
         try {
             const res = await getUsersMessage();
@@ -121,6 +124,7 @@ const AuthContext = ({ children }: Props) => {
             setIsMessagesLoading(false);
         }
     };
+
     const getMessages = useCallback(async (userId: string) => {
         setIsMessagesLoading(true);
         try {
@@ -135,6 +139,7 @@ const AuthContext = ({ children }: Props) => {
             setIsMessagesLoading(false);
         }
     }, []);
+
     const sendMessage = async (messageData: SendMessage) => {
         if (!selectedUser) return;
 
@@ -151,6 +156,7 @@ const AuthContext = ({ children }: Props) => {
             console.log('getUsers errors ', error);
         }
     };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
