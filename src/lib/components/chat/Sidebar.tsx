@@ -5,13 +5,25 @@ import React, { useContext, useState } from 'react';
 import { Auth } from '../context/AuthContext';
 
 type Props = {
-    users: any;
-    setUsers: (user: any) => void;
+    users: User[];
+    setUsers: (user: User) => void;
 };
+interface User {
+    _id: string;
+    role: string;
+    avatar: string;
+    fullName: string;
+    email: string;
+}
 
-const Sidebar = ({ users = [], setUsers }: Props) => {
-    const { onlineUsers, selectedUser, setSelectedUser } = useContext(Auth);
+const Sidebar = ({ users = [] }: Props) => {
+    const context = useContext(Auth);
     const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+    if (!context) {
+        // You can handle the error as needed, for now just return null or a fallback UI
+        return null;
+    }
+    const { onlineUsers, selectedUser, setSelectedUser } = context;
     const filteredUsers = showOnlineOnly
         ? users.filter((user) => onlineUsers.includes(user._id))
         : users;
@@ -54,7 +66,7 @@ const Sidebar = ({ users = [], setUsers }: Props) => {
                                     width={70}
                                     height={70}
                                     src={user.avatar || '/user_ava.png'}
-                                    alt={user.name}
+                                    alt={user.fullName}
                                     className="size-12 object-cover rounded-full"
                                 />
                                 {onlineUsers.includes(user._id) && (

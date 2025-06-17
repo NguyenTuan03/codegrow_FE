@@ -466,12 +466,12 @@ const HomePage = () => {
                         {
                             title: 'Students Enrolled',
                             value: '10K+',
-                            image: '/icons8-students-64.png',
+                            image: '/undraw_graduation_u7uc.svg',
                         },
                         {
                             title: 'Courses Offered',
                             value: '50+',
-                            image: '/icons8-course-assign-100.png',
+                            image: '/undraw_teaching_58yg.svg',
                         },
                         {
                             title: 'Expert Mentors',

@@ -11,14 +11,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import AdminHeader from '@/lib/components/layout/header/Adminheader';
 import Customerheader from '@/lib/components/layout/header/Customerheader';
 import MentorHeader from '@/lib/components/layout/header/Mentorheader';
-import Footer from '@/lib/components/layout/footer/Page';
-
-interface IUserRef {
-    current?: any;
-}
 
 const ChatPage = () => {
-    const { selectedUser } = useContext(Auth);
+    const authContext = useContext(Auth);
+    const selectedUser = authContext?.selectedUser;
     console.log(selectedUser);
     const router = useRouter();
     const [role, setRole] = useState<string | null>(null);

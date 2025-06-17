@@ -8,7 +8,13 @@ const MessageInput = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [sendImage, setSendImage] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { sendMessage } = useContext(Auth);
+    const authContext = useContext(Auth);
+    if (!authContext) {
+        throw new Error(
+            'AuthContext is undefined. Make sure MessageInput is wrapped in AuthProvider.',
+        );
+    }
+    const { sendMessage } = authContext;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -39,7 +45,6 @@ const MessageInput = () => {
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!text.trim() && !sendImage) return;
 
         try {
             await sendMessage({
