@@ -3,7 +3,11 @@ import { Auth } from '../context/AuthContext';
 import { X } from 'lucide-react';
 
 const ChatHeader = () => {
-    const { onlineUsers, selectedUser, setSelectedUser } = useContext(Auth);
+    const auth = useContext(Auth);
+    if (!auth) {
+        return null; // or a fallback UI
+    }
+    const { onlineUsers, selectedUser, setSelectedUser } = auth;
     return (
         <div className="p-2.5 border-b border-base-300">
             <div className="flex items-center justify-between">
@@ -22,7 +26,9 @@ const ChatHeader = () => {
                     <div>
                         <h3 className="font-medium">{selectedUser?.fullName}</h3>
                         <p className="text-sm text-base-content/70 text-black dark:text-white">
-                            {onlineUsers.includes(selectedUser?._id) ? 'Online' : 'Offline'}
+                            {selectedUser?._id && onlineUsers.includes(selectedUser._id)
+                                ? 'Online'
+                                : 'Offline'}
                         </p>
                     </div>
                 </div>
