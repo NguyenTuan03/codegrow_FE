@@ -466,22 +466,22 @@ const HomePage = () => {
                         {
                             title: 'Students Enrolled',
                             value: '10K+',
-                            image: '/icons8-students-64.png',
+                            image: '/undraw_graduation_u7uc.svg',
                         },
                         {
                             title: 'Courses Offered',
                             value: '50+',
-                            image: '/icons8-course-assign-100.png',
+                            image: '/undraw_teaching_58yg.svg',
                         },
                         {
                             title: 'Expert Mentors',
                             value: '200+',
-                            image: '/icons8-expert-96.png',
+                            image: '/undraw_experts_v2vy.svg',
                         },
                         {
                             title: 'Classes Completed',
                             value: '5K+',
-                            image: '/icons8-class-80.png',
+                            image: '/undraw_educator_6dgp.svg',
                         },
                     ].map((item, index) => (
                         <motion.div key={index} variants={itemVariants}>

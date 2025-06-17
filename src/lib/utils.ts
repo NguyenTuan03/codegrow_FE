@@ -14,10 +14,14 @@ export function getTableLink({ token, tableNumber }: { token: string; tableNumbe
     const baseUrl = process.env.NEXT_PUBLIC_HOST_CODEGROW || 'http://localhost:8888';
     return `${baseUrl}/table/${tableNumber}?token=${token}`;
 }
-export function formatMessageTime(date) {
-  return new Date(date).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+interface FormatMessageTimeOptions {
+    date: string | number | Date;
+}
+
+export function formatMessageTime(date: FormatMessageTimeOptions['date']): string {
+    return new Date(date).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
 }

@@ -1,10 +1,8 @@
 'use client';
 
-import { toast } from '@/components/ui/use-toast';
 import { getMessageById } from '@/lib/services/chat/getMessages';
 import { getUsersMessage } from '@/lib/services/chat/getUsers';
 import { sendUserMessage } from '@/lib/services/chat/sendMessage';
-import { setupAxiosInterceptor } from '@/lib/util/axiosInterceptor';
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -13,10 +11,27 @@ type Props = {
 };
 
 interface User {
-    id: string;
+    _id: string;
     role: string;
-    fullname: string;
+    avatar: string;
+    fullName: string;
     email: string;
+}
+
+interface Message {
+    id: string;
+    content: string;
+    senderId: string;
+    receiverId: string;
+    timestamp: string;
+    createAt: string;
+    image: File | null;
+    text: string;
+}
+
+interface SendMessage {
+    text: string;
+    image?: File | null;
 }
 
 interface AuthContextType {
@@ -26,15 +41,15 @@ interface AuthContextType {
     logoutUser: () => void;
     onlineUsers: string[];
     socket: Socket | null;
-    selectedUser: null;
+    selectedUser: User | null;
     setSelectedUser: (user: User | null) => void;
     subscribeToMessages: () => void;
     unsubscribeFromMessages: () => void;
-    messages: any[];
+    messages: Message[];
     getMessages: (userId: string) => Promise<void>;
     getUsers: () => void;
     isMessagesLoading: boolean;
-    sendMessage: (messageData: any) => Promise<void>;
+    sendMessage: (messageData: SendMessage) => Promise<void>;
 }
 
 export const Auth = createContext<AuthContextType | undefined>(undefined);
@@ -43,9 +58,10 @@ const AuthContext = ({ children }: Props) => {
     const [userAuth, setUserAuth] = useState<User | null>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [messages, setMessages] = useState<any[]>([]);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
@@ -62,9 +78,10 @@ const AuthContext = ({ children }: Props) => {
     useEffect(() => {
         if (userAuth) {
             console.log('🔄 userAuth đã có, thử kết nối lại socket...');
-            connectSocket(userAuth.id);
+            connectSocket(userAuth._id);
         }
     }, [userAuth]);
+
     const connectSocket = (userId: string) => {
         if (socket || !userId) return;
 
@@ -95,47 +112,52 @@ const AuthContext = ({ children }: Props) => {
             setOnlineUsers([]);
         }
     };
-    // useEffect(() => {
-    //     setupAxiosInterceptor();
-    //   }, []);
+
     const getUsers = async () => {
         try {
-            const res = getUsersMessage();
-            if (res.status === 200) {
-                setMessages(res?.data.metadata);
+            const res = await getUsersMessage();
+            if (res && res.status === 200) {
+                setMessages(res.data.metadata);
             }
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Failed to get messages');
+        } catch (error) {
+            console.log('getUsers errors ', error);
         } finally {
             setIsMessagesLoading(false);
         }
     };
+
     const getMessages = useCallback(async (userId: string) => {
         setIsMessagesLoading(true);
         try {
             const res = await getMessageById(userId);
             console.log(res);
-            if (res.status === 200) {
-                setMessages(res.data.metadata);
+            if (res && res.status === 200) {
+                setMessages(res.data.metadata); // Updated to use metadata array
             }
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Failed to get messages');
+        } catch (error) {
+            console.log('getUsers errors ', error);
         } finally {
             setIsMessagesLoading(false);
         }
     }, []);
-    const sendMessage = async (messageData: any) => {
+
+    const sendMessage = async (messageData: SendMessage) => {
         if (!selectedUser) return;
 
         try {
-            const res = await sendUserMessage(selectedUser._id, messageData);            
+            const { text, image } = messageData;
+            const res = await sendUserMessage(selectedUser._id, {
+                text,
+                image: image ?? undefined,
+            });
             if (res?.status === 201) {
                 setMessages((prev) => [...prev, res.data.metadata]);
             }
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Failed to send message');
+        } catch (error) {
+            console.log('getUsers errors ', error);
         }
     };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
@@ -154,7 +176,7 @@ const AuthContext = ({ children }: Props) => {
         if (typeof window !== 'undefined') {
             localStorage.setItem('user', JSON.stringify(user));
         }
-        connectSocket(user.id);
+        connectSocket(user._id);
     };
 
     const logoutUser = () => {
@@ -168,9 +190,9 @@ const AuthContext = ({ children }: Props) => {
     const subscribeToMessages = useCallback(() => {
         if (!selectedUser || !socket) return;
 
-        const handler = (newMessage: any) => {            
+        const handler = (newMessage: Message) => {
             const isMessageFromSelectedUser =
-                newMessage.senderId?.toString() === selectedUser._id?.toString(); // dùng toString() để so sánh chắc chắn
+                newMessage.senderId?.toString() === selectedUser._id?.toString();
 
             if (!isMessageFromSelectedUser) return;
             setMessages((prev) => [...prev, newMessage]);
@@ -179,14 +201,13 @@ const AuthContext = ({ children }: Props) => {
         socket.on('newMessage', handler);
 
         return () => {
-            socket.off('newMessage', handler);
+            socket.off('newMessage', handler); // return cleanup
         };
     }, [selectedUser, socket]);
 
     const unsubscribeFromMessages = useCallback(() => {
-        if (socket) {
-            socket.off('newMessage');
-        }
+        if (!socket) return;
+        socket.off('newMessage');
     }, [socket]);
 
     const value: AuthContextType = {

@@ -39,7 +39,7 @@ export default function CourseHeader({ course }: CourseHeaderProps) {
             }
 
             try {
-                await getUserDetail(userAuth.id);
+                await getUserDetail(userAuth._id);
                 // You can handle the result here if needed in the future
             } catch (error) {
                 console.error('Error fetching enrolled courses:', error);
