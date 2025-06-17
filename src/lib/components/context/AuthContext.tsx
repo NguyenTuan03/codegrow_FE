@@ -185,7 +185,7 @@ const AuthContext = ({ children }: Props) => {
 
         const handler = (newMessage: Message) => {
             const isMessageFromSelectedUser =
-                newMessage.senderId?.toString() === selectedUser._id?.toString(); // dùng toString() để so sánh chắc chắn
+                newMessage.senderId?.toString() === selectedUser._id?.toString();
 
             if (!isMessageFromSelectedUser) return;
             setMessages((prev) => [...prev, newMessage]);
@@ -194,14 +194,13 @@ const AuthContext = ({ children }: Props) => {
         socket.on('newMessage', handler);
 
         return () => {
-            socket.off('newMessage', handler);
+            socket.off('newMessage', handler); // return cleanup
         };
     }, [selectedUser, socket]);
 
     const unsubscribeFromMessages = useCallback(() => {
-        if (socket) {
-            socket.off('newMessage');
-        }
+        if (!socket) return;
+        socket.off('newMessage');
     }, [socket]);
 
     const value: AuthContextType = {
