@@ -476,12 +476,12 @@ const HomePage = () => {
                         {
                             title: 'Expert Mentors',
                             value: '200+',
-                            image: '/icons8-expert-96.png',
+                            image: '/undraw_experts_v2vy.svg',
                         },
                         {
                             title: 'Classes Completed',
                             value: '5K+',
-                            image: '/icons8-class-80.png',
+                            image: '/undraw_educator_6dgp.svg',
                         },
                     ].map((item, index) => (
                         <motion.div key={index} variants={itemVariants}>
