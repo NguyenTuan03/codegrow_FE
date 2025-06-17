@@ -232,7 +232,7 @@ const HomePage = () => {
 
     return (
         <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-12 mt-50 gap-4 mb-10">
                 <div className="md:col-span-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -257,7 +257,7 @@ const HomePage = () => {
                                 className="shadow-sm bg-gray-100 dark:bg-gray-700 border-gray-100 dark:border-gray-700 rounded-xl"
                             >
                                 <CardHeader className="flex justify-center">
-                                    <div className="relative w-[100px] h-[100px]">
+                                    <div className="relative w-[100px] h-[150px]">
                                         <Image
                                             src={item.img}
                                             alt="Courses"
@@ -354,41 +354,41 @@ const HomePage = () => {
                 initial="hidden"
                 animate={benefitsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-15 mb-15"
+                className="mt-65 mb-15"
             >
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid mt-20 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {[
                         {
                             title: 'STRUCTURED COURSES',
                             image: '/structurecourse.svg',
                             description:
-                                'Our courses are carefully designed to provide a clear and systematic learning path, ensuring you build skills step-by-step from beginner to advanced levels.',
+                                'Our courses offer a clear, step-by-step learning path, guiding you from beginner to advanced levels with a systematic approach.',
                         },
                         {
                             title: 'PERSONALIZED MENTORSHIP',
                             image: '/undraw_personalization_0q05.svg',
                             description:
-                                'Receive one-on-one guidance from expert mentors who tailor their advice to your learning needs, helping you overcome challenges and achieve your goals.',
+                                'Get one-on-one support from expert mentors, who customize their guidance to fit your unique learning needs and help you reach your goals.',
                         },
                         {
                             title: 'HANDS-ON EXERCISES',
                             image: '/undraw_mathematics_hc2c.svg',
                             description:
-                                'Practice what you learn with real-world coding exercises, designed to reinforce your knowledge and build practical skills through active learning.',
+                                'Engage in practical coding exercises based on real-world scenarios, strengthening your skills through active, hands-on learning experiences.',
                         },
                         {
                             title: 'COMMUNITY SUPPORT',
                             image: '/community.svg',
                             description:
-                                'Join a vibrant community of learners and mentors to share knowledge, ask questions, and get support, ensuring you never feel alone on your learning journey.',
+                                'Connect with a lively community of learners and mentors, where you can exchange ideas, seek help, and thrive with continuous support.',
                         },
                     ].map((item, index) => (
                         <motion.div key={index} variants={itemVariants}>
                             <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                                <div className="relative w-full h-[140px] mb-4">
+                                <div className="relative w-full h-[200px] mb-4">
                                     <Image
                                         src={item.image}
                                         alt={item.title}
@@ -414,9 +414,9 @@ const HomePage = () => {
                 initial="hidden"
                 animate={skillsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-15 mb-15"
+                className="mt-65 mb-15"
             >
-                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                <h3 className="text-center mb-20 font-bold text-4xl text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     RoadMap Programming Skills
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
@@ -426,7 +426,7 @@ const HomePage = () => {
                                 href={`/customer/roadmap`}
                                 className="bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer"
                             >
-                                <div className="relative w-[24px] h-[24px] mr-3">
+                                <div className="relative w-[50px] h-[50px] mr-3">
                                     <Image
                                         src={skill.icon}
                                         alt={skill.name}
@@ -434,7 +434,7 @@ const HomePage = () => {
                                         className="object-contain"
                                     />
                                 </div>
-                                <span className="text-gray-900 text-xl dark:text-gray-100 font-medium cursor-default">
+                                <span className="text-gray-900 text-2xl dark:text-gray-100 font-medium cursor-default">
                                     {skill.name}
                                 </span>
                             </Link>
@@ -456,9 +456,9 @@ const HomePage = () => {
                 initial="hidden"
                 animate={achievementsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-8 mb-15"
+                className="mt-65 mb-65"
             >
-                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                <h3 className="text-center font-bold text-4xl mb-20 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     Our Achievements
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
