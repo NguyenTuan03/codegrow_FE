@@ -1,18 +1,18 @@
 export const HOME_INTRODUCTION = [
     {
         name: 'Testing entrance exam',
-        img: '/bookworm.png',        
+        img: '/testing.svg',
     },
     {
         name: 'Personalized by AI',
-        img: '/bookworm.png',        
+        img: '/personal.svg',
     },
     {
         name: 'Try your hand at mentoring',
-        img: '/bookworm.png',        
+        img: '/mentor.svg',
     },
     {
         name: 'In-depth courses',
-        img: '/bookworm.png',        
+        img: '/deep.svg',
     },
-]
+];
