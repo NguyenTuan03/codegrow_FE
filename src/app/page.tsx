@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { motion } from 'framer-motion';
+import { linear } from 'popmotion'; // ✅ Sửa đúng easing linear
 
 interface JwtPayload {
     _id: string;
@@ -33,10 +34,11 @@ export default function Page() {
 
         if (jwtdecode && auth) {
             auth.loginUser({
-                id: jwtdecode._id,
+                _id: jwtdecode._id,
                 role: jwtdecode.role,
-                fullname: jwtdecode.name,
+                fullName: jwtdecode.name,
                 email: jwtdecode.email,
+                avatar: '', // Provide a default or fetched avatar value
             });
         }
     }, [searchParams, auth]);
@@ -73,7 +75,7 @@ export default function Page() {
             transition: {
                 repeat: Infinity,
                 duration: 1.5,
-                ease: 'linear',
+                ease: linear, // ✅ sửa thành linear
             },
         },
     };
@@ -87,7 +89,7 @@ export default function Page() {
             transition: {
                 delay: 0.5,
                 duration: 0.8,
-                ease: 'easeOut',
+                ease: linear, // ✅ sửa thành linear
             },
         },
     };
@@ -101,7 +103,7 @@ export default function Page() {
                 repeat: Infinity,
                 duration: 1.2,
                 delay: i * 0.2,
-                ease: 'easeInOut',
+                ease: linear, // use imported linear easing function
             },
         }),
     };
