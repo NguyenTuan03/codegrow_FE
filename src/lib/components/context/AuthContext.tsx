@@ -3,7 +3,6 @@
 import { getMessageById } from '@/lib/services/chat/getMessages';
 import { getUsersMessage } from '@/lib/services/chat/getUsers';
 import { sendUserMessage } from '@/lib/services/chat/sendMessage';
-
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -20,12 +19,11 @@ interface User {
 }
 
 interface Message {
-    _id: string;
+    id: string;
+    content: string;
     senderId: string;
-    image?: File;
-    text?: string;
-    receiverId?: string;
-    createAt?: string;
+    receiverId: string;
+    timestamp: string;
 }
 
 interface SendMessage {
@@ -131,7 +129,7 @@ const AuthContext = ({ children }: Props) => {
             const res = await getMessageById(userId);
             console.log(res);
             if (res && res.status === 200) {
-                setMessages(res.data.metadata);
+                setMessages(res.data.metadata); // Updated to use metadata array
             }
         } catch (error) {
             console.log('getUsers errors ', error);
