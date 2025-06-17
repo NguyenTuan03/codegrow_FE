@@ -13,6 +13,8 @@ import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { useRouter } from 'next/navigation';
+import { motion, useInView } from 'framer-motion'; // Import framer-motion
+import { useRef } from 'react';
 
 interface Category {
     _id: string;
@@ -60,16 +62,24 @@ interface ProgrammingSkill {
 }
 
 const HomePage = () => {
-    const [courses, setCourses] = useState<Course[]>([]);
+    // const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
-    const [progress, setProgress] = useState(0);
-    const [completedLessons, setCompletedLessons] = useState<{ [key: string]: boolean }>({});
-    const [completedQuizzes, setCompletedQuizzes] = useState<{ [key: string]: boolean }>({});
-    const [lastLesson, setLastLesson] = useState<string | null>(null);
+
+    // Refs for scroll-triggered animations
+    const benefitsRef = useRef(null);
+    const skillsRef = useRef(null);
+    const achievementsRef = useRef(null);
+    const benefitsInView = useInView(benefitsRef, { once: true, margin: '0px 0px -50px 0px' });
+    const skillsInView = useInView(skillsRef, { once: true, margin: '0px 0px -50px 0px' });
+    const achievementsInView = useInView(achievementsRef, {
+        once: true,
+        margin: '0px 0px -50px 0px',
+    });
+
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -81,51 +91,20 @@ const HomePage = () => {
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
                 router.push('/login');
-                return;
+                return 0;
             }
             const tokenuser = JSON.parse(token);
-
-            console.log('token', tokenuser);
             const userId = localStorage.getItem('user');
             if (!userId) {
                 throw new Error('User ID not found in localStorage');
             }
             const user = JSON.parse(userId);
             const id = user.id;
-            try {
-                const progress = await GetProgress(tokenuser, courseId, id || ''); // Keep original call
-                console.log('Progress:', progress);
-
-                if (progress?.status === 200 && progress.metadata) {
-                    setProgress(progress.metadata.progress || 0); // Set progress (0-100)
-                    setCompletedLessons(
-                        progress.metadata.completedLessons.reduce(
-                            (acc: { [key: string]: boolean }, lessonId: string) => ({
-                                ...acc,
-                                [lessonId]: true,
-                            }),
-                            {},
-                        ),
-                    ); // Map completedLessons
-                    setCompletedQuizzes(
-                        progress.metadata.completedQuizzes.reduce(
-                            (acc: { [key: string]: boolean }, quizId: string) => ({
-                                ...acc,
-                                [quizId]: true,
-                            }),
-                            {},
-                        ),
-                    ); // Map completedQuizzes
-                    setLastLesson(progress.metadata.lastLesson); // Set lastLesson
-                } else {
-                    setProgress(0);
-                    setCompletedLessons({});
-                    setCompletedQuizzes({});
-                    setLastLesson(null);
-                }
-            } catch (error) {
-                console.error('Không thể tải tiến độ:', error);
+            const progressData = await GetProgress(tokenuser, courseId, id);
+            if (progressData?.status === 200 && progressData.metadata) {
+                return progressData.metadata.progress || 0;
             }
+            return 0;
         } catch (error) {
             console.log(`Error fetching progress for course ${courseId}:`, error);
             return 0;
@@ -135,7 +114,6 @@ const HomePage = () => {
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
-            console.log('Fetched categories:', data);
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
             console.log('Failed to fetch categories:', error);
@@ -146,8 +124,6 @@ const HomePage = () => {
         try {
             const limit = 10;
             const data: ApiResponse = await GetCourses(1, limit);
-            console.log('Fetched courses:', data);
-
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = data.metadata.courses.map((course: Course) => {
                     let categoryObj = categories.find((cat) => cat._id === course.category);
@@ -160,17 +136,20 @@ const HomePage = () => {
                     };
                 });
 
-                setCourses(parsedCourses);
+                // setCourses(parsedCourses);
 
-                const progressPromises = parsedCourses.map(async (course) => {
-                    const progress = await fetchProgress(course._id);
-                    return { courseId: course._id, progress };
-                });
+                // Fetch progress for enrolled courses
+                const progressPromises = parsedCourses
+                    .filter((course) => user?.enrolledCourses.some((ec) => ec._id === course._id))
+                    .map(async (course) => {
+                        const progress = await fetchProgress(course._id);
+                        return { courseId: course._id, progress };
+                    });
 
                 const progressResults = await Promise.all(progressPromises);
                 const progressMap = progressResults.reduce(
                     (acc, { courseId, progress }) => {
-                        acc[courseId] = progress ?? 0;
+                        acc[courseId] = progress;
                         return acc;
                     },
                     {} as { [courseId: string]: number },
@@ -182,9 +161,9 @@ const HomePage = () => {
                     'No courses found. Please check your connection or try again later.',
                 );
             }
-        } catch (error: unknown) {
-            console.log(' Error fetching courses:', error);
-            setCourses([]);
+        } catch (error) {
+            console.log('Error fetching courses:', error);
+            // setCourses([]);
         }
     };
 
@@ -192,18 +171,15 @@ const HomePage = () => {
         try {
             const userId = localStorage.getItem('user');
             if (!userId) {
-                // Don't show a toast for non-logged-in users on the homepage
                 setUser(null);
                 return;
             }
             const user = JSON.parse(userId);
             const id = user.id;
-
             const userDetail = await getUserDetail(id);
-
             setUser(userDetail.metadata);
         } catch (error) {
-            console.log(' Error fetching user detail:', error);
+            console.log('Error fetching user detail:', error);
             setUser(null);
         }
     };
@@ -214,10 +190,10 @@ const HomePage = () => {
     }, []);
 
     useEffect(() => {
-        if (categories.length > 0) {
+        if (categories.length > 0 && user) {
             fetchCourses();
         }
-    }, [categories]);
+    }, [categories, user]);
 
     const toggleChat = () => {
         setShowChat((prev) => !prev);
@@ -231,7 +207,6 @@ const HomePage = () => {
         }
     };
 
-    // Data for Popular Programming Skills
     const programmingSkills: ProgrammingSkill[] = [
         { name: 'Python', icon: '/icons8-python-48.png' },
         { name: 'JavaScript', icon: '/icons8-javascript-96.png' },
@@ -244,6 +219,17 @@ const HomePage = () => {
         { name: 'SQL', icon: '/icons8-sql-48.png' },
     ];
 
+    // Animation variants
+    const sectionVariants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, scale: 0.8 },
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: 'easeOut' as const } },
+    };
+
     return (
         <div className="w-full bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] relative">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
@@ -255,7 +241,6 @@ const HomePage = () => {
                                     ? `Welcome back, ${user.fullName}`
                                     : 'Welcome back, customer'}
                             </h3>
-
                             <p className="text-xl mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
                                 Solve coding exercises and get mentored to develop fluency in your
                                 chosen programming languages
@@ -295,25 +280,41 @@ const HomePage = () => {
                     <div className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
                         Your track
                     </div>
-                    <div className="flex flex-row items-center">
-                        <Image src={'/C.png'} width={40} height={40} alt="C" />
-                        <div className="flex flex-col ml-4 text-xl">
-                            <Progress
-                                value={progress > 0 ? progress : 0}
-                                className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
-                            />
-                            <div className="text-xl font-medium text-gray-900 dark:text-gray-300 cursor-default">
-                                {courses.length > 0
-                                    ? `${progress || 0}% completed`
-                                    : 'No progress available'}
+                    {user && user.enrolledCourses.length > 0 ? (
+                        user.enrolledCourses.map((course) => (
+                            <div key={course._id} className="flex flex-col mb-4">
+                                <div className="flex flex-row items-center">
+                                    <Image
+                                        src={course.imgUrl || '/C.png'}
+                                        width={40}
+                                        height={40}
+                                        alt={course.title}
+                                    />
+                                    <div className="flex flex-col ml-4 text-xl">
+                                        <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                            {course.title}
+                                        </span>
+                                        <Progress
+                                            value={courseProgress[course._id] || 0}
+                                            className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
+                                        />
+                                        <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default">
+                                            {courseProgress[course._id] || 0}% completed
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
+                            No enrolled courses yet. Start exploring courses!
                         </div>
-                    </div>
+                    )}
                     <Card className="bg-gray-100 dark:bg-gray-700 border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
                         <CardHeader className="flex justify-center">
                             <div className="relative w-[120px] h-[120px]">
                                 <Image
-                                    src="/mentor.png"
+                                    src="/becomementor.svg"
                                     alt="Mentor"
                                     fill
                                     className="object-contain"
@@ -347,103 +348,80 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <div className="mt-15 mb-15">
+            {/* What you get from CODEGROW */}
+            <motion.div
+                ref={benefitsRef}
+                initial="hidden"
+                animate={benefitsInView ? 'visible' : 'hidden'}
+                variants={sectionVariants}
+                className="mt-15 mb-15"
+            >
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {/* Structured Courses */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/structured_courses.png"
-                                alt="Structured Courses"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            STRUCTURED COURSES
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                            Our courses are carefully designed to provide a clear and systematic
-                            learning path, ensuring you build skills step-by-step from beginner to
-                            advanced levels.
-                        </p>
-                    </div>
-
-                    {/* Personalized Mentorship */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/mentorship.png"
-                                alt="Personalized Mentorship"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            PERSONALIZED MENTORSHIP
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                            Receive one-on-one guidance from expert mentors who tailor their advice
-                            to your learning needs, helping you overcome challenges and achieve your
-                            goals.
-                        </p>
-                    </div>
-
-                    {/* Hands-On Exercises */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/exercises.png"
-                                alt="Hands-On Exercises"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            HANDS-ON EXERCISES
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                            Practice what you learn with real-world coding exercises, designed to
-                            reinforce your knowledge and build practical skills through active
-                            learning.
-                        </p>
-                    </div>
-
-                    {/* Community Support */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/community.png"
-                                alt="Community Support"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            COMMUNITY SUPPORT
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                            Join a vibrant community of learners and mentors to share knowledge, ask
-                            questions, and get support, ensuring you never feel alone on your
-                            learning journey.
-                        </p>
-                    </div>
+                    {[
+                        {
+                            title: 'STRUCTURED COURSES',
+                            image: '/structurecourse.svg',
+                            description:
+                                'Our courses are carefully designed to provide a clear and systematic learning path, ensuring you build skills step-by-step from beginner to advanced levels.',
+                        },
+                        {
+                            title: 'PERSONALIZED MENTORSHIP',
+                            image: '/undraw_personalization_0q05.svg',
+                            description:
+                                'Receive one-on-one guidance from expert mentors who tailor their advice to your learning needs, helping you overcome challenges and achieve your goals.',
+                        },
+                        {
+                            title: 'HANDS-ON EXERCISES',
+                            image: '/undraw_mathematics_hc2c.svg',
+                            description:
+                                'Practice what you learn with real-world coding exercises, designed to reinforce your knowledge and build practical skills through active learning.',
+                        },
+                        {
+                            title: 'COMMUNITY SUPPORT',
+                            image: '/community.svg',
+                            description:
+                                'Join a vibrant community of learners and mentors to share knowledge, ask questions, and get support, ensuring you never feel alone on your learning journey.',
+                        },
+                    ].map((item, index) => (
+                        <motion.div key={index} variants={itemVariants}>
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                                <div className="relative w-full h-[140px] mb-4">
+                                    <Image
+                                        src={item.image}
+                                        alt={item.title}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                                    {item.title}
+                                </div>
+                                <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
+                                    {item.description}
+                                </p>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Updated Component: Popular Programming Skills */}
-            <div className="mt-15 mb-15">
+            {/* RoadMap Programming Skills */}
+            <motion.div
+                ref={skillsRef}
+                initial="hidden"
+                animate={skillsInView ? 'visible' : 'hidden'}
+                variants={sectionVariants}
+                className="mt-15 mb-15"
+            >
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     RoadMap Programming Skills
                 </h3>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                     {programmingSkills.map((skill, index) => (
-                        <div key={index} className="relative group">
+                        <motion.div key={index} variants={itemVariants}>
                             <Link
                                 href={`/customer/roadmap`}
                                 className="bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer"
@@ -460,7 +438,7 @@ const HomePage = () => {
                                     {skill.name}
                                 </span>
                             </Link>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
                 <div className="flex justify-center mt-6 mb-10">
@@ -470,87 +448,63 @@ const HomePage = () => {
                         </Button>
                     </Link>
                 </div>
-            </div>
-            {/* New Section: Our Achievements */}
-            <div className="mt-8 mb-15">
+            </motion.div>
+
+            {/* Our Achievements */}
+            <motion.div
+                ref={achievementsRef}
+                initial="hidden"
+                animate={achievementsInView ? 'visible' : 'hidden'}
+                variants={sectionVariants}
+                className="mt-8 mb-15"
+            >
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     Our Achievements
                 </h3>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {/* Students Enrolled */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/icons8-students-64.png"
-                                alt="Students Enrolled"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            10K+
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
-                            Students Enrolled
-                        </p>
-                    </div>
-
-                    {/* Courses Offered */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/icons8-course-assign-100.png"
-                                alt="Courses Offered"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            50+
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
-                            Courses Offered
-                        </p>
-                    </div>
-
-                    {/* Mentors */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/icons8-expert-96.png"
-                                alt="Mentors"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            200+
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
-                            Expert Mentors
-                        </p>
-                    </div>
-
-                    {/* Projects Completed */}
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                        <div className="relative w-full h-[140px] mb-4">
-                            <Image
-                                src="/icons8-class-80.png"
-                                alt="Mentors"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                        <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                            5K+
-                        </div>
-                        <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
-                            Classes Completed
-                        </p>
-                    </div>
+                    {[
+                        {
+                            title: 'Students Enrolled',
+                            value: '10K+',
+                            image: '/icons8-students-64.png',
+                        },
+                        {
+                            title: 'Courses Offered',
+                            value: '50+',
+                            image: '/icons8-course-assign-100.png',
+                        },
+                        {
+                            title: 'Expert Mentors',
+                            value: '200+',
+                            image: '/icons8-expert-96.png',
+                        },
+                        {
+                            title: 'Classes Completed',
+                            value: '5K+',
+                            image: '/icons8-class-80.png',
+                        },
+                    ].map((item, index) => (
+                        <motion.div key={index} variants={itemVariants}>
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
+                                <div className="relative w-full h-[140px] mb-4">
+                                    <Image
+                                        src={item.image}
+                                        alt={item.title}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <div className="font-bold text-2xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
+                                    {item.value}
+                                </div>
+                                <p className="text-base text-gray-500 dark:text-gray-300 font-medium cursor-default text-center">
+                                    {item.title}
+                                </p>
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };

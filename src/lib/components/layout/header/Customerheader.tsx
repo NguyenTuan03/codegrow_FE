@@ -216,6 +216,13 @@ const Customerheader = () => {
                                     <span className="text-sm">Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
+                                    onClick={() => router.push('/customer/history')}
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
+                                >
+                                    <Settings className="w-4 h-4" />
+                                    <span className="text-sm">History Transaction</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                     onClick={() => router.push('/customer/support')}
                                     className="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black rounded-md transition-colors font-medium"
                                 >

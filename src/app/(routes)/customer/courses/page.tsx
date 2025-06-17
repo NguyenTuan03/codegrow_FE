@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
 import { debounce } from 'lodash';
-
+import { motion, AnimatePresence } from 'framer-motion';
 import { enrollCourseFree } from '@/lib/services/api/enrollcourseFree';
 
 interface Category {
@@ -78,6 +78,27 @@ interface CommentResponse {
     metadata: Message[];
 }
 
+// Animation variants
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+};
+
 export default function CoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
@@ -95,7 +116,6 @@ export default function CoursesPage() {
     const limit = 6;
     const router = useRouter();
 
-    // New function to enroll in free courses
     const enrollFreeCourse = async (courseId: string) => {
         try {
             setPaymentLoading(true);
@@ -120,6 +140,7 @@ export default function CoursesPage() {
                 setEnrolledCourses([...enrolledCourses, { _id: courseId }]);
                 closeModal();
                 await fetchEnrolledCourses();
+                router.push(`/customer/courses/${courseId}`);
             } else {
                 throw new Error('Failed to enroll in the course.');
             }
@@ -140,7 +161,6 @@ export default function CoursesPage() {
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
-
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
@@ -167,7 +187,6 @@ export default function CoursesPage() {
             if (ratings.length === 0) return 0;
 
             const avgRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-
             return Number(avgRating.toFixed(1));
         } catch (error) {
             console.error(`Error fetching comments for course ${courseId}:`, error);
@@ -203,6 +222,7 @@ export default function CoursesPage() {
         try {
             setLoading(true);
             const data: ApiResponse = await GetCourses(page, limit);
+            console.log('API Response:', data); // Debug logging
 
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
                 const parsedCourses = await Promise.all(
@@ -226,6 +246,7 @@ export default function CoursesPage() {
                 setFilteredCourses(parsedCourses);
                 setCurrentPage(data.metadata.page);
                 setTotalPages(data.metadata.totalPages);
+                console.log('Total Pages:', data.metadata.totalPages); // Debug logging
             } else {
                 throw new Error(
                     'No courses found. Please check your connection or try again later.',
@@ -375,10 +396,20 @@ export default function CoursesPage() {
     };
 
     return (
-        <div className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
+        >
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
-                <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                >
                     <div>
                         <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:text-[#5AD3AF]">
                             Discover Amazing Courses
@@ -388,10 +419,15 @@ export default function CoursesPage() {
                             courses.
                         </p>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Search and Filter Section */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+                <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8"
+                >
                     {/* Search Input */}
                     <div className="relative w-full sm:w-1/2 lg:w-1/3">
                         <Input
@@ -399,7 +435,7 @@ export default function CoursesPage() {
                             placeholder="Search courses..."
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                            className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 cursor-pointer"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
@@ -407,7 +443,10 @@ export default function CoursesPage() {
                     {/* Filter and Sort Dropdowns */}
                     <div className="flex items-center gap-4">
                         {/* Category Filter */}
-                        <div className="flex items-center gap-2">
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-2 cursor-pointer"
+                        >
                             <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300 flex-shrink-0" />
                             <select
                                 value={selectedCategory}
@@ -422,48 +461,59 @@ export default function CoursesPage() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </motion.div>
 
                         {/* Sort Options */}
-                        <select
-                            value={sortOption}
-                            onChange={(e) => setSortOption(e.target.value)}
-                            className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
-                            aria-label="Sort By"
-                        >
-                            <option value="default">Sort By</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="rating-desc">Rating: High to Low</option>
-                            <option value="enrolled-desc">Popularity</option>
-                        </select>
+                        <motion.div whileHover={{ scale: 1.02 }} className="cursor-pointer">
+                            <select
+                                value={sortOption}
+                                onChange={(e) => setSortOption(e.target.value)}
+                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base shadow-sm py-2 px-3 cursor-pointer"
+                                aria-label="Sort By"
+                            >
+                                <option value="default">Sort By</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="rating-desc">Rating: High to Low</option>
+                                <option value="enrolled-desc">Popularity</option>
+                            </select>
+                        </motion.div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Courses Grid */}
                 {loading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6"
+                    >
                         {[...Array(8)].map((_, i) => (
-                            <Card
-                                key={i}
-                                className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl"
-                            >
-                                <Skeleton className="h-48 w-full rounded-t-xl" />
-                                <CardContent className="p-4 space-y-3">
-                                    <Skeleton className="h-6 w-3/4" />
-                                    <Skeleton className="h-4 w-full" />
-                                    <Skeleton className="h-4 w-1/2" />
-                                </CardContent>
-                                <CardFooter className="p-4">
-                                    <Skeleton className="h-12 w-full rounded-full" />
-                                </CardFooter>
-                            </Card>
+                            <motion.div key={i} variants={itemVariants}>
+                                <Card className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
+                                    <Skeleton className="h-48 w-full rounded-t-xl" />
+                                    <CardContent className="p-4 space-y-3">
+                                        <Skeleton className="h-6 w-3/4" />
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-1/2" />
+                                    </CardContent>
+                                    <CardFooter className="p-4">
+                                        <Skeleton className="h-12 w-full rounded-full" />
+                                    </CardFooter>
+                                </Card>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 ) : (
                     <>
                         {filteredCourses.length === 0 ? (
-                            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5 }}
+                                className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700"
+                            >
                                 <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                                     <BookOpen className="w-12 h-12 text-gray-400" />
                                 </div>
@@ -474,249 +524,357 @@ export default function CoursesPage() {
                                     We couldn’t find any courses matching your criteria. Try
                                     adjusting your search or filters.
                                 </p>
-                            </div>
+                            </motion.div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                                <motion.div
+                                    variants={containerVariants}
+                                    initial="hidden"
+                                    animate="show"
+                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6"
+                                >
                                     {filteredCourses.map((course) => (
-                                        <Card
+                                        <motion.div
                                             key={course._id}
-                                            className="group hover:shadow-md transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col h-full transform hover:-translate-y-1"
+                                            variants={itemVariants}
+                                            whileHover={{
+                                                scale: 1.03,
+                                                boxShadow: '0px 10px 25px rgba(0, 0, 0, 0.1)',
+                                                transition: {
+                                                    duration: 0.3,
+                                                    ease: [0.42, 0, 0.58, 1],
+                                                },
+                                            }}
+                                            className="cursor-pointer"
                                         >
-                                            <div
-                                                className="relative h-70 w-full overflow-hidden"
-                                                style={{
-                                                    backgroundImage: course.imgUrl
-                                                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
-                                                        : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
-                                                    backgroundColor: course.imgUrl
-                                                        ? 'transparent'
-                                                        : '#657ED4',
-                                                    backgroundSize: 'cover',
-                                                    backgroundPosition: 'center',
-                                                }}
-                                            >
-                                                <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
-                                                    {typeof course.category === 'object'
-                                                        ? course.category.name
-                                                        : 'Uncategorized'}
-                                                </Badge>
-                                            </div>
-                                            <CardHeader className="p-4 pb-2">
-                                                <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-10">
-                                                    {course.title}
-                                                </h4>
-                                                <p className="text-xl text-gray-500 dark:text-gray-400">
-                                                    by {course.author}
-                                                </p>
-                                            </CardHeader>
-                                            <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <span className="font-bold text-xl">
-                                                        ${course.price.toFixed(2)}
-                                                    </span>
-                                                    <div className="flex items-center space-x-1">
-                                                        <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-xl md:text-xl font-medium text-gray-700 dark:text-gray-300">
-                                                            {course.rating?.toFixed(1) || 'N/A'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter className="p-4 pt-0">
-                                                <Button
-                                                    variant="default"
-                                                    size="lg"
-                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md cursor-pointer"
-                                                    onClick={() => openModal(course)}
-                                                >
-                                                    Enroll Now
-                                                </Button>
-                                            </CardFooter>
-                                        </Card>
-                                    ))}
-                                </div>
-
-                                {/* Modal for Course Details */}
-                                {isModalOpen && selectedCourse && (
-                                    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-transparent">
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 relative">
-                                            <button
-                                                onClick={closeModal}
-                                                className="absolute cursor-pointer top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-6 w-6"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    />
-                                                </svg>
-                                            </button>
-                                            <div className="flex flex-col items-center space-y-6">
+                                            <Card className="group overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl flex flex-col h-full">
                                                 <div
-                                                    className="relative h-100 w-full overflow-hidden rounded-t-xl mb-4"
+                                                    className="relative h-70 w-full overflow-hidden"
                                                     style={{
-                                                        backgroundImage: selectedCourse.imgUrl
-                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedCourse.imgUrl})`
+                                                        backgroundImage: course.imgUrl
+                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
                                                             : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
-                                                        backgroundColor: selectedCourse.imgUrl
+                                                        backgroundColor: course.imgUrl
                                                             ? 'transparent'
                                                             : '#657ED4',
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center',
                                                     }}
-                                                />
-                                                <h3 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default">
-                                                    {selectedCourse.title}
-                                                </h3>
-                                                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xl text-gray-600 dark:text-gray-300">
-                                                    <div className="flex items-center gap-2">
-                                                        <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                        <span>
-                                                            {selectedCourse.enrolledCount} students
-                                                            enrolled
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                        <span>
-                                                            Author:{' '}
-                                                            {selectedCourse.author || 'Unknown'}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span>
-                                                            Category:{' '}
-                                                            {typeof selectedCourse.category ===
-                                                            'object'
-                                                                ? selectedCourse.category.name
-                                                                : 'Uncategorized'}
-                                                        </span>
-                                                    </div>
+                                                >
+                                                    <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
+                                                        {typeof course.category === 'object'
+                                                            ? course.category.name
+                                                            : 'Uncategorized'}
+                                                    </Badge>
                                                 </div>
-                                                <p className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed mb-4 cursor-default">
-                                                    {selectedCourse.description}
-                                                </p>
-                                                <div className="flex items-center justify-between w-full mb-4">
-                                                    <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                                                        ${selectedCourse.price.toFixed(2)}
-                                                    </span>
-                                                    <div className="flex items-center space-x-1">
-                                                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                                                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
-                                                            {selectedCourse.rating?.toFixed(1) ||
-                                                                'N/A'}
+                                                <CardHeader className="p-4 pb-2">
+                                                    <h4 className="font-semibold text-2xl line-clamp-5 text-[#657ED4] dark:text-[#5AD3AF] h-10">
+                                                        {course.title}
+                                                    </h4>
+                                                    <p className="text-xl text-gray-500 dark:text-gray-400">
+                                                        by {course.author}
+                                                    </p>
+                                                </CardHeader>
+                                                <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <span className="font-bold text-xl">
+                                                            ${course.price.toFixed(2)}
                                                         </span>
+                                                        <div className="flex items-center space-x-1">
+                                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                                            <span className="text-xl md:text-xl font-medium text-gray-700 dark:text-gray-300">
+                                                                {course.rating?.toFixed(1) || 'N/A'}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="flex items-center justify-between w-full mb-4 text-gray-500 dark:text-gray-400">
-                                                    <div className="flex items-center">
-                                                        <Users className="h-5 w-5 mr-1" />
-                                                        <span>
-                                                            {selectedCourse.enrolledCount} learners
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <BookOpen className="h-5 w-5 mr-1" />
-                                                        <span>
-                                                            {selectedCourse.lessons} lessons
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                </CardContent>
+                                                <CardFooter className="p-4 pt-0">
+                                                    <motion.div
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                    >
+                                                        <Button
+                                                            variant="default"
+                                                            size="lg"
+                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full shadow-md cursor-pointer"
+                                                            onClick={() => openModal(course)}
+                                                        >
+                                                            Enroll Now
+                                                        </Button>
+                                                    </motion.div>
+                                                </CardFooter>
+                                            </Card>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
 
-                                                <div className="flex flex-col sm:flex-row gap-3 w-full">
-                                                    {enrolledCourses.some(
-                                                        (enrolledCourse) =>
-                                                            enrolledCourse._id ===
-                                                            selectedCourse._id,
-                                                    ) ? (
-                                                        <Button
-                                                            variant="default"
-                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
-                                                            onClick={() =>
-                                                                router.push(
-                                                                    `/customer/courses/${selectedCourse._id}`,
-                                                                )
-                                                            }
-                                                        >
-                                                            View Details
-                                                        </Button>
-                                                    ) : selectedCourse.price === 0 ? (
-                                                        <Button
-                                                            variant="default"
-                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
-                                                            onClick={() =>
-                                                                enrollFreeCourse(selectedCourse._id)
-                                                            }
-                                                            disabled={paymentLoading}
-                                                        >
-                                                            {paymentLoading
-                                                                ? 'Đang xử lý...'
-                                                                : 'Enroll Course'}
-                                                        </Button>
-                                                    ) : (
-                                                        <>
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleAlternativePayment('momo')
-                                                                }
-                                                                disabled={paymentLoading}
-                                                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
-                                                                    paymentLoading
-                                                                        ? 'opacity-50 cursor-not-allowed'
-                                                                        : ''
-                                                                }`}
+                                {/* Modal for Course Details */}
+                                <AnimatePresence>
+                                    {isModalOpen && selectedCourse && (
+                                        <motion.div
+                                            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                            initial="hidden"
+                                            animate="visible"
+                                            exit="hidden"
+                                            variants={backdropVariants}
+                                        >
+                                            {/* Backdrop */}
+                                            <motion.div
+                                                className="fixed inset-0  bg-opacity-50 backdrop-blur-sm z-40"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                            />
+                                            {/* Modal Content */}
+                                            <motion.div
+                                                className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 max-h-[90vh] overflow-y-auto"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.9 }}
+                                            >
+                                                <motion.button
+                                                    onClick={closeModal}
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                    className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-6 w-6"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        strokeWidth={2}
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M6 18L18 6M6 6l12 12"
+                                                        />
+                                                    </svg>
+                                                </motion.button>
+                                                <div className="flex flex-col items-center space-y-6">
+                                                    <motion.div
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{ delay: 0.1 }}
+                                                        className="relative h-100 w-full overflow-hidden rounded-t-xl mb-4"
+                                                        style={{
+                                                            backgroundImage: selectedCourse.imgUrl
+                                                                ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedCourse.imgUrl})`
+                                                                : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                            backgroundColor: selectedCourse.imgUrl
+                                                                ? 'transparent'
+                                                                : '#657ED4',
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center',
+                                                        }}
+                                                    />
+                                                    <motion.h3
+                                                        initial={{ y: -10, opacity: 0 }}
+                                                        animate={{ y: 0, opacity: 1 }}
+                                                        transition={{ delay: 0.2 }}
+                                                        className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default"
+                                                    >
+                                                        {selectedCourse.title}
+                                                    </motion.h3>
+                                                    <motion.div
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{ delay: 0.3 }}
+                                                        className="flex flex-wrap items-center gap-4 sm:gap-6 text-xl text-gray-600 dark:text-gray-300"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                            <span>
+                                                                {selectedCourse.enrolledCount}{' '}
+                                                                students enrolled
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                            <span>
+                                                                Author:{' '}
+                                                                {selectedCourse.author || 'Unknown'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span>
+                                                                Category:{' '}
+                                                                {typeof selectedCourse.category ===
+                                                                'object'
+                                                                    ? selectedCourse.category.name
+                                                                    : 'Uncategorized'}
+                                                            </span>
+                                                        </div>
+                                                    </motion.div>
+                                                    <motion.p
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{ delay: 0.4 }}
+                                                        className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed mb-4 cursor-default"
+                                                    >
+                                                        {selectedCourse.description}
+                                                    </motion.p>
+                                                    <motion.div
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{ delay: 0.5 }}
+                                                        className="flex items-center justify-between w-full mb-4"
+                                                    >
+                                                        <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                                            ${selectedCourse.price.toFixed(2)}
+                                                        </span>
+                                                        <div className="flex items-center space-x-1">
+                                                            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                                                            <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                                                                {selectedCourse.rating?.toFixed(
+                                                                    1,
+                                                                ) || 'N/A'}
+                                                            </span>
+                                                        </div>
+                                                    </motion.div>
+                                                    <motion.div
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{ delay: 0.6 }}
+                                                        className="flex items-center justify-between w-full mb-4 text-gray-500 dark:text-gray-400"
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <Users className="h-5 w-5 mr-1" />
+                                                            <span>
+                                                                {selectedCourse.enrolledCount}{' '}
+                                                                learners
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center">
+                                                            <BookOpen className="h-5 w-5 mr-1" />
+                                                            <span>
+                                                                {selectedCourse.lessons} lessons
+                                                            </span>
+                                                        </div>
+                                                    </motion.div>
+
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.7 }}
+                                                        className="flex flex-col sm:flex-row gap-3 w-full"
+                                                    >
+                                                        {enrolledCourses.some(
+                                                            (enrolledCourse) =>
+                                                                enrolledCourse._id ===
+                                                                selectedCourse._id,
+                                                        ) ? (
+                                                            <motion.div
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
                                                             >
-                                                                <img
-                                                                    src="/momoo.webp"
-                                                                    alt="MoMo"
-                                                                    className="h-6 w-6"
-                                                                />
-                                                                {paymentLoading
-                                                                    ? 'Đang xử lý...'
-                                                                    : 'Thanh toán MoMo'}
-                                                            </Button>
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleAlternativePayment(
-                                                                        'vnpay',
-                                                                    )
-                                                                }
-                                                                disabled={paymentLoading}
-                                                                className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-md ${
-                                                                    paymentLoading
-                                                                        ? 'opacity-50 cursor-not-allowed'
-                                                                        : ''
-                                                                }`}
+                                                                <Button
+                                                                    variant="default"
+                                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full shadow-md cursor-pointer"
+                                                                    onClick={() =>
+                                                                        router.push(
+                                                                            `/customer/courses/${selectedCourse._id}`,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    View Details
+                                                                </Button>
+                                                            </motion.div>
+                                                        ) : selectedCourse.price === 0 ? (
+                                                            <motion.div
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
                                                             >
-                                                                <img
-                                                                    src="/vnpay.png"
-                                                                    alt="VNPay"
-                                                                    className="h-6 w-6"
-                                                                />
-                                                                {paymentLoading
-                                                                    ? 'Đang xử lý...'
-                                                                    : 'Thanh toán VNPay'}
-                                                            </Button>
-                                                        </>
-                                                    )}
+                                                                <Button
+                                                                    variant="default"
+                                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed"
+                                                                    onClick={() =>
+                                                                        enrollFreeCourse(
+                                                                            selectedCourse._id,
+                                                                        )
+                                                                    }
+                                                                    disabled={paymentLoading}
+                                                                >
+                                                                    {paymentLoading
+                                                                        ? 'Đang xử lý...'
+                                                                        : 'Enroll Course'}
+                                                                </Button>
+                                                            </motion.div>
+                                                        ) : (
+                                                            <>
+                                                                <motion.div
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                >
+                                                                    <Button
+                                                                        onClick={() =>
+                                                                            handleAlternativePayment(
+                                                                                'momo',
+                                                                            )
+                                                                        }
+                                                                        disabled={paymentLoading}
+                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
+                                                                            paymentLoading
+                                                                                ? 'opacity-50'
+                                                                                : ''
+                                                                        }`}
+                                                                    >
+                                                                        <img
+                                                                            src="/momoo.webp"
+                                                                            alt="MoMo"
+                                                                            className="h-6 w-6"
+                                                                        />
+                                                                        {paymentLoading
+                                                                            ? 'Đang xử lý...'
+                                                                            : 'Thanh toán MoMo'}
+                                                                    </Button>
+                                                                </motion.div>
+                                                                <motion.div
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                >
+                                                                    <Button
+                                                                        onClick={() =>
+                                                                            handleAlternativePayment(
+                                                                                'vnpay',
+                                                                            )
+                                                                        }
+                                                                        disabled={paymentLoading}
+                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
+                                                                            paymentLoading
+                                                                                ? 'opacity-50'
+                                                                                : ''
+                                                                        }`}
+                                                                    >
+                                                                        <img
+                                                                            src="/vnpay.png"
+                                                                            alt="VNPay"
+                                                                            className="h-6 w-6"
+                                                                        />
+                                                                        {paymentLoading
+                                                                            ? 'Đang xử lý...'
+                                                                            : 'Thanh toán VNPay'}
+                                                                    </Button>
+                                                                </motion.div>
+                                                            </>
+                                                        )}
+                                                    </motion.div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                            </motion.div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* Pagination */}
                                 {totalPages > 1 && (
-                                    <div className="mt-12 flex justify-center">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.5 }}
+                                        className="mt-16 flex justify-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md"
+                                    >
                                         <Pagination>
                                             <PaginationContent>
                                                 <PaginationItem>
@@ -724,11 +882,11 @@ export default function CoursesPage() {
                                                         onClick={() =>
                                                             handlePageChange(currentPage - 1)
                                                         }
-                                                        className={
+                                                        className={`cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] ${
                                                             currentPage === 1
                                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
-                                                        }
+                                                                : ''
+                                                        }`}
                                                     />
                                                 </PaginationItem>
                                                 {Array.from(
@@ -739,11 +897,11 @@ export default function CoursesPage() {
                                                         <PaginationLink
                                                             onClick={() => handlePageChange(page)}
                                                             isActive={currentPage === page}
-                                                            className={
+                                                            className={`cursor-pointer ${
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg cursor-pointer'
-                                                                    : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
-                                                            }
+                                                                    ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg'
+                                                                    : 'text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
+                                                            }`}
                                                         >
                                                             {page}
                                                         </PaginationLink>
@@ -754,22 +912,22 @@ export default function CoursesPage() {
                                                         onClick={() =>
                                                             handlePageChange(currentPage + 1)
                                                         }
-                                                        className={
+                                                        className={`cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] ${
                                                             currentPage === totalPages
                                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
-                                                                : 'cursor-pointer text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
-                                                        }
+                                                                : ''
+                                                        }`}
                                                     />
                                                 </PaginationItem>
                                             </PaginationContent>
                                         </Pagination>
-                                    </div>
+                                    </motion.div>
                                 )}
                             </>
                         )}
                     </>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 }

@@ -1,6 +1,9 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
-import React from 'react';
+import React, { useRef } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
+import { motion, useInView, Variants } from 'framer-motion';
 
 export default function DeveloperRoadmaps() {
     const roadmaps = [
@@ -27,32 +30,84 @@ export default function DeveloperRoadmaps() {
         { name: 'Developer Relations', href: '/customer/roadmap/DeveloperRelations' },
     ];
 
+    // Refs for scroll-triggered animations
+    const headerRef = useRef(null);
+    const descriptionRef = useRef(null);
+    const roadmapsRef = useRef(null);
+
+    // Detect when sections are in view
+    const headerInView = useInView(headerRef, { once: true, margin: '0px 0px -50px 0px' });
+    const descriptionInView = useInView(descriptionRef, {
+        once: true,
+        margin: '0px 0px -50px 0px',
+    });
+    const roadmapsInView = useInView(roadmapsRef, { once: true, margin: '0px 0px -50px 0px' });
+
+    // Animation variants
+    const sectionVariants: Variants = {
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeInOut' } },
+    };
+
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, scale: 0.8 },
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: 'easeInOut' } },
+    };
+
     return (
         <ReactFlowProvider>
-            <div className="min-h-screen  dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
+            <div className="min-h-screen dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-6 transition-colors duration-300">
                 <div className="max-w-8xl mx-auto">
-                    <h1 className="text-4xl  font-bold  tracking-tight text-center mb-4 text-[#657ED4] dark:[#5AD3AF]">
+                    {/* Header */}
+                    <motion.h1
+                        ref={headerRef}
+                        initial="hidden"
+                        animate={headerInView ? 'visible' : 'hidden'}
+                        variants={sectionVariants}
+                        className="text-4xl font-bold tracking-tight text-center mb-4 text-[#657ED4] dark:[#5AD3AF]"
+                    >
                         Developer Roadmaps
-                    </h1>
+                    </motion.h1>
 
-                    <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto">
+                    {/* Description */}
+                    <motion.p
+                        ref={descriptionRef}
+                        initial="hidden"
+                        animate={descriptionInView ? 'visible' : 'hidden'}
+                        variants={sectionVariants}
+                        className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto"
+                    >
                         <span className="text-gray-800 dark:text-gray-300 text-xl">roadmap.sh</span>{' '}
                         is a community effort to create roadmaps, guides and other educational
                         content to help guide developers in picking up a path and guide their
                         learnings.
-                    </p>
+                    </motion.p>
 
-                    <div className="border-t border-gray-300 dark:border-gray-700 pt-8 mb-8">
+                    {/* Roadmaps Grid */}
+                    <motion.div
+                        ref={roadmapsRef}
+                        initial="hidden"
+                        animate={roadmapsInView ? 'visible' : 'hidden'}
+                        variants={sectionVariants}
+                        className="border-t border-gray-300 dark:border-gray-700 pt-8 mb-8"
+                    >
                         <h2 className="text-xl font-medium text-center mb-8 text-gray-700 dark:text-gray-300">
                             Role-based Roadmaps
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {roadmaps.map((roadmap, index) => (
-                                <div key={index} className="relative group">
+                                <motion.div
+                                    key={index}
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    transition={{ delay: index * 0.1 }}
+                                    className="relative group"
+                                >
                                     <a
                                         href={roadmap.href}
-                                        className="block bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16  items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg"
+                                        className="block bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg"
                                     >
                                         <span>{roadmap.name}</span>
                                         {roadmap.isNew && (
@@ -76,36 +131,10 @@ export default function DeveloperRoadmaps() {
                                             <polyline points="7 3 7 8 15 8"></polyline>
                                         </svg>
                                     </Button>
-                                </div>
+                                </motion.div>
                             ))}
-
-                            {/* <div className="relative group">
-                                <a
-                                    href="#/create-roadmap"
-                                    className="block bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 border-dashed rounded-lg p-4 h-16 flex items-center justify-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600"
-                                >
-                                    <span className="flex items-center">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="mr-2"
-                                        >
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                        Create your own Roadmap
-                                    </span>
-                                </a>
-                            </div> */}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </ReactFlowProvider>
