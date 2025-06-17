@@ -5,14 +5,7 @@ import { formatMessageTime } from '@/lib/utils';
 import MessageInput from './MessageInput';
 
 const ChatContainer = () => {
-    const {
-        userAuth,
-        messages,
-        getMessages,
-        subscribeToMessages,
-        selectedUser,
-        unsubscribeFromMessages,
-    } = useContext(Auth);
+    const { userAuth, messages, getMessages, subscribeToMessages, selectedUser } = useContext(Auth);
 
     const messageEndRef = useRef(null);
     console.log('messages ', messages);
