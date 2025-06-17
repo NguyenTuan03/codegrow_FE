@@ -24,6 +24,9 @@ interface Message {
     senderId: string;
     receiverId: string;
     timestamp: string;
+    createAt: string;
+    image: File | null;
+    text: string;
 }
 
 interface SendMessage {
