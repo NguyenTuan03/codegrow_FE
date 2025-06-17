@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { toast } from '@/components/ui/use-toast';
+
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
@@ -34,7 +34,7 @@ export default function OverviewTab({
     progress,
     completedLessons,
     completedQuizzes,
-    lastLesson,
+
     onNavigate,
     courseId,
 }: OverviewTabProps) {
@@ -50,12 +50,6 @@ export default function OverviewTab({
             }
         } catch (error) {
             console.error('Error loading data:', error);
-            toast({
-                title: 'Error',
-                description: 'Failed to load course data',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
         } finally {
             setLoading(false);
         }

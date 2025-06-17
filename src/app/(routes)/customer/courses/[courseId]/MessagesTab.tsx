@@ -121,12 +121,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
             setMessages(nestedMessages);
         } catch (error) {
             console.error('Error fetching messages:', error);
-            toast({
-                title: 'Error',
-                description: 'Failed to load comments',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
         }
     };
 

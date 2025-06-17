@@ -1,18 +1,17 @@
 import httpRequest from '@/lib/util/HttpRequest';
-interface IalternativePayment {
+interface enrollcoursefree {
     token: string | null;
-    paymentMethod: string;
+
     course: {
         _id: string;
     };
 }
-export const alternativePayment = async ({ token, paymentMethod, course }: IalternativePayment) => {
+export const enrollCourseFree = async ({ token, course }: enrollcoursefree) => {
     try {
         const response = await httpRequest.post(
-            '/users/enroll',
+            '/users/enroll-free',
             {
                 courseId: course._id,
-                paymentMethod,
             },
             {
                 headers: {
@@ -20,10 +19,10 @@ export const alternativePayment = async ({ token, paymentMethod, course }: Ialte
                 },
             },
         );
-        console.log('Alternative payment response:', response);
+
         return response;
     } catch (error) {
-        console.error('Error marking alternative payment:', error);
+        console.error('Error enrolling in free course:', error);
         throw error;
     }
 };
