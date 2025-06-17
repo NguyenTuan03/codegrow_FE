@@ -1,4 +1,5 @@
 'use client';
+
 import { Users } from 'lucide-react';
 
 import React, { useContext, useState } from 'react';
@@ -6,7 +7,7 @@ import { Auth } from '../context/AuthContext';
 
 type Props = {
     users: User[];
-    setUsers: (user: User) => void;
+    setUsers: React.Dispatch<React.SetStateAction<User[]>>; // Updated prop type to match useState
 };
 interface User {
     _id: string;
@@ -35,17 +36,17 @@ const Sidebar = ({ users = [] }: Props) => {
                         <Users className="size-6" />
                         <span className="font-medium hidden lg:block">Contacts</span>
                     </div>
-                    <div className="mt-3  hidden lg:flex items-center gap-2">
-                        <label className="cursor-pointer  flex items-center gap-2">
+                    <div className="mt-3 hidden lg:flex items-center gap-2">
+                        <label className="cursor-pointer flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 checked={showOnlineOnly}
                                 onChange={(e) => setShowOnlineOnly(e.target.checked)}
                                 className="checkbox bg-white checkbox-sm"
                             />
-                            <span className="text-sm ">Show online only</span>
+                            <span className="text-sm">Show online only</span>
                         </label>
-                        <span className="text-xs text-zinc-500 ">
+                        <span className="text-xs text-zinc-500">
                             ({onlineUsers.length - 1} online)
                         </span>
                     </div>
@@ -76,8 +77,6 @@ const Sidebar = ({ users = [] }: Props) => {
                                     />
                                 )}
                             </div>
-
-                            {/* User info - only visible on larger screens */}
                             <div className="hidden lg:block text-left min-w-0">
                                 <div className="font-medium truncate">{user.fullName}</div>
                                 <div className="text-sm text-zinc-400">
@@ -86,7 +85,6 @@ const Sidebar = ({ users = [] }: Props) => {
                             </div>
                         </button>
                     ))}
-
                     {filteredUsers.length === 0 && (
                         <div className="text-center text-zinc-500 py-4">No online users</div>
                     )}

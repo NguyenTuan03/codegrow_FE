@@ -12,13 +12,21 @@ import AdminHeader from '@/lib/components/layout/header/Adminheader';
 import Customerheader from '@/lib/components/layout/header/Customerheader';
 import MentorHeader from '@/lib/components/layout/header/Mentorheader';
 
+interface User {
+    _id: string;
+    role: string;
+    avatar: string;
+    fullName: string;
+    email: string;
+}
+
 const ChatPage = () => {
     const authContext = useContext(Auth);
     const selectedUser = authContext?.selectedUser;
     console.log(selectedUser);
     const router = useRouter();
     const [role, setRole] = useState<string | null>(null);
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<User[]>([]); // Typed as User[]
 
     // Retrieve role from localStorage
     useEffect(() => {
