@@ -141,7 +141,7 @@ export const PostgreSQLNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'tables',
-        position: { x: 100, y: 500 },
+        position: { x: -100, y: 500 },
         data: { label: 'Creating Tables' },
         style: {
             background: '#e6f7fa',
@@ -158,7 +158,7 @@ export const PostgreSQLNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'constraints',
-        position: { x: 300, y: 500 },
+        position: { x: 180, y: 500 },
         data: { label: 'Constraints (PK, FK, etc.)' },
         style: {
             background: '#e6f7fa',
@@ -281,7 +281,7 @@ export const PostgreSQLNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'user-roles',
-        position: { x: 1000, y: 300 },
+        position: { x: 1200, y: 300 },
         data: { label: 'User Roles & Permissions' },
         style: {
             background: '#e6f7fa',
@@ -354,7 +354,7 @@ export const PostgreSQLNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'triggers',
-        position: { x: 1100, y: 700 },
+        position: { x: 1200, y: 700 },
         data: {
             label: 'Triggers',
             recommendation: 'optional',

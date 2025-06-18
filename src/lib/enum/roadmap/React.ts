@@ -9,13 +9,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     // Main React Node
     {
         id: 'react',
-        position: { x: 600, y: 50 }, // Shifted to center for wider layout
+        position: { x: 600, y: 50 },
         data: {
             label: 'React',
             recommendation: 'recommended',
         },
         style: {
-            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)', // Updated to app theme gradient
+            background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
             borderRadius: 16,
             border: '2px solid #2e90fa',
@@ -32,7 +32,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     // JavaScript Roadmap Link
     {
         id: 'js-roadmap',
-        position: { x: 200, y: 150 },
+        position: { x: 200, y: 200 }, // Tăng y để tách xa
         data: {
             label: 'Visit JavaScript Roadmap',
             recommendation: 'recommended',
@@ -71,13 +71,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'vite',
-        position: { x: 400, y: 300 },
+        position: { x: 400, y: 300 }, // Tách xa hơn
         data: {
             label: 'Vite',
             recommendation: 'recommended',
         },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#ffd700',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -91,20 +91,20 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'cra',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 300 }, // Tách xa hơn
         data: {
             label: 'Create React App',
             recommendation: 'not-recommended',
         },
         style: {
-            background: '#ff6b6b', // Kept original color for recommendation
+            background: '#ff6b6b',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
             width: 260,
             textAlign: 'center',
             fontSize: 14,
-            color: '#1a202c',
+            color: '#fff',
             boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
             transition: 'transform 0.2s ease-in-out',
         },
@@ -130,7 +130,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'functional-components',
-        position: { x: 100, y: 500 },
+        position: { x: -200, y: 500 }, // Tăng khoảng cách
         data: {
             label: 'Functional Components',
             recommendation: 'recommended',
@@ -150,7 +150,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'class-components',
-        position: { x: 300, y: 500 },
+        position: { x: 70, y: 500 }, // Tăng khoảng cách
         data: {
             label: 'Class Components',
             recommendation: 'optional',
@@ -170,7 +170,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'jsx',
-        position: { x: 100, y: 600 },
+        position: { x: -100, y: 600 }, // Tăng khoảng cách
         data: { label: 'JSX' },
         style: {
             background: '#e6f7fa',
@@ -187,7 +187,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'props-state',
-        position: { x: 300, y: 600 },
+        position: { x: 300, y: 600 }, // Tăng khoảng cách
         data: { label: 'Props vs State' },
         style: {
             background: '#e6f7fa',
@@ -223,7 +223,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'usestate',
-        position: { x: 450, y: 500 },
+        position: { x: 450, y: 500 }, // Tăng khoảng cách
         data: { label: 'useState' },
         style: {
             background: '#e6f7fa',
@@ -240,7 +240,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'useeffect',
-        position: { x: 750, y: 500 },
+        position: { x: 720, y: 500 }, // Tăng khoảng cách
         data: { label: 'useEffect' },
         style: {
             background: '#e6f7fa',
@@ -259,7 +259,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     // State Management
     {
         id: 'state-management',
-        position: { x: 1000, y: 200 },
+        position: { x: 1000, y: 400 }, // Tăng y để tách xa
         data: { label: 'State Management' },
         style: {
             background: '#e6f7fa',
@@ -276,13 +276,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'redux',
-        position: { x: 1000, y: 300 },
+        position: { x: 1000, y: 500 }, // Tăng y để tách xa
         data: {
             label: 'Redux / Toolkit',
             recommendation: 'recommended',
         },
         style: {
-            background: '#764abc', // Kept original color for recommendation
+            background: '#764abc',
             color: '#fff',
             border: '2px solid #2e90fa',
             borderRadius: 12,
@@ -296,13 +296,13 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'zustand',
-        position: { x: 1000, y: 400 },
+        position: { x: 1000, y: 600 }, // Tăng y để tách xa
         data: {
             label: 'Zustand',
             recommendation: 'alternative',
         },
         style: {
-            background: '#ffd700', // Kept original color for recommendation
+            background: '#ffd700',
             border: '2px solid #2e90fa',
             borderRadius: 12,
             padding: 12,
@@ -318,7 +318,7 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
     // Frontend Roadmap Link
     {
         id: 'frontend-roadmap',
-        position: { x: 1000, y: 600 },
+        position: { x: 1000, y: 700 }, // Tăng y để tách xa
         data: {
             label: 'Frontend Roadmap',
             recommendation: 'recommended',
@@ -337,7 +337,6 @@ export const ReactNodes: Node<Partial<CustomNodeData>>[] = [
         },
     },
 ];
-
 export const ReactEdges: Edge[] = [
     // Main connections from React
     {

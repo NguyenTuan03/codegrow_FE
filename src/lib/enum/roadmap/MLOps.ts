@@ -49,7 +49,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'data-collection',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Data Collection' },
         style: {
             background: '#e6f7fa',
@@ -102,7 +102,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'training',
-        position: { x: 400, y: 300 },
+        position: { x: 300, y: 450 },
         data: { label: 'Model Training' },
         style: {
             background: '#e6f7fa',
@@ -119,7 +119,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'evaluation',
-        position: { x: 600, y: 300 },
+        position: { x: 600, y: 450 },
         data: { label: 'Model Evaluation' },
         style: {
             background: '#e6f7fa',
@@ -136,7 +136,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'tuning',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Model Tuning' },
         style: {
             background: '#e6f7fa',
@@ -189,7 +189,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'model-serving',
-        position: { x: 1100, y: 250 },
+        position: { x: 1200, y: 250 },
         data: { label: 'Model Serving' },
         style: {
             background: '#e6f7fa',
@@ -225,7 +225,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'model-monitoring',
-        position: { x: 900, y: 500 },
+        position: { x: 850, y: 500 },
         data: { label: 'Model Monitoring' },
         style: {
             background: '#e6f7fa',
@@ -242,7 +242,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'retraining',
-        position: { x: 1100, y: 500 },
+        position: { x: 1200, y: 500 },
         data: { label: 'Automated Retraining' },
         style: {
             background: '#e6f7fa',
@@ -278,7 +278,7 @@ export const MLOpsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'data-poisoning-defense',
-        position: { x: 900, y: 750 },
+        position: { x: 800, y: 750 },
         data: {
             label: 'Data Poisoning Defense',
             recommendation: 'recommended',

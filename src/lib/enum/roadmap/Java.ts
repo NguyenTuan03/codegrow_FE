@@ -141,7 +141,7 @@ export const JavaNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'encapsulation',
-        position: { x: 100, y: 500 },
+        position: { x: -150, y: 500 },
         data: { label: 'Encapsulation' },
         style: {
             background: '#e6f7fa',
@@ -158,7 +158,7 @@ export const JavaNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'interfaces',
-        position: { x: 300, y: 500 },
+        position: { x: 150, y: 500 },
         data: { label: 'Interfaces' },
         style: {
             background: '#e6f7fa',
@@ -264,7 +264,7 @@ export const JavaNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'spring-boot',
-        position: { x: 1000, y: 300 },
+        position: { x: 1200, y: 300 },
         data: {
             label: 'Spring Boot',
             recommendation: 'recommended',

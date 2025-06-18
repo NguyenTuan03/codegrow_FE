@@ -97,7 +97,7 @@ export const QANodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'white-box',
-        position: { x: 50, y: 450 },
+        position: { x: -150, y: 450 },
         data: {
             label: 'White Box Testing',
             category: 'technique',
@@ -183,7 +183,7 @@ export const QANodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'test-cases',
-        position: { x: 800, y: 300 },
+        position: { x: 700, y: 300 },
         data: {
             label: 'Test Cases',
             category: 'process',
@@ -313,7 +313,7 @@ export const QANodes: Node<Partial<CustomNodeData>>[] = [
     // CI/CD
     {
         id: 'ci-cd',
-        position: { x: 1200, y: 150 },
+        position: { x: 1300, y: 150 },
         data: {
             label: 'CI/CD Pipelines',
             category: 'devops',
@@ -334,7 +334,7 @@ export const QANodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'jenkins',
-        position: { x: 1200, y: 250 },
+        position: { x: 1300, y: 250 },
         data: {
             label: 'Jenkins',
             category: 'devops',
@@ -355,7 +355,7 @@ export const QANodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'github-actions',
-        position: { x: 1200, y: 350 },
+        position: { x: 1300, y: 350 },
         data: {
             label: 'GitHub Actions',
             category: 'devops',
