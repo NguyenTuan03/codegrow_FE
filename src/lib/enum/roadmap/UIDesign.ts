@@ -49,7 +49,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'typography',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Typography' },
         style: {
             background: '#e6f7fa',
@@ -66,7 +66,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'color-theory',
-        position: { x: 300, y: 250 },
+        position: { x: 200, y: 220 },
         data: { label: 'Color Theory' },
         style: {
             background: '#e6f7fa',
@@ -102,7 +102,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'figma',
-        position: { x: 400, y: 300 },
+        position: { x: 200, y: 300 },
         data: {
             label: 'Figma',
             recommendation: 'recommended',
@@ -122,7 +122,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'sketch',
-        position: { x: 600, y: 300 },
+        position: { x: 500, y: 300 },
         data: {
             label: 'Sketch',
             recommendation: 'alternative',
@@ -142,7 +142,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'adobe-xd',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Adobe XD' },
         style: {
             background: '#e6f7fa',
@@ -178,7 +178,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'interactive-prototypes',
-        position: { x: 900, y: 250 },
+        position: { x: 800, y: 260 },
         data: { label: 'Interactive Prototypes' },
         style: {
             background: '#e6f7fa',
@@ -231,7 +231,7 @@ export const UIDesignNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'design-handoff',
-        position: { x: 900, y: 500 },
+        position: { x: 800, y: 500 },
         data: {
             label: 'Design Handoff',
             recommendation: 'recommended',

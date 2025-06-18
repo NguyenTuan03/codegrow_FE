@@ -49,7 +49,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'clarity-concision',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Clarity & Concision' },
         style: {
             background: '#e6f7fa',
@@ -102,7 +102,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'markdown',
-        position: { x: 400, y: 300 },
+        position: { x: 300, y: 450 },
         data: {
             label: 'Markdown',
             recommendation: 'recommended',
@@ -122,7 +122,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'docs-tools',
-        position: { x: 600, y: 300 },
+        position: { x: 600, y: 450 },
         data: { label: 'Docs Tools (e.g., Docusaurus)' },
         style: {
             background: '#e6f7fa',
@@ -139,7 +139,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'version-control',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Version Control (Git)' },
         style: {
             background: '#e6f7fa',
@@ -192,7 +192,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'review-process',
-        position: { x: 1100, y: 250 },
+        position: { x: 1200, y: 250 },
         data: { label: 'Review Process' },
         style: {
             background: '#e6f7fa',
@@ -248,7 +248,7 @@ export const TechnicalWriterNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'user-guides',
-        position: { x: 1100, y: 500 },
+        position: { x: 1200, y: 500 },
         data: { label: 'User Guides & Tutorials' },
         style: {
             background: '#e6f7fa',

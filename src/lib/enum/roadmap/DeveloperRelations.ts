@@ -49,7 +49,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'events',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Events & Meetups' },
         style: {
             background: '#e6f7fa',
@@ -102,7 +102,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'tutorials',
-        position: { x: 400, y: 300 },
+        position: { x: 100, y: 450 },
         data: { label: 'Tutorials & Demos' },
         style: {
             background: '#e6f7fa',
@@ -119,7 +119,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'blog-posts',
-        position: { x: 600, y: 300 },
+        position: { x: 500, y: 450 },
         data: { label: 'Blog Posts & Videos' },
         style: {
             background: '#e6f7fa',
@@ -136,7 +136,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'social-media',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Social Media Engagement' },
         style: {
             background: '#e6f7fa',
@@ -189,7 +189,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'feedback-loop',
-        position: { x: 1100, y: 250 },
+        position: { x: 1200, y: 250 },
         data: { label: 'Feedback Loop' },
         style: {
             background: '#e6f7fa',
@@ -245,7 +245,7 @@ export const DeveloperRelationsNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'developer-experience',
-        position: { x: 1100, y: 500 },
+        position: { x: 1200, y: 500 },
         data: { label: 'Developer Experience (DX)' },
         style: {
             background: '#e6f7fa',

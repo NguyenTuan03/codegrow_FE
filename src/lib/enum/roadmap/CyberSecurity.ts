@@ -32,7 +32,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     // Threat Management
     {
         id: 'threat-management',
-        position: { x: 200, y: 150 },
+        position: { x: 100, y: 150 },
         data: { label: 'Threat Management' },
         style: {
             background: '#e6f7fa',
@@ -49,7 +49,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'threat-modeling',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Threat Modeling' },
         style: {
             background: '#e6f7fa',
@@ -119,7 +119,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'network-security',
-        position: { x: 400, y: 300 },
+        position: { x: 400, y: 400 },
         data: { label: 'Network Security' },
         style: {
             background: '#e6f7fa',
@@ -136,7 +136,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'encryption',
-        position: { x: 600, y: 300 },
+        position: { x: 520, y: 320 },
         data: { label: 'Encryption' },
         style: {
             background: '#e6f7fa',
@@ -153,7 +153,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'access-control',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Access Control' },
         style: {
             background: '#e6f7fa',
@@ -206,7 +206,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'response-plan',
-        position: { x: 1100, y: 250 },
+        position: { x: 1200, y: 250 },
         data: { label: 'Response Planning' },
         style: {
             background: '#e6f7fa',
@@ -242,7 +242,7 @@ export const CybersecurityNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'gdpr',
-        position: { x: 900, y: 500 },
+        position: { x: 800, y: 550 },
         data: {
             label: 'GDPR Compliance',
             recommendation: 'recommended',

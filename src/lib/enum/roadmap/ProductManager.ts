@@ -49,7 +49,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'market-research',
-        position: { x: 100, y: 250 },
+        position: { x: -100, y: 250 },
         data: { label: 'Market Research' },
         style: {
             background: '#e6f7fa',
@@ -102,7 +102,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'requirements',
-        position: { x: 400, y: 300 },
+        position: { x: 200, y: 450 },
         data: { label: 'Defining Requirements' },
         style: {
             background: '#e6f7fa',
@@ -119,7 +119,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'collaboration',
-        position: { x: 600, y: 300 },
+        position: { x: 500, y: 450 },
         data: { label: 'Cross-Team Collaboration' },
         style: {
             background: '#e6f7fa',
@@ -136,7 +136,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'agile',
-        position: { x: 800, y: 300 },
+        position: { x: 800, y: 320 },
         data: { label: 'Agile Methodologies' },
         style: {
             background: '#e6f7fa',
@@ -189,7 +189,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'metrics',
-        position: { x: 1100, y: 250 },
+        position: { x: 1200, y: 250 },
         data: { label: 'Metrics & Analytics' },
         style: {
             background: '#e6f7fa',
@@ -245,7 +245,7 @@ export const ProductManagerNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'compliance',
-        position: { x: 1100, y: 500 },
+        position: { x: 1200, y: 500 },
         data: {
             label: 'Compliance (GDPR, CCPA)',
             recommendation: 'recommended',

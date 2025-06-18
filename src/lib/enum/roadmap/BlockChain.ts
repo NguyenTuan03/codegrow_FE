@@ -49,7 +49,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'distributed-ledger',
-        position: { x: 100, y: 250 },
+        position: { x: -200, y: 250 },
         data: { label: 'Distributed Ledger' },
         style: {
             background: '#e6f7fa',
@@ -66,7 +66,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'consensus-mechanisms',
-        position: { x: 300, y: 250 },
+        position: { x: 100, y: 250 },
         data: { label: 'Consensus Mechanisms' },
         style: {
             background: '#e6f7fa',
@@ -119,7 +119,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'solidity',
-        position: { x: 400, y: 300 },
+        position: { x: 400, y: 500 },
         data: {
             label: 'Solidity',
             recommendation: 'recommended',
@@ -139,7 +139,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'vyper',
-        position: { x: 600, y: 300 },
+        position: { x: 400, y: 300 },
         data: {
             label: 'Vyper',
             recommendation: 'alternative',
@@ -159,7 +159,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'testing-smart-contracts',
-        position: { x: 800, y: 300 },
+        position: { x: 700, y: 350 },
         data: { label: 'Testing Smart Contracts' },
         style: {
             background: '#e6f7fa',
@@ -195,7 +195,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'web3js',
-        position: { x: 900, y: 250 },
+        position: { x: 800, y: 260 },
         data: {
             label: 'Web3.js',
             recommendation: 'recommended',
@@ -254,7 +254,7 @@ export const BlockchainNodes: Node<Partial<CustomNodeData>>[] = [
     },
     {
         id: 'smart-contract-audits',
-        position: { x: 900, y: 500 },
+        position: { x: 800, y: 500 },
         data: {
             label: 'Smart Contract Audits',
             recommendation: 'recommended',
