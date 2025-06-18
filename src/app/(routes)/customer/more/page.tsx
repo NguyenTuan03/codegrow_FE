@@ -37,18 +37,18 @@ export default function MentorCourses() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const limit = 6;
+    const limit = 4;
 
     // Refs for scroll-triggered animations
     const heroRef = useRef(null);
-    const methodsRef = useRef(null);
+
     const benefitsRef = useRef(null);
     const coursesRef = useRef(null);
     const contactRef = useRef(null);
 
     // Detect when sections are in view
     const heroInView = useInView(heroRef, { once: true, margin: '0px 0px -50px 0px' });
-    const methodsInView = useInView(methodsRef, { once: true, margin: '0px 0px -50px 0px' });
+
     const benefitsInView = useInView(benefitsRef, { once: true, margin: '0px 0px -50px 0px' });
     const coursesInView = useInView(coursesRef, { once: true, margin: '0px 0px -50px 0px' });
     const contactInView = useInView(contactRef, { once: true, margin: '0px 0px -50px 0px' });
@@ -88,7 +88,7 @@ export default function MentorCourses() {
     };
 
     return (
-        <div className="space-y-16 px-6 py-10 bg-white dark:bg-gray-900 transition-colors duration-300 md:px-16">
+        <div className="space-y-16 px-6 py-10  transition-colors duration-300 md:px-16">
             <motion.div
                 ref={heroRef}
                 initial="hidden"
@@ -96,17 +96,10 @@ export default function MentorCourses() {
                 variants={sectionVariants}
             >
                 <HeroSection />
-            </motion.div>
-            <hr className="border-t border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
-            <motion.div
-                ref={methodsRef}
-                initial="hidden"
-                animate={methodsInView ? 'visible' : 'hidden'}
-                variants={sectionVariants}
-            >
                 <LearningMethods />
             </motion.div>
-            <hr className="border-t border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
+
+            <hr className="border-t mt-65 border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
             <motion.div
                 ref={benefitsRef}
                 initial="hidden"
@@ -115,7 +108,7 @@ export default function MentorCourses() {
             >
                 <BenefitsSection />
             </motion.div>
-            <hr className="border-t border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
+            <hr className="border-t mt-65 border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
             <motion.div
                 ref={coursesRef}
                 initial="hidden"
@@ -130,7 +123,7 @@ export default function MentorCourses() {
                     handlePageChange={handlePageChange}
                 />
             </motion.div>
-            <hr className="border-t border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
+            <hr className="border-t mt-65 border-[#657ED4]/20 dark:border-[#5AD3AF]/20 my-10" />
             <motion.div
                 ref={contactRef}
                 initial="hidden"

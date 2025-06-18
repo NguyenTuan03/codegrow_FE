@@ -38,7 +38,7 @@ export default function CourseCard({ course }: CourseCardProps) {
     return (
         <Card className="relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 h-[440px] flex flex-col">
             <div
-                className="h-40 relative overflow-hidden rounded-t-xl flex items-center justify-center text-white"
+                className="relative h-100 w-full  overflow-hidden rounded-t-xl flex items-center justify-center text-white"
                 style={{
                     backgroundImage: course.imgUrl
                         ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${course.imgUrl})`
@@ -48,6 +48,9 @@ export default function CourseCard({ course }: CourseCardProps) {
                     backgroundColor: course.imgUrl ? 'transparent' : '#5AD3AF',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
+                    minHeight: '100px' /* Tăng min-height để lấp đầy */,
+                    position: 'relative',
+                    top: '-24px' /* Kéo ảnh lên sát header */,
                 }}
             >
                 <h3 className="text-xl font-semibold px-4 text-center line-clamp-2">

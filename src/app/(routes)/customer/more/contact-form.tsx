@@ -170,7 +170,7 @@ export default function ContactForm() {
     return (
         <div className="p-6 md:p-10 rounded-xl grid md:grid-cols-2 items-center gap-10 transition-colors duration-300">
             <Image
-                src="/image 14.png"
+                src="/undraw_agreement_w6ua.svg"
                 alt="Contact illustration"
                 width={500}
                 height={400}
