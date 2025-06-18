@@ -8,7 +8,6 @@ import { ReactFlow, Node, Background, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { nodeTypes } from '@/lib/components/nodes/CustomsNode';
 import { FEnodes, FEedges } from '@/lib/enum/roadmap/FrontEnd';
-import { RoadmapCard } from '@/components/CardDetailRoadmap';
 import { BEEdges, BENodes } from '@/lib/enum/roadmap/BackEnd';
 import { ReactEdges, ReactNodes } from '@/lib/enum/roadmap/React';
 import { FSEdges, FSNodes } from '@/lib/enum/roadmap/FullStack';
@@ -29,6 +28,12 @@ import {
     DeveloperRelationsEdges,
     DeveloperRelationsNodes,
 } from '@/lib/enum/roadmap/DeveloperRelations';
+import { frontendDetails } from '@/lib/enum/roadmap/frontendDetail';
+import { backendDetails } from '@/lib/enum/roadmap/backendDetail';
+import { javaDetails } from '@/lib/enum/roadmap/javaDetail';
+import { RoadmapCard } from '@/components/CardDetailRoadmap';
+
+console.log('Imported frontendDetails:', frontendDetails); // Debug import
 
 const roadmapData = {
     Frontend: {
@@ -175,225 +180,62 @@ const Page = () => {
     };
 
     const handleNodeClick = (event: React.MouseEvent, node: Node<Partial<CustomNodeData>>) => {
-        console.log('Clicked Node ID:', node.id); // Debug the node ID
-        setSelectedNode(node); // Ensure state is updated
+        console.log('Clicked Node ID:', node.id); // Debug log
+        if (node && node.id) {
+            setSelectedNode(node); // Ensure node.id is valid before setting
+        } else {
+            console.error('Node or node.id is undefined:', node);
+        }
     };
 
     const handleCloseDrawer = () => {
         setSelectedNode(null);
     };
 
-    // Dynamic node details including free and premium resources
+    // Dynamic node details based on roadmap with enhanced debug
     const getNodeDetails = (nodeId: string): NodeDetail => {
-        const nodeDetails: { [key: string]: NodeDetail } = {
-            framework: {
-                // Matches the id in FEnodes for "Pick a Framework"
-                title: 'Pick a Framework',
-                description: 'General information about this topic.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'General Resource',
-                            url: 'https://example.com/general',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            'how-internet': {
-                title: 'How Does The Internet Work',
-                description:
-                    'The internet is a global network connecting computers and devices for information sharing, enabling activities like browsing websites, sending emails, and streaming videos. It acts as a vast web linking everything, facilitating communication and access to online resources and services worldwide.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'Introduction to Internet',
-                            url: 'https://example.com/internet-intro',
-                        },
-                        {
-                            type: 'Article',
-                            title: 'How does the Internet Work?',
-                            url: 'https://example.com/internet-work',
-                        },
-                        {
-                            type: 'Article',
-                            title: 'How Does the Internet Work? MDN Docs',
-                            url: 'https://example.com/mdn-internet',
-                        },
-                        {
-                            type: 'Video',
-                            title: 'How the Internet Works in 5 Minutes',
-                            url: 'https://example.com/internet-5min',
-                        },
-                    ],
-                    premium: [
-                        {
-                            type: 'Course',
-                            title: 'Scrimba - Frontend Developer Career Path',
-                            url: 'https://example.com/scrimba',
-                            discount: '20% Off',
-                        },
-                    ],
-                },
-            },
-            http: {
-                title: 'What is HTTP?',
-                description:
-                    'Learn about the HyperText Transfer Protocol and its role in web communication.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'HTTP Basics',
-                            url: 'https://example.com/http-basics',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            domain: {
-                title: 'What is Domain Name?',
-                description:
-                    'Explore how domain names function and their importance in web addressing.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Guide',
-                            title: 'Domain Names Explained',
-                            url: 'https://example.com/domain',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            hosting: {
-                title: 'What is Hosting?',
-                description: 'Discover what web hosting is and how it supports websites.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'Web Hosting Guide',
-                            url: 'https://example.com/hosting',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            dns: {
-                title: 'DNS and How it Works?',
-                description:
-                    'Learn about the Domain Name System and its role in internet navigation.',
-                resources: {
-                    free: [
-                        { type: 'Video', title: 'DNS Explained', url: 'https://example.com/dns' },
-                    ],
-                    premium: [],
-                },
-            },
-            browser: {
-                title: 'Browsers and How They Work?',
-                description: 'Understand how web browsers render and interact with web content.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Tutorial',
-                            title: 'Browser Basics',
-                            url: 'https://example.com/browser',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            'learn-basics-html': {
-                title: 'Learn the Basics',
-                description: 'Get started with the fundamentals of HTML.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'HTML Basics',
-                            url: 'https://example.com/html-basics',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            'semantic-html': {
-                title: 'Writing Semantic HTML',
-                description:
-                    'Master the use of semantic elements for better accessibility and SEO.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Tutorial',
-                            title: 'Semantic HTML Guide',
-                            url: 'https://example.com/semantic-html',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            'forms-validation': {
-                title: 'Forms and Validations',
-                description: 'Learn to create and validate HTML forms.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'Forms and Validation',
-                            url: 'https://example.com/forms',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            accessibility: {
-                title: 'Accessibility',
-                description: 'Ensure your web content is accessible to all users.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Guide',
-                            title: 'Web Accessibility',
-                            url: 'https://example.com/accessibility',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            seo: {
-                title: 'SEO Basics',
-                description: 'Understand the basics of Search Engine Optimization.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'SEO Basics',
-                            url: 'https://example.com/seo-basics',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-            default: {
-                title: 'Node Details',
-                description: 'General information about this topic.',
-                resources: {
-                    free: [
-                        {
-                            type: 'Article',
-                            title: 'General Resource',
-                            url: 'https://example.com/general',
-                        },
-                    ],
-                    premium: [],
-                },
-            },
-        };
-        return nodeDetails[nodeId] || nodeDetails['default'];
+        console.log('Fetching details for nodeId:', nodeId, 'with slug:', slug); // Debug log
+        console.log('Available frontendDetails keys:', Object.keys(frontendDetails)); // Debug all keys
+        switch (slug) {
+            case 'Frontend':
+                const detail = frontendDetails[nodeId] || frontendDetails['default'];
+                console.log('Fetched detail for', nodeId, ':', detail); // Debug specific detail
+                return detail;
+            case 'Backend':
+                return backendDetails[nodeId] || backendDetails['default'];
+            case 'Java':
+                return javaDetails[nodeId] || javaDetails['default'];
+            case 'React':
+                return {
+                    title: nodeId,
+                    description: `Details for ${nodeId}`,
+                    resources: {
+                        free: [
+                            {
+                                type: 'Article',
+                                title: `${nodeId} Resource`,
+                                url: 'https://example.com',
+                            },
+                        ],
+                        premium: [],
+                    },
+                };
+            default:
+                return {
+                    title: 'Node Details',
+                    description: 'General information about this topic.',
+                    resources: {
+                        free: [
+                            {
+                                type: 'Article',
+                                title: 'General Resource',
+                                url: 'https://example.com/general',
+                            },
+                        ],
+                        premium: [],
+                    },
+                };
+        }
     };
 
     return (
@@ -451,7 +293,7 @@ const Page = () => {
                 </div>
             </div>
 
-            {/* Drawer for Node Details */}
+            {/* Drawer for Node Details - Moved to right and enlarged */}
             {selectedNode && (
                 <RoadmapCard
                     title={getNodeDetails(selectedNode.id).title}
@@ -462,7 +304,7 @@ const Page = () => {
                     ]}
                     progress={0}
                     onClose={handleCloseDrawer}
-                    isOpen={true}
+                    isOpen={!!selectedNode}
                 />
             )}
         </div>

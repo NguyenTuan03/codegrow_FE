@@ -32,6 +32,8 @@ export function RoadmapCard({
 }: RoadmapCardProps) {
     const [localProgress, setLocalProgress] = React.useState(progress);
 
+    console.log('RoadmapCard props:', { title, description, resources }); // Debug log
+
     const handleProgressChange = (adjustment: number) => {
         setLocalProgress(Math.max(0, Math.min(100, localProgress + adjustment)));
     };
@@ -42,15 +44,18 @@ export function RoadmapCard({
 
     return (
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
-            <DrawerContent className="max-w-2xl mx-auto bg-white shadow-lg">
-                {/* Customize animation to slide from left to right */}
+            <DrawerContent
+                className="max-w-2xl max-h-[80vh] mx-auto bg-white shadow-lg transform translate-x-0 -translate-y-0"
+                style={{ right: 0, left: 'auto' }}
+            >
+                {/* Customize animation to slide from right */}
                 <style jsx>{`
                     .drawer-content {
-                        animation: slideFromLeft 0.3s ease-in-out;
+                        animation: slideFromRight 0.3s ease-in-out;
                     }
-                    @keyframes slideFromLeft {
+                    @keyframes slideFromRight {
                         from {
-                            transform: translateX(-100%);
+                            transform: translateX(100%);
                         }
                         to {
                             transform: translateX(0);
@@ -63,7 +68,7 @@ export function RoadmapCard({
                         {description}
                     </DrawerDescription>
                 </DrawerHeader>
-                <div className="p-6 space-y-6">
+                <div className="p-6 space-y-6 overflow-y-auto">
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h4 className="text-md font-medium text-gray-700 mb-2">Progress</h4>
                         <div className="flex items-center justify-between mb-2">
