@@ -35,7 +35,7 @@ export default function AboutUs() {
         {
             name: 'Trần Thị Diễm Quỳnh',
             role: 'CMO – Chief Marketing Officer',
-            image: '/Quỳnh.jpg',
+            image: '/quynh.JPG',
             description:
                 'Trần Thị Diễm Quỳnh leads our marketing efforts, ensuring that CODEGROW reaches learners globally. With a background in digital marketing and a knack for storytelling, she has played a key role in building our brand and community.',
             responsibilities: [
@@ -49,7 +49,7 @@ export default function AboutUs() {
         {
             name: 'Phan Thanh Phong',
             role: 'CFO – Chief Financial Officer',
-            image: '/phong.jpg',
+            image: '/pphong.jpg',
             description:
                 'Phan Thanh Phong oversees the financial strategy of CODEGROW, ensuring sustainable growth. With his expertise in finance and business management, he ensures that we can continue to provide high-quality education to our learners.',
             responsibilities: [
@@ -76,7 +76,7 @@ export default function AboutUs() {
         {
             name: 'Nguyễn Anh Tuấn',
             role: 'CIO - Chief Information Officer',
-            image: '/tuan.png',
+            image: '/tuan.jpg',
             description:
                 'Nguyễn Anh Tuấn manages the information systems at CODEGROW, ensuring seamless operations. His expertise in IT infrastructure helps us deliver a smooth and secure learning experience for all users.',
             responsibilities: [

@@ -316,6 +316,7 @@ export default function Classes() {
                                                         : '#5AD3AF',
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
+                                                    top: '-24px' /* Kéo ảnh lên sát header */,
                                                 }}
                                             />
                                             <CardHeader className="pt-4">

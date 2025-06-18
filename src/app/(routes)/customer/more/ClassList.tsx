@@ -2,13 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselPrevious,
-    CarouselNext,
-} from '@/components/ui/carousel';
 import CourseCard from '@/app/(routes)/customer/more/ClassCard';
 import {
     Pagination,
@@ -88,21 +81,14 @@ export default function CoursesList({
                     Available Classes
                 </h2>
             </div>
-            <div className="relative">
-                <Carousel className="w-full">
-                    <CarouselContent className="px-12 gap-4">
-                        {classesItems.map((course) => (
-                            <CarouselItem
-                                key={course._id}
-                                className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 flex flex-col h-full"
-                            >
-                                <CourseCard course={course} />
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-100 dark:bg-gray-800 text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full shadow-md transition-all duration-300 hover:scale-110 border border-gray-100 dark:border-gray-700 w-10 h-10 cursor-pointer" />
-                    <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-100 dark:bg-gray-800 text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-white rounded-full shadow-md transition-all duration-300 hover:scale-110 border border-gray-100 dark:border-gray-700 w-10 h-10 cursor-pointer" />
-                </Carousel>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {' '}
+                {/* Thay carousel bằng grid */}
+                {classesItems.map((course) => (
+                    <div key={course._id} className="flex flex-col h-full">
+                        <CourseCard course={course} />
+                    </div>
+                ))}
             </div>
 
             {/* Pagination */}

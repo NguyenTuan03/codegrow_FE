@@ -400,7 +400,7 @@ export default function CoursesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
+            className="p-4 md:p-8 min-h-screen  dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
         >
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
@@ -587,6 +587,9 @@ export default function CoursesPage() {
                                                             : '#657ED4',
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center',
+                                                        minHeight: '200px',
+                                                        position: 'relative',
+                                                        top: '-20px', // Điều chỉnh giá trị này
                                                     }}
                                                 >
                                                     <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
@@ -696,6 +699,7 @@ export default function CoursesPage() {
                                                                 : '#657ED4',
                                                             backgroundSize: 'cover',
                                                             backgroundPosition: 'center',
+                                                            top: '-2px' /* Kéo ảnh lên sát header */,
                                                         }}
                                                     />
                                                     <motion.h3
@@ -901,7 +905,7 @@ export default function CoursesPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.5 }}
-                                        className="mt-16 flex justify-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md"
+                                        className="mt-16 flex justify-center   p-4 "
                                     >
                                         <Pagination>
                                             <PaginationContent>

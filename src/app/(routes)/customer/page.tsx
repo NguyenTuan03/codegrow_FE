@@ -241,7 +241,7 @@ const HomePage = () => {
                                     ? `Welcome back, ${user.fullName}`
                                     : 'Welcome back, customer'}
                             </h3>
-                            <p className="text-xl mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default">
+                            <p className="text-xl mb-2 font-medium text-gray-900 dark:text-gray-300 cursor-default inline-block break-words">
                                 Solve coding exercises and get mentored to develop fluency in your
                                 chosen programming languages
                             </p>
@@ -359,7 +359,7 @@ const HomePage = () => {
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-                <div className="grid mt-20 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid mt-20  font-bold grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {[
                         {
                             title: 'STRUCTURED COURSES',
@@ -369,19 +369,19 @@ const HomePage = () => {
                         },
                         {
                             title: 'PERSONALIZED MENTORSHIP',
-                            image: '/undraw_personalization_0q05.svg',
+                            image: '/undraw_professor_d7zn.svg',
                             description:
                                 'Get one-on-one support from expert mentors, who customize their guidance to fit your unique learning needs and help you reach your goals.',
                         },
                         {
                             title: 'HANDS-ON EXERCISES',
-                            image: '/undraw_mathematics_hc2c.svg',
+                            image: '/undraw_mathematics_hc2c (1).svg',
                             description:
                                 'Engage in practical coding exercises based on real-world scenarios, strengthening your skills through active, hands-on learning experiences.',
                         },
                         {
                             title: 'COMMUNITY SUPPORT',
-                            image: '/community.svg',
+                            image: '/undraw_conference-call_ccsp.svg',
                             description:
                                 'Connect with a lively community of learners and mentors, where you can exchange ideas, seek help, and thrive with continuous support.',
                         },
@@ -408,40 +408,41 @@ const HomePage = () => {
                 </div>
             </motion.div>
 
-            {/* RoadMap Programming Skills */}
             <motion.div
                 ref={skillsRef}
                 initial="hidden"
                 animate={skillsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-65 mb-15"
+                className="mt-65 mb-6"
             >
-                <h3 className="text-center mb-20 font-bold text-4xl text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                <h3 className="text-center mb-8 font-semibold text-3xl text-[#657ED4] dark:text-[#5AD3AF] tracking-wide cursor-default">
                     RoadMap Programming Skills
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {programmingSkills.map((skill, index) => (
-                        <motion.div key={index} variants={itemVariants}>
+                        <motion.div key={`${skill.name}-${index}`} variants={itemVariants}>
                             <Link
                                 href={`/customer/roadmap`}
-                                className="bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer"
+                                className="bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 h-16 flex items-center justify-start transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-lg cursor-pointer"
                             >
-                                <div className="relative w-[50px] h-[50px] mr-3">
+                                <div className="relative w-10 h-10 mr-2 flex-shrink-0">
                                     <Image
-                                        src={skill.icon}
-                                        alt={skill.name}
-                                        fill
+                                        src={skill.icon || '/default-icon.svg'}
+                                        alt={`${skill.name} icon`}
+                                        width={40}
+                                        height={40}
                                         className="object-contain"
+                                        onError={(e) => (e.currentTarget.src = '/default-icon.svg')}
                                     />
                                 </div>
-                                <span className="text-gray-900 text-2xl dark:text-gray-100 font-medium cursor-default">
+                                <span className=" dark:text-gray-100 font-medium text-base leading-tight cursor-default">
                                     {skill.name}
                                 </span>
                             </Link>
                         </motion.div>
                     ))}
                 </div>
-                <div className="flex justify-center mt-6 mb-10">
+                <div className="flex justify-center mt-6 mb-8">
                     <Link href="/customer/roadmap">
                         <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300 cursor-pointer">
                             Explore More
@@ -465,22 +466,22 @@ const HomePage = () => {
                     {[
                         {
                             title: 'Students Enrolled',
-                            value: '10K+',
-                            image: '/undraw_graduation_u7uc.svg',
+                            value: '100+',
+                            image: '/undraw_graduation_u7uc (1).svg',
                         },
                         {
                             title: 'Courses Offered',
                             value: '50+',
-                            image: '/undraw_teaching_58yg.svg',
+                            image: '/undraw_teaching_58yg (1).svg',
                         },
                         {
                             title: 'Expert Mentors',
-                            value: '200+',
+                            value: '20+',
                             image: '/undraw_experts_v2vy.svg',
                         },
                         {
                             title: 'Classes Completed',
-                            value: '5K+',
+                            value: '50+',
                             image: '/undraw_educator_6dgp.svg',
                         },
                     ].map((item, index) => (

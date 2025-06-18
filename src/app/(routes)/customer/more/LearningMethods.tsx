@@ -5,9 +5,9 @@ import Image from 'next/image';
 
 export default function LearningMethods() {
     return (
-        <div className="space-y-12 ml-80   bg-white dark:bg-gray-900 transition-colors duration-300 ">
+        <div className="space-y-12 ml-60 mt-10   transition-colors duration-300 ">
             {/* One-on-One Learning */}
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8  items-center">
                 <div className="space-y-4">
                     <h2 className="text-2xl font-bold ">One-On-One Learning</h2>
                     <ul className="space-y-2 text-xl text-gray-600 dark:text-gray-400">
@@ -25,7 +25,7 @@ export default function LearningMethods() {
                     </ul>
                 </div>
                 <Image
-                    src="/kids-taking-online-lessons_23-2148517076.png"
+                    src="/undraw_online-learning_tgmv (1).svg"
                     alt="1-on-1 learning"
                     width={400}
                     height={300}
@@ -34,9 +34,9 @@ export default function LearningMethods() {
             </div>
 
             {/* Group Learning */}
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8  items-center">
                 <Image
-                    src="/pngtree-online-learning-group-of-students-png-image_3869760.png"
+                    src="/undraw_work-chat_hc3y.svg"
                     alt="group learning"
                     width={400}
                     height={300}
