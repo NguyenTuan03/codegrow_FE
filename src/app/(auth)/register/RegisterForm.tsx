@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.schema';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
@@ -64,9 +64,9 @@ const RegisterForm = () => {
     const [googleLoading, setGoogleLoading] = useState(false);
     const [emailValidationResult, setEmailValidationResult] =
         useState<EmailValidationResponse | null>(null);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const { toast } = useToast();
     const router = useRouter();
-    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const form = useForm<RegisterBodyType>({
         resolver: zodResolver(RegisterBody),
@@ -78,7 +78,7 @@ const RegisterForm = () => {
         },
     });
 
-    // Validate email with Abstract API using httpGetAsync
+    // Không sử dụng useEffect, chỉ gọi validateEmailWithAPI trong onSubmit
     const validateEmailWithAPI = (email: string) => {
         const apiKey = process.env.NEXT_PUBLIC_ABSTRACT_API_KEY || ''; // Use env or fallback
         const url = `https://emailvalidation.abstractapi.com/v1/?api_key=${encodeURIComponent(apiKey)}&email=${encodeURIComponent(email)}`;
@@ -104,35 +104,18 @@ const RegisterForm = () => {
         });
     };
 
-    // Trigger email validation when email field changes
-    const { watch } = form;
-    const emailValue = watch('email');
-    useEffect(() => {
-        if (emailValue) {
-            validateEmailWithAPI(emailValue);
-        }
-    }, [emailValue]);
-
-    const handleGoogleLogin = async () => {
-        if (googleLoading) return;
-        setGoogleLoading(true);
-        try {
-            router.push(process.env.NEXT_PUBLIC_API_URL + 'auth/login/google');
-        } catch {
-            toast({
-                description: 'Google login failed. Please try again.',
-                variant: 'destructive',
-            });
-            setGoogleLoading(false);
-        }
-    };
-
     const onSubmit = async (data: RegisterBodyType) => {
         if (loading) return;
 
         setLoading(true);
 
-        // Check email validation result before submitting
+        // Gọi API kiểm tra email khi submit
+        validateEmailWithAPI(data.email);
+
+        // Chờ 500ms để đảm bảo kết quả email validation được cập nhật
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Kiểm tra email validation result
         if (emailValidationResult && emailValidationResult.deliverability !== 'DELIVERABLE') {
             toast({
                 description: 'Please use a valid and deliverable email address.',
@@ -166,6 +149,20 @@ const RegisterForm = () => {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        if (googleLoading) return;
+        setGoogleLoading(true);
+        try {
+            router.push(process.env.NEXT_PUBLIC_API_URL + 'auth/login/google');
+        } catch {
+            toast({
+                description: 'Google login failed. Please try again.',
+                variant: 'destructive',
+            });
+            setGoogleLoading(false);
         }
     };
 
@@ -225,7 +222,6 @@ const RegisterForm = () => {
                                             'Email is not deliverable or invalid.'}
                                     </FormMessage>
                                 )}
-                                {/* <FormMessage className="text-base text-red-500 dark:text-red-400 font-medium cursor-default" /> */}
                             </FormItem>
                         )}
                     />
