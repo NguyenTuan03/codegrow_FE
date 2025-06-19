@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
@@ -87,7 +87,7 @@ const LoginForm = () => {
         },
     });
 
-    // Validate email with Abstract API using httpGetAsync
+    // Không sử dụng useEffect để validate email, chỉ gọi khi submit
     const validateEmailWithAPI = (email: string) => {
         const apiKey = process.env.NEXT_PUBLIC_ABSTRACT_API_KEY || ''; // Replace with environment variable in production
         const url = `https://emailvalidation.abstractapi.com/v1/?api_key=${encodeURIComponent(apiKey)}&email=${encodeURIComponent(email)}`;
@@ -113,21 +113,18 @@ const LoginForm = () => {
         });
     };
 
-    // Trigger email validation when email field changes
-    const { watch } = form;
-    const emailValue = watch('email');
-    useEffect(() => {
-        if (emailValue) {
-            validateEmailWithAPI(emailValue);
-        }
-    }, [emailValue]);
-
     const onSubmit = async (data: LoginBodyType) => {
         if (loading) return;
 
         setLoading(true);
 
-        // Check email validation result before submitting
+        // Gọi API kiểm tra email khi submit
+        validateEmailWithAPI(data.email);
+
+        // Chờ 500ms để đảm bảo kết quả email validation được cập nhật
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Kiểm tra email validation result
         if (emailValidationResult && emailValidationResult.deliverability !== 'DELIVERABLE') {
             toast({
                 description: 'Please use a valid and deliverable email address.',
