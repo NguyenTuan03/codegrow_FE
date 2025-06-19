@@ -43,12 +43,12 @@ const footerSections: FooterSection[] = [
 export default function Footer() {
     return (
         <footer className="bg-white dark:bg-gray-800 py-10">
-            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-4">
+            <div className="max-w-8xl ">
                 <div className="grid grid-cols-1 md:grid-cols-5 ml-50 gap-15">
                     {/* Logo and Introduction Section */}
                     <div className="md:col-span-2">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="relative w-[50px] h-[50px]">
+                            <div className="relative mt-4 w-[50px] h-[50px]">
                                 <Image
                                     src="/logoFooter.png"
                                     alt="CODEGROW Logo"

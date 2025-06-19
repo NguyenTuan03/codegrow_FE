@@ -502,7 +502,6 @@ export const FEnodes: Node<Partial<CustomNodeData>>[] = [
         id: 'framework',
         position: { x: 600, y: 1100 },
         data: { label: 'Pick a Framework' },
-        type: 'custom', // Kept the custom type as specified
         style: {
             background: 'linear-gradient(135deg, #5AD3AF 0%, #4ac2a0 100%)',
             padding: 15,
