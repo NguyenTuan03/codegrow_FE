@@ -291,7 +291,7 @@ const HomePage = () => {
                                         </span>
                                         <Progress
                                             value={courseProgress[course._id] || 0}
-                                            className="w-full bg-gray-200 dark:bg-gray-600 mt-2"
+                                            className="w-[200px] bg-gray-200 dark:bg-gray-600 mt-2"
                                         />
                                         <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default mt-1">
                                             {courseProgress[course._id] || 0}% completed
