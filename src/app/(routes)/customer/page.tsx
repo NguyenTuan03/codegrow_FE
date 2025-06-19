@@ -13,7 +13,7 @@ import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 
-import { motion, useInView } from 'framer-motion'; // Import framer-motion
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
 interface Category {
@@ -62,13 +62,11 @@ interface ProgrammingSkill {
 }
 
 const HomePage = () => {
-    // const [courses, setCourses] = useState<Course[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
 
-    // Refs for scroll-triggered animations
     const benefitsRef = useRef(null);
     const skillsRef = useRef(null);
     const achievementsRef = useRef(null);
@@ -90,7 +88,6 @@ const HomePage = () => {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-
                 return 0;
             }
             const tokenuser = JSON.parse(token);
@@ -102,6 +99,8 @@ const HomePage = () => {
             const user = JSON.parse(userId);
             const id = user.id;
             const progressData = await GetProgress(tokenuser, courseId, id);
+            console.log('progressData', progressData);
+
             if (progressData?.status === 200 && progressData.metadata) {
                 return progressData.metadata.progress || 0;
             }
@@ -137,9 +136,6 @@ const HomePage = () => {
                     };
                 });
 
-                // setCourses(parsedCourses);
-
-                // Fetch progress for enrolled courses
                 const progressPromises = parsedCourses
                     .filter((course) => user?.enrolledCourses.some((ec) => ec._id === course._id))
                     .map(async (course) => {
@@ -164,7 +160,6 @@ const HomePage = () => {
             }
         } catch (error) {
             console.log('Error fetching courses:', error);
-            // setCourses([]);
         }
     };
 
@@ -220,7 +215,6 @@ const HomePage = () => {
         { name: 'SQL', icon: '/icons8-sql-48.png' },
     ];
 
-    // Animation variants
     const sectionVariants = {
         hidden: { opacity: 0, y: 50 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
@@ -291,15 +285,15 @@ const HomePage = () => {
                                         height={40}
                                         alt={course.title}
                                     />
-                                    <div className="flex flex-col ml-4 text-xl">
+                                    <div className="flex flex-col ml-4 text-xl w-full">
                                         <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                             {course.title}
                                         </span>
                                         <Progress
                                             value={courseProgress[course._id] || 0}
-                                            className="w-[60%] bg-[#657ED4] dark:bg-[#5AD3AF]"
+                                            className="w-full bg-gray-200 dark:bg-gray-600 mt-2"
                                         />
-                                        <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default">
+                                        <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default mt-1">
                                             {courseProgress[course._id] || 0}% completed
                                         </div>
                                     </div>
@@ -349,7 +343,6 @@ const HomePage = () => {
                 </div>
             </div>
 
-            {/* What you get from CODEGROW */}
             <motion.div
                 ref={benefitsRef}
                 initial="hidden"
@@ -360,7 +353,7 @@ const HomePage = () => {
                 <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-                <div className="grid mt-20  font-bold grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="grid mt-20 font-bold grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                     {[
                         {
                             title: 'STRUCTURED COURSES',
@@ -416,7 +409,7 @@ const HomePage = () => {
                 variants={sectionVariants}
                 className="mt-65 mb-6"
             >
-                <h3 className="text-center mb-8 font-semibold text-3xl text-[#657ED4] dark:text-[#5AD3AF] tracking-wide cursor-default">
+                <h3 className="text-center font-bold mb-8 text-4xl text-[#657ED4] dark:text-[#5AD3AF] tracking-wide cursor-default">
                     RoadMap Programming Skills
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -436,7 +429,7 @@ const HomePage = () => {
                                         onError={(e) => (e.currentTarget.src = '/default-icon.svg')}
                                     />
                                 </div>
-                                <span className=" dark:text-gray-100 font-medium text-base leading-tight cursor-default">
+                                <span className="dark:text-gray-100 font-medium text-base leading-tight cursor-default">
                                     {skill.name}
                                 </span>
                             </Link>
@@ -452,7 +445,6 @@ const HomePage = () => {
                 </div>
             </motion.div>
 
-            {/* Our Achievements */}
             <motion.div
                 ref={achievementsRef}
                 initial="hidden"

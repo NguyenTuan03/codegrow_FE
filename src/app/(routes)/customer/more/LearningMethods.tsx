@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function LearningMethods() {
     return (
-        <div className="space-y-12 ml-60 mt-10   transition-colors duration-300 ">
+        <div className="space-y-12 ml-50 mt-10   transition-colors duration-300 ">
             {/* One-on-One Learning */}
             <div className="grid md:grid-cols-2 gap-8  items-center">
                 <div className="space-y-4">
