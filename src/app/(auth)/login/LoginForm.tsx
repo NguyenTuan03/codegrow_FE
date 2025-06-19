@@ -89,8 +89,7 @@ const LoginForm = () => {
 
     // Validate email with Abstract API using httpGetAsync
     const validateEmailWithAPI = (email: string) => {
-        const apiKey =
-            process.env.NEXT_PUBLIC_ABSTRACT_API_KEY || 'b29d0ac747d243399b212a8514cfb659'; // Use env or fallback
+        const apiKey = process.env.NEXT_PUBLIC_ABSTRACT_API_KEY || ''; // Replace with environment variable in production
         const url = `https://emailvalidation.abstractapi.com/v1/?api_key=${encodeURIComponent(apiKey)}&email=${encodeURIComponent(email)}`;
 
         httpGetAsync(url, (error: string | null, result: EmailValidationResponse | null) => {

@@ -22,7 +22,7 @@ const NewsPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     // Using your provided API key directly (for demo purposes only)
-    const apiKey = '593d09b7078748db9c25576d621b08e6'; // Replace with environment variable in production
+    const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY; // Replace with environment variable in production
 
     useEffect(() => {
         const fetchNews = async () => {
