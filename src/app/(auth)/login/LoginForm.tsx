@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Routes } from '@/lib/config/Routes';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
@@ -31,6 +31,44 @@ interface ExtendedJwtPayload extends JwtPayload {
     avatar?: string;
 }
 
+// Define the Email Validation API response interface
+interface EmailValidationResponse {
+    email: string;
+    autocorrect?: string;
+    deliverability: string;
+    quality_score: number;
+    is_valid_format: { value: boolean; text: string };
+    is_free_email: { value: boolean; text: string };
+    is_disposable_email: { value: boolean; text: string };
+    is_role_email: { value: boolean; text: string };
+    is_catchall_email: { value: boolean; text: string };
+    is_mx_found: { value: boolean | null; text: string };
+    is_smtp_valid: { value: boolean | null; text: string };
+}
+
+function httpGetAsync(
+    url: string,
+    callback: (error: string | null, result: EmailValidationResponse | null) => void,
+) {
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === 4) {
+            if (xmlHttp.status === 200) {
+                try {
+                    const response = JSON.parse(xmlHttp.responseText) as EmailValidationResponse;
+                    callback(null, response);
+                } catch {
+                    console.log('Failed to parse response');
+                }
+            } else {
+                console.log('Failed to parse response');
+            }
+        }
+    };
+    xmlHttp.open('GET', url, true); // true for asynchronous
+    xmlHttp.send(null);
+}
+
 const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -38,6 +76,9 @@ const LoginForm = () => {
     const userAuth = useContext(Auth);
     const router = useRouter();
     const [googleLoading, setGoogleLoading] = useState(false);
+    const [emailValidationResult, setEmailValidationResult] =
+        useState<EmailValidationResponse | null>(null);
+
     const form = useForm<LoginBodyType>({
         resolver: zodResolver(LoginBody),
         defaultValues: {
@@ -46,9 +87,59 @@ const LoginForm = () => {
         },
     });
 
+    // Validate email with Abstract API using httpGetAsync
+    const validateEmailWithAPI = (email: string) => {
+        const apiKey =
+            process.env.NEXT_PUBLIC_ABSTRACT_API_KEY || 'b29d0ac747d243399b212a8514cfb659'; // Use env or fallback
+        const url = `https://emailvalidation.abstractapi.com/v1/?api_key=${encodeURIComponent(apiKey)}&email=${encodeURIComponent(email)}`;
+
+        httpGetAsync(url, (error: string | null, result: EmailValidationResponse | null) => {
+            if (error) {
+                console.error('Error validating email:', error);
+                setEmailValidationResult({
+                    deliverability: 'UNKNOWN',
+                    is_valid_format: { value: false, text: 'FALSE' },
+                    is_free_email: { value: false, text: 'FALSE' },
+                    is_disposable_email: { value: false, text: 'FALSE' },
+                    is_role_email: { value: false, text: 'FALSE' },
+                    is_catchall_email: { value: false, text: 'FALSE' },
+                    is_mx_found: { value: null, text: 'UNKNOWN' },
+                    is_smtp_valid: { value: null, text: 'UNKNOWN' },
+                    email: email,
+                    quality_score: 0.0,
+                });
+            } else {
+                setEmailValidationResult(result);
+            }
+        });
+    };
+
+    // Trigger email validation when email field changes
+    const { watch } = form;
+    const emailValue = watch('email');
+    useEffect(() => {
+        if (emailValue) {
+            validateEmailWithAPI(emailValue);
+        }
+    }, [emailValue]);
+
     const onSubmit = async (data: LoginBodyType) => {
         if (loading) return;
+
         setLoading(true);
+
+        // Check email validation result before submitting
+        if (emailValidationResult && emailValidationResult.deliverability !== 'DELIVERABLE') {
+            toast({
+                description: 'Please use a valid and deliverable email address.',
+                className: 'bg-[#F76F8E] text-black',
+                variant: 'destructive',
+                duration: 1000,
+            });
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await login(data.email, data.password);
             console.log('Login response:', response);
@@ -139,6 +230,13 @@ const LoginForm = () => {
                                             className="mt-1 border-gray-300 dark:border-gray-600 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg cursor-text"
                                         />
                                     </FormControl>
+                                    {emailValidationResult && (
+                                        <FormMessage className="text-base text-red-500 dark:text-red-400 font-medium cursor-default">
+                                            {emailValidationResult.deliverability !==
+                                                'DELIVERABLE' &&
+                                                'Email is not deliverable or invalid.'}
+                                        </FormMessage>
+                                    )}
                                     <FormMessage className="text-base text-red-500 dark:text-red-400 font-medium cursor-default" />
                                 </FormItem>
                             )}

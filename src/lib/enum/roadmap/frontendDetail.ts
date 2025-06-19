@@ -22,7 +22,7 @@ export const frontendDetails: { [key: string]: NodeDetail } = {
     'how-internet': {
         title: 'How Does The Internet Work',
         description:
-            'The internet is a global network connecting computers and devices for information sharing, enabling activities like browsing websites, sending emails, and streaming videos.',
+            'The internet is a global network connecting computers and devices for information sharing.',
         resources: {
             free: [
                 {
@@ -268,7 +268,6 @@ export const frontendDetails: { [key: string]: NodeDetail } = {
         },
     },
     dom: {
-        // Added missing "dom" key
         title: 'Learn DOM Manipulation',
         description: 'Understand how to manipulate the Document Object Model with JavaScript.',
         resources: {
