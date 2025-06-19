@@ -30,7 +30,7 @@ const WeatherPage = () => {
     const [city, setCity] = useState('Ho Chi Minh,VN'); // Default city set to Ho Chi Minh City
 
     // Using your provided OpenWeatherMap API key
-    const apiKey = '1e7e33f7815d3535147a98e3e19b9d19'; // Replace with environment variable in production
+    const apiKey = process.env.NEXT_PUBLIC_WEATHER_API_KEY; // Replace with environment variable in production
 
     const fetchWeather = async (cityInput: string) => {
         try {
