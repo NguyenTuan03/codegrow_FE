@@ -37,7 +37,7 @@ interface SendMessage {
 interface AuthContextType {
     userAuth: User | null;
     setUserAuth: (user: User | null) => void;
-    loginUser: (user: User) => void;
+    loginUser: (user: User, token: string) => void;
     logoutUser: () => void;
     onlineUsers: string[];
     socket: Socket | null;
@@ -61,11 +61,14 @@ const AuthContext = ({ children }: Props) => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
-
+    const [token, setToken] = useState<string>('');
     // Load user from localStorage on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
+            const storedToken = localStorage.getItem('token');
+
+            console.log('check token123123', storedToken);
             if (storedUser) {
                 try {
                     const parsedUser = JSON.parse(storedUser);
@@ -76,6 +79,18 @@ const AuthContext = ({ children }: Props) => {
                     }
                 } catch (e) {
                     console.error('❌ Failed to parse user from localStorage', e);
+                }
+            }
+            if (storedToken) {
+                try {
+                    const parsedToken = JSON.parse(storedToken);
+                    console.log('check token', parsedToken);
+
+                    if (JSON.stringify(parsedToken) !== JSON.stringify(token)) {
+                        setToken(parsedToken);
+                    }
+                } catch (e) {
+                    console.error('❌ Failed to parse token from localStorage', e);
                 }
             }
         }
@@ -164,14 +179,16 @@ const AuthContext = ({ children }: Props) => {
         }
     };
 
-    const loginUser = (user: User) => {
+    const loginUser = (user: User, token: string) => {
         if (userAuth && userAuth._id === user._id) {
             console.log('User already logged in, skipping update');
             return;
         }
         setUserAuth(user);
+
         if (typeof window !== 'undefined') {
             localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('token', JSON.stringify(token));
         }
         connectSocket(user._id);
     };

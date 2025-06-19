@@ -80,6 +80,8 @@ export default function Account() {
         try {
             setLoading(true);
             const response: ApiResponse = await getUser(page, limit);
+            console.log(response);
+
             setAccounts(response.metadata.users || []);
             setFilteredAccounts(response.metadata.users || []);
             setCurrentPage(response.metadata.page || 1);
