@@ -32,14 +32,17 @@ export default function Page() {
             }
         }
 
-        if (jwtdecode && auth) {
-            auth.loginUser({
-                _id: jwtdecode._id,
-                role: jwtdecode.role,
-                fullName: jwtdecode.name,
-                email: jwtdecode.email,
-                avatar: '', // Provide a default or fetched avatar value
-            });
+        if (jwtdecode && auth && token) {
+            auth.loginUser(
+                {
+                    _id: jwtdecode._id,
+                    role: jwtdecode.role,
+                    fullName: jwtdecode.name,
+                    email: jwtdecode.email,
+                    avatar: '', // Provide a default or fetched avatar value
+                },
+                token,
+            );
         }
     }, [searchParams, auth]);
 
