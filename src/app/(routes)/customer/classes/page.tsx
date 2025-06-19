@@ -98,7 +98,7 @@ export default function Classes() {
         }
 
         const user = JSON.parse(userData);
-        const id = user.id;
+        const id = user._id;
 
         if (id) {
             setCurrentUserId(id);

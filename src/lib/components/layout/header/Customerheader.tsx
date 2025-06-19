@@ -56,7 +56,7 @@ const Customerheader = () => {
                 }
 
                 const user = JSON.parse(userData);
-                const id = user.id;
+                const id = user._id;
 
                 const userDetail = await getUserDetail(id);
                 console.log(`User detail for ID ${id}:`, userDetail);
@@ -76,7 +76,7 @@ const Customerheader = () => {
         if (user) {
             try {
                 const parsedUser = JSON.parse(user);
-                if (parsedUser.id) {
+                if (parsedUser._id) {
                     setIsLoggedIn(true);
                 } else {
                     setIsLoggedIn(false);

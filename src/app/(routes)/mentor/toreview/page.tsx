@@ -48,7 +48,7 @@ export default function ReviewsList() {
                     throw new Error('User data is missing');
                 }
                 const user = JSON.parse(userData);
-                const mentorId = user.id;
+                const mentorId = user._id;
                 if (!mentorId) {
                     throw new Error('Mentor ID not found in local storage');
                 }

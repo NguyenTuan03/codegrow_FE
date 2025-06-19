@@ -29,7 +29,7 @@ const Page = () => {
             console.log('✅ Socket connected with ID:', socketId);
 
             axios
-                .post(`${process.env.NEXT_PUBLIC_API_URL}auth/verify-email`, {
+                .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email`, {
                     token,
                     socketId,
                 })

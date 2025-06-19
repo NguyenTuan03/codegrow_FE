@@ -156,7 +156,7 @@ const RegisterForm = () => {
         if (googleLoading) return;
         setGoogleLoading(true);
         try {
-            router.push(process.env.NEXT_PUBLIC_API_URL + 'auth/login/google');
+            router.push(process.env.NEXT_PUBLIC_API_URL + '/auth/login/google');
         } catch {
             toast({
                 description: 'Google login failed. Please try again.',

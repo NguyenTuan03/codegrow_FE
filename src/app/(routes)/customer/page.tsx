@@ -175,7 +175,7 @@ const HomePage = () => {
                 return;
             }
             const user = JSON.parse(userId);
-            const id = user.id;
+            const id = user._id;
             const userDetail = await getUserDetail(id);
             setUser(userDetail.metadata);
         } catch (error) {

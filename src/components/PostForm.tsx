@@ -143,7 +143,7 @@ const PostForm: React.FC = () => {
         const user = JSON.parse(userData);
         console.log(` User data:`, user);
 
-        const authorId = user.id;
+        const authorId = user._id;
         if (!authorId) {
             toast({
                 title: 'Authentication Error',
