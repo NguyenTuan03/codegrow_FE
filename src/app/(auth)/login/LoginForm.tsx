@@ -140,6 +140,7 @@ const LoginForm = () => {
             const response = await login(data.email, data.password);
             console.log('Login response:', response);
             const token = response.metadata;
+            console.log('Token:', token);
             localStorage.setItem('token', JSON.stringify(token));
             const decoded = jwtDecode<ExtendedJwtPayload>(token);
             const user = {
@@ -152,7 +153,7 @@ const LoginForm = () => {
                 avatar: decoded.avatar || '', // Provide a default or decode if available
             };
             localStorage.setItem('user', JSON.stringify(user));
-            userAuth?.loginUser(user);
+            userAuth?.loginUser(user, token);
             console.log('Decoded token:', decoded);
 
             toast({

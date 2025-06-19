@@ -12,7 +12,7 @@ import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
-import { useRouter } from 'next/navigation';
+
 import { motion, useInView } from 'framer-motion'; // Import framer-motion
 import { useRef } from 'react';
 
@@ -67,7 +67,6 @@ const HomePage = () => {
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
-    const router = useRouter();
 
     // Refs for scroll-triggered animations
     const benefitsRef = useRef(null);
@@ -83,6 +82,7 @@ const HomePage = () => {
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
+            console.log('Token user:', token);
             if (!token) {
                 toast({
                     title: 'Lỗi',
@@ -90,10 +90,11 @@ const HomePage = () => {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-                router.push('/login');
+
                 return 0;
             }
             const tokenuser = JSON.parse(token);
+
             const userId = localStorage.getItem('user');
             if (!userId) {
                 throw new Error('User ID not found in localStorage');
