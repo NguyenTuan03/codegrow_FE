@@ -21,7 +21,7 @@ export default function ProfileAdmin() {
                 const user = JSON.parse(userData);
                 console.log('User data:', user);
 
-                const id = user.id;
+                const id = user._id;
 
                 const userDetail = await getUserDetail(id);
                 console.log(`User detail for ID ${id}:`, userDetail);

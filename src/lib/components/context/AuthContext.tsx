@@ -62,46 +62,52 @@ const AuthContext = ({ children }: Props) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isMessagesLoading, setIsMessagesLoading] = useState(false);
 
+    // Load user from localStorage on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 try {
-                    setUserAuth(JSON.parse(storedUser));
+                    const parsedUser = JSON.parse(storedUser);
+                    console.log('check userAuth', parsedUser);
+
+                    if (JSON.stringify(parsedUser) !== JSON.stringify(userAuth)) {
+                        setUserAuth(parsedUser);
+                    }
                 } catch (e) {
                     console.error('❌ Failed to parse user from localStorage', e);
                 }
             }
         }
-    }, []);
+    }, [userAuth]);
 
+    // Connect socket when userAuth changes
     useEffect(() => {
         if (userAuth) {
-            console.log('🔄 userAuth đã có, thử kết nối lại socket...');
+            console.log('🔄 Connecting socket for user:', userAuth._id);
             connectSocket(userAuth._id);
+        } else if (!userAuth && socket) {
+            disconnectSocket();
         }
+        return () => {
+            disconnectSocket();
+        };
     }, [userAuth]);
 
     const connectSocket = (userId: string) => {
         if (socket || !userId) return;
 
-        const newSocket = io('http://localhost:8888', {
-            query: { userId },
-        });
-
-        newSocket.on('connect', () => {
-            console.log('Socket connected:', newSocket.id);
-        });
-
+        const newSocket = io(process.env.NEXT_PUBLIC_API_URL, { query: { userId } });
+        newSocket.on('connect', () => console.log('Socket connected:', newSocket.id));
         newSocket.on('getOnlineUsers', (userIds: string[]) => {
+            console.log('Online users updated:', userIds);
             setOnlineUsers(userIds);
         });
-
         newSocket.on('disconnect', () => {
             console.log('Socket disconnected');
             setOnlineUsers([]);
         });
-
+        newSocket.on('error', (error) => console.error('Socket error:', error));
         setSocket(newSocket);
     };
 
@@ -114,13 +120,14 @@ const AuthContext = ({ children }: Props) => {
     };
 
     const getUsers = async () => {
+        setIsMessagesLoading(true);
         try {
             const res = await getUsersMessage();
             if (res && res.status === 200) {
-                setMessages(res.data.metadata);
+                setMessages(res.data.metadata || []);
             }
         } catch (error) {
-            console.log('getUsers errors ', error);
+            console.error('getUsers error:', error);
         } finally {
             setIsMessagesLoading(false);
         }
@@ -130,12 +137,11 @@ const AuthContext = ({ children }: Props) => {
         setIsMessagesLoading(true);
         try {
             const res = await getMessageById(userId);
-            console.log(res);
             if (res && res.status === 200) {
-                setMessages(res.data.metadata); // Updated to use metadata array
+                setMessages(res.data.metadata || []);
             }
         } catch (error) {
-            console.log('getUsers errors ', error);
+            console.error('getMessages error:', error);
         } finally {
             setIsMessagesLoading(false);
         }
@@ -151,27 +157,18 @@ const AuthContext = ({ children }: Props) => {
                 image: image ?? undefined,
             });
             if (res?.status === 201) {
-                setMessages((prev) => [...prev, res.data.metadata]);
+                setMessages((prev) => [...prev, res.data.metadata || {}]);
             }
         } catch (error) {
-            console.log('getUsers errors ', error);
+            console.error('sendMessage error:', error);
         }
     };
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    setUserAuth(JSON.parse(storedUser));
-                } catch (e) {
-                    console.error('Failed to parse user from localStorage', e);
-                }
-            }
-        }
-    }, []);
-
     const loginUser = (user: User) => {
+        if (userAuth && userAuth._id === user._id) {
+            console.log('User already logged in, skipping update');
+            return;
+        }
         setUserAuth(user);
         if (typeof window !== 'undefined') {
             localStorage.setItem('user', JSON.stringify(user));
@@ -183,6 +180,7 @@ const AuthContext = ({ children }: Props) => {
         setUserAuth(null);
         if (typeof window !== 'undefined') {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
         }
         disconnectSocket();
     };
@@ -193,16 +191,12 @@ const AuthContext = ({ children }: Props) => {
         const handler = (newMessage: Message) => {
             const isMessageFromSelectedUser =
                 newMessage.senderId?.toString() === selectedUser._id?.toString();
-
             if (!isMessageFromSelectedUser) return;
             setMessages((prev) => [...prev, newMessage]);
         };
 
         socket.on('newMessage', handler);
-
-        return () => {
-            socket.off('newMessage', handler); // return cleanup
-        };
+        return () => socket.off('newMessage', handler);
     }, [selectedUser, socket]);
 
     const unsubscribeFromMessages = useCallback(() => {
