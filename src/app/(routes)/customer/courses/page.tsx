@@ -828,14 +828,6 @@ export default function CoursesPage() {
                                                                     : 'Uncategorized'}
                                                             </span>
                                                         </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                            <span>
-                                                                Completed Lessons:{' '}
-                                                                {selectedCourse.lessonsCount || 0}/
-                                                                {selectedCourse.totalLessons || 0}
-                                                            </span>
-                                                        </div>
                                                     </motion.div>
                                                     <motion.p
                                                         initial={{ opacity: 0 }}
@@ -882,7 +874,7 @@ export default function CoursesPage() {
                                                                 {selectedCourse.lessonsCount || 0}{' '}
                                                                 of{' '}
                                                                 {selectedCourse.totalLessons || 0}{' '}
-                                                                lessons completed
+                                                                lessons
                                                             </span>
                                                         </div>
                                                     </motion.div>
