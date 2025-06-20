@@ -8,13 +8,14 @@ export const CUSTOMER_HEADER = [
         href: '/customer/courses',
     },
     {
+        name: 'Classroom',
+        href: '/customer/more',
+    },
+    {
         name: 'Roadmap',
         href: '/customer/roadmap',
     },
-    {
-        name: 'More',
-        href: '/customer/more',
-    },
+
     // {
     //     name: 'Test',
     //     href: '/customer/test',

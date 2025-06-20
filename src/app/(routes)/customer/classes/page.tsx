@@ -28,6 +28,33 @@ import { debounce } from 'lodash';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Animation variants (unchanged)
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+};
+
+const popupVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
+    exit: { opacity: 0, scale: 0.8, transition: { duration: 0.2 } },
+};
+
 interface ClassItem {
     _id: string;
     title: string;
@@ -50,27 +77,6 @@ interface ClassItem {
     bgColor?: string;
 }
 
-// Animation variants
-const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
-const backdropVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-};
-
 export default function Classes() {
     const [classesItems, setClassesItems] = useState<ClassItem[]>([]);
     const [filteredClasses, setFilteredClasses] = useState<ClassItem[]>([]);
@@ -81,10 +87,11 @@ export default function Classes() {
     const [totalPages, setTotalPages] = useState(1);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false); // New state for join modal
     const [selectedClass, setSelectedClass] = useState<ClassItem | null>(null);
     const limit = 6;
 
-    // Fetch the current user's ID from localStorage
+    // Fetch user ID (unchanged)
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
@@ -113,17 +120,16 @@ export default function Classes() {
         }
     }, []);
 
+    // Fetch classes (unchanged)
     const fetchClasses = async (page: number = 1) => {
         try {
             setLoading(true);
             const data = await GetClass(page, limit);
-            console.log('GetClass Response:', JSON.stringify(data, null, 2));
             if (data?.metadata?.classes) {
                 setClassesItems(data.metadata.classes);
-                setFilteredClasses(data.metadata.classes); // Initialize filtered classes
+                setFilteredClasses(data.metadata.classes);
                 setCurrentPage(data.metadata.page);
                 setTotalPages(data.metadata.totalPages);
-                console.log('Total Pages:', data.metadata.totalPages); // Debug logging
             } else {
                 throw new Error('No classes found in the response.');
             }
@@ -146,35 +152,29 @@ export default function Classes() {
         fetchClasses(currentPage);
     }, [currentPage]);
 
+    // Pagination (unchanged)
     const handlePageChange = (page: number) => {
-        console.log(
-            `Navigating to page ${page}, currentPage: ${currentPage}, totalPages: ${totalPages}`,
-        );
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
-            setSearchQuery(''); // Reset search on page change
+            setSearchQuery('');
         }
     };
 
-    // Generate pagination links with a limited range
     const getPaginationRange = () => {
-        const delta = 2; // Number of pages to show on each side of current page
+        const delta = 2;
         const range: (number | string)[] = [];
         const start = Math.max(1, currentPage - delta);
         const end = Math.min(totalPages, currentPage + delta);
 
-        // Always show first page
         if (start > 1) {
             range.push(1);
             if (start > 2) range.push('...');
         }
 
-        // Add pages in range
         for (let i = start; i <= end; i++) {
             range.push(i);
         }
 
-        // Add last page and ellipsis if needed
         if (end < totalPages) {
             if (end < totalPages - 1) range.push('...');
             range.push(totalPages);
@@ -183,6 +183,7 @@ export default function Classes() {
         return range;
     };
 
+    // Modal controls
     const openModal = (classItem: ClassItem) => {
         setSelectedClass(classItem);
         setIsModalOpen(true);
@@ -193,20 +194,36 @@ export default function Classes() {
         setSelectedClass(null);
     };
 
-    const handleClassAction = (classId: string, isEnrolled: boolean) => {
-        console.log('Handling action for class ID:', classId, 'Is Enrolled:', isEnrolled);
+    const openJoinModal = (classItem: ClassItem) => {
+        setSelectedClass(classItem);
+        setIsJoinModalOpen(true);
+    };
+
+    const closeJoinModal = () => {
+        setIsJoinModalOpen(false);
+        setSelectedClass(null);
+    };
+
+    // Handle class action (updated)
+    const handleClassAction = (classId: string, isEnrolled: boolean, classItem: ClassItem) => {
         if (isEnrolled) {
             router.push(`/customer/classes/${classId}`);
         } else {
-            router.push('/customer/more');
+            openJoinModal(classItem); // Open join modal instead of navigating
         }
     };
 
-    // Search handling
+    // Handle join class navigation
+    const handleJoinClass = () => {
+        router.push('/customer/more');
+        closeJoinModal();
+    };
+
+    // Search (unchanged)
     const debouncedSearch = useCallback(
         debounce((searchTerm: string) => {
             if (!searchTerm) {
-                setFilteredClasses(classesItems); // Restore original list
+                setFilteredClasses(classesItems);
                 return;
             }
             const filtered = classesItems.filter((classItem) =>
@@ -231,7 +248,7 @@ export default function Classes() {
             className="p-6 sm:p-10 mx-auto py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300"
         >
             <div className="max-w-8xl mx-auto">
-                {/* Header and Search */}
+                {/* Header and Search (unchanged) */}
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -316,7 +333,7 @@ export default function Classes() {
                                                         : '#5AD3AF',
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
-                                                    top: '-24px' /* Kéo ảnh lên sát header */,
+                                                    top: '-24px',
                                                 }}
                                             />
                                             <CardHeader className="pt-4">
@@ -356,7 +373,11 @@ export default function Classes() {
                                                     whileTap={{ scale: 0.98 }}
                                                 >
                                                     <Button
-                                                        onClick={() => openModal(course)}
+                                                        onClick={() =>
+                                                            isEnrolled
+                                                                ? openModal(course)
+                                                                : openJoinModal(course)
+                                                        }
                                                         className={`text-base ${
                                                             isEnrolled
                                                                 ? 'bg-white dark:bg-gray-800 border-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] hover:text-white dark:hover:text-white'
@@ -373,7 +394,7 @@ export default function Classes() {
                             })}
                         </motion.div>
 
-                        {/* Modal for Class Details */}
+                        {/* Class Details Modal */}
                         <AnimatePresence>
                             {isModalOpen && selectedClass && (
                                 <motion.div
@@ -383,19 +404,15 @@ export default function Classes() {
                                     exit="hidden"
                                     variants={backdropVariants}
                                 >
-                                    {/* Backdrop */}
                                     <motion.div
                                         className="fixed inset-0 bg-gray-200 bg-opacity-50 backdrop-blur-sm z-40"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
                                     />
-                                    {/* Modal Content */}
                                     <motion.div
                                         className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 max-h-[90vh] overflow-y-auto"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        variants={popupVariants}
                                     >
                                         <motion.button
                                             onClick={closeModal}
@@ -514,6 +531,7 @@ export default function Classes() {
                                                                 handleClassAction(
                                                                     selectedClass._id,
                                                                     true,
+                                                                    selectedClass,
                                                                 )
                                                             }
                                                             className="w-full text-base bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
@@ -531,6 +549,7 @@ export default function Classes() {
                                                                 handleClassAction(
                                                                     selectedClass._id,
                                                                     false,
+                                                                    selectedClass,
                                                                 )
                                                             }
                                                             className="w-full text-base bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
@@ -546,6 +565,186 @@ export default function Classes() {
                             )}
                         </AnimatePresence>
 
+                        {/* Join Class Modal */}
+                        <AnimatePresence>
+                            {isJoinModalOpen && selectedClass && (
+                                <motion.div
+                                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="hidden"
+                                    variants={backdropVariants}
+                                >
+                                    <motion.div
+                                        className="fixed inset-0 bg-gray-200 bg-opacity-50 backdrop-blur-sm z-40"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                    />
+                                    <motion.div
+                                        className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 p-8 max-h-[90vh] overflow-y-auto"
+                                        variants={popupVariants}
+                                    >
+                                        <motion.button
+                                            onClick={closeJoinModal}
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-6 w-6"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </motion.button>
+                                        <div className="flex flex-col items-center space-y-6">
+                                            <motion.h3
+                                                initial={{ y: -10, opacity: 0 }}
+                                                animate={{ y: 0, opacity: 1 }}
+                                                transition={{ delay: 0.2 }}
+                                                className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default"
+                                            >
+                                                Join {selectedClass.title}
+                                            </motion.h3>
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.1 }}
+                                                className="relative h-40 w-full overflow-hidden rounded-xl mb-4"
+                                                style={{
+                                                    backgroundImage: selectedClass.imgUrl
+                                                        ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedClass.imgUrl})`
+                                                        : selectedClass.bgColor
+                                                          ? selectedClass.bgColor
+                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                                    backgroundColor: selectedClass.imgUrl
+                                                        ? 'transparent'
+                                                        : '#5AD3AF',
+                                                    backgroundSize: 'cover',
+                                                    backgroundPosition: 'center',
+                                                }}
+                                            />
+                                            <motion.p
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.3 }}
+                                                className="text-lg text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-4 cursor-default"
+                                            >
+                                                {selectedClass.description}
+                                            </motion.p>
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.4 }}
+                                                className="flex flex-wrap items-center gap-4 sm:gap-6 text-lg text-gray-600 dark:text-gray-300"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    <span>
+                                                        {selectedClass.students.length} students
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <User className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    <span>
+                                                        Mentor:{' '}
+                                                        {selectedClass.mentor?.fullName ||
+                                                            'Unknown'}
+                                                    </span>
+                                                </div>
+                                            </motion.div>
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.5 }}
+                                                className="flex flex-wrap gap-2 mb-4"
+                                            >
+                                                {selectedClass.schedule.daysOfWeek.map((day) => (
+                                                    <Badge
+                                                        key={day}
+                                                        variant="outline"
+                                                        className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
+                                                    >
+                                                        {day}
+                                                    </Badge>
+                                                ))}
+                                                <Badge
+                                                    variant="outline"
+                                                    className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-base font-medium"
+                                                >
+                                                    <Clock className="h-4 w-4 mr-1 inline" />
+                                                    {selectedClass.schedule.time}
+                                                </Badge>
+                                            </motion.div>
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.6 }}
+                                                className="text-center text-gray-600 dark:text-gray-300"
+                                            >
+                                                <p className="text-lg font-medium mb-4">
+                                                    To join this class, please complete the contact
+                                                    form with your details. Follow these steps:
+                                                </p>
+                                                <ul className="list-disc text-left pl-6 mb-4">
+                                                    <li>Go to the "More" page.</li>
+                                                    <li>
+                                                        Fill out the contact form with your
+                                                        information.
+                                                    </li>
+                                                    <li>
+                                                        Submit the form to apply for this class.
+                                                    </li>
+                                                </ul>
+                                            </motion.div>
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.7 }}
+                                                className="flex flex-col sm:flex-row gap-3 w-full"
+                                            >
+                                                <motion.div
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className="flex-1"
+                                                >
+                                                    <Button
+                                                        onClick={closeJoinModal}
+                                                        variant="outline"
+                                                        className="w-full text-base border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </motion.div>
+                                                <motion.div
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className="flex-1"
+                                                >
+                                                    <Button
+                                                        onClick={handleJoinClass}
+                                                        className="w-full text-base bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
+                                                    >
+                                                        Go to Contact Form
+                                                    </Button>
+                                                </motion.div>
+                                            </motion.div>
+                                        </div>
+                                    </motion.div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Pagination (unchanged) */}
                         {totalPages > 1 && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}

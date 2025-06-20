@@ -1,13 +1,8 @@
 'use client';
-import { Search, User, Settings, BookOpen, Bell, LayoutDashboard, LogOut } from 'lucide-react';
+import { Search, User, Settings, Bell, LogOut } from 'lucide-react';
 import { useState, useEffect, useContext } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Auth } from '@/lib/components/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ModeToggle } from '@/components/mode-toggle';
@@ -34,7 +29,7 @@ export const AdminHeader = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
-    const pathname = usePathname();
+
     const userAuth = useContext(Auth);
     const [isClient, setIsClient] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -89,42 +84,6 @@ export const AdminHeader = () => {
         },
     ];
 
-    const reportItems = [
-        {
-            name: 'Courses',
-            href: '/admin/report/courses',
-            icon: <BookOpen className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
-        },
-        {
-            name: 'Mentors',
-            href: '/admin/report/mentors',
-            icon: <User className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
-        },
-    ];
-
-    const menuItems = [
-        {
-            name: 'Dashboard',
-            href: '/admin/report/dashboard',
-            icon: <LayoutDashboard className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
-        },
-        {
-            name: 'Settings',
-            href: '/admin/report/settings',
-            icon: <Settings className="h-4 w-4 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />,
-        },
-    ];
-
-    const isActiveLink = (href: string) => {
-        const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
-        const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-
-        return (
-            normalizedPathname === normalizedHref ||
-            (normalizedHref !== '' && normalizedPathname.startsWith(normalizedHref + '/'))
-        );
-    };
-
     if (!isClient) {
         return null;
     }
@@ -132,69 +91,6 @@ export const AdminHeader = () => {
     return (
         <header className="fixed w-full top-0 left-0 right-0 z-50 shadow-sm border-b bg-gray-50 dark:bg-gray-900">
             <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
-                {/* Left side - Logo and Dropdowns */}
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-4">
-                        {/* Report Dropdown */}
-                        <Accordion type="single" collapsible className="w-auto">
-                            <AccordionItem value="report" className="border-b-0">
-                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
-                                    <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
-                                        Report
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                    <div className="py-1">
-                                        {reportItems.map((item) => (
-                                            <Link key={item.name} href={item.href}>
-                                                <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
-                                                        isActiveLink(item.href)
-                                                            ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
-                                                            : 'text-gray-700 dark:text-gray-300'
-                                                    }`}
-                                                >
-                                                    {item.icon}
-                                                    {item.name}
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-
-                        {/* Menu Dropdown */}
-                        <Accordion type="single" collapsible className="w-auto">
-                            <AccordionItem value="menu" className="border-b-0">
-                                <AccordionTrigger className="[&[data-state=open]>svg]:rotate-180 px-0">
-                                    <div className="flex items-center gap-1 text-lg font-medium text-gray-800 dark:text-gray-200">
-                                        Menu
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                                    <div className="py-1">
-                                        {menuItems.map((item) => (
-                                            <Link key={item.name} href={item.href}>
-                                                <div
-                                                    className={`flex items-center px-4 py-2 text-sm hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium ${
-                                                        isActiveLink(item.href)
-                                                            ? 'text-[#657ED4] dark:text-[#5AD3AF] font-semibold bg-gray-100 dark:bg-gray-700'
-                                                            : 'text-gray-700 dark:text-gray-300'
-                                                    }`}
-                                                >
-                                                    {item.icon}
-                                                    {item.name}
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
-                </div>
-
                 {/* Search Bar */}
                 <div className="relative flex-1 max-w-xl mx-4">
                     <div className="relative">

@@ -100,9 +100,9 @@ export default function StudentsPanel({
                 <div className="mt-6">
                     <Button
                         onClick={handleOpenModal}
-                        className="flex cursor-pointer items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 w-full"
+                        className="flex cursor-pointer items-center px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] transition-colors duration-200 w-full"
                     >
-                        <UserPlus className="h-5 w-5  mr-2" />
+                        <UserPlus className="h-5 w-5 mr-2" />
                         Add Student
                     </Button>
                 </div>
@@ -125,7 +125,7 @@ export default function StudentsPanel({
                         </div>
                         {studentsLoading ? (
                             <div className="flex justify-center items-center h-32">
-                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF]"></div>
                             </div>
                         ) : students.length === 0 ? (
                             <p className="text-gray-600 dark:text-gray-300 text-center">
@@ -133,16 +133,16 @@ export default function StudentsPanel({
                             </p>
                         ) : (
                             <div className="max-h-96 overflow-y-auto">
-                                <table className="w-full table-auto border-collapse border border-gray-300 dark:border-gray-700">
+                                <table className="w-full table-auto border-collapse border border-gray-200 dark:border-gray-700">
                                     <thead>
                                         <tr className="bg-gray-100 dark:bg-gray-700">
-                                            <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
                                                 Full Name
                                             </th>
-                                            <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-left text-gray-800 dark:text-gray-100">
                                                 Role
                                             </th>
-                                            <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center text-gray-800 dark:text-gray-100">
+                                            <th className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center text-gray-800 dark:text-gray-100">
                                                 Action
                                             </th>
                                         </tr>
@@ -153,13 +153,13 @@ export default function StudentsPanel({
                                                 key={student._id}
                                                 className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                                             >
-                                                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
                                                     {student.fullName}
                                                 </td>
-                                                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-gray-100">
                                                     Customer
                                                 </td>
-                                                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-center">
+                                                <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-center">
                                                     <button
                                                         onClick={() =>
                                                             handleAddStudent(
@@ -167,7 +167,7 @@ export default function StudentsPanel({
                                                                 student.fullName,
                                                             )
                                                         }
-                                                        className="px-3 py-1 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+                                                        className="px-3 py-1 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] transition-colors duration-200"
                                                     >
                                                         Add
                                                     </button>

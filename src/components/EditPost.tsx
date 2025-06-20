@@ -92,10 +92,7 @@ const EditPost: React.FC = () => {
                     throw new Error('No posts found');
                 }
             } catch (error) {
-                console.error(
-                    `[Saturday, May 31, 2025, 11:48 AM +07] Failed to fetch post details:`,
-                    error,
-                );
+                console.error(`Failed to fetch post details:`, error);
                 toast({
                     title: 'Error',
                     description: 'Failed to fetch post details. Please try again.',
@@ -123,13 +120,23 @@ const EditPost: React.FC = () => {
 
         try {
             setLoading(true);
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const response = await UpdatePost({
-                token,
+                token: tokenuser,
                 postId: post._id,
                 title: values.title,
                 content: values.content,
@@ -148,7 +155,7 @@ const EditPost: React.FC = () => {
 
             router.push(`/posts/${post._id}`); // Redirect to the post detail page
         } catch (error) {
-            console.error(`[Saturday, May 31, 2025, 11:48 AM +07] Failed to update post:`, error);
+            console.error(`Failed to update post:`, error);
             toast({
                 title: 'Error',
                 description: 'Failed to update post. Please try again.',

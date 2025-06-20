@@ -38,7 +38,7 @@ interface Lesson {
     content?: string;
     videoUrl?: string;
     videoKey?: string;
-    free_url?: string; // Added free_url to interface
+    free_url?: string;
     order: number;
 }
 
@@ -89,6 +89,8 @@ export default function LessonDetail() {
         testCases: [{ input: '', expectedOutput: '' }],
     });
     const [editingQuizId, setEditingQuizId] = useState<string | null>(null);
+    const [isCreating, setIsCreating] = useState(false); // Loading state for creating quiz
+    const [isUpdating, setIsUpdating] = useState(false); // Loading state for updating quiz
 
     const router = useRouter();
     const params = useParams();
@@ -230,6 +232,7 @@ export default function LessonDetail() {
     };
 
     const handleCreateQuiz = async () => {
+        setIsCreating(true); // Start loading for create
         try {
             const token = localStorage.getItem('token');
 
@@ -303,10 +306,13 @@ export default function LessonDetail() {
                 description: error instanceof Error ? error.message : 'Failed to create quiz',
                 variant: 'destructive',
             });
+        } finally {
+            setIsCreating(false); // Stop loading for create
         }
     };
 
     const handleEditQuiz = async () => {
+        setIsUpdating(true); // Start loading for update
         if (!editingQuizId) return;
         try {
             const token = localStorage.getItem('token');
@@ -353,6 +359,8 @@ export default function LessonDetail() {
                 description: error instanceof Error ? error.message : 'Failed to update quiz',
                 variant: 'destructive',
             });
+        } finally {
+            setIsUpdating(false); // Stop loading for update
         }
     };
 
@@ -462,7 +470,7 @@ export default function LessonDetail() {
     }
 
     return (
-        <div className="min-h-screen  dark:bg-gray-900 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen dark:bg-gray-900 transition-colors duration-300 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header with back button and title */}
                 <div className="flex items-center gap-4">
@@ -961,9 +969,17 @@ export default function LessonDetail() {
                                             </Button>
                                             <Button
                                                 onClick={handleCreateQuiz}
+                                                disabled={isCreating}
                                                 className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                                             >
-                                                Create Quiz
+                                                {isCreating ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Creating...
+                                                    </>
+                                                ) : (
+                                                    'Create Quiz'
+                                                )}
                                             </Button>
                                         </div>
                                     </DialogContent>
@@ -1473,9 +1489,17 @@ export default function LessonDetail() {
                         </div>
                         <Button
                             onClick={handleEditQuiz}
+                            disabled={isUpdating}
                             className="mt-4 w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-md cursor-pointer"
                         >
-                            Update Quiz
+                            {isUpdating ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Updating...
+                                </>
+                            ) : (
+                                'Update Quiz'
+                            )}
                         </Button>
                     </DialogContent>
                 </Dialog>

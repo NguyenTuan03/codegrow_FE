@@ -1,7 +1,6 @@
 'use client';
 
-import { Users, MessageSquare } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Users } from 'lucide-react';
 
 interface Student {
     _id: string;
@@ -13,13 +12,6 @@ interface StudentsPanelProps {
 }
 
 export default function StudentsPanel({ classData }: StudentsPanelProps) {
-    const router = useRouter();
-
-    const handleChatClick = (studentId: string) => {
-        // Navigate to the chat page for the student
-        router.push(`/customer/chat/${studentId}`);
-    };
-
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
             <div className="p-6">
@@ -54,14 +46,6 @@ export default function StudentsPanel({ classData }: StudentsPanelProps) {
                                         {student.fullName}
                                     </span>
                                 </div>
-                                <button
-                                    onClick={() => handleChatClick(student._id)}
-                                    className="p-2 cursor-pointer rounded-full text-gray-500 dark:text-gray-400 hover:text-[#5AD3AF] dark:hover:text-[#5AD3AF] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-                                    aria-label={`Chat with ${student.fullName}`}
-                                    title={`Chat with ${student.fullName}`}
-                                >
-                                    <MessageSquare className="w-5 h-5" />
-                                </button>
                             </div>
                         ))
                     )}

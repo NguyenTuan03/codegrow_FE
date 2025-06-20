@@ -419,7 +419,7 @@ export default function AdminCoursesPage() {
                                                 <Button
                                                     variant="default"
                                                     size="lg"
-                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md"
+                                                    className="w-full cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full transition-all duration-200 transform hover:scale-[1.02] shadow-md"
                                                     onClick={() =>
                                                         router.push(`/admin/courses/${course._id}`)
                                                     }

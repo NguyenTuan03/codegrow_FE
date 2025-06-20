@@ -324,7 +324,7 @@ export default function Classes() {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="w-full rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
+                                                            className="w-full rounded-full cursor-pointer text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
                                                             onClick={() =>
                                                                 router.push(
                                                                     `/mentor/classes/${course._id}`,
@@ -341,7 +341,7 @@ export default function Classes() {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="w-full rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
+                                                            className="w-full rounded-full cursor-pointer text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#5AD3AF] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
                                                             onClick={() =>
                                                                 handleAssignMentor(course._id)
                                                             }
@@ -355,7 +355,7 @@ export default function Classes() {
                                     })}
                                 </div>
                                 {totalPages > 1 && (
-                                    <div className="mt-8 flex justify-center">
+                                    <div className="mt-10  flex justify-center">
                                         <Pagination>
                                             <PaginationContent>
                                                 <PaginationItem>
@@ -363,7 +363,7 @@ export default function Classes() {
                                                         onClick={() =>
                                                             handlePageChange(currentPage - 1)
                                                         }
-                                                        className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
+                                                        className={`text-[#657ED4]  cursor-pointer mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
                                                             currentPage === 1
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''
@@ -394,8 +394,8 @@ export default function Classes() {
                                                                     }
                                                                     className={
                                                                         currentPage === pageNum
-                                                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors'
-                                                                            : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors'
+                                                                            ? 'bg-[#657ED4] mb-10 dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors'
+                                                                            : 'text-[#657ED4] mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors'
                                                                     }
                                                                 >
                                                                     {pageNum}
@@ -409,7 +409,7 @@ export default function Classes() {
                                                         onClick={() =>
                                                             handlePageChange(currentPage + 1)
                                                         }
-                                                        className={`text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
+                                                        className={`text-[#657ED4] cursor-pointer mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
                                                             currentPage === totalPages
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''

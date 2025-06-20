@@ -12,7 +12,7 @@ const socket = io(process.env.NEXT_PUBLIC_API_URL, {
 });
 
 const Page = () => {
-    const [htmlResponse, setHtmlResponse] = useState('Đang xác minh tài khoản...');
+    const [htmlResponse, setHtmlResponse] = useState('Verifying account...');
     const router = useRouter();
 
     useEffect(() => {
@@ -20,7 +20,9 @@ const Page = () => {
         const token = urlParams.get('token');
 
         if (!token) {
-            setHtmlResponse("<h2 style='color:red'>Check dùm cái gmail đi ạ.</h2>");
+            setHtmlResponse(
+                "<h2 style='color:red'>You're just one step away! Check your email and verify now!</h2>",
+            );
             return;
         }
 
@@ -47,7 +49,7 @@ const Page = () => {
                     if (err.response) {
                         setHtmlResponse(err.response.data);
                     } else {
-                        setHtmlResponse("<h2 style='color:red'>Lỗi kết nối tới máy chủ.</h2>");
+                        setHtmlResponse("<h2 style='color:red'>Error connecting to server.</h2>");
                     }
                 });
         };
@@ -60,7 +62,7 @@ const Page = () => {
 
         socket.on('connect_error', (err) => {
             console.error('❌ Lỗi kết nối socket:', err);
-            setHtmlResponse("<h2 style='color:red'>Không thể kết nối socket.io</h2>");
+            setHtmlResponse("<h2 style='color:red'>Error connecting to socket.</h2>");
         });
 
         return () => {

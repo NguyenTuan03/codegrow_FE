@@ -1,6 +1,6 @@
 import { get } from '@/lib/util/HttpRequest';
 
-export const GetListUserEnrollpedding = async (page: number = 1, limit: number = 10) => {
+export const GetListUserEnrollpedding = async (page: number = 1, limit: number = 100) => {
     try {
         const token = localStorage.getItem('token');
         if (!token) {

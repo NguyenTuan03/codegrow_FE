@@ -44,7 +44,7 @@ const classes = [
 
 const page = () => {
     return (
-        <div className="p-6 space-y-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300 min-h-screen">
+        <div className="p-6 space-y-6  dark:bg-gray-900 transition-colors duration-300 min-h-screen">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                 Performance Analytics
             </h1>

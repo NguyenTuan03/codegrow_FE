@@ -149,9 +149,19 @@ export default function LessonDetail() {
     const handleUpdateLesson = async () => {
         try {
             const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('No authentication token found');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
             if (typeof lessonId !== 'string') {
                 throw new Error('Invalid lesson ID format');
             }
@@ -160,7 +170,7 @@ export default function LessonDetail() {
             }
 
             const res = await UpdateLesson(
-                token,
+                tokenuser,
                 lessonId,
                 updateLessonData.status,
                 updateLessonData.mark,

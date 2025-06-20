@@ -24,7 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { Eye, Upload, PlusCircle } from 'lucide-react';
+import { Eye, Upload, PlusCircle, Loader2 } from 'lucide-react';
 import { CreateLesson } from '@/lib/services/lessons/createLesson';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
 
@@ -60,6 +60,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
         quiz: [] as string[],
     });
     const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+    const [isCreating, setIsCreating] = useState(false); // New loading state for creating lesson
 
     const router = useRouter();
 
@@ -158,6 +159,7 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
     };
 
     const handleCreateLesson = async () => {
+        setIsCreating(true); // Start loading
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -230,6 +232,8 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                 description: error instanceof Error ? error.message : 'Failed to create lesson',
                 variant: 'destructive',
             });
+        } finally {
+            setIsCreating(false); // Stop loading
         }
     };
 
@@ -410,8 +414,16 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                         <Button
                                             type="submit"
                                             className="bg-[#657ED4] hover:bg-[#424c70] text-white cursor-pointer"
+                                            disabled={isCreating} // Disable button while loading
                                         >
-                                            Create Lesson
+                                            {isCreating ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Creating...
+                                                </>
+                                            ) : (
+                                                'Create Lesson'
+                                            )}
                                         </Button>
                                     </div>
                                 </form>

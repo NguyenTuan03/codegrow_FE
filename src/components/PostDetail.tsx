@@ -88,10 +88,7 @@ const PostDetail: React.FC = () => {
 
                     // Fetch author details
                     const authorResponse = await getUserDetail(postData.author);
-                    console.log(
-                        '[Saturday, May 31, 2025, 11:48 AM +07] Check author:',
-                        authorResponse,
-                    );
+                    console.log(' Check author:', authorResponse);
 
                     // Fetch course details
                     const courseResponse = await viewDetailCourses(postData.course._id);
@@ -122,10 +119,7 @@ const PostDetail: React.FC = () => {
                     throw new Error('No posts found');
                 }
             } catch (error) {
-                console.error(
-                    `[Saturday, May 31, 2025, 11:48 AM +07] Failed to fetch post details:`,
-                    error,
-                );
+                console.error(`Failed to fetch post details:`, error);
                 toast({
                     title: 'Error',
                     description: 'Failed to fetch post details. Please try again.',

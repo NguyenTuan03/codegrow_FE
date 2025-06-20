@@ -221,18 +221,6 @@ export default function CourseDetailPage() {
                                     year: 'numeric',
                                 })}
                             </span>
-                            <span className="text-base text-gray-600 dark:text-gray-400">
-                                Last updated{' '}
-                                {new Date('2025-05-28T23:19:00+07:00').toLocaleString('en-US', {
-                                    month: 'long',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true,
-                                    timeZone: 'Asia/Bangkok',
-                                })}
-                            </span>
                         </div>
                     </CardContent>
                 </Card>

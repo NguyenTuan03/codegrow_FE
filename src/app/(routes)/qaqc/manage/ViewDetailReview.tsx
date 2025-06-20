@@ -18,6 +18,24 @@ import {
 } from '@/components/ui/select';
 import { GetReviewsByMentorId } from '@/lib/services/qaqc/getReviewDetail';
 import { toast } from '@/components/ui/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
+
+// Animation variants for review items
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 type Review = {
     _id: string;
@@ -45,10 +63,8 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
     useEffect(() => {
         const fetchReviews = async () => {
             setLoading(true);
-
             try {
                 const token = localStorage.getItem('token');
-
                 if (!token) {
                     toast({
                         title: 'Lỗi',
@@ -56,11 +72,9 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
                         variant: 'destructive',
                         className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                     });
-
                     return;
                 }
                 const tokenuser = JSON.parse(token);
-                console.log('Token user:', tokenuser);
                 const reviews = await GetReviewsByMentorId(mentorId, tokenuser);
                 setAllReviews(reviews);
             } catch (error) {
@@ -80,7 +94,6 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
         const end = start + pageSize;
         const paginatedReviews = allReviews.slice(start, end);
         setDisplayReviews(paginatedReviews);
-
         const total = Math.ceil(allReviews.length / pageSize);
         setTotalPages(total > 0 ? total : 1);
     }, [allReviews, currentPage, pageSize]);
@@ -107,62 +120,77 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
     };
 
     return (
-        <div className="p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-[400px] max-h-[80vh] overflow-y-auto">
-            {loading && (
-                <p className="text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default">
-                    Loading reviews...
-                </p>
-            )}
-            {error && (
-                <p className="text-center text-red-500 dark:text-red-400 text-base font-medium cursor-default">
+        <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 min-h-[400px] max-h-[80vh] overflow-y-auto">
+            {loading ? (
+                <div className="space-y-6">
+                    {[...Array(3)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm"
+                        >
+                            <Skeleton className="h-5 w-[80%] mb-2" />
+                            <Skeleton className="h-4 w-[60%] mb-2" />
+                            <Skeleton className="h-4 w-[70%] mb-2" />
+                            <Skeleton className="h-4 w-[50%]" />
+                        </div>
+                    ))}
+                </div>
+            ) : error ? (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg text-center text-red-500 dark:text-red-400 text-base font-medium">
                     {error}
-                </p>
-            )}
-            {!loading && !error && allReviews.length > 0 ? (
+                </div>
+            ) : allReviews.length > 0 ? (
                 <>
-                    <ul className="space-y-4">
+                    <motion.ul
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="space-y-6"
+                    >
                         {displayReviews.map((review) => (
-                            <li
+                            <motion.li
                                 key={review._id}
+                                variants={itemVariants}
                                 className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
                             >
-                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default">
-                                    <strong className="text-gray-900 dark:text-white text-xl font-semibold">
+                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default mb-2">
+                                    <strong className="text-gray-900 dark:text-white text-lg font-semibold">
                                         Comment:
                                     </strong>{' '}
                                     {review.comment}
                                 </p>
-                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default">
-                                    <strong className="text-gray-900 dark:text-white text-xl font-semibold">
+                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default mb-2">
+                                    <strong className="text-gray-900 dark:text-white text-lg font-semibold">
                                         Rating:
                                     </strong>{' '}
                                     {review.rating}/5
                                 </p>
-                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default">
-                                    <strong className="text-gray-900 dark:text-white text-xl font-semibold">
+                                <p className="text-gray-800 dark:text-gray-200 text-base cursor-default mb-2">
+                                    <strong className="text-gray-900 dark:text-white text-lg font-semibold">
                                         Reviewed by:
                                     </strong>{' '}
                                     {review.qaqc.fullName} ({review.qaqc.email})
                                 </p>
                                 <p className="text-gray-800 dark:text-gray-200 text-base cursor-default">
-                                    <strong className="text-gray-900 dark:text-white text-xl font-semibold">
+                                    <strong className="text-gray-900 dark:text-white text-lg font-semibold">
                                         Created At:
                                     </strong>{' '}
                                     {new Date(review.createdAt).toLocaleString()}
                                 </p>
-                            </li>
+                            </motion.li>
                         ))}
-                    </ul>
+                    </motion.ul>
 
                     {/* Pagination Controls */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
-                        <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-between mt-8 gap-4">
+                        <div className="flex items-center gap-3">
                             <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
                                 Items per page:
                             </span>
                             <Select
                                 value={pageSize.toString()}
                                 onValueChange={handlePageSizeChange}
+                                aria-label="Select items per page"
                             >
                                 <SelectTrigger className="w-[100px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer">
                                     <SelectValue placeholder="Select" />
@@ -200,9 +228,9 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
                                                 : ''
                                         }`}
+                                        aria-label="Previous page"
                                     />
                                 </PaginationItem>
-
                                 {getPageNumbers().map((page) => (
                                     <PaginationItem key={page}>
                                         <PaginationLink
@@ -213,12 +241,12 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
                                                     ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
                                                     : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md border-gray-300 dark:border-gray-600 transition-colors cursor-pointer'
                                             }
+                                            aria-label={`Page ${page}`}
                                         >
                                             {page}
                                         </PaginationLink>
                                     </PaginationItem>
                                 ))}
-
                                 <PaginationItem>
                                     <PaginationNext
                                         onClick={() => handlePageChange(currentPage + 1)}
@@ -227,6 +255,7 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
                                                 ? 'pointer-events-none opacity-50 cursor-not-allowed'
                                                 : ''
                                         }`}
+                                        aria-label="Next page"
                                     />
                                 </PaginationItem>
                             </PaginationContent>
@@ -236,9 +265,9 @@ export function ViewDetailReview({ mentorId }: { mentorId: string }) {
             ) : (
                 !loading &&
                 !error && (
-                    <p className="text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default">
+                    <div className="p-4 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-500 dark:text-gray-400 text-base font-medium">
                         No reviews found for this mentor.
-                    </p>
+                    </div>
                 )
             )}
         </div>
