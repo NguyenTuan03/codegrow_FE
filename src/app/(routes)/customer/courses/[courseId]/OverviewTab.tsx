@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
@@ -34,22 +33,37 @@ export default function OverviewTab({
     progress,
     completedLessons,
     completedQuizzes,
-
     onNavigate,
     courseId,
 }: OverviewTabProps) {
     const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [allLessons, setAllLessons] = useState<Lesson[]>([]); // Store all lessons before filtering
     const [loading, setLoading] = useState(true);
+    const [completedLessonsCount, setCompletedLessonsCount] = useState(0);
 
     const loadData = async () => {
         try {
             setLoading(true);
             const lessonsData = await GetLessons(courseId);
             if (lessonsData?.status === 200 && Array.isArray(lessonsData.metadata)) {
-                setLessons(lessonsData.metadata);
+                const allLessonsData = lessonsData.metadata; // Store all lessons
+                setAllLessons(allLessonsData);
+                const filteredLessons = allLessonsData.filter(
+                    (lesson: Lesson) => lesson.status === 'done',
+                );
+                setLessons(filteredLessons);
+                setCompletedLessonsCount(filteredLessons.length); // Count only lessons with status 'done'
+            } else {
+                setLessons([]);
+                setAllLessons([]);
+                setCompletedLessonsCount(0);
             }
+            console.log('check log', courseId, lessonsData);
         } catch (error) {
             console.error('Error loading data:', error);
+            setLessons([]);
+            setAllLessons([]);
+            setCompletedLessonsCount(0);
         } finally {
             setLoading(false);
         }
@@ -85,6 +99,9 @@ export default function OverviewTab({
         return completedQuizzes[quizId] || false;
     };
 
+    // Calculate total lessons from allLessons
+    const totalLessons = allLessons.length;
+
     return (
         <div className="space-y-8">
             {/* Progress Section */}
@@ -102,7 +119,7 @@ export default function OverviewTab({
                     </span>
                 </div>
                 <div className="text-base text-gray-600 dark:text-gray-400 font-medium">
-                    {Object.keys(completedLessons).length} of {lessons.length} lessons completed
+                    {completedLessonsCount} of {totalLessons} lessons completed
                 </div>
             </div>
 
