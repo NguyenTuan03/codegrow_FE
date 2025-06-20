@@ -48,7 +48,7 @@ const PostForm: React.FC = () => {
                 );
             }
         } catch (error: unknown) {
-            console.error(`[Saturday, May 31, 2025, 12:04 PM +07] Failed to fetch courses:`, error);
+            console.error(`Failed to fetch courses:`, error);
             toast({
                 title: 'Error',
                 description: error instanceof Error ? error.message : 'Failed to fetch courses',
@@ -191,7 +191,7 @@ const PostForm: React.FC = () => {
             if (fileInputRef.current) fileInputRef.current.value = '';
             setOpen(false);
         } catch (error) {
-            console.error(`[Saturday, May 31, 2025, 12:04 PM +07] Failed to create post:`, error);
+            console.error(`Failed to create post:`, error);
             toast({
                 title: 'Error',
                 description: 'Failed to create post. Please try again.',

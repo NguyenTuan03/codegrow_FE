@@ -61,10 +61,7 @@ export const UpdatePost = async ({
         });
         return response.data;
     } catch (error) {
-        console.error(
-            `[Saturday, May 31, 2025, 11:48 AM +07] ❌ Error from UpdatePost API:`,
-            error,
-        );
+        console.error(` ❌ Error from UpdatePost API:`, error);
         throw error;
     }
 };

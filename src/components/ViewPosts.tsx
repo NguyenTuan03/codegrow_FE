@@ -119,10 +119,20 @@ const ViewPosts: React.FC = () => {
     const fetchPosts = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             const response = await GetPosts(token);
             if (response?.metadata?.posts && response.metadata.posts.length > 0) {
@@ -198,12 +208,22 @@ const ViewPosts: React.FC = () => {
     // Handle delete post
     const handleDelete = async (postId: string) => {
         try {
-            const token = localStorage.getItem('token') || '';
-            if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
-            }
+            const token = localStorage.getItem('token');
 
-            await DeletePost(token, postId);
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
+
+            await DeletePost(tokenuser, postId);
             toast({
                 title: 'Success',
                 description: 'Post deleted successfully!',
@@ -244,13 +264,23 @@ const ViewPosts: React.FC = () => {
     const handleUpdate = async (values: UpdatePostFormType, post: EnrichedPost) => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+
             if (!token) {
-                throw new Error('Authentication token is missing. Please log in.');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+
+                return;
             }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user:', tokenuser);
 
             await UpdatePost({
-                token,
+                token: tokenuser,
                 postId: post._id,
                 title: values.title,
                 content: values.content,

@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 // lib/utils.ts
 export function getTableLink({ token, tableNumber }: { token: string; tableNumber: number }) {
     // Sử dụng biến môi trường NEXT_PUBLIC_HOST_CODEGROW
-    const baseUrl = process.env.NEXT_PUBLIC_HOST_CODEGROW || 'http://localhost:8888';
+    const baseUrl = process.env.NEXT_PUBLIC_HOST_CODEGROW || '';
     return `${baseUrl}/table/${tableNumber}?token=${token}`;
 }
 interface FormatMessageTimeOptions {

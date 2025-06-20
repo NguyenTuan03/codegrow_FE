@@ -76,6 +76,7 @@ export default function ServiceTicketReplyForm({
             });
             onReplySuccess(ticketId, values.qaqcReply);
             form.reset();
+            window.location.reload();
         } catch (error) {
             console.error('Failed to send reply:', error);
             toast({

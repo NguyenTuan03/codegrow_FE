@@ -242,10 +242,10 @@ export default function Classes() {
                             </div>
                             <Button
                                 onClick={() => fetchClasses(currentPage)}
-                                className="rounded-lg px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
+                                className="rounded-lg   cursor-pointer px-6 py-2 bg-[#5AD3AF] hover:bg-[#4ac2a0] text-white transition-all duration-200 shadow-md font-medium"
                                 aria-label="Refresh classes"
                             >
-                                <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
+                                <RefreshCw className="h-5  cursor-pointer w-5 mr-2 animate-spin-slow" />
                                 Refresh
                             </Button>
                         </div>
@@ -350,7 +350,7 @@ export default function Classes() {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            className="w-full rounded-full text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
+                                                            className="w-full rounded-full  cursor-pointer text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-all duration-200 font-medium"
                                                             onClick={() =>
                                                                 router.push(
                                                                     `/mentor/classes/${course._id}`,
@@ -378,7 +378,7 @@ export default function Classes() {
                                 </div>
                                 <div className="flex justify-center mt-6 mb-10">
                                     <Link href="/mentor/allclasses">
-                                        <Button className="bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300">
+                                        <Button className="bg-[#657ED4]  cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] text-white font-semibold px-6 py-3 text-base rounded-lg transition-colors duration-300">
                                             Explore More
                                         </Button>
                                     </Link>

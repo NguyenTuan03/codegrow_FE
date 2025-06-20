@@ -190,8 +190,15 @@ export default function ClassDetailPage() {
                 throw new Error('Invalid or missing enrollment data');
             }
 
-            const customers = response.metadata
+            // Get the IDs of students already in the class
+            const enrolledStudentIds =
+                classData?.students.map((student: User) => student._id) || [];
+
+            // Process the response data
+            const uniqueStudents = response.metadata
+                // Filter out deleted and consulted records
                 .filter((record: EnrollmentRecord) => !record.isConsulted && !record.isDeleted)
+                // Map to student objects
                 .map((record: EnrollmentRecord) => {
                     const user = record.user;
                     if (!user._id || !user.fullName) {
@@ -203,10 +210,21 @@ export default function ClassDetailPage() {
                         fullName: user.fullName,
                     };
                 })
-                .filter((user: Student | null): user is Student => user !== null);
+                // Remove null entries
+                .filter((user: Student | null): user is Student => user !== null)
+                // Filter out students already enrolled
+                .filter((student: Student) => !enrolledStudentIds.includes(student._id))
+                // Remove duplicates by creating a map keyed by _id
+                .reduce((acc: Student[], current: Student) => {
+                    const existing = acc.find((student: Student) => student._id === current._id);
+                    if (!existing) {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
 
-            setStudents(customers);
-            console.log('Filtered students:', JSON.stringify(customers, null, 2));
+            setStudents(uniqueStudents);
+            console.log('Filtered unique students:', JSON.stringify(uniqueStudents, null, 2));
         } catch (error) {
             console.error('Failed to fetch students:', error);
             toast({
@@ -221,7 +239,6 @@ export default function ClassDetailPage() {
             setStudentsLoading(false);
         }
     };
-
     useEffect(() => {
         fetchCourse();
         fetchMentors();

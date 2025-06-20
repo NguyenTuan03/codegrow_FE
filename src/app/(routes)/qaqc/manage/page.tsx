@@ -70,7 +70,7 @@ type ReviewItem = {
 const mentorColumns: ColumnDef<MentorTableData>[] = [
     {
         accessorKey: 'name',
-        header: 'Tên',
+        header: 'Name',
         cell: ({ row }) => (
             <div className="flex items-center gap-3">
                 <Avatar className="w-9 h-9">
@@ -95,7 +95,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
     },
     {
         accessorKey: 'action',
-        header: 'Hành động',
+        header: 'Actions',
         cell: ({ row }) => (
             <div className="flex gap-2">
                 <Dialog>
@@ -103,17 +103,17 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                         <Button
                             variant="outline"
                             size="sm"
-                            title="Thêm đánh giá"
+                            title="Add Review"
                             className="flex gap-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-black transition-colors rounded-lg cursor-pointer"
                         >
                             <PlusIcon className="w-4 h-4" />
-                            Thêm
+                            Add
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
                             <DialogTitle className="text-gray-900 dark:text-white text-xl font-semibold cursor-default">
-                                Thêm đánh giá cho {row.getValue('name')}
+                                Add Review for {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
                         <CreateReviewForm mentorId={row.original._id} />
@@ -125,17 +125,17 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
                         <Button
                             variant="outline"
                             size="sm"
-                            title="Xem chi tiết đánh giá"
+                            title="View Review Details"
                             className="flex gap-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg cursor-pointer"
                         >
                             <EyeIcon className="w-4 h-4" />
-                            Xem chi tiết
+                            View Detail
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-xl">
                         <DialogHeader>
                             <DialogTitle className="text-gray-900 dark:text-white text-xl font-semibold cursor-default">
-                                Đánh giá cho {row.getValue('name')}
+                                Reviews for {row.getValue('name')}
                             </DialogTitle>
                         </DialogHeader>
                         <ViewDetailReview mentorId={row.original._id} />
@@ -150,7 +150,7 @@ const mentorColumns: ColumnDef<MentorTableData>[] = [
 const reviewColumns: ColumnDef<ReviewItem>[] = [
     {
         accessorKey: 'mentor.fullName',
-        header: 'Người đánh giá',
+        header: 'Reviewer',
         cell: ({ row }) => (
             <span className="text-gray-900 dark:text-gray-100 font-medium text-base cursor-default">
                 {row.original.mentor?.fullName || 'N/A'}
@@ -159,7 +159,7 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
     },
     {
         accessorKey: 'comment',
-        header: 'Nhận xét',
+        header: 'Comment',
         cell: ({ row }) => (
             <span className="text-gray-700 dark:text-gray-300 text-base cursor-default">
                 {row.getValue('comment')}
@@ -168,10 +168,10 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
     },
     {
         accessorKey: 'createdAt',
-        header: 'Ngày',
+        header: 'Date',
         cell: ({ row }) => (
             <span className="text-gray-700 dark:text-gray-300 text-base cursor-default">
-                {new Date(row.getValue('createdAt')).toLocaleDateString('vi-VN', {
+                {new Date(row.getValue('createdAt')).toLocaleDateString('en-US', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
@@ -181,7 +181,7 @@ const reviewColumns: ColumnDef<ReviewItem>[] = [
     },
     {
         accessorKey: 'rating',
-        header: 'Điểm',
+        header: 'Score',
         cell: ({ row }) => (
             <span className="text-yellow-600 dark:text-yellow-400 font-semibold text-base cursor-default">
                 {row.getValue('rating')}/5
@@ -223,7 +223,7 @@ export default function MentorsPage() {
             setAllMentors(mappedData);
             setLoadingMentors(false);
         } catch (error) {
-            setErrorMentors('Lỗi khi tải danh sách mentor');
+            setErrorMentors('Error loading mentor list');
             setLoadingMentors(false);
             console.error('Error fetching mentors:', error);
         }
@@ -251,7 +251,7 @@ export default function MentorsPage() {
             }
             setLoadingReviews(false);
         } catch (error) {
-            setErrorReviews('Lỗi khi tải danh sách đánh giá');
+            setErrorReviews('Error loading review list');
             setLoadingReviews(false);
             console.error('Error fetching reviews:', error);
         }
@@ -388,12 +388,12 @@ export default function MentorsPage() {
             {/* Mentors Section */}
             <section className="mb-12">
                 <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white cursor-default">
-                    Danh sách Mentor
+                    Mentor List
                 </h2>
                 <div className="relative w-full sm:w-1/2 lg:w-1/3 mb-6">
                     <Input
                         type="text"
-                        placeholder="Tìm kiếm theo tên hoặc email..."
+                        placeholder="Search by name or email..."
                         onChange={handleMentorSearchChange}
                         className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     />
@@ -401,7 +401,7 @@ export default function MentorsPage() {
                 </div>
                 {loadingMentors && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
-                        Đang tải danh sách mentor...
+                        Loading mentor list...
                     </p>
                 )}
                 {errorMentors && (
@@ -456,7 +456,7 @@ export default function MentorsPage() {
                                                 colSpan={mentorColumns.length}
                                                 className="py-10 text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default"
                                             >
-                                                Không tìm thấy mentor.
+                                                No mentors found.
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -468,7 +468,7 @@ export default function MentorsPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
                             <div className="flex items-center gap-3">
                                 <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
-                                    Số mục mỗi trang:
+                                    Items per page:
                                 </span>
                                 <Select
                                     value={mentorPageSize.toString()}
@@ -553,15 +553,15 @@ export default function MentorsPage() {
             {/* Review History Section */}
             <section>
                 <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white cursor-default">
-                    Lịch sử đánh giá
+                    Review History
                 </h2>
                 <p className="mb-6 text-gray-600 dark:text-gray-400 text-base font-medium cursor-default">
-                    Phần này cho phép bạn xem lại lịch sử các hoạt động đánh giá QAQC.
+                    This section allows you to view the history of QAQC activities.
                 </p>
                 <div className="relative w-full sm:w-1/2 lg:w-1/3 mb-6">
                     <Input
                         type="text"
-                        placeholder="Tìm kiếm theo nhận xét hoặc tên mentor..."
+                        placeholder="Search by comment or mentor name..."
                         onChange={handleReviewSearchChange}
                         className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     />
@@ -569,7 +569,7 @@ export default function MentorsPage() {
                 </div>
                 {loadingReviews && (
                     <p className="text-center text-gray-500 dark:text-gray-400 py-6 text-base font-medium cursor-default">
-                        Đang tải danh sách đánh giá...
+                        Loading review list...
                     </p>
                 )}
                 {errorReviews && (
@@ -624,7 +624,7 @@ export default function MentorsPage() {
                                                 colSpan={reviewColumns.length}
                                                 className="py-10 text-center text-gray-500 dark:text-gray-400 text-base font-medium cursor-default"
                                             >
-                                                Không tìm thấy đánh giá.
+                                                No reviews found.
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -636,7 +636,7 @@ export default function MentorsPage() {
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
                             <div className="flex items-center gap-3">
                                 <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
-                                    Số mục mỗi trang:
+                                    Items per page:
                                 </span>
                                 <Select
                                     value={reviewPageSize.toString()}
