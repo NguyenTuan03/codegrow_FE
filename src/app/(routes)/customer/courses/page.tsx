@@ -19,12 +19,14 @@ import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { GetComment } from '@/lib/services/course/getComment';
+import { GetLessons } from '@/lib/services/lessons/getAllLessons'; // Import GetLessons
 import { Input } from '@/components/ui/input';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { alternativePayment } from '@/lib/services/api/alternativePayment';
 import { debounce } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
 import { enrollCourseFree } from '@/lib/services/api/enrollcourseFree';
+import { createPaymentLink } from '@/lib/services/api/payOsApi';
 
 interface Category {
     _id: string;
@@ -48,6 +50,13 @@ interface Message {
     replies?: Message[];
 }
 
+interface Lesson {
+    _id: string;
+    title: string;
+    status?: string; // e.g., 'done', 'in-progress'
+    // Add other lesson fields as needed
+}
+
 interface Course {
     _id: string;
     title: string;
@@ -57,9 +66,11 @@ interface Course {
     author: string;
     category: string | Category;
     createdAt: string;
-    lessons: number;
+    lessons: number; // Initial lessons count from GetCourses
     rating?: number;
     imgUrl?: string;
+    lessonsCount?: number; // Number of completed lessons (optional)
+    totalLessons?: number; // Total number of lessons (optional)
 }
 
 interface ApiResponse {
@@ -316,14 +327,92 @@ export default function CoursesPage() {
         }
     };
 
-    const openModal = (course: Course) => {
-        setSelectedCourse(course);
-        setIsModalOpen(true);
+    const openModal = async (course: Course) => {
+        try {
+            setLoading(true);
+            const response = await GetLessons(course._id); // Call GetLessons instead of viewDetailCourses
+            if (response.status === 200 && Array.isArray(response.metadata)) {
+                const totalLessons = response.metadata.length;
+                const completedLessonsCount = response.metadata.filter(
+                    (lesson: Lesson) => lesson.status === 'done',
+                ).length;
+                setSelectedCourse({
+                    ...course,
+                    lessonsCount: completedLessonsCount, // Number of lessons with status 'done'
+                    totalLessons: totalLessons, // Total number of lessons
+                });
+                setIsModalOpen(true);
+            } else {
+                throw new Error('Không thể tải danh sách bài học');
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách bài học:', error);
+            toast({
+                title: 'Error',
+                description:
+                    error instanceof Error ? error.message : 'Không thể tải danh sách bài học.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedCourse(null);
+    };
+
+    const createPaymentLinkHandle = async (courseId: string) => {
+        try {
+            setPaymentLoading(true);
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+
+            if (!selectedCourse) {
+                throw new Error('No course selected for payment.');
+            }
+
+            const res = await createPaymentLink({
+                token: tokenuser,
+                courseid: courseId,
+                price: selectedCourse.price,
+                description: selectedCourse.description,
+            });
+            const { payUrl } = res.data.metadata;
+
+            if (payUrl) {
+                window.location.href = payUrl; // Chuyển hướng trực tiếp bằng payUrl
+            } else {
+                console.error('Không lấy được đường link thanh toán.');
+                toast({
+                    title: 'Error',
+                    description: 'Không lấy được đường link thanh toán.',
+                    variant: 'destructive',
+                });
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to process payment. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setPaymentLoading(false);
+        }
     };
 
     const handleAlternativePayment = async (paymentMethod: string) => {
@@ -651,7 +740,7 @@ export default function CoursesPage() {
                                         >
                                             {/* Backdrop */}
                                             <motion.div
-                                                className="fixed inset-0  bg-opacity-50 backdrop-blur-sm z-40"
+                                                className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-40"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
@@ -739,6 +828,14 @@ export default function CoursesPage() {
                                                                     : 'Uncategorized'}
                                                             </span>
                                                         </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <BookOpen className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                            <span>
+                                                                Completed Lessons:{' '}
+                                                                {selectedCourse.lessonsCount || 0}/
+                                                                {selectedCourse.totalLessons || 0}
+                                                            </span>
+                                                        </div>
                                                     </motion.div>
                                                     <motion.p
                                                         initial={{ opacity: 0 }}
@@ -782,7 +879,10 @@ export default function CoursesPage() {
                                                         <div className="flex items-center">
                                                             <BookOpen className="h-5 w-5 mr-1" />
                                                             <span>
-                                                                {selectedCourse.lessons} lessons
+                                                                {selectedCourse.lessonsCount || 0}{' '}
+                                                                of{' '}
+                                                                {selectedCourse.totalLessons || 0}{' '}
+                                                                lessons completed
                                                             </span>
                                                         </div>
                                                     </motion.div>
@@ -888,6 +988,33 @@ export default function CoursesPage() {
                                                                         {paymentLoading
                                                                             ? 'Đang xử lý...'
                                                                             : 'Thanh toán VNPay'}
+                                                                    </Button>
+                                                                </motion.div>
+                                                                <motion.div
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                >
+                                                                    <Button
+                                                                        onClick={() =>
+                                                                            createPaymentLinkHandle(
+                                                                                selectedCourse._id,
+                                                                            )
+                                                                        }
+                                                                        disabled={paymentLoading}
+                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
+                                                                            paymentLoading
+                                                                                ? 'opacity-50'
+                                                                                : ''
+                                                                        }`}
+                                                                    >
+                                                                        <img
+                                                                            src="/payOs.svg"
+                                                                            alt="PayOs"
+                                                                            className="h-6 w-6"
+                                                                        />
+                                                                        {paymentLoading
+                                                                            ? 'Đang xử lý...'
+                                                                            : 'Thanh toán PayOs'}
                                                                     </Button>
                                                                 </motion.div>
                                                             </>
