@@ -41,7 +41,7 @@ const NewsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY;
+    const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY || '593d09b7078748db9c25576d621b08e6';
 
     useEffect(() => {
         const fetchNews = async () => {
