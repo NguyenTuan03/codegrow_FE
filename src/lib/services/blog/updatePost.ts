@@ -5,7 +5,7 @@ interface UpdatePostParams {
     postId: string;
     title: string;
     content: string;
-    courseId: string;
+    classId: string;
     author: string;
     tags?: string;
     attachments?: File;
@@ -18,7 +18,7 @@ interface UpdatePostResponse {
         _id: string;
         title: string;
         content: string;
-        course: string;
+        classId: string;
         author: string;
         tags?: string;
         attachments?: Array<{
@@ -35,7 +35,7 @@ export const UpdatePost = async ({
     postId,
     title,
     content,
-    courseId,
+    classId,
     author,
     tags,
     attachments,
@@ -44,7 +44,7 @@ export const UpdatePost = async ({
         const formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
-        formData.append('course', courseId);
+        formData.append('classId', classId);
         formData.append('author', author);
         if (tags) {
             formData.append('tags', tags);

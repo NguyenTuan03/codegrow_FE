@@ -3,21 +3,15 @@ import axios from 'axios';
 
 interface Data {
     token: string | null;
-
-    courseid: string;
-
-    price: number;
-    description: string;
+    courseId: string;
 }
 
-export const createPaymentLink = async ({ token, courseid, price, description }: Data) => {
+export const createPaymentLink = async ({ token, courseId }: Data) => {
     try {
         const response = await httpRequest.post(
-            '/payments',
+            '/users/enroll',
             {
-                courseid,
-                price,
-                description,
+                courseId,
             },
             {
                 headers: {
@@ -51,9 +45,9 @@ export const getListBank = async ({ token }: Data) => {
     }
 };
 
-export const getListPayment = async ({ token, courseid }: Data) => {
+export const getListPayment = async ({ token, courseId }: Data) => {
     try {
-        const response = await httpRequest.get(`/payments/${courseid}`, {
+        const response = await httpRequest.get(`/payments/${courseId}`, {
             headers: {
                 'x-api-key': token,
             },
@@ -66,9 +60,9 @@ export const getListPayment = async ({ token, courseid }: Data) => {
     }
 };
 
-export const cancelPayment = async ({ token, courseid }: Data) => {
+export const cancelPayment = async ({ token, courseId }: Data) => {
     try {
-        const response = await httpRequest.delete(`/payments/${courseid}`, {
+        const response = await httpRequest.delete(`/payments/${courseId}`, {
             headers: {
                 'x-api-key': token,
             },

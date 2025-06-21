@@ -19,13 +19,11 @@ import { toast } from '@/components/ui/use-toast';
 import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { GetComment } from '@/lib/services/course/getComment';
-import { GetLessons } from '@/lib/services/lessons/getAllLessons'; // Import GetLessons
+import { GetLessons } from '@/lib/services/lessons/getAllLessons';
 import { Input } from '@/components/ui/input';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
-import { alternativePayment } from '@/lib/services/api/alternativePayment';
 import { debounce } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { enrollCourseFree } from '@/lib/services/api/enrollcourseFree';
 import { createPaymentLink } from '@/lib/services/api/payOsApi';
 
 interface Category {
@@ -127,48 +125,6 @@ export default function CoursesPage() {
     const limit = 6;
     const router = useRouter();
 
-    const enrollFreeCourse = async (courseId: string) => {
-        try {
-            setPaymentLoading(true);
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Token không tồn tại. Vui lòng đăng nhập lại.');
-            }
-            const tokenuser = JSON.parse(token);
-
-            const response = await enrollCourseFree({
-                token: tokenuser,
-                course: { _id: courseId },
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                toast({
-                    title: 'Success',
-                    description: 'Successfully enrolled in the free course!',
-                    className:
-                        'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
-                });
-                setEnrolledCourses([...enrolledCourses, { _id: courseId }]);
-                closeModal();
-                await fetchEnrolledCourses();
-                router.push(`/customer/courses/${courseId}`);
-            } else {
-                throw new Error('Failed to enroll in the course.');
-            }
-        } catch (error) {
-            console.error('Error enrolling in free course:', error);
-            toast({
-                title: 'Error',
-                description:
-                    error instanceof Error ? error.message : 'Failed to enroll in the course.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-        } finally {
-            setPaymentLoading(false);
-        }
-    };
-
     const fetchCategories = async () => {
         try {
             const data = await GetAllCategory(1, 100);
@@ -222,7 +178,9 @@ export default function CoursesPage() {
             const res = await getUserDetail(user.id);
 
             if (res.status === 200) {
-                setEnrolledCourses(res.metadata.enrolledCourses || []);
+                const updatedEnrolledCourses = res.metadata.enrolledCourses || [];
+                console.log('Updated enrolledCourses:', updatedEnrolledCourses); // Debug log
+                setEnrolledCourses(updatedEnrolledCourses);
             }
         } catch (error) {
             console.error('Error fetching enrolled courses:', error);
@@ -330,7 +288,7 @@ export default function CoursesPage() {
     const openModal = async (course: Course) => {
         try {
             setLoading(true);
-            const response = await GetLessons(course._id); // Call GetLessons instead of viewDetailCourses
+            const response = await GetLessons(course._id);
             if (response.status === 200 && Array.isArray(response.metadata)) {
                 const totalLessons = response.metadata.length;
                 const completedLessonsCount = response.metadata.filter(
@@ -338,8 +296,8 @@ export default function CoursesPage() {
                 ).length;
                 setSelectedCourse({
                     ...course,
-                    lessonsCount: completedLessonsCount, // Number of lessons with status 'done'
-                    totalLessons: totalLessons, // Total number of lessons
+                    lessonsCount: completedLessonsCount,
+                    totalLessons: totalLessons,
                 });
                 setIsModalOpen(true);
             } else {
@@ -387,68 +345,33 @@ export default function CoursesPage() {
 
             const res = await createPaymentLink({
                 token: tokenuser,
-                courseid: courseId,
-                price: selectedCourse.price,
-                description: selectedCourse.description,
+                courseId: courseId,
             });
-            const { payUrl } = res.data.metadata;
 
-            if (payUrl) {
-                window.location.href = payUrl; // Chuyển hướng trực tiếp bằng payUrl
+            if (res.status === 201 && selectedCourse.price === 0) {
+                toast({
+                    title: 'Success',
+                    description: 'Successfully enrolled in the free course!',
+                    className:
+                        'bg-[#5AD3AF] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
+                });
+                setEnrolledCourses([...enrolledCourses, { _id: courseId }]);
+                closeModal();
+                await fetchEnrolledCourses();
+                router.push(`/customer/courses/${courseId}`); // Direct redirect to course detail
             } else {
-                console.error('Không lấy được đường link thanh toán.');
-                toast({
-                    title: 'Error',
-                    description: 'Không lấy được đường link thanh toán.',
-                    variant: 'destructive',
-                });
-            }
-        } catch (error) {
-            console.error('Payment error:', error);
-            toast({
-                title: 'Error',
-                description: 'Failed to process payment. Please try again.',
-                variant: 'destructive',
-            });
-        } finally {
-            setPaymentLoading(false);
-        }
-    };
+                const { payUrl } = res.data.metadata;
 
-    const handleAlternativePayment = async (paymentMethod: string) => {
-        if (!selectedCourse) return;
-        try {
-            setPaymentLoading(true);
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                toast({
-                    title: 'Lỗi',
-                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
-                    variant: 'destructive',
-                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                });
-                router.push('/login');
-                return;
-            }
-            const tokenuser = JSON.parse(token);
-
-            const res = await alternativePayment({
-                token: tokenuser,
-                paymentMethod,
-                course: selectedCourse,
-            });
-            const { payUrl } = res.data.metadata;
-
-            if (payUrl) {
-                window.location.href = payUrl;
-            } else {
-                console.error('Không lấy được đường link thanh toán.');
-                toast({
-                    title: 'Error',
-                    description: 'Không lấy được đường link thanh toán.',
-                    variant: 'destructive',
-                });
+                if (payUrl) {
+                    window.location.href = payUrl; // Chuyển hướng trực tiếp bằng payUrl
+                } else {
+                    console.error('Không lấy được đường link thanh toán.');
+                    toast({
+                        title: 'Error',
+                        description: 'Không lấy được đường link thanh toán.',
+                        variant: 'destructive',
+                    });
+                }
             }
         } catch (error) {
             console.error('Payment error:', error);
@@ -678,7 +601,7 @@ export default function CoursesPage() {
                                                         backgroundPosition: 'center',
                                                         minHeight: '200px',
                                                         position: 'relative',
-                                                        top: '-20px', // Điều chỉnh giá trị này
+                                                        top: '-20px',
                                                     }}
                                                 >
                                                     <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
@@ -713,14 +636,32 @@ export default function CoursesPage() {
                                                         whileHover={{ scale: 1.02 }}
                                                         whileTap={{ scale: 0.98 }}
                                                     >
-                                                        <Button
-                                                            variant="default"
-                                                            size="lg"
-                                                            className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full shadow-md cursor-pointer"
-                                                            onClick={() => openModal(course)}
-                                                        >
-                                                            Enroll Now
-                                                        </Button>
+                                                        {enrolledCourses.some(
+                                                            (enrolledCourse) =>
+                                                                enrolledCourse._id === course._id,
+                                                        ) ? (
+                                                            <Button
+                                                                variant="default"
+                                                                size="lg"
+                                                                className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full shadow-md cursor-pointer"
+                                                                onClick={() =>
+                                                                    router.push(
+                                                                        `/customer/courses/${course._id}`,
+                                                                    )
+                                                                }
+                                                            >
+                                                                View Details
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                variant="default"
+                                                                size="lg"
+                                                                className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white text-sm md:text-base font-semibold py-5 rounded-full shadow-md cursor-pointer"
+                                                                onClick={() => openModal(course)}
+                                                            >
+                                                                Enroll Now
+                                                            </Button>
+                                                        )}
                                                     </motion.div>
                                                 </CardFooter>
                                             </Card>
@@ -788,7 +729,7 @@ export default function CoursesPage() {
                                                                 : '#657ED4',
                                                             backgroundSize: 'cover',
                                                             backgroundPosition: 'center',
-                                                            top: '-2px' /* Kéo ảnh lên sát header */,
+                                                            top: '-2px',
                                                         }}
                                                     />
                                                     <motion.h3
@@ -885,28 +826,7 @@ export default function CoursesPage() {
                                                         transition={{ delay: 0.7 }}
                                                         className="flex flex-col sm:flex-row gap-3 w-full"
                                                     >
-                                                        {enrolledCourses.some(
-                                                            (enrolledCourse) =>
-                                                                enrolledCourse._id ===
-                                                                selectedCourse._id,
-                                                        ) ? (
-                                                            <motion.div
-                                                                whileHover={{ scale: 1.02 }}
-                                                                whileTap={{ scale: 0.98 }}
-                                                            >
-                                                                <Button
-                                                                    variant="default"
-                                                                    className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full shadow-md cursor-pointer"
-                                                                    onClick={() =>
-                                                                        router.push(
-                                                                            `/customer/courses/${selectedCourse._id}`,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    View Details
-                                                                </Button>
-                                                            </motion.div>
-                                                        ) : selectedCourse.price === 0 ? (
+                                                        {selectedCourse.price === 0 ? (
                                                             <motion.div
                                                                 whileHover={{ scale: 1.02 }}
                                                                 whileTap={{ scale: 0.98 }}
@@ -915,7 +835,7 @@ export default function CoursesPage() {
                                                                     variant="default"
                                                                     className="w-full bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#5A6BBE] dark:hover:bg-[#4ac2a0] text-white font-semibold py-3 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed"
                                                                     onClick={() =>
-                                                                        enrollFreeCourse(
+                                                                        createPaymentLinkHandle(
                                                                             selectedCourse._id,
                                                                         )
                                                                     }
@@ -927,89 +847,33 @@ export default function CoursesPage() {
                                                                 </Button>
                                                             </motion.div>
                                                         ) : (
-                                                            <>
-                                                                <motion.div
-                                                                    whileHover={{ scale: 1.02 }}
-                                                                    whileTap={{ scale: 0.98 }}
+                                                            <motion.div
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                            >
+                                                                <Button
+                                                                    onClick={() =>
+                                                                        createPaymentLinkHandle(
+                                                                            selectedCourse._id,
+                                                                        )
+                                                                    }
+                                                                    disabled={paymentLoading}
+                                                                    className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
+                                                                        paymentLoading
+                                                                            ? 'opacity-50'
+                                                                            : ''
+                                                                    }`}
                                                                 >
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            handleAlternativePayment(
-                                                                                'momo',
-                                                                            )
-                                                                        }
-                                                                        disabled={paymentLoading}
-                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
-                                                                            paymentLoading
-                                                                                ? 'opacity-50'
-                                                                                : ''
-                                                                        }`}
-                                                                    >
-                                                                        <img
-                                                                            src="/momoo.webp"
-                                                                            alt="MoMo"
-                                                                            className="h-6 w-6"
-                                                                        />
-                                                                        {paymentLoading
-                                                                            ? 'Đang xử lý...'
-                                                                            : 'Thanh toán MoMo'}
-                                                                    </Button>
-                                                                </motion.div>
-                                                                <motion.div
-                                                                    whileHover={{ scale: 1.02 }}
-                                                                    whileTap={{ scale: 0.98 }}
-                                                                >
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            handleAlternativePayment(
-                                                                                'vnpay',
-                                                                            )
-                                                                        }
-                                                                        disabled={paymentLoading}
-                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
-                                                                            paymentLoading
-                                                                                ? 'opacity-50'
-                                                                                : ''
-                                                                        }`}
-                                                                    >
-                                                                        <img
-                                                                            src="/vnpay.png"
-                                                                            alt="VNPay"
-                                                                            className="h-6 w-6"
-                                                                        />
-                                                                        {paymentLoading
-                                                                            ? 'Đang xử lý...'
-                                                                            : 'Thanh toán VNPay'}
-                                                                    </Button>
-                                                                </motion.div>
-                                                                <motion.div
-                                                                    whileHover={{ scale: 1.02 }}
-                                                                    whileTap={{ scale: 0.98 }}
-                                                                >
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            createPaymentLinkHandle(
-                                                                                selectedCourse._id,
-                                                                            )
-                                                                        }
-                                                                        disabled={paymentLoading}
-                                                                        className={`flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-full shadow-md cursor-pointer disabled:cursor-not-allowed ${
-                                                                            paymentLoading
-                                                                                ? 'opacity-50'
-                                                                                : ''
-                                                                        }`}
-                                                                    >
-                                                                        <img
-                                                                            src="/payOs.svg"
-                                                                            alt="PayOs"
-                                                                            className="h-6 w-6"
-                                                                        />
-                                                                        {paymentLoading
-                                                                            ? 'Đang xử lý...'
-                                                                            : 'Thanh toán PayOs'}
-                                                                    </Button>
-                                                                </motion.div>
-                                                            </>
+                                                                    <img
+                                                                        src="/payOs.svg"
+                                                                        alt="PayOs"
+                                                                        className="h-6 w-6"
+                                                                    />
+                                                                    {paymentLoading
+                                                                        ? 'Đang xử lý...'
+                                                                        : 'Thanh toán PayOs'}
+                                                                </Button>
+                                                            </motion.div>
                                                         )}
                                                     </motion.div>
                                                 </div>

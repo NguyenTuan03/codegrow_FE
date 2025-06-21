@@ -49,7 +49,7 @@ interface ClassItem {
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
-    imgUrl?: string; // Added image field to ClassItem
+    imgUrl?: string;
     __v: number;
 }
 
@@ -163,8 +163,10 @@ export default function ClassDetailPage() {
                     }}
                 >
                     <div className="relative z-10">
-                        <h1 className=" sm:text-4xl font-bold tracking-tight">{classData.title}</h1>
-                        <p className="mt-2 sm:text-xl opacity-90 font-medium">
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                            {classData.title}
+                        </h1>
+                        <p className="mt-2 text-lg sm:text-xl opacity-90 font-medium">
                             Course: {classData.course.title || 'N/A'} | Mentor:{' '}
                             {classData.mentor.fullName || 'N/A'}
                         </p>
@@ -178,7 +180,7 @@ export default function ClassDetailPage() {
                             <button
                                 key={tab.name}
                                 onClick={() => setActiveTab(tab.name)}
-                                className={`flex cursor-pointer items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-200 ${
                                     activeTab === tab.name
                                         ? 'border-b-2 border-[#657ED4] dark:border-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF]'
                                         : 'text-gray-500 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
@@ -198,7 +200,7 @@ export default function ClassDetailPage() {
                             <ClassInfo classData={classData} />
                         </div>
                         <div className="lg:col-span-2">
-                            <Post />
+                            <Post classId={classId} /> {/* Pass classId as prop */}
                         </div>
                     </div>
                 )}
