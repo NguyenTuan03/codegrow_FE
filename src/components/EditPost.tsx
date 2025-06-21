@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Paperclip, ArrowLeft } from 'lucide-react';
 import { GetPosts } from '@/lib/services/blog/getPosts';
+import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { UpdatePost } from '@/lib/services/blog/updatePost';
 import { toast } from '@/components/ui/use-toast';
 import { useRouter, useParams } from 'next/navigation';
@@ -29,18 +30,34 @@ const updatePostSchema = z.object({
 });
 
 type UpdatePostFormType = z.infer<typeof updatePostSchema>;
+
+interface ClassItem {
+    _id: string;
+    title: string;
+    description: string;
+    students: string[];
+    schedule: {
+        startDate: string;
+        endDate: string;
+        daysOfWeek: string[];
+        time: string;
+    };
+    imgUrl?: string;
+    bgColor?: string;
+    mentor?: {
+        _id: string;
+        fullName: string;
+        email: string;
+    } | null;
+}
+
+// Interface for a post (based on API response)
 interface Post {
     _id: string;
     title: string;
     content: string;
-    course: {
-        _id: string;
-        title: string;
-        description: string;
-        price: number;
-        enrolledCount: number;
-    };
-    author: string; // Author is a string ID from the API
+    class: ClassItem | null;
+    author: string;
     tags?: string[];
     attachments?: Array<{
         fileName: string;
@@ -49,9 +66,34 @@ interface Post {
     }>;
     createdAt: string;
 }
-const EditPost: React.FC = () => {
+
+// Interface for the enriched post with author and detailed class details
+interface EnrichedPost {
+    _id: string;
+    title: string;
+    content: string;
+    class: ClassItem | null;
+    author: {
+        _id: string;
+        fullName: string;
+        avatar?: string;
+    };
+    tags?: string[];
+    attachments?: Array<{
+        fileName: string;
+        fileUrl: string;
+        fileType: string;
+    }>;
+    createdAt: string;
+}
+
+interface ViewPostsProps {
+    classId: string;
+}
+
+const EditPost: React.FC<ViewPostsProps> = ({ classId }) => {
     const [loading, setLoading] = useState(false);
-    const [post, setPost] = useState<Post | null>(null);
+    const [post, setPost] = useState<EnrichedPost | null>(null);
     const [attachment, setAttachment] = useState<File | null>(null);
     const router = useRouter();
     const params = useParams();
@@ -70,29 +112,103 @@ const EditPost: React.FC = () => {
         const fetchPost = async () => {
             try {
                 setLoading(true);
-                const token = localStorage.getItem('token') || '';
+                const token = localStorage.getItem('token');
                 if (!token) {
-                    throw new Error('Authentication token is missing. Please log in.');
+                    toast({
+                        title: 'Lỗi',
+                        description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                        variant: 'destructive',
+                        className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                    });
+                    return;
                 }
 
-                const response = await GetPosts(token);
-                if (response?.metadata?.posts && response.metadata.posts.length > 0) {
-                    const postData = response.metadata.posts.find((p: Post) => p._id === postId);
-                    if (!postData) {
+                const response = await GetPosts(token, classId);
+                console.log(' API Response:', response);
+
+                if (response?.metadata?.posts && Array.isArray(response.metadata.posts)) {
+                    const enrichedPosts = await Promise.all(
+                        response.metadata.posts.map(async (post: Post) => {
+                            try {
+                                if (!post.class) {
+                                    console.warn(
+                                        ' Post ${post._id} has no class data, using fallback',
+                                    );
+                                    post.class = {
+                                        _id: '',
+                                        title: 'Unknown Class',
+                                        description: '',
+                                        students: [],
+                                        schedule: {
+                                            startDate: '',
+                                            endDate: '',
+                                            daysOfWeek: [],
+                                            time: '',
+                                        },
+                                    };
+                                }
+
+                                const authorResponse = await getUserDetail(post.author);
+                                console.log(' Check author response:', authorResponse);
+
+                                if (!authorResponse.metadata) {
+                                    throw new Error('Invalid author data');
+                                }
+
+                                return {
+                                    ...post,
+                                    author: {
+                                        _id: authorResponse.metadata._id,
+                                        fullName:
+                                            authorResponse.metadata.fullName || 'Unknown Author',
+                                        avatar: authorResponse.metadata.avatar,
+                                    },
+                                    class: post.class,
+                                };
+                            } catch (error) {
+                                console.error(
+                                    ' Failed to fetch details for post ${post._id}:',
+                                    error,
+                                );
+                                return {
+                                    ...post,
+                                    author: {
+                                        _id: post.author,
+                                        fullName: 'Unknown Author',
+                                        avatar: undefined,
+                                    },
+                                    class: post.class || {
+                                        _id: '',
+                                        title: 'Unknown Class',
+                                        description: '',
+                                        students: [],
+                                        schedule: {
+                                            startDate: '',
+                                            endDate: '',
+                                            daysOfWeek: [],
+                                            time: '',
+                                        },
+                                    },
+                                };
+                            }
+                        }),
+                    );
+
+                    const foundPost = enrichedPosts.find((p) => p._id === postId);
+                    if (!foundPost) {
                         throw new Error('Post not found');
                     }
-
-                    setPost(postData);
+                    setPost(foundPost);
                     form.reset({
-                        title: postData.title,
-                        content: postData.content,
-                        tags: postData.tags?.join(', ') || '',
+                        title: foundPost.title,
+                        content: foundPost.content,
+                        tags: foundPost.tags?.join(', ') || '',
                     });
                 } else {
-                    throw new Error('No posts found');
+                    throw new Error('No posts found or invalid metadata structure');
                 }
             } catch (error) {
-                console.error(`Failed to fetch post details:`, error);
+                console.error(' Failed to fetch post details:', error);
                 toast({
                     title: 'Error',
                     description: 'Failed to fetch post details. Please try again.',
@@ -108,7 +224,7 @@ const EditPost: React.FC = () => {
         if (postId) {
             fetchPost();
         }
-    }, [postId, router, form]);
+    }, [postId, router, form, classId]);
 
     const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
@@ -121,7 +237,6 @@ const EditPost: React.FC = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-
             if (!token) {
                 toast({
                     title: 'Lỗi',
@@ -129,23 +244,32 @@ const EditPost: React.FC = () => {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-
                 return;
             }
-            const tokenuser = JSON.parse(token);
-            console.log('Token user:', tokenuser);
 
+            // Kiểm tra classId trước khi gọi API
+            if (!post.class?._id) {
+                toast({
+                    title: 'Error',
+                    description: 'Class ID is missing or invalid.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+
+            console.log(' Token for update:', token);
             const response = await UpdatePost({
-                token: tokenuser,
+                token,
                 postId: post._id,
                 title: values.title,
                 content: values.content,
-                courseId: post.course._id,
-                author: post.author,
+                classId: post.class?._id,
+                author: post.author._id,
                 tags: values.tags,
                 attachments: attachment || undefined,
             });
-            console.log(`Post updated successfully:`, response);
+            console.log(' Post updated successfully:', response);
             toast({
                 title: 'Success',
                 description: 'Post updated successfully!',
@@ -153,9 +277,9 @@ const EditPost: React.FC = () => {
                 className: 'bg-[#5AD3AF] text-black font-medium',
             });
 
-            router.push(`/posts/${post._id}`); // Redirect to the post detail page
+            router.push('/posts'); // Redirect to posts list after success
         } catch (error) {
-            console.error(`Failed to update post:`, error);
+            console.error(' Failed to update post:', error);
             toast({
                 title: 'Error',
                 description: 'Failed to update post. Please try again.',
@@ -188,11 +312,11 @@ const EditPost: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
             <button
-                onClick={() => router.push(`/posts/${post._id}`)}
+                onClick={() => router.push('/posts')}
                 className="mb-6 flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-[#657ED4] dark:hover:text-[#5AD3AF] transition-colors duration-200"
             >
                 <ArrowLeft className="w-5 h-5" />
-                <span>Back to Post</span>
+                <span>Back to Posts</span>
             </button>
 
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6 cursor-default">
@@ -280,7 +404,7 @@ const EditPost: React.FC = () => {
                     <div className="flex justify-end space-x-4">
                         <Button
                             type="button"
-                            onClick={() => router.push(`/posts/${post._id}`)}
+                            onClick={() => router.push('/posts')}
                             className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-md font-medium cursor-pointer"
                         >
                             Cancel

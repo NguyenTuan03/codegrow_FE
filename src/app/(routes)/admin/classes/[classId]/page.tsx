@@ -807,7 +807,7 @@ export default function ClassDetailPage() {
                             />
                         </div>
                         <div className="lg:col-span-2">
-                            <ViewPosts classId="classId" />
+                            <ViewPosts classId={classId} />
                         </div>
                     </div>
                 )}
