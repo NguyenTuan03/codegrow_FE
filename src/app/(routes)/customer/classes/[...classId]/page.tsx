@@ -206,7 +206,7 @@ export default function ClassDetailPage() {
                             <ClassInfo classData={classData} />
                         </div>
                         <div className="lg:col-span-2">
-                            <ViewPosts />
+                            <ViewPosts classId={classId} /> {/* Pass classId to ViewPosts */}
                         </div>
                     </div>
                 )}

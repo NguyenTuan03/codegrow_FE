@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useParams } from 'next/navigation'; // Import useParams
+import React, { useState, useRef } from 'react';
 import { Paperclip, Send, Tag, X } from 'lucide-react';
 import { CreatePost } from '@/lib/services/blog/createpost';
-import { GetCourses } from '@/lib/services/course/getcourse';
 import { toast } from '@/components/ui/use-toast';
 import {
     Dialog,
@@ -14,56 +14,15 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-// Interface for a course (based on typical GetCourses response)
-interface Course {
-    _id: string;
-    title: string;
-}
-
 // Main Post Form component
 const PostForm: React.FC = () => {
+    const { classId } = useParams<{ classId: string }>(); // Get classId from URL
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState('');
     const [attachment, setAttachment] = useState<File | null>(null);
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [courseId, setCourseId] = useState<string>(''); // State for selected course ID
-    const [courseLoading, setCourseLoading] = useState(false); // State for loading courses
-    const [open, setOpen] = useState(false); // State for modal visibility
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Fetch courses when component mounts
-    const fetchCourses = async () => {
-        try {
-            setCourseLoading(true);
-            const data = await GetCourses();
-
-            if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                setCourses(data.metadata.courses);
-                // Set the first course as default if available
-                setCourseId(data.metadata.courses[0]._id);
-            } else {
-                throw new Error(
-                    'No courses found. Please check your connection or try again later.',
-                );
-            }
-        } catch (error: unknown) {
-            console.error(`Failed to fetch courses:`, error);
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to fetch courses',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-            setCourses([]);
-        } finally {
-            setCourseLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchCourses();
-    }, []);
+    const [open, setOpen] = useState(false); // State for modal visibility
 
     // Handle form reset
     const handleReset = () => {
@@ -71,7 +30,6 @@ const PostForm: React.FC = () => {
         setContent('');
         setTags('');
         setAttachment(null);
-        setCourseId(courses.length > 0 ? courses[0]._id : ''); // Reset to first course
         if (fileInputRef.current) fileInputRef.current.value = '';
         toast({
             title: 'Form Reset',
@@ -104,18 +62,18 @@ const PostForm: React.FC = () => {
             return;
         }
 
-        if (!courseId) {
+        if (!classId) {
             toast({
-                title: 'Missing Course',
-                description: 'Please select a course.',
+                title: 'Missing Class',
+                description: 'Class ID is required. Please ensure you are on a valid class page.',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+            console.log('Validation Error - Missing classId:', { classId });
             return;
         }
 
         const token = localStorage.getItem('token');
-
         if (!token) {
             toast({
                 title: 'Lỗi',
@@ -123,58 +81,23 @@ const PostForm: React.FC = () => {
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
-
+            console.log('Validation Error - Missing token:', { token });
             return;
         }
         const tokenuser = JSON.parse(token);
-        console.log('Token user:', tokenuser);
-
-        const userData = localStorage.getItem('user');
-        if (!userData) {
-            toast({
-                title: 'Authentication Error',
-                description: 'User data is missing in localStorage.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-            return;
-        }
-
-        const user = JSON.parse(userData);
-        console.log(` User data:`, user);
-
-        const authorId = user._id;
-        if (!authorId) {
-            toast({
-                title: 'Authentication Error',
-                description: 'User ID is missing in user data.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-            return;
-        }
-
-        // Log form data for debugging
-        console.log(` Form Data Before Sending:`, {
-            title: title.trim(),
-            content: content.trim(),
-            courseId,
-            author: authorId,
-            tags: tags.trim() || 'None',
-            attachments: attachment ? { name: attachment.name, size: attachment.size } : 'None',
-        });
+        console.log('Token user parsed:', tokenuser);
 
         try {
             const response = await CreatePost({
                 token: tokenuser,
                 title: title.trim(),
                 content: content.trim(),
-                courseId,
-                author: authorId,
+                classId,
                 tags: tags.trim() || undefined,
                 attachments: attachment || undefined,
             });
-            console.log(`Post created successfully:`, response);
+
+            console.log('CreatePost Response Received:', response);
             toast({
                 title: 'Success',
                 description: 'Post created successfully!',
@@ -187,23 +110,29 @@ const PostForm: React.FC = () => {
             setContent('');
             setTags('');
             setAttachment(null);
-            setCourseId(courses.length > 0 ? courses[0]._id : '');
             if (fileInputRef.current) fileInputRef.current.value = '';
             setOpen(false);
         } catch (error) {
-            console.error(`Failed to create post:`, error);
-            toast({
-                title: 'Error',
-                description: 'Failed to create post. Please try again.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
+            console.error('Failed to create post:', error);
         }
     };
 
     // Handle file attachment
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        if (file && file.size > 10 * 1024 * 1024) {
+            toast({
+                title: 'File Too Large',
+                description: 'File size must be less than 10MB.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+            return;
+        }
+        console.log(
+            'File selected:',
+            file ? { name: file.name, size: file.size, type: file.type } : 'No file',
+        );
         setAttachment(file || null);
     };
 
@@ -231,32 +160,6 @@ const PostForm: React.FC = () => {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 cursor-default">
-                                Select Course
-                            </label>
-                            {courseLoading ? (
-                                <div className="flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[#657ED4] dark:border-[#5AD3AF] cursor-default"></div>
-                                </div>
-                            ) : courses.length === 0 ? (
-                                <p className="text-gray-500 dark:text-gray-400 text-sm cursor-default">
-                                    No courses available.
-                                </p>
-                            ) : (
-                                <select
-                                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm cursor-pointer"
-                                    value={courseId}
-                                    onChange={(e) => setCourseId(e.target.value)}
-                                >
-                                    {courses.map((course) => (
-                                        <option key={course._id} value={course._id}>
-                                            {course.title}
-                                        </option>
-                                    ))}
-                                </select>
-                            )}
-                        </div>
                         <textarea
                             className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-y text-base cursor-text"
                             rows={5}
@@ -303,14 +206,12 @@ const PostForm: React.FC = () => {
                             </Button>
                             <Button
                                 className={`px-4 py-2 bg-[#657ED4] dark:bg-[#5AD3AF] text-white rounded-lg flex items-center space-x-2 transition-colors duration-200 text-base font-medium cursor-pointer ${
-                                    !title.trim() || (!content.trim() && !attachment) || !courseId
+                                    !title.trim() || (!content.trim() && !attachment)
                                         ? 'opacity-50 cursor-not-allowed'
                                         : 'hover:bg-[#424c70] dark:hover:bg-[#4ac2a0]'
                                 }`}
                                 onClick={handlePost}
-                                disabled={
-                                    !title.trim() || (!content.trim() && !attachment) || !courseId
-                                }
+                                disabled={!title.trim() || (!content.trim() && !attachment)}
                             >
                                 <Send className="w-4 h-4" />
                                 <span>Post</span>

@@ -24,9 +24,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { Eye, Upload, PlusCircle, Loader2 } from 'lucide-react';
+import { Eye, Upload, PlusCircle, Loader2, Trash } from 'lucide-react';
 import { CreateLesson } from '@/lib/services/lessons/createLesson';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
+import { DeleteLesson } from '@/lib/services/lessons/deleteLesson'; // Giả định API deleteLesson
 
 interface Lesson {
     _id: string;
@@ -246,6 +247,41 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
     const handleViewDetails = (lessonId: string) => {
         console.log('Navigating to lesson details:', lessonId);
         router.push(`/admin/courses/${courseId}/${lessonId}`);
+    };
+
+    const handleDeleteLesson = async (lessonId: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            console.log('Token user for delete:', tokenuser);
+
+            const res = await DeleteLesson(lessonId, tokenuser);
+            toast({
+                title: 'Success',
+                description: 'Lesson deleted successfully!',
+                variant: 'default',
+                className: 'bg-[#5AD3AF] text-black font-medium',
+            });
+            console.log('Lesson deleted successfully!', res);
+            loadLessons(); // Refresh the lesson list
+        } catch (error) {
+            console.log('Failed to delete lesson:', error);
+
+            toast({
+                title: 'Error',
+                description: error instanceof Error ? error.message : 'Failed to delete lesson',
+                variant: 'destructive',
+            });
+        }
     };
 
     return (
@@ -524,15 +560,24 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                                     </span>
                                                 </div>
                                             </CardContent>
-                                            <div className="p-4">
+                                            <div className="p-4 flex gap-2">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="w-full bg-[#657ED4] hover:bg-[#424c70] text-white border-none dark:bg-[#657ED4] dark:hover:bg-[#424c70] dark:text-white cursor-pointer"
+                                                    className="flex-1 bg-[#657ED4] hover:bg-[#424c70] text-white border-none dark:bg-[#657ED4] dark:hover:bg-[#424c70] dark:text-white cursor-pointer"
                                                     onClick={() => handleViewDetails(lesson._id)}
                                                 >
                                                     <Eye className="h-4 w-4 mr-2" />
                                                     View Details
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white border-none cursor-pointer"
+                                                    onClick={() => handleDeleteLesson(lesson._id)}
+                                                >
+                                                    <Trash className="h-4 w-4 mr-2" />
+                                                    Delete Lesson
                                                 </Button>
                                             </div>
                                         </Card>

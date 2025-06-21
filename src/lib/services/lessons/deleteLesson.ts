@@ -11,7 +11,7 @@ export const DeleteLesson = async (id: string, token: string) => {
         console.log('✅ API Response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('❌ Error from DeleteLesson API:', error);
+        console.log('❌ Error from DeleteLesson API:', error);
         throw error;
     }
 };

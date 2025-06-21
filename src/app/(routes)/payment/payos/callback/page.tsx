@@ -76,15 +76,9 @@ export default function PaymentCallbackPage() {
                 const params = Object.fromEntries(searchParams.entries());
                 console.log('Callback params:', params);
 
-                // Extract orderCode from query parameters or state
-                const orderCode = params.orderCode;
-                if (!orderCode) {
-                    throw new Error('No order code found in callback.');
-                }
-
-                // Simulate fetching order data (replace with actual API call if needed)
+                // Extract data from query parameters
                 const data: PaymentData = {
-                    id: params.id || orderCode,
+                    id: params.id || params.orderCode,
                     status: params.status || 'PENDING', // Default to PENDING if not provided
                     amount: params.amount ? parseFloat(params.amount) : undefined,
                     items: params.items
@@ -136,17 +130,17 @@ export default function PaymentCallbackPage() {
                 animate="show"
                 className="container mx-auto p-4 sm:p-6"
             >
-                <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
+                <motion.div variants={itemVariants} className="max-w-4xl mx-auto mt-20">
                     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
                         <CardHeader className="flex flex-col items-center justify-center text-center p-6">
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                                Payment Status
+                                Payment Callback
                             </h1>
                             {loading ? (
                                 <div className="flex items-center gap-2 mt-4">
                                     <Loader2 className="h-6 w-6 animate-spin text-[#657ED4] dark:text-[#5AD3AF]" />
                                     <span className="text-lg text-gray-600 dark:text-gray-300">
-                                        Processing payment data...
+                                        Processing payment callback...
                                     </span>
                                 </div>
                             ) : paymentData?.status ? (
@@ -195,18 +189,6 @@ export default function PaymentCallbackPage() {
                                                   ? 'Pending'
                                                   : 'Unpaid'}
                                         </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                                            Items
-                                        </span>
-                                        <ul className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            {paymentData.items?.map((item, index) => (
-                                                <li key={index}>
-                                                    {`Name: ${item.name}, Quantity: ${item.quantity}, Price: ${item.price} VND`}
-                                                </li>
-                                            ))}
-                                        </ul>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
