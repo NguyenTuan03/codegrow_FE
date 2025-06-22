@@ -137,7 +137,7 @@ export default function CourseDetailPage() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const validTypes = ['image/jpeg', 'image/gif'];
             if (!validTypes.includes(file.type)) {
                 toast({
                     title: '❌ Invalid File Type',

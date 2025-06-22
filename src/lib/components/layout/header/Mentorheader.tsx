@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Plus, LayoutGrid } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -90,13 +90,6 @@ export default function MentorHeader() {
                         onClick={handleCreatePost}
                     >
                         <Plus className="h-5 w-5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-[#657ED4] cursor-pointer dark:text-[#5AD3AF] hover:bg-[#657ED4]/10 dark:hover:bg-[#5AD3AF]/20"
-                    >
-                        <LayoutGrid className="h-5 w-5" />
                     </Button>
 
                     {/* Avatar with Dropdown */}

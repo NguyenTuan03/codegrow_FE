@@ -10,6 +10,14 @@ import { GetProgress } from '@/lib/services/api/progress';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationPrevious,
+    PaginationNext,
+} from '@/components/ui/pagination'; // Import pagination components
 
 interface Course {
     _id: string;
@@ -48,6 +56,8 @@ interface CourseInProgressProps {
 export default function CourseInProgress({ enrollCourse }: CourseInProgressProps) {
     const [progressData, setProgressData] = useState<{ [key: string]: number }>({});
     const [loading, setLoading] = useState<boolean>(true);
+    const [currentPage, setCurrentPage] = useState(1); // State for current page
+    const [itemsPerPage] = useState(3); // Number of items per page
     const router = useRouter();
 
     const fetchProgress = async (courseId: string, course: Course) => {
@@ -65,7 +75,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
             }
             const tokenuser = JSON.parse(token);
 
-            console.log('token', tokenuser);
+            console.log('[04:12 PM +07, 22/06/2025] Token:', tokenuser);
             const userId = localStorage.getItem('user');
             if (!userId) {
                 throw new Error('User ID not found in localStorage');
@@ -73,18 +83,21 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
             const user = JSON.parse(userId);
             const id = user.id;
             const response: ProgressResponse = await GetProgress(tokenuser, courseId, id);
-            console.log('Progress response:', response);
+            console.log('[04:12 PM +07, 22/06/2025] Progress response:', response);
 
             const { completedLessons = [], completedQuizzes = [] } = response.metadata || {};
-            const totalLessons = course.totalLessons || 0; // Hypothetical default
-            const totalQuizzes = course.totalQuizzes || 0; // Hypothetical default
+            const totalLessons = course.totalLessons || 0;
+            const totalQuizzes = course.totalQuizzes || 0;
             const totalItems = totalLessons + totalQuizzes;
             const completedItems = completedLessons.length + completedQuizzes.length;
             const calculatedProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
             return { courseId, progress: calculatedProgress };
         } catch (error) {
-            console.error(`Error fetching progress for course ${courseId}:`, error);
+            console.error(
+                `[04:12 PM +07, 22/06/2025] Error fetching progress for course ${courseId}:`,
+                error,
+            );
             toast({
                 title: 'Error',
                 description: 'Failed to load course progress. Please try again later.',
@@ -145,6 +158,16 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
         ));
     };
 
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentCourses = enrollCourse.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(enrollCourse.length / itemsPerPage);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
     return (
         <section>
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
@@ -157,8 +180,8 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                     <div className="text-gray-600 dark:text-gray-400 text-sm text-center py-4">
                         Loading course progress...
                     </div>
-                ) : enrollCourse.length > 0 ? (
-                    enrollCourse.map((course) => {
+                ) : currentCourses.length > 0 ? (
+                    currentCourses.map((course) => {
                         const progress = progressData[course._id] ?? 0;
                         const statusText = progress === 0 ? 'Not Started' : `${progress}% Complete`;
 
@@ -220,6 +243,51 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                     </div>
                 )}
             </div>
+
+            {/* Pagination */}
+            {enrollCourse.length > itemsPerPage && (
+                <div className="mt-6 flex justify-center">
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    className={
+                                        currentPage === 1
+                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                    }
+                                />
+                            </PaginationItem>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <PaginationItem key={page}>
+                                    <PaginationLink
+                                        onClick={() => handlePageChange(page)}
+                                        isActive={currentPage === page}
+                                        className={
+                                            currentPage === page
+                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] rounded-lg font-medium'
+                                                : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                        }
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    className={
+                                        currentPage === totalPages
+                                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                    }
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            )}
         </section>
     );
 }
