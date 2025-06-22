@@ -12,9 +12,16 @@ import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { toast } from '@/components/ui/use-toast';
 import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
-
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationPrevious,
+    PaginationNext,
+} from '@/components/ui/pagination'; // Import pagination components
 
 interface Category {
     _id: string;
@@ -66,6 +73,8 @@ const HomePage = () => {
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
+    const [currentPage, setCurrentPage] = useState(1); // State for current page
+    const [itemsPerPage] = useState(3); // Number of items per page
 
     const benefitsRef = useRef(null);
     const skillsRef = useRef(null);
@@ -80,7 +89,7 @@ const HomePage = () => {
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
-            console.log('Token user:', token);
+            console.log('[04:15 PM +07, 22/06/2025] Token user:', token);
             if (!token) {
                 toast({
                     title: 'Lỗi',
@@ -99,14 +108,17 @@ const HomePage = () => {
             const user = JSON.parse(userId);
             const id = user.id;
             const progressData = await GetProgress(tokenuser, courseId, id);
-            console.log('progressData', progressData);
+            console.log('[04:15 PM +07, 22/06/2025] progressData:', progressData);
 
             if (progressData?.status === 200 && progressData.metadata) {
                 return progressData.metadata.progress || 0;
             }
             return 0;
         } catch (error) {
-            console.log(`Error fetching progress for course ${courseId}:`, error);
+            console.log(
+                `[04:15 PM +07, 22/06/2025] Error fetching progress for course ${courseId}:`,
+                error,
+            );
             return 0;
         }
     };
@@ -116,7 +128,7 @@ const HomePage = () => {
             const data = await GetAllCategory(1, 100);
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
-            console.log('Failed to fetch categories:', error);
+            console.log('[04:15 PM +07, 22/06/2025] Failed to fetch categories:', error);
         }
     };
 
@@ -159,7 +171,7 @@ const HomePage = () => {
                 );
             }
         } catch (error) {
-            console.log('Error fetching courses:', error);
+            console.log('[04:15 PM +07, 22/06/2025] Error fetching courses:', error);
         }
     };
 
@@ -175,7 +187,7 @@ const HomePage = () => {
             const userDetail = await getUserDetail(id);
             setUser(userDetail.metadata);
         } catch (error) {
-            console.log('Error fetching user detail:', error);
+            console.log('[04:15 PM +07, 22/06/2025] Error fetching user detail:', error);
             setUser(null);
         }
     };
@@ -223,6 +235,19 @@ const HomePage = () => {
     const itemVariants = {
         hidden: { opacity: 0, scale: 0.8 },
         visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: 'easeOut' as const } },
+    };
+
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentEnrolledCourses =
+        user?.enrolledCourses.slice(indexOfFirstItem, indexOfLastItem) || [];
+    const totalPages = user?.enrolledCourses
+        ? Math.ceil(user.enrolledCourses.length / itemsPerPage)
+        : 1;
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     return (
@@ -275,8 +300,8 @@ const HomePage = () => {
                     <div className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
                         Your track
                     </div>
-                    {user && user.enrolledCourses.length > 0 ? (
-                        user.enrolledCourses.map((course) => (
+                    {user && currentEnrolledCourses.length > 0 ? (
+                        currentEnrolledCourses.map((course) => (
                             <div key={course._id} className="flex flex-col mb-4">
                                 <div className="flex flex-row items-center">
                                     <Image
@@ -305,6 +330,53 @@ const HomePage = () => {
                             No enrolled courses yet. Start exploring courses!
                         </div>
                     )}
+                    {/* Pagination */}
+                    {user?.enrolledCourses && user.enrolledCourses.length > itemsPerPage && (
+                        <div className="mt-6 flex justify-center">
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            className={
+                                                currentPage === 1
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                            }
+                                        />
+                                    </PaginationItem>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                                        (page) => (
+                                            <PaginationItem key={page}>
+                                                <PaginationLink
+                                                    onClick={() => handlePageChange(page)}
+                                                    isActive={currentPage === page}
+                                                    className={
+                                                        currentPage === page
+                                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] rounded-lg font-medium'
+                                                            : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                                    }
+                                                >
+                                                    {page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ),
+                                    )}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            className={
+                                                currentPage === totalPages
+                                                    ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                                                    : 'cursor-pointer text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#4a5da0] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all'
+                                            }
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
+                    )}
+
                     <Card className="bg-gray-100 dark:bg-gray-700 border-none text-center mt-7 p-6 w-full max-w-sm mx-auto shadow-lg">
                         <CardHeader className="flex justify-center">
                             <div className="relative w-[120px] h-[120px]">

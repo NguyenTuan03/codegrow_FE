@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
-import { Calendar, Home, Users, ClipboardList, CircleSlash } from 'lucide-react';
+import { Home, Users, ClipboardList, CircleSlash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
 
 import { ChatBubbleIcon } from '@radix-ui/react-icons';
 
 const menuItems = [
     { label: 'Home', icon: <Home className="w-5 h-5" />, href: '/qaqc' },
-    { label: 'Calendar', icon: <Calendar className="w-5 h-5" />, href: '/qaqc/calendar' },
+    // { label: 'Calendar', icon: <Calendar className="w-5 h-5" />, href: '/qaqc/calendar' },
     { label: 'Mentor Manage', icon: <ClipboardList className="w-5 h-5" />, href: '/qaqc/manage' },
     // { label: 'Feedbacks', icon: <ThumbsUp className="w-5 h-5" />, href: '/qaqc/feedbacks' },
     { label: 'Services', icon: <Users className="w-5 h-5" />, href: '/qaqc/services' },

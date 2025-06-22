@@ -43,7 +43,7 @@ export default function CourseLearningPage() {
         try {
             setLoading(true);
             const courseRes = await viewDetailCourses(courseId);
-
+            console.log(courseRes);
             if (courseRes.status === 200) {
                 const parsedCourse = {
                     ...courseRes.metadata,

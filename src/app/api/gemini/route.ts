@@ -22,14 +22,20 @@ const buildGoogleGenAIPrompt = (messages: Message[]): Message[] => {
         ...messages.map((message) => ({
             id: message.id || generateId(),
             role: message.role,
-            content: message.content,
+            content:
+                message.content ||
+                (message.parts
+                    ? message.parts
+                          .map((p) => ('text' in p && typeof p.text === 'string' ? p.text : ''))
+                          .join('')
+                    : ''), // Handle parts if present
         })),
     ];
 };
 
 export async function POST(request: Request) {
     try {
-        console.log('Starting /api/gemini POST request');
+        console.log(' Starting /api/gemini POST request');
         const { messages } = await request.json();
         if (!Array.isArray(messages)) {
             return NextResponse.json(
@@ -38,7 +44,7 @@ export async function POST(request: Request) {
             );
         }
 
-        console.log('Received messages:', messages);
+        console.log(' Received messages:', messages);
 
         if (!process.env.GOOGLE_API_KEY) {
             return NextResponse.json(
@@ -52,16 +58,23 @@ export async function POST(request: Request) {
             messages: buildGoogleGenAIPrompt(messages),
             temperature: 0.7,
             onFinish: (text) => {
-                console.log('Streamed text:', text);
+                console.log(' Streamed text:', text);
             },
         });
 
         const response = stream?.toDataStreamResponse();
-        console.log('Response:', response);
-        response.headers.set('Content-Type', 'text/event-stream'); // Uncomment this line
-        return response;
+        if (response) {
+            response.headers.set('Content-Type', 'text/event-stream'); // Ensure correct header
+            console.log(' Response:', response);
+            return response;
+        } else {
+            return NextResponse.json(
+                { error: 'Failed to create stream response' },
+                { status: 500 },
+            );
+        }
     } catch (error) {
-        console.error('Error in /api/gemini:', error);
+        console.error(' Error in /api/gemini:', error);
         return NextResponse.json(
             {
                 error: 'Internal server error',

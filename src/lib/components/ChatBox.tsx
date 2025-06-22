@@ -25,20 +25,21 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
         useChat({
             api: apiEndpoint,
             onResponse: (response) => {
-                console.log('Stream response received:', response);
+                console.log(' Stream response received:', response);
             },
             onError: (err) => {
-                console.error('Stream error:', err);
+                console.error(' Stream error:', err);
+                console.error(' Full error stack:', err.stack); // Log stack trace
             },
             onFinish: (message) => {
-                console.log('Stream finished with message:', message);
+                console.log(' Stream finished with message:', message);
             },
         });
 
     useEffect(() => {
-        console.log('ChatBox mounted, apiEndpoint:', apiEndpoint);
-        console.log('Current messages:', messages);
-        if (error) console.log('Chat error:', error);
+        console.log(' ChatBox mounted, apiEndpoint:', apiEndpoint);
+        console.log(' Current messages:', messages);
+        if (error) console.log(' Chat error:', error);
     }, [apiEndpoint, messages, error]);
 
     useEffect(() => {
@@ -61,23 +62,23 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
             <AnimatePresence>
                 {showChatIcon && (
                     <motion.div
-                        className="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg z-[1000]"
+                        className="fixed bottom-6 right-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-full shadow-xl z-[1000] hover:shadow-2xl transition-shadow duration-300"
                         initial={{ opacity: 0, scale: 0, y: 100 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0, y: 100 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
                         <Button
                             ref={chatIconRef}
                             variant="ghost"
                             onClick={toggleChat}
                             size="icon"
-                            className="rounded-full size-14 p-2 shadow-lg"
+                            className="rounded-full size-16 p-3 focus:outline-none"
                         >
                             {!isChatOpen ? (
-                                <MessageCircle size={24} />
+                                <MessageCircle size={28} />
                             ) : (
-                                <ArrowDownCircleIcon size={24} />
+                                <ArrowDownCircleIcon size={28} />
                             )}
                         </Button>
                     </motion.div>
@@ -87,44 +88,46 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
             <AnimatePresence>
                 {isChatOpen && (
                     <motion.div
-                        className="fixed bottom-16 right-4 bg-white shadow-lg rounded-lg z-[1000] w-[95%] md:w-[500px]"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
+                        className="fixed bottom-24 right-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-[1000] w-[95%] max-w-[550px] max-h-[80vh]"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
-                        <Card className="border-2">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                                <CardTitle>Chat with us</CardTitle>
+                        <Card className="w-full h-full border-0 rounded-xl overflow-hidden">
+                            <CardHeader className="flex flex-row items-center justify-between p-4 bg-gray-100 dark:bg-gray-800">
+                                <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                    Chat with us
+                                </CardTitle>
                                 <Button
                                     variant="ghost"
                                     onClick={toggleChat}
                                     size="sm"
-                                    className="absolute top-2 right-2 px-2 py-0"
+                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                                 >
-                                    <X size={16} />
+                                    <X size={20} />
                                     <span className="sr-only">Close chat</span>
                                 </Button>
                             </CardHeader>
 
-                            <CardContent>
-                                <ScrollArea key={messages.length} className="h-[300px] pr-4">
+                            <CardContent className="p-4">
+                                <ScrollArea className="h-[400px] pr-4">
                                     {messages?.length === 0 && (
-                                        <div className="w-full mt-32 text-gray-500 items-center justify-center flex gap-3">
+                                        <div className="w-full mt-20 text-gray-500 dark:text-gray-400 flex items-center justify-center text-lg font-medium">
                                             No messages yet
                                         </div>
                                     )}
                                     {messages?.map((message, index) => (
                                         <div
                                             key={index}
-                                            className={`mb-4 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
+                                            className={`mb-6 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
                                         >
                                             <div
-                                                className={`inline-block p-4 rounded-lg ${
+                                                className={`inline-block p-4 rounded-xl ${
                                                     message.role === 'user'
-                                                        ? 'bg-primary text-primary-foreground'
-                                                        : 'bg-muted'
-                                                }`}
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                                                } shadow-md`}
                                             >
                                                 <ReactMarkdown
                                                     remarkPlugins={[remarkGfm]}
@@ -145,14 +148,14 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                                             return inline ? (
                                                                 <code
                                                                     {...rest}
-                                                                    className="bg-gray-200 px-1 rounded"
+                                                                    className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono"
                                                                 >
                                                                     {children}
                                                                 </code>
                                                             ) : (
                                                                 <pre
                                                                     {...rest}
-                                                                    className="bg-gray-200 p-2 rounded"
+                                                                    className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg text-sm font-mono overflow-x-auto"
                                                                 >
                                                                     <code className={className}>
                                                                         {children}
@@ -161,12 +164,12 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                                             );
                                                         },
                                                         ul: ({ children }) => (
-                                                            <ul className="list-disc ml-4">
+                                                            <ul className="list-disc ml-6 mt-2">
                                                                 {children}
                                                             </ul>
                                                         ),
                                                         ol: ({ children }) => (
-                                                            <ol className="list-decimal ml-4">
+                                                            <ol className="list-decimal ml-6 mt-2">
                                                                 {children}
                                                             </ol>
                                                         ),
@@ -178,10 +181,11 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                         </div>
                                     ))}
                                     {isLoading && (
-                                        <div className="w-full items-center flex justify-center gap-3">
-                                            <Loader2 className="animate-spin h-5 w-5 text-primary" />
+                                        <div className="w-full flex items-center justify-center gap-3 text-lg font-medium">
+                                            <Loader2 className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                            <span>Typing...</span>
                                             <button
-                                                className="underline"
+                                                className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300"
                                                 type="button"
                                                 onClick={() => stop()}
                                             >
@@ -190,13 +194,12 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                         </div>
                                     )}
                                     {error && (
-                                        <div className="w-full items-center flex justify-center gap-3">
-                                            <div>Error: {error.message || 'An error occurred'}</div>
-                                            <pre className="text-xs text-red-500">
-                                                {JSON.stringify(error, null, 2)}
-                                            </pre>
+                                        <div className="w-full flex items-center justify-center gap-3 text-lg font-medium text-red-600 dark:text-red-400">
+                                            <span>
+                                                Error: {error.message || 'An error occurred'}
+                                            </span>
                                             <button
-                                                className="underline"
+                                                className="underline hover:text-red-800 dark:hover:text-red-300"
                                                 type="button"
                                                 onClick={() => reload()}
                                             >
@@ -208,24 +211,25 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                 </ScrollArea>
                             </CardContent>
 
-                            <CardFooter>
+                            <CardFooter className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                                 <form
                                     onSubmit={handleSubmit}
-                                    className="flex w-full items-center justify-center gap-3"
+                                    className="flex w-full items-center gap-4"
                                 >
                                     <Input
                                         value={input}
                                         onChange={handleInputChange}
-                                        className="flex-1"
+                                        className="flex-1 p-3 text-lg rounded-lg border-2 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-md placeholder-gray-500 dark:placeholder-gray-400"
                                         placeholder="Type your message..."
                                     />
                                     <Button
                                         variant="default"
-                                        className="mt-2 size-9"
+                                        size="lg"
+                                        className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all disabled:opacity-50"
                                         disabled={isLoading}
-                                        size="icon"
                                     >
-                                        <SendIcon className="size-4" />
+                                        <SendIcon className="size-5" />
+                                        <span className="sr-only">Send message</span>
                                     </Button>
                                 </form>
                             </CardFooter>

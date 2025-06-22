@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import {
     LineChart,
     Line,
@@ -15,7 +14,12 @@ import {
 } from 'recharts';
 import { Activity, Users } from 'lucide-react';
 
-// Sample data for charts
+import { getUser } from '@/lib/services/admin/getuser'; // Sử dụng getUser thay vì getUserDetail
+import { GetCourses } from '@/lib/services/course/getcourse';
+import { GetClass } from '@/lib/services/class/getclass';
+import { toast } from '@/components/ui/use-toast';
+
+// Sample data for charts (kept for reference, can be replaced with API data)
 const userActivityData = [
     { name: 'Jan', users: 4000 },
     { name: 'Feb', users: 3000 },
@@ -32,26 +36,114 @@ const revenueData = [
     { name: 'Week 4', revenue: 3800 },
 ];
 
+interface Class {
+    _id: string;
+    title: string;
+    description: string;
+}
+
+interface ApiResponse {
+    message: string;
+    status: number;
+    metadata: {
+        totalUsers?: number;
+        classes?: Class[];
+        totalClasses?: number;
+        courses?: Course[];
+        totalCourses?: number;
+        totalPages?: number;
+    };
+}
+
+interface Course {
+    _id: string;
+    title: string;
+    description: string;
+    price: number;
+    enrolledCount: number;
+    author: { _id: string; fullName: string; email: string; role: string };
+    category: string | { _id: string; name: string };
+    createdAt: string;
+    imgUrl?: string;
+}
+
 const Page: React.FC = () => {
+    const [totalUsers, setTotalUsers] = useState<number>(0);
+    const [totalClasses, setTotalClasses] = useState<number>(0);
+    const [totalCourses, setTotalCourses] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const fetchTotals = async () => {
+        try {
+            setLoading(true);
+
+            // Fetch total users
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+            const userResponse: ApiResponse = await getUser(1, 1); // Lấy trang 1, giới hạn 1 để lấy tổng
+            console.log(' User response:', userResponse);
+            setTotalUsers(userResponse.metadata?.totalPages || 0); // Giả định totalUsers trong metadata
+
+            // Fetch total classes
+            const classesResponse: ApiResponse = await GetClass(tokenuser); // Giả định API này
+            console.log(' Classes response:', classesResponse);
+            setTotalClasses(
+                classesResponse.metadata?.totalClasses ||
+                    classesResponse.metadata?.classes?.length ||
+                    0,
+            );
+
+            // Fetch total courses
+            const coursesResponse: ApiResponse = await GetCourses(1, 10); // Lấy 10 khóa học đầu tiên
+            console.log(' Courses response:', coursesResponse);
+            setTotalCourses(
+                coursesResponse.metadata?.totalCourses ||
+                    coursesResponse.metadata?.courses?.length ||
+                    0,
+            );
+        } catch (error) {
+            console.error(' Error fetching totals:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to fetch dashboard totals. Please try again later.',
+                variant: 'destructive',
+                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTotals();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6 items-center justify-center">
+                <p className="text-lg text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6 ">
-            {/* Main Content */}
+        <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6">
             <div className="flex-1">
-                {/* Header */}
                 <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <span className="text-xl font-semibold">Dashboard</span>
-                        <div className="ml-8 space-x-1 text-sm text-gray-500 dark:text-gray-400">
-                            <span>Upvex</span>
-                            <span>/</span>
-                            <span>Dashboards</span>
-                            <span>/</span>
-                            <span className="text-gray-400 dark:text-gray-500">Dashboard</span>
-                        </div>
                     </div>
                 </div>
 
-                {/* Dashboard Content */}
                 <div className="p-6">
                     <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
                         {/* Total Users Card */}
@@ -61,7 +153,9 @@ const Page: React.FC = () => {
                             </div>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-2xl font-bold">72,540</div>
+                                    <div className="text-2xl font-bold">
+                                        {totalUsers.toLocaleString()}
+                                    </div>
                                     <div className="flex items-center text-sm">
                                         <span className="px-2 py-0.5 text-green-700 bg-green-100 dark:bg-green-800 dark:text-green-200 rounded">
                                             ↑ 12.5%
@@ -87,20 +181,22 @@ const Page: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Sessions Card */}
+                        {/* Total Classes Card */}
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                             <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                SESSIONS
+                                TOTAL CLASSES
                             </div>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-2xl font-bold">29.4%</div>
+                                    <div className="text-2xl font-bold">
+                                        {totalClasses.toLocaleString()}
+                                    </div>
                                     <div className="flex items-center text-sm">
                                         <span className="px-2 py-0.5 text-green-700 bg-green-100 dark:bg-green-800 dark:text-green-200 rounded">
-                                            ↑ 1.7%
+                                            ↑ 5.0%
                                         </span>
                                         <span className="ml-2 text-gray-500 dark:text-gray-400">
-                                            from 29.1%
+                                            from previous month
                                         </span>
                                     </div>
                                 </div>
@@ -120,20 +216,22 @@ const Page: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Avg. Click Rate Card */}
+                        {/* Total Courses Card */}
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                             <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                AVG. CLICK RATE
+                                TOTAL COURSES
                             </div>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-2xl font-bold">56.8%</div>
+                                    <div className="text-2xl font-bold">
+                                        {totalCourses.toLocaleString()}
+                                    </div>
                                     <div className="flex items-center text-sm">
-                                        <span className="px-2 py-0.5 text-red-700 bg-red-100 dark:bg-red-800 dark:text-red-200 rounded">
-                                            ↓ 4.4%
+                                        <span className="px-2 py-0.5 text-green-700 bg-green-100 dark:bg-green-800 dark:text-green-200 rounded">
+                                            ↑ 8.0%
                                         </span>
                                         <span className="ml-2 text-gray-500 dark:text-gray-400">
-                                            from 61.2%
+                                            from last update
                                         </span>
                                     </div>
                                 </div>
@@ -155,7 +253,6 @@ const Page: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        {/* Import Data Section */}
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-base font-medium">
@@ -223,7 +320,6 @@ const Page: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Monthly Expenses Chart */}
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-base font-medium">Monthly expenses</h3>
