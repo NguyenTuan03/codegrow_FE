@@ -1,7 +1,8 @@
 'use client';
-
-import { useChat } from '@ai-sdk/react';
-import { useEffect, useRef, useState } from 'react';
+// Auto scroll to bottom when messages change
+// eslint-disable-next-line react-hooks/exhaustive-deps
+import { useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowDownCircleIcon, Loader2, MessageCircle, SendIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,43 +11,59 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { chatAI } from '../services/api/aichatbox';
 
-interface ChatBoxProps {
-    apiEndpoint: string;
+interface Message {
+    content: string;
+    role: 'user' | 'ai';
 }
 
-export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
+export default function ChatBox() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [showChatIcon, setShowChatIcon] = useState(true);
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const chatIconRef = useRef<HTMLButtonElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const { messages, input, handleInputChange, handleSubmit, isLoading, stop, reload, error } =
-        useChat({
-            api: apiEndpoint,
-            onResponse: (response) => {
-                console.log(' Stream response received:', response);
-            },
-            onError: (err) => {
-                console.error(' Stream error:', err);
-                console.error(' Full error stack:', err.stack); // Log stack trace
-            },
-            onFinish: (message) => {
-                console.log(' Stream finished with message:', message);
-            },
-        });
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+    };
 
-    useEffect(() => {
-        console.log(' ChatBox mounted, apiEndpoint:', apiEndpoint);
-        console.log(' Current messages:', messages);
-        if (error) console.log(' Chat error:', error);
-    }, [apiEndpoint, messages, error]);
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError(null);
+        if (!input.trim()) return;
 
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+        // Add user message
+        setMessages((prev) => [...prev, { content: input, role: 'user' }]);
+        setIsLoading(true);
+
+        try {
+            const response = await chatAI(input);
+            // response.metadata là câu trả lời AI trả về
+            setMessages((prev) => [
+                ...prev,
+                { content: response?.metadata || 'No response from AI.', role: 'ai' },
+            ]);
+            setInput('');
+        } catch {
+            setError('Failed to get response from AI.');
+        } finally {
+            setIsLoading(false);
         }
-    }, [messages]);
+    };
+
+    const stop = () => {
+        setIsLoading(false);
+    };
+
+    const reload = () => {
+        setError(null);
+    };
 
     const toggleChat = () => {
         setIsChatOpen(!isChatOpen);
@@ -56,6 +73,12 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
             setShowChatIcon(true);
         }
     };
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages, isLoading]);
 
     return (
         <>
@@ -112,12 +135,12 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
 
                             <CardContent className="p-4">
                                 <ScrollArea className="h-[400px] pr-4">
-                                    {messages?.length === 0 && (
+                                    {messages.length === 0 && (
                                         <div className="w-full mt-20 text-gray-500 dark:text-gray-400 flex items-center justify-center text-lg font-medium">
                                             No messages yet
                                         </div>
                                     )}
-                                    {messages?.map((message, index) => (
+                                    {messages.map((message, index) => (
                                         <div
                                             key={index}
                                             className={`mb-6 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
@@ -187,7 +210,7 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                             <button
                                                 className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300"
                                                 type="button"
-                                                onClick={() => stop()}
+                                                onClick={stop}
                                             >
                                                 Abort
                                             </button>
@@ -195,13 +218,11 @@ export default function ChatBox({ apiEndpoint }: ChatBoxProps) {
                                     )}
                                     {error && (
                                         <div className="w-full flex items-center justify-center gap-3 text-lg font-medium text-red-600 dark:text-red-400">
-                                            <span>
-                                                Error: {error.message || 'An error occurred'}
-                                            </span>
+                                            <span>Error: {error}</span>
                                             <button
                                                 className="underline hover:text-red-800 dark:hover:text-red-300"
                                                 type="button"
-                                                onClick={() => reload()}
+                                                onClick={reload}
                                             >
                                                 Retry
                                             </button>
