@@ -13,7 +13,6 @@ import Output from '@/components/output';
 import { submitQuizCode } from '@/lib/services/quizs/sumbitcode';
 import { MarkQuiz } from '@/lib/services/api/markquiz';
 import type { editor } from 'monaco-editor';
-import ChatBox from '@/lib/components/ChatBox';
 
 interface Quiz {
     _id: string;
@@ -289,7 +288,6 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
                 </div>
             </div>
             {/* Add ChatBox with apiEndpoint */}
-            <ChatBox apiEndpoint="/api/gemini" />
         </div>
     );
 }

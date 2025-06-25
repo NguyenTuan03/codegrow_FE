@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import ChatBox from '@/lib/components/ChatBox';
 import Customerheader from '@/lib/components/layout/header/Customerheader';
 import React, { ReactNode } from 'react';
 
@@ -28,6 +29,7 @@ const Layout = ({ children }: Props) => {
                 {/* Add padding-top to account for the fixed header height */}
                 <div className=" min-h-screen mt-[100px] ml-[100px] mr-[100px]   ">
                     <main>{children}</main>
+                    <ChatBox />
                 </div>
             </ThemeProvider>
         </div>

@@ -9,7 +9,6 @@ import { MarkQuiz } from '@/lib/services/api/markquiz';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import ChatBox from '@/lib/components/ChatBox';
 
 interface QuizOption {
     text: string;
@@ -267,8 +266,6 @@ export default function QuizChoice({ quiz }: QuizChoiceProps) {
                     )}
                 </CardContent>
             </Card>
-            {/* Add ChatBox with apiEndpoint */}
-            <ChatBox apiEndpoint="/api/gemini" />
         </div>
     );
 }
