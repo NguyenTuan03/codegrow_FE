@@ -696,7 +696,7 @@ export default function Classes() {
                                                     form with your details. Follow these steps:
                                                 </p>
                                                 <ul className="list-disc text-left pl-6 mb-4">
-                                                    <li>Go to the "More" page.</li>
+                                                    <li>Go to the "Classroom" page.</li>
                                                     <li>
                                                         Fill out the contact form with your
                                                         information.
