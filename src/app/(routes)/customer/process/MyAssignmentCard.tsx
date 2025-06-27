@@ -46,13 +46,15 @@ export default function MyAssignmentCard({ user }: Props) {
         const token = localStorage.getItem('token');
         if (!token) {
             toast({
-                title: 'Lỗi',
-                description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                title: 'Error',
+                description: 'Token not found. Please log in again.',
                 variant: 'destructive',
                 className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
             });
+
+            return;
         }
-        const tokenuser = token ? JSON.parse(token) : null;
+        const tokenuser = JSON.parse(token);
 
         try {
             setLoading(true);
