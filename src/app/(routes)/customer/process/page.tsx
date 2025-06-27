@@ -13,6 +13,8 @@ import LeaderboardCard from '@/app/(routes)/customer/process/LeaderboardCard';
 import UserProfileCard from '@/app/(routes)/customer/process/UserProfileCard';
 import MyAssignmentCard from '@/app/(routes)/customer/process/MyAssignmentCard';
 import { motion } from 'framer-motion';
+import ChatAIPage from '@/components/ChatAIPage';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'; // Giả định đường dẫn
 
 interface Category {
     _id: string;
@@ -66,6 +68,7 @@ export default function Process() {
     const [user, setUser] = useState<User | null>(null);
     const [enrollCourse, setEnrollCourse] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'Dashboard' | 'AI Insights'>('Dashboard');
 
     const fetchUserDetail = async () => {
         try {
@@ -150,49 +153,103 @@ export default function Process() {
                     Learning Dashboard
                 </motion.h1>
 
+                {/* Tab Navigation with Tooltips */}
+                <TooltipProvider>
+                    <div className="mb-6 flex space-x-4">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    className={`px-4 py-2 rounded-lg ${activeTab === 'Dashboard' ? 'bg-[#657ED4] cursor-pointer text-white dark:bg-[#5AD3AF] dark:text-black' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+                                    onClick={() => setActiveTab('Dashboard')}
+                                >
+                                    Dashboard
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-800 text-white cursor-pointer dark:bg-gray-200 dark:text-gray-900 p-2 rounded-md text-sm">
+                                <p>
+                                    View your learning dashboard with courses, assignments, and
+                                    progress.
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    className={`px-4 py-2 rounded-lg cursor-pointer ${activeTab === 'AI Insights' ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] cursor-pointer dark:text-black' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}`}
+                                    onClick={() => setActiveTab('AI Insights')}
+                                >
+                                    AI Insights
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-gray-800 text-white dark:bg-gray-200 cursor-pointer dark:text-gray-900 p-2 rounded-md text-sm">
+                                <p>
+                                    Interact with AI to get insights and feedback on your learning
+                                    progress.
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                </TooltipProvider>
+
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6 cursor-pointer"
                 >
-                    <motion.div variants={itemVariants} className="md:col-span-2 space-y-8">
-                        <motion.div variants={itemVariants}>
-                            <CourseInProgress enrollCourse={enrollCourse} />
-                        </motion.div>
+                    {activeTab === 'Dashboard' && (
+                        <>
+                            <motion.div
+                                variants={itemVariants}
+                                className="md:col-span-2 cursor-pointer space-y-8"
+                            >
+                                <motion.div variants={itemVariants}>
+                                    <CourseInProgress enrollCourse={enrollCourse} />
+                                </motion.div>
 
-                        <motion.div variants={itemVariants}>
-                            <UpcomingAssignment />
-                        </motion.div>
+                                <motion.div variants={itemVariants}>
+                                    <UpcomingAssignment />
+                                </motion.div>
 
-                        <motion.div variants={itemVariants}>
-                            <ContinueWatching />
-                        </motion.div>
+                                <motion.div variants={itemVariants}>
+                                    <ContinueWatching />
+                                </motion.div>
 
-                        <motion.div variants={itemVariants}>
-                            <YourMentor />
-                        </motion.div>
+                                <motion.div variants={itemVariants}>
+                                    <YourMentor />
+                                </motion.div>
 
-                        <motion.div variants={itemVariants}>
-                            <CertificationSection />
-                        </motion.div>
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} className="space-y-6">
-                        <motion.div variants={itemVariants}>
-                            <UserProfileCard user={user} />
-                        </motion.div>
-
-                        <motion.div variants={itemVariants}>
-                            <LeaderboardCard />
-                        </motion.div>
-
-                        {user && (
-                            <motion.div variants={itemVariants}>
-                                <MyAssignmentCard user={user} />
+                                <motion.div variants={itemVariants}>
+                                    <CertificationSection />
+                                </motion.div>
                             </motion.div>
-                        )}
-                    </motion.div>
+
+                            <motion.div variants={itemVariants} className="space-y-6">
+                                <motion.div variants={itemVariants}>
+                                    <UserProfileCard user={user} />
+                                </motion.div>
+
+                                <motion.div variants={itemVariants}>
+                                    <LeaderboardCard />
+                                </motion.div>
+
+                                {user && (
+                                    <motion.div variants={itemVariants}>
+                                        <MyAssignmentCard user={user} />
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        </>
+                    )}
+
+                    {activeTab === 'AI Insights' && (
+                        <motion.div
+                            variants={itemVariants}
+                            className="md:col-span-3 cursor-pointer"
+                        >
+                            <ChatAIPage onClose={() => setActiveTab('Dashboard')} />
+                        </motion.div>
+                    )}
                 </motion.div>
             </div>
         </motion.div>

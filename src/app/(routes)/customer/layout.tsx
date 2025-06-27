@@ -27,7 +27,7 @@ const Layout = ({ children }: Props) => {
                 {/* Ensure the header is not affected by parent overflow */}
                 <Customerheader />
                 {/* Add padding-top to account for the fixed header height */}
-                <div className=" min-h-screen mt-[100px] ml-[100px] mr-[100px]   ">
+                <div className=" min-h-screen mt-[100px] ml-[100px] mr-[100px]    ">
                     <main>{children}</main>
                     <ChatBox />
                 </div>
