@@ -74,7 +74,7 @@ const HomePage = () => {
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
     const [currentPage, setCurrentPage] = useState(1); // State for current page
-    const [itemsPerPage] = useState(3); // Number of items per page
+    const [itemsPerPage] = useState(2); // Number of items per page
 
     const benefitsRef = useRef(null);
     const skillsRef = useRef(null);
