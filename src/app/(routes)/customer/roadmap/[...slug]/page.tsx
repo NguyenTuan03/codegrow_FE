@@ -180,7 +180,7 @@ const Page = () => {
     };
 
     const handleNodeClick = (event: React.MouseEvent, node: Node<Partial<CustomNodeData>>) => {
-        console.log('Clicked Node ID:', node.id); // Debug log
+        console.log('Clicked Node ID:', node); // Debug log
         if (node && node.id) {
             setSelectedNode(node); // Ensure node.id is valid before setting
         } else {
@@ -194,9 +194,7 @@ const Page = () => {
 
     // Dynamic node details based on roadmap with enhanced debug
     const getNodeDetails = (nodeId: string): NodeDetail => {
-        console.log('Fetching details for nodeId:', nodeId, 'with slug:', slug); // Debug log
-        console.log('Available frontendDetails keys:', Object.keys(frontendDetails)); // Debug all keys
-        switch (slug) {
+        switch (slug[0]) {
             case 'Frontend':
                 const detail = frontendDetails[nodeId] || frontendDetails['default'];
                 console.log('Fetched detail for', nodeId, ':', detail); // Debug specific detail
@@ -222,7 +220,7 @@ const Page = () => {
                 };
             default:
                 return {
-                    title: 'Node Details',
+                    title: 'Node Dsssetails',
                     description: 'General information about this topic.',
                     resources: {
                         free: [

@@ -1,6 +1,7 @@
 import { Edge, Node } from '@xyflow/react';
 
 type CustomNodeData = {
+    id: string;
     label: string;
 };
 
