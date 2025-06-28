@@ -32,6 +32,7 @@ import { frontendDetails } from '@/lib/enum/roadmap/frontendDetail';
 import { backendDetails } from '@/lib/enum/roadmap/backendDetail';
 import { javaDetails } from '@/lib/enum/roadmap/javaDetail';
 import { RoadmapCard } from '@/components/CardDetailRoadmap';
+import { fullstackDetails } from '@/lib/enum/roadmap/fullStackDetail';
 
 console.log('Imported frontendDetails:', frontendDetails); // Debug import
 
@@ -180,7 +181,7 @@ const Page = () => {
     };
 
     const handleNodeClick = (event: React.MouseEvent, node: Node<Partial<CustomNodeData>>) => {
-        console.log('Clicked Node ID:', node.id); // Debug log
+        console.log('Clicked Node ID:', node); // Debug log
         if (node && node.id) {
             setSelectedNode(node); // Ensure node.id is valid before setting
         } else {
@@ -194,9 +195,7 @@ const Page = () => {
 
     // Dynamic node details based on roadmap with enhanced debug
     const getNodeDetails = (nodeId: string): NodeDetail => {
-        console.log('Fetching details for nodeId:', nodeId, 'with slug:', slug); // Debug log
-        console.log('Available frontendDetails keys:', Object.keys(frontendDetails)); // Debug all keys
-        switch (slug) {
+        switch (slug[0]) {
             case 'Frontend':
                 const detail = frontendDetails[nodeId] || frontendDetails['default'];
                 console.log('Fetched detail for', nodeId, ':', detail); // Debug specific detail
@@ -205,24 +204,12 @@ const Page = () => {
                 return backendDetails[nodeId] || backendDetails['default'];
             case 'Java':
                 return javaDetails[nodeId] || javaDetails['default'];
-            case 'React':
-                return {
-                    title: nodeId,
-                    description: `Details for ${nodeId}`,
-                    resources: {
-                        free: [
-                            {
-                                type: 'Article',
-                                title: `${nodeId} Resource`,
-                                url: 'https://example.com',
-                            },
-                        ],
-                        premium: [],
-                    },
-                };
+            case 'FullStack':
+                return fullstackDetails[nodeId] || fullstackDetails['default'];
+
             default:
                 return {
-                    title: 'Node Details',
+                    title: 'Node Dsssetails',
                     description: 'General information about this topic.',
                     resources: {
                         free: [
@@ -302,7 +289,6 @@ const Page = () => {
                         ...getNodeDetails(selectedNode.id).resources.free,
                         ...getNodeDetails(selectedNode.id).resources.premium,
                     ]}
-                    progress={0}
                     onClose={handleCloseDrawer}
                     isOpen={!!selectedNode}
                 />
