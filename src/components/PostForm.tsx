@@ -110,30 +110,17 @@ const PostForm: React.FC = () => {
             setContent('');
             setTags('');
             setAttachment(null);
-            if (fileInputRef.current) fileInputRef.current.value = '';
+
             setOpen(false);
         } catch (error) {
             console.error('Failed to create post:', error);
         }
     };
 
-    // Handle file attachment
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file && file.size > 10 * 1024 * 1024) {
-            toast({
-                title: 'File Too Large',
-                description: 'File size must be less than 10MB.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-            return;
-        }
-        console.log(
-            'File selected:',
-            file ? { name: file.name, size: file.size, type: file.type } : 'No file',
-        );
-        setAttachment(file || null);
+    const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        console.log('Attachment file selected:', file);
+        setAttachment(file);
     };
 
     return (
@@ -184,9 +171,8 @@ const PostForm: React.FC = () => {
                                     <span className="text-sm font-medium">Attach file</span>
                                     <input
                                         type="file"
-                                        ref={fileInputRef}
+                                        onChange={handleAttachmentChange}
                                         className="hidden cursor-pointer"
-                                        onChange={handleFileChange}
                                     />
                                 </label>
                                 {attachment && (

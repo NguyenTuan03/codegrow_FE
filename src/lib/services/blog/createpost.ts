@@ -33,7 +33,7 @@ export const CreatePost = async ({
         if (attachments) {
             formData.append('attachments', attachments);
         }
-
+        console.log(formData);
         // Send request to the backend
         const response = await httpRequest.post('/post', formData, {
             headers: {

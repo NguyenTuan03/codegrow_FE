@@ -61,3 +61,8 @@ body {
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 }
+@layer base {
+    :root {
+        --radix-select-trigger-width: 100%;
+    }
+}

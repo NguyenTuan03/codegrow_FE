@@ -28,13 +28,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+
 import { Input } from '@/components/ui/input';
 import { debounce } from 'lodash';
 import { getUser } from '@/lib/services/admin/getuser';
@@ -200,10 +194,10 @@ export default function MentorsPage() {
     const [errorMentors, setErrorMentors] = useState<string | null>(null);
     const [errorReviews, setErrorReviews] = useState<string | null>(null);
     const [mentorCurrentPage, setMentorCurrentPage] = useState(1);
-    const [mentorPageSize, setMentorPageSize] = useState(10);
+    const [mentorPageSize] = useState(10);
     const [mentorTotalPages, setMentorTotalPages] = useState(1);
     const [reviewCurrentPage, setReviewCurrentPage] = useState(1);
-    const [reviewPageSize, setReviewPageSize] = useState(10);
+    const [reviewPageSize] = useState(10);
     const [reviewTotalPages, setReviewTotalPages] = useState(1);
     const [mentorSearchQuery, setMentorSearchQuery] = useState('');
     const [reviewSearchQuery, setReviewSearchQuery] = useState('');
@@ -343,11 +337,6 @@ export default function MentorsPage() {
         }
     };
 
-    const handleMentorPageSizeChange = (value: string) => {
-        setMentorPageSize(Number(value));
-        setMentorCurrentPage(1);
-    };
-
     const getMentorPageNumbers = () => {
         const pages: number[] = [];
         const maxPagesToShow = 5;
@@ -364,11 +353,6 @@ export default function MentorsPage() {
         if (page >= 1 && page <= reviewTotalPages) {
             setReviewCurrentPage(page);
         }
-    };
-
-    const handleReviewPageSizeChange = (value: string) => {
-        setReviewPageSize(Number(value));
-        setReviewCurrentPage(1);
     };
 
     const getReviewPageNumbers = () => {
@@ -466,40 +450,6 @@ export default function MentorsPage() {
 
                         {/* Pagination Controls for Mentors */}
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
-                            <div className="flex items-center gap-3">
-                                <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
-                                    Items per page:
-                                </span>
-                                <Select
-                                    value={mentorPageSize.toString()}
-                                    onValueChange={handleMentorPageSizeChange}
-                                >
-                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] cursor-pointer">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
-                                        <SelectItem
-                                            value="10"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            10
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="20"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            20
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="50"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            50
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
                             <Pagination>
                                 <PaginationContent className="flex items-center gap-1">
                                     <PaginationItem>
@@ -634,40 +584,6 @@ export default function MentorsPage() {
 
                         {/* Pagination Controls for Review History */}
                         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
-                            <div className="flex items-center gap-3">
-                                <span className="text-base font-medium text-gray-700 dark:text-gray-300 cursor-default">
-                                    Items per page:
-                                </span>
-                                <Select
-                                    value={reviewPageSize.toString()}
-                                    onValueChange={handleReviewPageSizeChange}
-                                >
-                                    <SelectTrigger className="w-24 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] cursor-pointer">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-md">
-                                        <SelectItem
-                                            value="10"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            10
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="20"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            20
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="50"
-                                            className="text-gray-900 dark:text-gray-100 hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium cursor-pointer"
-                                        >
-                                            50
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
                             <Pagination>
                                 <PaginationContent className="flex items-center gap-1">
                                     <PaginationItem>

@@ -7,7 +7,7 @@ import { viewDetail } from '@/lib/services/class/viewdetail';
 import ClassInfo from '@/app/(routes)/customer/classes/[...classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/customer/classes/[...classId]/StudentList';
 
-import { BookOpen, Users, FileText, Award } from 'lucide-react';
+import { BookOpen, Users } from 'lucide-react';
 import Assignments from './Assignment';
 import MarksAttendance from './MarkAttendance';
 import ViewPosts from '@/components/ViewPost';
@@ -147,9 +147,8 @@ export default function ClassDetailPage() {
 
     const tabs = [
         { name: 'Stream', icon: BookOpen },
-        { name: 'Classwork', icon: FileText },
+
         { name: 'People', icon: Users },
-        { name: 'Marks', icon: Award },
     ];
 
     return (

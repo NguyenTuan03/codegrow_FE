@@ -1,4 +1,5 @@
 'use client';
+
 // Auto scroll to bottom when messages change
 // eslint-disable-next-line react-hooks/exhaustive-deps
 import { useEffect } from 'react';
@@ -85,7 +86,8 @@ export default function ChatBox() {
             <AnimatePresence>
                 {showChatIcon && (
                     <motion.div
-                        className="fixed bottom-6 cursor-pointer right-6 bg-[#657ED4] dark:bg-[#5AD3AF] text-white p-4 rounded-full shadow-xl z-[1000] transition-shadow duration-300"
+                        className="fixed bottom-6 right-6 bg-[#657ED4] dark:bg-[#5AD3AF] text-white p-2 rounded-full shadow-xl z-[1000] transition-shadow duration-300"
+                        style={{ width: '60px', height: '60px' }} // Fixed size to 60px
                         initial={{ opacity: 0, scale: 0, y: 100 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0, y: 100 }}
@@ -96,12 +98,12 @@ export default function ChatBox() {
                             variant="ghost"
                             onClick={toggleChat}
                             size="icon"
-                            className="rounded-full size-15 focus:outline-none"
+                            className="rounded-full w-full h-full focus:outline-none"
                         >
                             {!isChatOpen ? (
-                                <MessageCircle size={20} />
+                                <MessageCircle size={24} />
                             ) : (
-                                <ArrowDownCircleIcon size={38} />
+                                <ArrowDownCircleIcon size={24} />
                             )}
                         </Button>
                     </motion.div>
@@ -111,15 +113,15 @@ export default function ChatBox() {
             <AnimatePresence>
                 {isChatOpen && (
                     <motion.div
-                        className="fixed bottom-24 right-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-[1000] w-[95%] max-w-[550px] max-h-[100vh]"
+                        className="fixed bottom-30 right-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-[1000] w-[100%] max-w-[550px] max-h-[400px]" // Reduced max height
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
-                        <Card className="w-full h-full border-0 rounded-xl  overflow-hidden">
-                            <CardHeader className="flex flex-row items-center justify-between p-4 bg-gray-100  dark:bg-gray-800">
-                                <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 ">
+                        <Card className="w-full h-full border-0 rounded-xl overflow-hidden">
+                            <CardHeader className="flex flex-row items-center justify-between p-4 bg-gray-100 dark:bg-gray-800">
+                                <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                     Chat with us
                                 </CardTitle>
                                 <Button
@@ -133,8 +135,10 @@ export default function ChatBox() {
                                 </Button>
                             </CardHeader>
 
-                            <CardContent className="p-4">
-                                <ScrollArea className="h-[400px] pr-4">
+                            <CardContent>
+                                <ScrollArea className="h-[250px] pr-4">
+                                    {' '}
+                                    {/* Reduced height */}
                                     {messages.length === 0 && (
                                         <div className="w-full mt-20 text-gray-500 dark:text-gray-400 flex items-center justify-center text-lg font-medium">
                                             No messages yet
@@ -148,7 +152,7 @@ export default function ChatBox() {
                                             <div
                                                 className={`inline-block p-4 rounded-xl ${
                                                     message.role === 'user'
-                                                        ? 'bg-[#657ED4]  text-white'
+                                                        ? 'bg-[#657ED4] text-white'
                                                         : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 } shadow-md`}
                                             >
@@ -205,10 +209,10 @@ export default function ChatBox() {
                                     ))}
                                     {isLoading && (
                                         <div className="w-full flex items-center justify-center gap-3 text-lg font-medium">
-                                            <Loader2 className="animate-spin h-6 w-6 text-[#657ED4]  dark:text-blue-400" />
+                                            <Loader2 className="animate-spin h-6 w-6 text-[#657ED4] dark:text-blue-400" />
                                             <span>Typing...</span>
                                             <button
-                                                className="text-[#657ED4]  dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300"
+                                                className="text-[#657ED4] dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300"
                                                 type="button"
                                                 onClick={stop}
                                             >
@@ -246,7 +250,7 @@ export default function ChatBox() {
                                     <Button
                                         variant="default"
                                         size="lg"
-                                        className="p-3 bg-[#657ED4]  hover:bg-blue-700 text-white rounded-lg shadow-md transition-all disabled:opacity-50"
+                                        className="p-3 bg-[#657ED4] hover:bg-blue-700 text-white rounded-lg shadow-md transition-all disabled:opacity-50"
                                         disabled={isLoading}
                                     >
                                         <SendIcon className="size-5" />

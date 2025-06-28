@@ -242,7 +242,7 @@ export default function CoursesPage() {
 
     useEffect(() => {
         if (categories.length > 0) {
-            fetchCourses(currentPage);
+            fetchCourses(currentPage); // Fetch courses when currentPage changes
         }
     }, [currentPage, categories]);
 
@@ -268,7 +268,7 @@ export default function CoursesPage() {
         if (sortOption === 'price-asc') {
             filtered.sort((a, b) => a.price - b.price);
         } else if (sortOption === 'price-desc') {
-            filtered.sort((a, b) => b.price - b.price);
+            filtered.sort((a, b) => b.price - a.price); // Fixed to sort high to low
         } else if (sortOption === 'rating-desc') {
             filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         } else if (sortOption === 'enrolled-desc') {
@@ -281,6 +281,7 @@ export default function CoursesPage() {
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
+            fetchCourses(page); // Fetch new page data
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -412,7 +413,7 @@ export default function CoursesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="p-4 md:p-8 min-h-screen  dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
+            className="p-4 md:p-8 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
         >
             <div className="max-w-8xl mx-auto px-4">
                 {/* Header Section */}
@@ -593,10 +594,10 @@ export default function CoursesPage() {
                                                     style={{
                                                         backgroundImage: course.imgUrl
                                                             ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
-                                                            : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                            : 'linear-gradient(to bottom, #657ED4, #4a5da0)', // Fallback gradient
                                                         backgroundColor: course.imgUrl
                                                             ? 'transparent'
-                                                            : '#657ED4',
+                                                            : '#657ED4', // Fallback solid color
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center',
                                                         minHeight: '200px',
@@ -723,10 +724,10 @@ export default function CoursesPage() {
                                                         style={{
                                                             backgroundImage: selectedCourse.imgUrl
                                                                 ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedCourse.imgUrl})`
-                                                                : 'linear-gradient(to bottom, #657ED4, #4a5da0)',
+                                                                : 'linear-gradient(to bottom, #657ED4, #4a5da0)', // Fallback gradient
                                                             backgroundColor: selectedCourse.imgUrl
                                                                 ? 'transparent'
-                                                                : '#657ED4',
+                                                                : '#657ED4', // Fallback solid color
                                                             backgroundSize: 'cover',
                                                             backgroundPosition: 'center',
                                                             top: '-2px',
@@ -888,7 +889,7 @@ export default function CoursesPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.5 }}
-                                        className="mt-16 flex justify-center   p-4 "
+                                        className="mt-16 flex justify-center p-4"
                                     >
                                         <Pagination>
                                             <PaginationContent>
@@ -914,7 +915,7 @@ export default function CoursesPage() {
                                                             isActive={currentPage === page}
                                                             className={`cursor-pointer ${
                                                                 currentPage === page
-                                                                    ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-medium rounded-lg'
+                                                                    ? 'bg-[#657ED4] text-white dark:bg-[#5AD3AF] dark:text-black font-bold rounded-lg' // Added font-bold for active page
                                                                     : 'text-gray-600 dark:text-gray-400 hover:text-[#657ED4] dark:hover:text-[#5AD3AF]'
                                                             }`}
                                                         >
