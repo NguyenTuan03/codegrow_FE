@@ -5,12 +5,16 @@ interface UpdatePostParams {
     postId: string;
     title: string;
     content: string;
-    classId: string;
+    classroom: ClassRoomItem | string;
     author: string;
     tags?: string;
     attachments?: File;
 }
-
+interface ClassRoomItem {
+    _id: string;
+    title: string;
+    description: string;
+}
 interface UpdatePostResponse {
     message: string;
     status: number;
@@ -18,7 +22,7 @@ interface UpdatePostResponse {
         _id: string;
         title: string;
         content: string;
-        classId: string;
+        classroom: ClassRoomItem | string;
         author: string;
         tags?: string;
         attachments?: Array<{
@@ -35,7 +39,7 @@ export const UpdatePost = async ({
     postId,
     title,
     content,
-    classId,
+    classroom,
     author,
     tags,
     attachments,
@@ -44,7 +48,7 @@ export const UpdatePost = async ({
         const formData = new FormData();
         formData.append('title', title);
         formData.append('content', content);
-        formData.append('classId', classId);
+        formData.append('classId', String(classroom));
         formData.append('author', author);
         if (tags) {
             formData.append('tags', tags);

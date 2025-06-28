@@ -38,7 +38,7 @@ export default function CourseCard({ course }: CourseCardProps) {
     return (
         <Card className="relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 h-[440px] flex flex-col">
             <div
-                className="relative h-100 w-full  overflow-hidden rounded-t-xl flex items-center justify-center text-white"
+                className="relative w-full flex items-center justify-center text-white"
                 style={{
                     backgroundImage: course.imgUrl
                         ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${course.imgUrl})`
@@ -48,12 +48,12 @@ export default function CourseCard({ course }: CourseCardProps) {
                     backgroundColor: course.imgUrl ? 'transparent' : '#5AD3AF',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    minHeight: '100px' /* Tăng min-height để lấp đầy */,
+                    minHeight: '100px',
                     position: 'relative',
-                    top: '-24px' /* Kéo ảnh lên sát header */,
+                    top: '-24px',
                 }}
             >
-                <h3 className="text-xl font-semibold px-4 text-center line-clamp-2">
+                <h3 className="text-xl font-semibold px-4 text-center line-clamp-2 w-full">
                     {course.title}
                 </h3>
             </div>
@@ -63,7 +63,7 @@ export default function CourseCard({ course }: CourseCardProps) {
                     {course.description}
                 </p>
 
-                <div className="flex items-center justify-between text-base">
+                <div className="flex items-center justify-between text-base w-full">
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                         <span className="text-gray-600 dark:text-gray-400 font-medium">
@@ -71,13 +71,13 @@ export default function CourseCard({ course }: CourseCardProps) {
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-gray-600 dark:text-gray-400 font-medium">
+                        <span className="text-gray-600 dark:text-gray-400 font-medium text-right">
                             {course.mentor?.fullName || 'Unknown'} - Mentor
                         </span>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 min-h-[40px] items-center">
+                <div className="flex flex-wrap gap-2 min-h-[40px] items-center w-full">
                     {course.schedule.daysOfWeek.map((day) => (
                         <Badge
                             key={day}

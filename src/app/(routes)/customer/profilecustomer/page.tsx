@@ -68,7 +68,7 @@ export default function ProfileCustomer() {
         })) || [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+        <div className="min-h-screen  dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
             {loading ? (
                 <div className="flex flex-col items-center justify-center min-h-[50vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 dark:border-blue-300 border-solid"></div>

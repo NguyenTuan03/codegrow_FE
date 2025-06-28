@@ -420,12 +420,13 @@ const HomePage = () => {
                 initial="hidden"
                 animate={benefitsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-65 mb-15"
+                className="mt-16 mb-16 px-4 sm:px-6 lg:px-8 mx-auto max-w-8xl mt-65"
             >
-                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                <h3 className="text-center font-bold text-4xl mb-12 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-                <div className="grid mt-20 font-bold grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mx-auto">
                     {[
                         {
                             title: 'STRUCTURED COURSES',
@@ -452,22 +453,33 @@ const HomePage = () => {
                                 'Connect with a lively community of learners and mentors, where you can exchange ideas, seek help, and thrive with continuous support.',
                         },
                     ].map((item, index) => (
-                        <motion.div key={index} variants={itemVariants}>
-                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                                <div className="relative w-full h-[200px] mb-4">
+                        <motion.div
+                            key={index}
+                            variants={itemVariants}
+                            className="flex flex-col h-full"
+                            whileHover={{ y: -5 }} // Adds slight lift on hover
+                        >
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border border-gray-200 dark:border-gray-600 flex flex-col h-full">
+                                {/* Image Container */}
+                                <div className="relative w-full aspect-square mb-6 mx-auto max-w-[200px]">
                                     <Image
                                         src={item.image}
                                         alt={item.title}
                                         fill
                                         className="object-contain"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                                    {item.title}
+
+                                {/* Text Content */}
+                                <div className="text-center space-y-4 flex-grow">
+                                    <h4 className="font-bold text-xl text-gray-900 dark:text-gray-100">
+                                        {item.title}
+                                    </h4>
+                                    <p className="text-gray-500 dark:text-gray-300 leading-relaxed font-medium">
+                                        {item.description}
+                                    </p>
                                 </div>
-                                <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                                    {item.description}
-                                </p>
                             </div>
                         </motion.div>
                     ))}

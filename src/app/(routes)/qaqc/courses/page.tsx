@@ -20,13 +20,7 @@ import { GetCourses } from '@/lib/services/course/getcourse';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { GetComment } from '@/lib/services/course/getComment';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Assuming Popover is available
 
 interface Category {
     _id: string;
@@ -90,6 +84,8 @@ export default function CoursesPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortOption, setSortOption] = useState('default');
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false); // State to control Category Popover
+    const [isSortOpen, setIsSortOpen] = useState(false); // State to control Sort Popover
     const limit = 8;
     const router = useRouter();
 
@@ -235,7 +231,7 @@ export default function CoursesPage() {
                 {/* Header Section */}
                 <div className="mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:[#5AD3AF]">
+                        <h1 className="text-4xl mb-5 font-bold tracking-tight text-[#657ED4] dark:text-[#5AD3AF]">
                             Discover Amazing Courses
                         </h1>
                         <p className="mt-3 text-xl text-gray-600 dark:text-gray-300">
@@ -260,72 +256,110 @@ export default function CoursesPage() {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             <Filter className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                <SelectTrigger
-                                    className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
-                                    aria-label="Filter by Category"
-                                >
-                                    <SelectValue placeholder="Filter by Category" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
-                                    <SelectItem
-                                        value="all"
-                                        className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                            <Popover open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
+                                        aria-label="Filter by Category"
+                                    >
+                                        {selectedCategory === 'all'
+                                            ? 'Filter by Category'
+                                            : categories.find((c) => c._id === selectedCategory)
+                                                  ?.name || 'Category'}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[180px] rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
+                                    <div
+                                        onClick={() => {
+                                            setSelectedCategory('all');
+                                            setIsCategoryOpen(false);
+                                        }}
+                                        className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                     >
                                         All Categories
-                                    </SelectItem>
+                                    </div>
                                     {categories.map((category) => (
-                                        <SelectItem
+                                        <div
                                             key={category._id}
-                                            value={category._id}
-                                            className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            onClick={() => {
+                                                setSelectedCategory(category._id);
+                                                setIsCategoryOpen(false);
+                                            }}
+                                            className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                         >
                                             {category.name}
-                                        </SelectItem>
+                                        </div>
                                     ))}
-                                </SelectContent>
-                            </Select>
+                                </PopoverContent>
+                            </Popover>
                         </div>
-                        <Select value={sortOption} onValueChange={setSortOption}>
-                            <SelectTrigger
-                                className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
-                                aria-label="Sort By"
-                            >
-                                <SelectValue placeholder="Sort By" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
-                                <SelectItem
-                                    value="default"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                        <Popover open={isSortOpen} onOpenChange={setIsSortOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-[180px] rounded-full border-gray-100 dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-700 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all text-base"
+                                    aria-label="Sort By"
+                                >
+                                    {sortOption === 'default'
+                                        ? 'Sort By'
+                                        : sortOption === 'price-asc'
+                                          ? 'Price: Low to High'
+                                          : sortOption === 'price-desc'
+                                            ? 'Price: High to Low'
+                                            : sortOption === 'rating-desc'
+                                              ? 'Rating: High to Low'
+                                              : 'Popularity'}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[180px] rounded-lg bg-white dark:bg-gray-700 text-black dark:text-white border-gray-100 dark:border-gray-700">
+                                <div
+                                    onClick={() => {
+                                        setSortOption('default');
+                                        setIsSortOpen(false);
+                                    }}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     Default
-                                </SelectItem>
-                                <SelectItem
-                                    value="price-asc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        setSortOption('price-asc');
+                                        setIsSortOpen(false);
+                                    }}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     Price: Low to High
-                                </SelectItem>
-                                <SelectItem
-                                    value="price-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        setSortOption('price-desc');
+                                        setIsSortOpen(false);
+                                    }}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     Price: High to Low
-                                </SelectItem>
-                                <SelectItem
-                                    value="rating-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        setSortOption('rating-desc');
+                                        setIsSortOpen(false);
+                                    }}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     Rating: High to Low
-                                </SelectItem>
-                                <SelectItem
-                                    value="enrolled-desc"
-                                    className="rounded-md hover:bg-gray-100 dark:hover:bg-gray-600"
+                                </div>
+                                <div
+                                    onClick={() => {
+                                        setSortOption('enrolled-desc');
+                                        setIsSortOpen(false);
+                                    }}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     Popularity
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </div>
 
@@ -383,6 +417,7 @@ export default function CoursesPage() {
                                                         : '#657ED4',
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
+                                                    top: '-20px',
                                                 }}
                                             >
                                                 <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">

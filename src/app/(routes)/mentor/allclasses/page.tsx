@@ -19,6 +19,7 @@ import {
     PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton'; // Import Skeleton
 import { debounce } from 'lodash';
 
 interface ClassItem {
@@ -49,7 +50,8 @@ export default function Classes() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
-    const limit = 6;
+    const [isPaginating, setIsPaginating] = useState(false); // Track pagination activity
+    const limit = 6; // Number of classes per page
     const router = useRouter();
 
     // Fetch current user ID from localStorage
@@ -78,9 +80,26 @@ export default function Classes() {
 
     const fetchClasses = async (page: number = 1) => {
         try {
+            setLoading(true);
             const data = await GetClass(page, limit);
-            setClassesItems(data.metadata.classes);
-            setFilteredClasses(data.metadata.classes);
+            console.log('API Response for page', page, ':', data);
+
+            // Filter classes where mentor is null or mentor._id matches currentUserId for each page
+            const allClasses = data.metadata.classes || [];
+            const filteredClasses = allClasses.filter((classItem: ClassItem) => {
+                return classItem.mentor === null || classItem.mentor?._id === currentUserId;
+            });
+            console.log('Filtered classes for page', page, ':', filteredClasses);
+
+            if (filteredClasses.length === 0 && page > 1) {
+                console.warn('No classes found for page', page, 'reverting to page 1');
+                setCurrentPage(1);
+                await fetchClasses(1); // Fallback to page 1 if no data
+                return;
+            }
+
+            setClassesItems(filteredClasses);
+            setFilteredClasses(filteredClasses); // Initialize filteredClasses
             setCurrentPage(data.metadata.page);
             setTotalPages(data.metadata.totalPages);
         } catch (error) {
@@ -93,6 +112,7 @@ export default function Classes() {
             });
         } finally {
             setLoading(false);
+            setIsPaginating(false); // Reset isPaginating when loading completes
         }
     };
 
@@ -136,12 +156,15 @@ export default function Classes() {
     };
 
     const handlePageChange = (page: number) => {
-        if (page >= 1 && page <= totalPages && page !== currentPage) {
+        if (page >= 1 && page <= totalPages && page !== currentPage && !loading && !isPaginating) {
             setCurrentPage(page);
-            setSearchQuery('');
+            setIsPaginating(true); // Set isPaginating before fetching
+            setSearchQuery(''); // Reset search query on page change
+            fetchClasses(page); // Fetch new page data
         }
     };
 
+    // Debounced search handler
     const debouncedSearch = useCallback(
         debounce((searchTerm: string) => {
             setSearchQuery(searchTerm);
@@ -154,21 +177,24 @@ export default function Classes() {
         debouncedSearch(value);
     };
 
+    // Filter classes based on search query
     useEffect(() => {
         let filtered = [...classesItems];
         if (searchQuery) {
-            filtered = filtered.filter((classItem) =>
-                [classItem.title || '', classItem.description || ''].some((field) =>
-                    field.toLowerCase().includes(searchQuery.toLowerCase()),
-                ),
+            filtered = filtered.filter(
+                (classItem) =>
+                    classItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    classItem.description.toLowerCase().includes(searchQuery.toLowerCase()),
             );
         }
         setFilteredClasses(filtered);
     }, [searchQuery, classesItems]);
 
     useEffect(() => {
-        fetchClasses(currentPage);
-    }, [currentPage]);
+        if (currentUserId) {
+            fetchClasses(currentPage);
+        }
+    }, [currentPage, currentUserId]);
 
     if (!currentUserId) {
         return (
@@ -192,7 +218,7 @@ export default function Classes() {
             <div className="container mx-auto pt-12 pb-6">
                 <div className="text-center space-y-4">
                     <h1 className="text-4xl sm:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                        <span className="block text-[#657ED4] dark:[#5AD3AF] bg-clip-text">
+                        <span className="block text-[#657ED4] dark:text-[#5AD3AF] bg-clip-text">
                             Manage Your Classes
                         </span>
                     </h1>
@@ -204,15 +230,21 @@ export default function Classes() {
 
             {/* Main Content */}
             <div className="container mx-auto px-4 sm:px-6">
-                {loading ? (
-                    <div className="text-center text-gray-600 dark:text-gray-400 py-12">
-                        <div className="relative inline-block">
-                            <div className="w-16 h-16 border-4 border-[#657ED4] border-t-transparent rounded-full animate-spin"></div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-8 h-8 bg-[#5AD3AF] rounded-full"></div>
+                {loading || isPaginating ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(9)].map((_, i) => (
+                            <div key={i} className="flex flex-col h-full">
+                                <Skeleton className="h-36 w-full rounded-t-xl" />
+                                <div className="p-4 space-y-3">
+                                    <Skeleton className="h-6 w-3/4" />
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </div>
+                                <div className="p-4">
+                                    <Skeleton className="h-10 w-full rounded-full" />
+                                </div>
                             </div>
-                        </div>
-                        <p className="mt-4 text-lg font-medium">Loading classes...</p>
+                        ))}
                     </div>
                 ) : (
                     <>
@@ -259,18 +291,21 @@ export default function Classes() {
                                                 className="relative overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                                             >
                                                 <div
-                                                    className="h-36 w-full relative overflow-hidden rounded-t-xl"
+                                                    className="h-70 w-full relative overflow-hidden rounded-t-xl" // Increased height to h-48
                                                     style={{
                                                         backgroundImage: course.imgUrl
-                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${course.imgUrl})`
+                                                            ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
                                                             : course.bgColor
                                                               ? course.bgColor
-                                                              : 'linear-gradient(to right, #5AD3AF, #657ED4)',
+                                                              : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)', // Fallback gradient
                                                         backgroundColor: course.imgUrl
                                                             ? 'transparent'
-                                                            : '#5AD3AF',
+                                                            : course.bgColor
+                                                              ? course.bgColor
+                                                              : '#5AD3AF', // Fallback solid color
                                                         backgroundSize: 'cover',
                                                         backgroundPosition: 'center',
+                                                        top: '-20px',
                                                     }}
                                                 >
                                                     <div className="absolute bottom-4 left-4 text-white">
@@ -355,7 +390,7 @@ export default function Classes() {
                                     })}
                                 </div>
                                 {totalPages > 1 && (
-                                    <div className="mt-10  flex justify-center">
+                                    <div className="mt-10 flex justify-center">
                                         <Pagination>
                                             <PaginationContent>
                                                 <PaginationItem>
@@ -363,8 +398,10 @@ export default function Classes() {
                                                         onClick={() =>
                                                             handlePageChange(currentPage - 1)
                                                         }
-                                                        className={`text-[#657ED4]  cursor-pointer mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
-                                                            currentPage === 1
+                                                        className={`text-[#657ED4] cursor-pointer mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
+                                                            currentPage === 1 ||
+                                                            loading ||
+                                                            isPaginating
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''
                                                         }`}
@@ -393,7 +430,9 @@ export default function Classes() {
                                                                         currentPage === pageNum
                                                                     }
                                                                     className={
-                                                                        currentPage === pageNum
+                                                                        currentPage === pageNum ||
+                                                                        loading ||
+                                                                        isPaginating
                                                                             ? 'bg-[#657ED4] mb-10 dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors'
                                                                             : 'text-[#657ED4] mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors'
                                                                     }
@@ -410,7 +449,9 @@ export default function Classes() {
                                                             handlePageChange(currentPage + 1)
                                                         }
                                                         className={`text-[#657ED4] cursor-pointer mb-10 dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors ${
-                                                            currentPage === totalPages
+                                                            currentPage === totalPages ||
+                                                            loading ||
+                                                            isPaginating
                                                                 ? 'pointer-events-none opacity-50'
                                                                 : ''
                                                         }`}

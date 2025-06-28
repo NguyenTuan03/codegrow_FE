@@ -13,7 +13,6 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
-    SidebarMenuBadge,
 } from '@/components/ui/sidebar';
 import { toast } from '@/components/ui/use-toast';
 import { GetClass } from '@/lib/services/class/getclass';
@@ -112,7 +111,7 @@ export default function MentorSidebar() {
 
     const otherItems = [
         // { href: '/mentor/analytics', icon: BarChart2, label: 'Analytics' },
-        { href: '/chat', icon: Mail, label: 'Messages', badge: 3 },
+        { href: '/chat', icon: Mail, label: 'Messages' },
         { href: '/mentor/help', icon: HelpCircle, label: 'Help Center' },
     ];
 
@@ -228,11 +227,6 @@ export default function MentorSidebar() {
                                         <Link href={item.href}>
                                             <item.icon className="h-5 w-5 mr-3 text-[#657ED4] dark:text-[#5AD3AF]" />
                                             <span>{item.label}</span>
-                                            {item.badge && (
-                                                <SidebarMenuBadge className="ml-auto bg-[#657ED4]/20 dark:bg-[#5AD3AF]/30 text-[#657ED4] dark:text-[#5AD3AF] font-medium">
-                                                    {item.badge}
-                                                </SidebarMenuBadge>
-                                            )}
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

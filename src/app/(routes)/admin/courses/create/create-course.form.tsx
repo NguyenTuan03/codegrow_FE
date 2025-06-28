@@ -19,13 +19,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { z } from 'zod';
 import { CreateCourse } from '@/lib/services/course/createcourse';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'; // Using your custom Popover
 import { Skeleton } from '@/components/ui/skeleton';
 import { GetAllCategory } from '@/lib/services/category/getallcategory';
 import { ImagePlus } from 'lucide-react';
@@ -78,7 +72,8 @@ export default function CreateCourseForm() {
     const router = useRouter();
     const [categories, setCategories] = useState<Category[]>([]);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [imgUrl, setImgUrl] = useState<File | undefined>(undefined); // Reverted to imgUrl
+    const [imgUrl, setImgUrl] = useState<File | undefined>(); // Reverted to imgUrl
+    const [isOpen, setIsOpen] = useState(false); // State to control Popover
 
     const form = useForm<CreateCourseFormData>({
         resolver: zodResolver(CourseSchema),
@@ -297,26 +292,45 @@ export default function CreateCourseForm() {
                                             {categoriesLoading ? (
                                                 <Skeleton className="h-10 w-full rounded-lg" />
                                             ) : (
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4] rounded-lg">
-                                                            <SelectValue placeholder="Select a category" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent className="bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
-                                                        {categories.map((category) => (
-                                                            <SelectItem
-                                                                key={category._id}
-                                                                value={category._id}
-                                                            >
-                                                                {category.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <Popover open={isOpen} onOpenChange={setIsOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            type="button"
+                                                            className="w-full justify-between bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 px-4 py-2 hover:border-[#657ED4] dark:hover:border-[#5AD3AF]"
+                                                        >
+                                                            {categories.find(
+                                                                (cat) => cat._id === field.value,
+                                                            )?.name || 'Select a category'}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-full max-w-xs bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-lg shadow-lg p-0">
+                                                        <div className="max-h-60 overflow-y-auto">
+                                                            {categories.map((category) => (
+                                                                <Button
+                                                                    key={category._id}
+                                                                    variant={
+                                                                        field.value === category._id
+                                                                            ? 'default'
+                                                                            : 'ghost'
+                                                                    }
+                                                                    className={`w-full justify-start rounded-none text-gray-900 dark:text-gray-100 ${
+                                                                        field.value === category._id
+                                                                            ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black'
+                                                                            : 'hover:border-[#657ED4] dark:hover:border-[#5AD3AF]'
+                                                                    }`}
+                                                                    onClick={() => {
+                                                                        field.onChange(
+                                                                            category._id,
+                                                                        );
+                                                                        setIsOpen(false); // Close Popover after selection
+                                                                    }}
+                                                                >
+                                                                    {category.name}
+                                                                </Button>
+                                                            ))}
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
                                             )}
                                             <FormMessage className="text-red-500 text-xs mt-1" />
                                         </FormItem>
@@ -386,7 +400,7 @@ export default function CreateCourseForm() {
                                                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                                                 >
                                                     <ImagePlus className="h-5 w-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                    <span className="text-gray-700  dark:text-gray-300">
+                                                    <span className="text-gray-700 dark:text-gray-300">
                                                         Upload Image
                                                     </span>
                                                     <input
