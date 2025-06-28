@@ -32,6 +32,7 @@ import { frontendDetails } from '@/lib/enum/roadmap/frontendDetail';
 import { backendDetails } from '@/lib/enum/roadmap/backendDetail';
 import { javaDetails } from '@/lib/enum/roadmap/javaDetail';
 import { RoadmapCard } from '@/components/CardDetailRoadmap';
+import { fullstackDetails } from '@/lib/enum/roadmap/fullStackDetail';
 
 console.log('Imported frontendDetails:', frontendDetails); // Debug import
 
@@ -203,21 +204,9 @@ const Page = () => {
                 return backendDetails[nodeId] || backendDetails['default'];
             case 'Java':
                 return javaDetails[nodeId] || javaDetails['default'];
-            case 'React':
-                return {
-                    title: nodeId,
-                    description: `Details for ${nodeId}`,
-                    resources: {
-                        free: [
-                            {
-                                type: 'Article',
-                                title: `${nodeId} Resource`,
-                                url: 'https://example.com',
-                            },
-                        ],
-                        premium: [],
-                    },
-                };
+            case 'FullStack':
+                return fullstackDetails[nodeId] || fullstackDetails['default'];
+
             default:
                 return {
                     title: 'Node Dsssetails',
@@ -300,7 +289,6 @@ const Page = () => {
                         ...getNodeDetails(selectedNode.id).resources.free,
                         ...getNodeDetails(selectedNode.id).resources.premium,
                     ]}
-                    progress={0}
                     onClose={handleCloseDrawer}
                     isOpen={!!selectedNode}
                 />
