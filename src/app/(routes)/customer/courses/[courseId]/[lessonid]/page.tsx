@@ -142,9 +142,20 @@ export default function LessonDetail() {
 
     const handleMarkAsCompleted = async () => {
         try {
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
             setIsMarking(true);
-            await MarkLesson(token, lessonId, courseId);
+            await MarkLesson(tokenuser, lessonId, courseId);
             setIsMarked(true);
             toast({
                 title: 'Success',

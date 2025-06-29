@@ -59,10 +59,21 @@ export default function QuizChoice({ quiz }: QuizChoiceProps) {
         setIsSubmitting(true);
 
         try {
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
             const quizId = quiz._id;
 
-            await submitQuizChoice({ token, quizId, selectedOptions });
+            await submitQuizChoice({ token: tokenuser, quizId, selectedOptions });
 
             const correctOptions = quiz.options
                 .filter((opt) => opt.isCorrect)
