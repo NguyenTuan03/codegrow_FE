@@ -28,6 +28,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MarkLesson } from '@/lib/services/api/markalesson';
+import { GetProgress } from '@/lib/services/api/progress'; // Import GetProgress
 
 interface Lesson {
     _id: string;
@@ -62,11 +63,24 @@ interface Quiz {
     testCases?: TestCase[];
 }
 
+interface ProgressResponse {
+    message: string;
+    status: number;
+    metadata: {
+        progress?: number;
+        completedLessons: string[];
+        completedQuizzes: string[];
+        lastLesson?: string;
+    };
+}
+
 export default function LessonDetail() {
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isMarked, setIsMarked] = useState(false);
+    const [loading, setLoading] = useState(true); // For lesson and quiz loading
+    const [progressLoading, setProgressLoading] = useState(true); // For progress loading
+    const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
+    const [completedQuizIds, setCompletedQuizIds] = useState<string[]>([]);
     const [isMarking, setIsMarking] = useState(false);
     const router = useRouter();
     const params = useParams();
@@ -100,16 +114,64 @@ export default function LessonDetail() {
         }
     };
 
+    // Fetch progress to check if lesson is marked as completed
+    const fetchProgress = async () => {
+        try {
+            setProgressLoading(true);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
+
+            const response: ProgressResponse = await GetProgress(tokenuser, id, courseId);
+
+            if (response?.status === 200 && response.metadata) {
+                const { completedLessons, completedQuizzes } = response.metadata;
+                setCompletedLessonIds(completedLessons);
+                setCompletedQuizIds(completedQuizzes);
+            }
+        } catch (error) {
+            console.error('Error fetching progress:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to load progress data.',
+                variant: 'destructive',
+            });
+        } finally {
+            setProgressLoading(false);
+        }
+    };
+
     // Load lesson details (without quizzes)
     const loadLessonDetails = async () => {
         try {
             setLoading(true);
             const response = await viewDetailLesson(lessonId);
-            console.log('viewDetailLesson response:', response);
 
             const lessonData = response.metadata;
             setLesson(lessonData);
-            console.log('Lesson details loaded:', lessonData);
         } catch (error) {
             toast({
                 title: 'Error',
@@ -117,6 +179,8 @@ export default function LessonDetail() {
                     error instanceof Error ? error.message : 'Failed to load lesson details',
                 variant: 'destructive',
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -124,7 +188,6 @@ export default function LessonDetail() {
     const loadAllQuiz = async () => {
         try {
             const response = await GetQuiz(lessonId);
-            console.log('GetQuiz response:', response);
 
             const quizData = response.metadata || [];
             setQuizzes(quizData);
@@ -135,12 +198,16 @@ export default function LessonDetail() {
                 description: error instanceof Error ? error.message : 'Failed to load quizzes',
                 variant: 'destructive',
             });
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleMarkAsCompleted = async () => {
+        if (
+            completedLessonIds.includes(lessonId) ||
+            completedQuizIds.some((q) => quizzes.some((quiz) => quiz._id === q))
+        )
+            return;
+
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -156,7 +223,7 @@ export default function LessonDetail() {
             const tokenuser = JSON.parse(token);
             setIsMarking(true);
             await MarkLesson(tokenuser, lessonId, courseId);
-            setIsMarked(true);
+            setCompletedLessonIds((prev) => [...prev, lessonId]);
             toast({
                 title: 'Success',
                 description: 'Lesson marked as completed!',
@@ -177,13 +244,14 @@ export default function LessonDetail() {
         }
     };
 
-    // Load lesson and quizzes on mount
+    // Load lesson, quizzes, and progress on mount
     useEffect(() => {
         console.log('Lesson ID:', lessonId);
 
         const fetchData = async () => {
-            await loadLessonDetails();
-            await loadAllQuiz();
+            setLoading(true); // Start loading for all data
+            await Promise.all([loadLessonDetails(), loadAllQuiz(), fetchProgress()]);
+            setLoading(false); // End loading only when all data is fetched
         };
         fetchData();
     }, [lessonId]);
@@ -193,7 +261,7 @@ export default function LessonDetail() {
         router.push(`/customer/courses/${courseId}/${lessonId}/${quizId}`);
     };
 
-    if (loading) {
+    if (loading || progressLoading) {
         return (
             <div className="flex flex-col justify-center items-center h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                 <Loader2 className="h-12 w-12 animate-spin text-[#657ED4] dark:text-[#5AD3AF] mb-4" />
@@ -225,6 +293,10 @@ export default function LessonDetail() {
             </div>
         );
     }
+
+    const isCompleted =
+        completedLessonIds.includes(lessonId) ||
+        completedQuizIds.some((q) => quizzes.some((quiz) => quiz._id === q));
 
     return (
         <div className="container mx-auto px-4 py-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -349,34 +421,31 @@ export default function LessonDetail() {
                                         )}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex  justify-between border-t border-gray-200 dark:border-gray-700 pt-4 p-6 gap-4">
-                                    <Button
-                                        variant="outline"
-                                        onClick={handleMarkAsCompleted}
-                                        disabled={isMarked || isMarking}
-                                        className={`${
-                                            isMarked
-                                                ? 'bg-green-50 cursor-pointer text-green-700 border-green-300 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700/30'
-                                                : 'text-[#657ED4] cursor-pointer border-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white'
-                                        } rounded-lg px-6 py-2 transition-all cursor-pointer duration-200 font-medium text-base`}
-                                    >
-                                        {isMarking ? (
-                                            <>
-                                                <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-t-transparent border-current"></span>
-                                                Marking...
-                                            </>
-                                        ) : isMarked ? (
-                                            <>
-                                                <CheckCircle className="mr-2 h-4 w-4" />
-                                                Completed
-                                            </>
-                                        ) : (
-                                            <>
-                                                <CheckCircle className="mr-2 h-4 w-4" />
-                                                Mark as Completed
-                                            </>
-                                        )}
-                                    </Button>
+                                <CardFooter className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-4 p-6 gap-4">
+                                    {isCompleted ? (
+                                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 text-base font-medium px-6 py-2 rounded-lg">
+                                            Completed
+                                        </Badge>
+                                    ) : (
+                                        <Button
+                                            variant="outline"
+                                            onClick={handleMarkAsCompleted}
+                                            disabled={isMarking}
+                                            className="text-[#657ED4] cursor-pointer border-[#657ED4] dark:text-[#5AD3AF] dark:border-[#5AD3AF] hover:bg-[#657ED4] hover:text-white dark:hover:bg-[#5AD3AF] dark:hover:text-white rounded-lg px-6 py-2 transition-all duration-200 font-medium text-base"
+                                        >
+                                            {isMarking ? (
+                                                <>
+                                                    <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-t-transparent border-current"></span>
+                                                    Marking...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                                    Mark as Completed
+                                                </>
+                                            )}
+                                        </Button>
+                                    )}
 
                                     <Button
                                         variant="outline"

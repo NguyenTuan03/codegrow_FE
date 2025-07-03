@@ -6,6 +6,10 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
+import { GetProgress } from '@/lib/services/api/progress'; // Import GetProgress
+
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/components/ui/use-toast';
 
 interface Lesson {
     _id: string;
@@ -29,6 +33,23 @@ interface OverviewTabProps {
     courseId: string;
 }
 
+interface ProgressResponse {
+    message: string;
+    status: number;
+    metadata: {
+        progress?: number;
+        completedLessons: {
+            _id: string;
+            title: string;
+            videoKey: string;
+            videoUrl: string;
+            course: string;
+        }[];
+        completedQuizzes: string[];
+        lastLesson?: string;
+    };
+}
+
 export default function OverviewTab({
     progress,
     completedLessons,
@@ -40,6 +61,7 @@ export default function OverviewTab({
     const [allLessons, setAllLessons] = useState<Lesson[]>([]); // Store all lessons before filtering
     const [loading, setLoading] = useState(true);
     const [completedLessonsCount, setCompletedLessonsCount] = useState(0);
+    const [isMarkedStates, setIsMarkedStates] = useState<{ [key: string]: boolean }>({}); // Track completion status per lesson
 
     const loadData = async () => {
         try {
@@ -69,8 +91,60 @@ export default function OverviewTab({
         }
     };
 
+    const fetchProgress = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+            const tokenuser = JSON.parse(token);
+
+            const userId = localStorage.getItem('user');
+            if (!userId) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                return;
+            }
+            const user = JSON.parse(userId);
+            const id = user.id;
+
+            const response: ProgressResponse = await GetProgress(tokenuser, id, courseId);
+            if (response?.status === 200 && response.metadata) {
+                const { completedLessons } = response.metadata;
+                const markedLessons = completedLessons.reduce(
+                    (acc: { [key: string]: boolean }, lesson) => {
+                        acc[lesson._id] = true;
+                        return acc;
+                    },
+                    {},
+                );
+                setIsMarkedStates(markedLessons);
+            }
+        } catch (error) {
+            console.error('Error fetching progress:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to load progress data.',
+                variant: 'destructive',
+            });
+        }
+    };
+
     useEffect(() => {
-        loadData();
+        const fetchData = async () => {
+            await Promise.all([loadData(), fetchProgress()]);
+        };
+        fetchData();
     }, [courseId]);
 
     const getLessonType = (lesson: Lesson) => {
@@ -92,7 +166,7 @@ export default function OverviewTab({
     };
 
     const isLessonCompleted = (lessonId: string) => {
-        return completedLessons[lessonId] || false;
+        return completedLessons[lessonId] || isMarkedStates[lessonId] || false;
     };
 
     const isQuizCompleted = (quizId: string) => {
@@ -181,17 +255,29 @@ export default function OverviewTab({
                                             </div>
                                         </div>
                                     </div>
-                                    <Button
-                                        onClick={() =>
-                                            onNavigate(
-                                                `/customer/courses/${courseId}/${lesson._id}`,
-                                            )
-                                        }
-                                        className="flex cursor-pointer items-center gap-2 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 transition-all duration-200 shadow-sm"
-                                    >
-                                        {iconMap[lessonType]}
-                                        {buttonTextMap[lessonType]}
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={() =>
+                                                onNavigate(
+                                                    `/customer/courses/${courseId}/${lesson._id}`,
+                                                )
+                                            }
+                                            className="flex cursor-pointer items-center gap-2 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 transition-all duration-200 shadow-sm"
+                                        >
+                                            {iconMap[lessonType]}
+                                            {buttonTextMap[lessonType]}
+                                        </Button>
+                                        {!completed && (
+                                            <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-700/20 dark:text-gray-300 text-base font-medium px-4 py-2 rounded-full">
+                                                Not Completed
+                                            </Badge>
+                                        )}
+                                        {completed && (
+                                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 text-base font-medium px-4 py-2 rounded-full">
+                                                Completed
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );
