@@ -8,8 +8,7 @@ import { toast } from '@/components/ui/use-toast';
 import Breadcrumbs from '@/app/(routes)/customer/courses/[courseId]/Breadcrumbs';
 import CourseHeader from '@/app/(routes)/customer/courses/[courseId]/CourseHeader';
 import OverviewTab from '@/app/(routes)/customer/courses/[courseId]/OverviewTab';
-import GradesTab from '@/app/(routes)/customer/courses/[courseId]/GradesTab';
-import NotesTab from '@/app/(routes)/customer/courses/[courseId]/NotesTab';
+
 import MessagesTab from '@/app/(routes)/customer/courses/[courseId]/MessagesTab';
 import { GetProgress } from '@/lib/services/api/progress';
 
@@ -192,7 +191,7 @@ export default function CourseLearningPage() {
                 {/* Tabs Navigation */}
                 <Tabs defaultValue="overview" className="w-full">
                     <TabsList className="flex flex-wrap justify-start gap-4 mb-6 bg-transparent border-gray-200 dark:border-gray-700 p-5">
-                        {['Tổng quan', 'Điểm số', 'Ghi chú', 'Thảo luận'].map((tab, i) => (
+                        {['Tổng quan', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
                                 value={['overview', 'grades', 'notes', 'messages'][i]}
@@ -213,12 +212,7 @@ export default function CourseLearningPage() {
                             courseId={courseId}
                         />
                     </TabsContent>
-                    <TabsContent value="grades">
-                        <GradesTab />
-                    </TabsContent>
-                    <TabsContent value="notes">
-                        <NotesTab />
-                    </TabsContent>
+
                     <TabsContent value="messages">
                         <MessagesTab courseId={courseId} />
                     </TabsContent>
