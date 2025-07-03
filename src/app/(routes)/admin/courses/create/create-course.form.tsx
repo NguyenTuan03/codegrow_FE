@@ -51,9 +51,9 @@ const CourseSchema = z.object({
         .refine(
             (file) => {
                 if (!file) return true; // Allow empty file (optional)
-                return ['image/jpeg', 'image/png', 'image/gif'].includes(file.type);
+                return ['image/jpeg', 'image/gif'].includes(file.type);
             },
-            { message: 'Please upload an image file (JPEG, PNG, or GIF)' },
+            { message: 'Please upload an image file (JPEG or GIF)' },
         )
         .refine(
             (file) => {
@@ -161,7 +161,7 @@ export default function CreateCourseForm() {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            const validTypes = ['image/jpeg', 'image/gif'];
             if (!validTypes.includes(file.type)) {
                 toast({
                     title: '❌ Invalid File Type',

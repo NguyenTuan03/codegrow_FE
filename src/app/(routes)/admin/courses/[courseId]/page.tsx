@@ -141,7 +141,7 @@ export default function CourseDetailPage() {
             if (!validTypes.includes(file.type)) {
                 toast({
                     title: '❌ Invalid File Type',
-                    description: 'Please upload an image file (JPEG, PNG, or GIF).',
+                    description: 'Please upload an image file (JPEG,  GIF).',
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });

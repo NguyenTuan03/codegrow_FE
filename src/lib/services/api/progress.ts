@@ -1,14 +1,10 @@
-// src/lib/services/api/progress.ts
 import httpRequest from '@/lib/util/HttpRequest';
 import { AxiosError } from 'axios';
 
 export const GetProgress = async (token: string, userId: string, courseId: string) => {
     try {
         const res = await httpRequest.get(`/users/${userId}/progress`, {
-            params: {
-                userId,
-                courseId,
-            },
+            params: { courseId },
             headers: {
                 Authorization: `Bearer ${token}`,
             },
