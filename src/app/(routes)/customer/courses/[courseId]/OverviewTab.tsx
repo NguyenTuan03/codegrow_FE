@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, PlayCircle, BookOpen, Code, ChevronRight } from 'lucide-react';
 import { GetLessons } from '@/lib/services/lessons/getAllLessons';
 import { GetProgress } from '@/lib/services/api/progress'; // Import GetProgress
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
-import { MarkLesson } from '@/lib/services/api/markalesson';
 
 interface Lesson {
     _id: string;
@@ -63,7 +62,6 @@ export default function OverviewTab({
     const [loading, setLoading] = useState(true);
     const [completedLessonsCount, setCompletedLessonsCount] = useState(0);
     const [isMarkedStates, setIsMarkedStates] = useState<{ [key: string]: boolean }>({}); // Track completion status per lesson
-    const router = useRouter();
 
     const loadData = async () => {
         try {
@@ -178,42 +176,6 @@ export default function OverviewTab({
     // Calculate total lessons from allLessons
     const totalLessons = allLessons.length;
 
-    const handleMarkAsCompleted = async (lessonId: string) => {
-        if (isLessonCompleted(lessonId)) return;
-
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                toast({
-                    title: 'Lỗi',
-                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
-                    variant: 'destructive',
-                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-                });
-                router.push('/login');
-                return;
-            }
-            const tokenuser = JSON.parse(token);
-
-            await MarkLesson(tokenuser, lessonId, courseId);
-            setIsMarkedStates((prev) => ({ ...prev, [lessonId]: true }));
-            toast({
-                title: 'Success',
-                description: 'Lesson marked as completed!',
-                variant: 'default',
-                className:
-                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
-            });
-        } catch (error) {
-            toast({
-                title: 'Error',
-                description: error instanceof Error ? error.message : 'Failed to mark lesson',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
-        }
-    };
-
     return (
         <div className="space-y-8">
             {/* Progress Section */}
@@ -306,13 +268,9 @@ export default function OverviewTab({
                                             {buttonTextMap[lessonType]}
                                         </Button>
                                         {!completed && (
-                                            <Button
-                                                onClick={() => handleMarkAsCompleted(lesson._id)}
-                                                className="flex cursor-pointer items-center gap-2 bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 transition-all duration-200 shadow-sm"
-                                            >
-                                                <CheckCircle2 className="w-5 h-5" />
-                                                Mark as Completed
-                                            </Button>
+                                            <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-700/20 dark:text-gray-300 text-base font-medium px-4 py-2 rounded-full">
+                                                Not Completed
+                                            </Badge>
                                         )}
                                         {completed && (
                                             <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 text-base font-medium px-4 py-2 rounded-full">

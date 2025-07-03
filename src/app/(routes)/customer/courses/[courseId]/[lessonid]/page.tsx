@@ -146,6 +146,7 @@ export default function LessonDetail() {
             const id = user.id;
 
             const response: ProgressResponse = await GetProgress(tokenuser, id, courseId);
+
             if (response?.status === 200 && response.metadata) {
                 const { completedLessons, completedQuizzes } = response.metadata;
                 setCompletedLessonIds(completedLessons);
@@ -168,11 +169,9 @@ export default function LessonDetail() {
         try {
             setLoading(true);
             const response = await viewDetailLesson(lessonId);
-            console.log('viewDetailLesson response:', response);
 
             const lessonData = response.metadata;
             setLesson(lessonData);
-            console.log('Lesson details loaded:', lessonData);
         } catch (error) {
             toast({
                 title: 'Error',
@@ -189,7 +188,6 @@ export default function LessonDetail() {
     const loadAllQuiz = async () => {
         try {
             const response = await GetQuiz(lessonId);
-            console.log('GetQuiz response:', response);
 
             const quizData = response.metadata || [];
             setQuizzes(quizData);
