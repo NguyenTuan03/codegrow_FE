@@ -5,7 +5,7 @@ interface Post {
     _id: string;
     title: string;
     content: string;
-    class: ClassItem;
+    classroom: ClassRoomItem | string;
     author: string;
     tags?: string[];
     attachments?: Array<{
@@ -15,27 +15,11 @@ interface Post {
     }>;
     createdAt: string;
 }
-
-interface ClassItem {
+interface ClassRoomItem {
     _id: string;
     title: string;
     description: string;
-    students: string[];
-    schedule: {
-        startDate: string;
-        endDate: string;
-        daysOfWeek: string[];
-        time: string;
-    };
-    imgUrl?: string;
-    bgColor?: string;
-    mentor?: {
-        _id: string;
-        fullName: string;
-        email: string;
-    } | null;
 }
-
 interface GetPostsResponse {
     message: string;
     status: number;
@@ -46,7 +30,7 @@ interface GetPostsResponse {
 
 export const GetPosts = async (token: string, classId: string): Promise<GetPostsResponse> => {
     try {
-        const response = await httpRequest.get(`/post?classId=${classId}`, {
+        const response = await httpRequest.get(`/post?classroom=${classId}&expand=classroom`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

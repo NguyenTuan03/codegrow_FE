@@ -7,24 +7,10 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { toast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-interface ClassItem {
+interface ClassRoomItem {
     _id: string;
     title: string;
     description: string;
-    students: string[];
-    schedule: {
-        startDate: string;
-        endDate: string;
-        daysOfWeek: string[];
-        time: string;
-    };
-    imgUrl?: string;
-    bgColor?: string;
-    mentor?: {
-        _id: string;
-        fullName: string;
-        email: string;
-    } | null;
 }
 
 // Interface for a post (based on API response)
@@ -32,7 +18,7 @@ interface Post {
     _id: string;
     title: string;
     content: string;
-    class: ClassItem | null; // Allow class to be null
+    classroom: ClassRoomItem | string; // Assuming this is the classId or class object
     author: string;
     tags?: string[];
     attachments?: Array<{
@@ -48,7 +34,7 @@ interface EnrichedPost {
     _id: string;
     title: string;
     content: string;
-    class: ClassItem | null;
+    classroom: ClassRoomItem | string;
     author: {
         _id: string;
         fullName: string;
@@ -97,19 +83,12 @@ const ViewPosts: React.FC<ViewPostsProps> = ({ classId }) => {
                     response.metadata.posts.map(async (post: Post) => {
                         try {
                             // Check if post.class is defined
-                            if (!post.class) {
+                            if (!post.classroom) {
                                 console.warn(`Post ${post._id} has no class data, using fallback`);
-                                post.class = {
-                                    _id: '',
+                                post.classroom = {
+                                    _id: classId, // Gán classId hiện tại
                                     title: 'Unknown Class',
                                     description: '',
-                                    students: [],
-                                    schedule: {
-                                        startDate: '',
-                                        endDate: '',
-                                        daysOfWeek: [],
-                                        time: '',
-                                    },
                                 };
                             }
 
@@ -128,7 +107,7 @@ const ViewPosts: React.FC<ViewPostsProps> = ({ classId }) => {
                                     fullName: authorResponse.metadata.fullName || 'Unknown Author',
                                     avatar: authorResponse.metadata.avatar,
                                 },
-                                class: post.class, // Use the class data, even if fallback
+                                class: post.classroom, // Use the class data, even if fallback
                             };
                         } catch (error) {
                             console.error(`Failed to fetch details for post ${post._id}:`, error);
@@ -139,7 +118,7 @@ const ViewPosts: React.FC<ViewPostsProps> = ({ classId }) => {
                                     fullName: 'Unknown Author',
                                     avatar: undefined,
                                 },
-                                class: post.class || {
+                                class: post.classroom || {
                                     _id: '',
                                     title: 'Unknown Class',
                                     description: '',
@@ -220,14 +199,25 @@ const ViewPosts: React.FC<ViewPostsProps> = ({ classId }) => {
                                             {new Date(post.createdAt).toLocaleString()}
                                         </p>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium cursor-default">
-                                            CLASS: {post.class?.title || 'Unknown Class'}
+                                            CLASS:{' '}
+                                            {typeof post.classroom === 'object' &&
+                                            post.classroom &&
+                                            'title' in post.classroom
+                                                ? (post.classroom as { title?: string }).title ||
+                                                  'Unknown Class'
+                                                : 'Unknown Class'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <p className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed text-base cursor-default">
                                 DESCRIPTION OF CLASS:{' '}
-                                {post.class?.description || 'No description available'}
+                                {typeof post.classroom === 'object' &&
+                                post.classroom &&
+                                'description' in post.classroom
+                                    ? (post.classroom as { description?: string }).description ||
+                                      'No description available'
+                                    : 'No description available'}
                             </p>
                             <p className="mt-2 text-gray-700 dark:text-gray-300 leading-relaxed text-base cursor-default">
                                 CONTENT: {post.content}

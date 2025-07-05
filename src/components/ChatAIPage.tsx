@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
@@ -25,7 +24,8 @@ export default function ChatAIPage({ onClose }: ChatAIPageProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const [showClearModal, setShowClearModal] = useState(false); // State for clear history modal
+    const scrollAreaRef = useRef<HTMLDivElement>(null); // Ref for ScrollArea
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
@@ -75,16 +75,26 @@ export default function ChatAIPage({ onClose }: ChatAIPageProps) {
     };
 
     const handleClearChat = () => {
-        if (window.confirm('Are you sure you want to clear the chat history?')) {
-            setMessages([]);
-            onClose(); // Đóng page khi xóa lịch sử
-        }
+        setShowClearModal(true); // Show custom modal instead of window.confirm
     };
 
+    const handleConfirmClear = () => {
+        setMessages([]); // Clear messages
+        setShowClearModal(false); // Close modal
+        onClose(); // Close the page
+    };
+
+    const handleCancelClear = () => {
+        setShowClearModal(false); // Close modal without clearing
+    };
+
+    // Scroll to bottom when messages or loading state changes
     useEffect(() => {
-        // Chỉ scroll khi có nội dung mới và không ảnh hưởng đến toàn bộ trang
-        if (scrollRef.current && messages.length > 0) {
-            scrollRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+        if (scrollAreaRef.current) {
+            scrollAreaRef.current.scrollTo({
+                top: scrollAreaRef.current.scrollHeight,
+                behavior: 'smooth', // Smooth scrolling
+            });
         }
     }, [messages, isLoading]);
 
@@ -116,7 +126,7 @@ export default function ChatAIPage({ onClose }: ChatAIPageProps) {
                     </div>
                 </CardHeader>
                 <CardContent className="p-4 flex-1">
-                    <ScrollArea className="h-full pr-4">
+                    <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
                         {messages.length === 0 ? (
                             <div className="w-full mt-20 text-gray-500 dark:text-gray-400 flex items-center justify-center text-lg font-medium">
                                 No chat history yet
@@ -200,7 +210,6 @@ export default function ChatAIPage({ onClose }: ChatAIPageProps) {
                                 </button>
                             </div>
                         )}
-                        <div ref={scrollRef} />
                     </ScrollArea>
                 </CardContent>
                 <CardFooter className="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
@@ -228,6 +237,37 @@ export default function ChatAIPage({ onClose }: ChatAIPageProps) {
                         </Button>
                     </form>
                 </CardFooter>
+
+                {/* Custom Clear History Modal */}
+                {showClearModal && (
+                    <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-60">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                Confirm Clear History
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                Are you sure you want to clear the chat history? This action cannot
+                                be undone, and the chat will be closed.
+                            </p>
+                            <div className="flex justify-end gap-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleCancelClear}
+                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    onClick={handleConfirmClear}
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                    Confirm
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </Card>
         </div>
     );

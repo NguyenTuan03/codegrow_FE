@@ -17,7 +17,7 @@ import {
     PaginationLink,
     PaginationPrevious,
     PaginationNext,
-} from '@/components/ui/pagination'; // Import pagination components
+} from '@/components/ui/pagination';
 
 interface Course {
     _id: string;
@@ -30,8 +30,8 @@ interface Course {
     category?: Category[] | Category | null;
     createdAt: string;
     enrolledCount: number;
-    totalLessons?: number; // Hypothetical total lessons
-    totalQuizzes?: number; // Hypothetical total quizzes
+    totalLessons?: number;
+    totalQuizzes?: number;
 }
 
 interface Category {
@@ -39,13 +39,12 @@ interface Category {
     name: string;
 }
 
-interface ProgressResponse {
-    message: string;
-    status: number;
-    metadata: {
-        progress?: number;
-        completedLessons: string[]; // Array of completed lesson IDs
-        completedQuizzes: string[]; // Array of completed quiz IDs
+interface CourseProgress {
+    [key: string]: {
+        progress: number;
+        completedLessons: { [key: string]: boolean };
+        completedQuizzes: { [key: string]: boolean };
+        lastLesson?: string | null;
     };
 }
 
@@ -54,13 +53,13 @@ interface CourseInProgressProps {
 }
 
 export default function CourseInProgress({ enrollCourse }: CourseInProgressProps) {
-    const [progressData, setProgressData] = useState<{ [key: string]: number }>({});
+    const [progressData, setProgressData] = useState<CourseProgress>({});
     const [loading, setLoading] = useState<boolean>(true);
-    const [currentPage, setCurrentPage] = useState(1); // State for current page
-    const [itemsPerPage] = useState(3); // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(3);
     const router = useRouter();
 
-    const fetchProgress = async (courseId: string, course: Course) => {
+    const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -71,57 +70,92 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
                 router.push('/login');
-                return { courseId, progress: 0 };
+                return null;
             }
             const tokenuser = JSON.parse(token);
 
-            console.log('[04:12 PM +07, 22/06/2025] Token:', tokenuser);
             const userId = localStorage.getItem('user');
             if (!userId) {
-                throw new Error('User ID not found in localStorage');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return null;
             }
             const user = JSON.parse(userId);
             const id = user.id;
-            const response: ProgressResponse = await GetProgress(tokenuser, courseId, id);
-            console.log('[04:12 PM +07, 22/06/2025] Progress response:', response);
 
-            const { completedLessons = [], completedQuizzes = [] } = response.metadata || {};
-            const totalLessons = course.totalLessons || 0;
-            const totalQuizzes = course.totalQuizzes || 0;
-            const totalItems = totalLessons + totalQuizzes;
-            const completedItems = completedLessons.length + completedQuizzes.length;
-            const calculatedProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+            const response = await GetProgress(tokenuser, id, courseId);
 
-            return { courseId, progress: calculatedProgress };
+            if (response?.status === 200 && response.metadata) {
+                const completedLessons =
+                    response.metadata.completedLessons?.reduce(
+                        (acc: { [key: string]: boolean }, lessonId: string) => ({
+                            ...acc,
+                            [lessonId]: true,
+                        }),
+                        {},
+                    ) || {};
+
+                const completedQuizzes =
+                    response.metadata.completedQuizzes?.reduce(
+                        (acc: { [key: string]: boolean }, quizId: string) => ({
+                            ...acc,
+                            [quizId]: true,
+                        }),
+                        {},
+                    ) || {};
+
+                return {
+                    progress: response.metadata.progress || 0,
+                    completedLessons,
+                    completedQuizzes,
+                    lastLesson: response.metadata.lastLesson || null,
+                };
+            }
+            return {
+                progress: 0,
+                completedLessons: {},
+                completedQuizzes: {},
+                lastLesson: null,
+            };
         } catch (error) {
-            console.error(
-                `[04:12 PM +07, 22/06/2025] Error fetching progress for course ${courseId}:`,
-                error,
-            );
-            toast({
-                title: 'Error',
-                description: 'Failed to load course progress. Please try again later.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black',
-            });
-            return { courseId, progress: 0 };
+            console.error(`Error fetching progress for course ${courseId}:`, error);
+            if (error instanceof Error && error.message.includes('Phiên đăng nhập hết hạn')) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+            } else {
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load course progress. Please try again later.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black',
+                });
+            }
+            return null;
         }
     };
 
     useEffect(() => {
         const loadProgress = async () => {
             setLoading(true);
-            const progressPromises = enrollCourse.map((course) =>
-                fetchProgress(course._id, course),
-            );
-            const results = await Promise.all(progressPromises);
-            const progressMap = results.reduce(
-                (acc, { courseId, progress }) => {
-                    acc[courseId] = progress;
-                    return acc;
-                },
-                {} as { [key: string]: number },
-            );
+            const progressMap: CourseProgress = {};
+
+            for (const course of enrollCourse) {
+                const progress = await fetchProgress(course._id);
+                if (progress) {
+                    progressMap[course._id] = progress;
+                }
+            }
+
             setProgressData(progressMap);
             setLoading(false);
         };
@@ -182,8 +216,15 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                     </div>
                 ) : currentCourses.length > 0 ? (
                     currentCourses.map((course) => {
-                        const progress = progressData[course._id] ?? 0;
-                        const statusText = progress === 0 ? 'Not Started' : `${progress}% Complete`;
+                        const courseProgress = progressData[course._id] || {
+                            progress: 0,
+                            completedLessons: {},
+                            completedQuizzes: {},
+                            lastLesson: null,
+                        };
+                        const progress = courseProgress.progress ?? 0;
+                        const statusText =
+                            progress === 0 ? 'Not Started' : `${Math.round(progress)}% Complete`;
 
                         return (
                             <Card
@@ -209,7 +250,7 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                             className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full [&_.progress-indicator]:bg-[#657ED4] dark:[&_.progress-indicator]:bg-[#5AD3AF]"
                                         />
                                         <span className="text-xs text-gray-600 dark:text-gray-300">
-                                            {progress}%
+                                            {Math.round(progress)}%
                                         </span>
                                     </div>
 
@@ -229,7 +270,9 @@ export default function CourseInProgress({ enrollCourse }: CourseInProgressProps
                                             <Button className="bg-[#657ED4] cursor-pointer dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-full px-4 py-2 text-xs transition-all duration-200 shadow-sm">
                                                 {progress === 0
                                                     ? 'Start Course'
-                                                    : 'Continue Course'}
+                                                    : courseProgress.lastLesson
+                                                      ? 'Continue Course'
+                                                      : 'View Course'}
                                             </Button>
                                         </Link>
                                     </div>

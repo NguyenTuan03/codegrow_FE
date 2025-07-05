@@ -9,7 +9,7 @@ import { UpdateClass } from '@/lib/services/class/updateclass';
 import { AssignStudent } from '@/lib/services/class/assignstudent';
 import { getUser } from '@/lib/services/admin/getuser';
 import { GetCourses } from '@/lib/services/course/getcourse';
-import { Pencil, Save, Trash2, X, BookOpen, Users, FileText, Award, Edit } from 'lucide-react';
+import { Pencil, Save, Trash2, X, BookOpen, Users, Edit } from 'lucide-react';
 import ClassInfo from '@/app/(routes)/admin/classes/[classId]/ClassInformation';
 import StudentsPanel from '@/app/(routes)/admin/classes/[classId]/StudentList';
 
@@ -671,9 +671,9 @@ export default function ClassDetailPage() {
 
     const tabs = [
         { name: 'Stream', icon: BookOpen },
-        { name: 'Classwork', icon: FileText },
+        // { name: 'Classwork', icon: FileText },
         { name: 'People', icon: Users },
-        { name: 'Marks', icon: Award },
+        // { name: 'Marks', icon: Award },
     ];
 
     return (

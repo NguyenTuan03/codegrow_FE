@@ -39,7 +39,6 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
     const params = useParams();
     const router = useRouter();
     const courseId = params.courseId as string;
-    const lessonId = params.lessonId as string;
 
     useEffect(() => {
         const startTime = localStorage.getItem(`quiz-timer-${quiz._id}`);
@@ -110,11 +109,22 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
         setSubmissionResult(null);
 
         try {
-            const token = localStorage.getItem('token') || '';
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Token không tồn tại. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return;
+            }
+            const tokenuser = JSON.parse(token);
             const quizId = quiz._id;
 
             const response = await submitQuizCode({
-                token,
+                token: tokenuser,
                 quizId,
                 code,
             });
@@ -152,7 +162,7 @@ export default function QuizCode({ quiz }: { quiz: Quiz }) {
     };
 
     const handleBackToLesson = () => {
-        router.push(`/customer/courses/${courseId}/${lessonId}`);
+        router.push(`/customer/courses/${courseId}`);
     };
 
     return (

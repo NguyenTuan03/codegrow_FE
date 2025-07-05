@@ -17,14 +17,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CreateClassBody } from '@/schemaValidations/class.schema';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/use-toast';
-import { CalendarIcon, ClockIcon, Link2Icon, UsersIcon, ImageIcon } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { CalendarIcon, Link2Icon, UsersIcon, ImageIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { CreateClass } from '@/lib/services/class/createclass';
 import { GetCourses } from '@/lib/services/course/getcourse';
@@ -57,6 +51,8 @@ export default function CreateClassForm() {
     const [imgUrl, setImgUrl] = useState<File | undefined>(undefined);
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
+    const [isCourseOpen, setIsCourseOpen] = useState(false); // State for Course ID Popover
+    const [isTimeOpen, setIsTimeOpen] = useState(false); // State for Time Popover
 
     const form = useForm<CreateClassFormBodyType>({
         resolver: zodResolver(CreateClassFormBody),
@@ -143,7 +139,6 @@ export default function CreateClassForm() {
     };
 
     const handleSubmit = async (data: CreateClassFormBodyType) => {
-        // Validate daysOfWeek before submission
         if (!data.schedule.daysOfWeek || data.schedule.daysOfWeek.length === 0) {
             toast({
                 title: 'Error',
@@ -165,7 +160,6 @@ export default function CreateClassForm() {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-
                 return;
             }
             const tokenuser = JSON.parse(token);
@@ -242,7 +236,6 @@ export default function CreateClassForm() {
                                 <CardTitle className="text-2xl font-bold text-white">
                                     Create New Class
                                 </CardTitle>
-
                                 <p className="text-white mt-2 font-medium">
                                     Fill in the details below to create a new class
                                 </p>
@@ -295,29 +288,54 @@ export default function CreateClassForm() {
                                                     {courseLoading ? (
                                                         <Skeleton className="h-10 w-full rounded-lg" />
                                                     ) : (
-                                                        <Select
-                                                            onValueChange={field.onChange}
-                                                            defaultValue={field.value}
-                                                            value={field.value}
-                                                            required
+                                                        <Popover
+                                                            open={isCourseOpen}
+                                                            onOpenChange={setIsCourseOpen}
                                                         >
-                                                            <FormControl>
-                                                                <SelectTrigger className="focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
-                                                                    <SelectValue placeholder="Select a course" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-                                                                {courses.map((course) => (
-                                                                    <SelectItem
-                                                                        key={course._id}
-                                                                        value={course._id}
-                                                                        className="hover:bg-[#657ED4] dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
-                                                                    >
-                                                                        {course.title}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
+                                                            <PopoverTrigger asChild>
+                                                                <Button
+                                                                    type="button"
+                                                                    className="w-full justify-between bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 px-4 py-2 hover:border-[#657ED4] dark:hover:border-[#5AD3AF]"
+                                                                >
+                                                                    {courses.find(
+                                                                        (course) =>
+                                                                            course._id ===
+                                                                            field.value,
+                                                                    )?.title || 'Select a course'}
+                                                                </Button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-full max-w-xs bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-0">
+                                                                <div className="max-h-60 overflow-y-auto">
+                                                                    {courses.map((course) => (
+                                                                        <Button
+                                                                            key={course._id}
+                                                                            variant={
+                                                                                field.value ===
+                                                                                course._id
+                                                                                    ? 'default'
+                                                                                    : 'ghost'
+                                                                            }
+                                                                            className={`w-full justify-start rounded-none text-gray-900 dark:text-gray-100 hover:border-[#657ED4] dark:hover:border-[#5AD3AF] ${
+                                                                                field.value ===
+                                                                                course._id
+                                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black'
+                                                                                    : ''
+                                                                            }`}
+                                                                            onClick={() => {
+                                                                                field.onChange(
+                                                                                    course._id,
+                                                                                );
+                                                                                setIsCourseOpen(
+                                                                                    false,
+                                                                                ); // Close Popover after selection
+                                                                            }}
+                                                                        >
+                                                                            {course.title}
+                                                                        </Button>
+                                                                    ))}
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
                                                     )}
                                                     <FormMessage className="text-red-500 font-medium" />
                                                 </FormItem>
@@ -423,64 +441,90 @@ export default function CreateClassForm() {
                                             name="schedule.time"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
+                                                    <FormLabel className="text-gray-700 mt--5 dark:text-gray-200 text-base font-semibold">
                                                         Class Time*
                                                     </FormLabel>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        defaultValue={field.value}
-                                                        value={field.value}
-                                                        required
-                                                    >
-                                                        <FormControl>
-                                                            <div className="relative">
-                                                                <ClockIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                                                <SelectTrigger className="pl-10 focus:ring-2 cursor-pointer focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200">
-                                                                    <SelectValue placeholder="Select a time slot" />
-                                                                </SelectTrigger>
-                                                            </div>
-                                                        </FormControl>
-                                                        <SelectContent className="bg-white cursor-pointer dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-                                                            {[
-                                                                {
-                                                                    value: '07:00-09:00',
-                                                                    label: '7:00 - 9:00',
-                                                                },
-                                                                {
-                                                                    value: '09:00-11:00',
-                                                                    label: '9:00 - 11:00',
-                                                                },
-                                                                {
-                                                                    value: '11:00-13:00',
-                                                                    label: '11:00 - 13:00',
-                                                                },
-                                                                {
-                                                                    value: '13:00-15:00',
-                                                                    label: '13:00 - 15:00',
-                                                                },
-                                                                {
-                                                                    value: '15:00-17:00',
-                                                                    label: '15:00 - 17:00',
-                                                                },
-                                                                {
-                                                                    value: '17:00-19:00',
-                                                                    label: '17:00 - 19:00',
-                                                                },
-                                                                {
-                                                                    value: '19:00-21:00',
-                                                                    label: '19:00 - 21:00',
-                                                                },
-                                                            ].map((timeSlot) => (
-                                                                <SelectItem
-                                                                    key={timeSlot.value}
-                                                                    value={timeSlot.value}
-                                                                    className="hover:bg-[#657ED4] cursor-pointer dark:hover:bg-[#5AD3AF] hover:text-white dark:hover:text-black transition-colors font-medium"
+                                                    {courseLoading ? (
+                                                        <Skeleton className="h-10 w-full rounded-lg" />
+                                                    ) : (
+                                                        <Popover
+                                                            open={isTimeOpen}
+                                                            onOpenChange={setIsTimeOpen}
+                                                        >
+                                                            <PopoverTrigger asChild>
+                                                                <Button
+                                                                    type="button"
+                                                                    className="w-full justify-between bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 px-4 py-2 hover:border-[#657ED4] dark:hover:border-[#5AD3AF]"
                                                                 >
-                                                                    {timeSlot.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                                    {field.value ||
+                                                                        'Select a time slot'}
+                                                                </Button>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-full max-w-xs bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-0">
+                                                                <div className="max-h-60 overflow-y-auto">
+                                                                    {[
+                                                                        {
+                                                                            value: '07:00-09:00',
+                                                                            label: '7:00 - 9:00',
+                                                                        },
+                                                                        {
+                                                                            value: '09:00-11:00',
+                                                                            label: '9:00 - 11:00',
+                                                                        },
+                                                                        {
+                                                                            value: '11:00-13:00',
+                                                                            label: '11:00 - 13:00',
+                                                                        },
+                                                                        {
+                                                                            value: '13:00-15:00',
+                                                                            label: '13:00 - 15:00',
+                                                                        },
+                                                                        {
+                                                                            value: '15:00-17:00',
+                                                                            label: '15:00 - 17:00',
+                                                                        },
+                                                                        {
+                                                                            value: '17:00-19:00',
+                                                                            label: '17:00 - 19:00',
+                                                                        },
+                                                                        {
+                                                                            value: '19:00-21:00',
+                                                                            label: '19:00 - 21:00',
+                                                                        },
+                                                                    ].map((timeSlot) => (
+                                                                        <Button
+                                                                            key={timeSlot.value}
+                                                                            variant={
+                                                                                field.value ===
+                                                                                timeSlot.value
+                                                                                    ? 'default'
+                                                                                    : 'ghost'
+                                                                            }
+                                                                            className={`w-full justify-start rounded-none text-gray-900 dark:text-gray-100 hover:border-[#657ED4] dark:hover:border-[#5AD3AF] ${
+                                                                                field.value ===
+                                                                                timeSlot.value
+                                                                                    ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black'
+                                                                                    : ''
+                                                                            }`}
+                                                                            onClick={() => {
+                                                                                field.onChange(
+                                                                                    timeSlot.value,
+                                                                                );
+                                                                                setIsTimeOpen(
+                                                                                    false,
+                                                                                ); // Close Popover after selection
+                                                                            }}
+                                                                        >
+                                                                            {timeSlot.label}
+                                                                        </Button>
+                                                                    ))}
+                                                                </div>
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                    )}
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                                        Must be between 7:00 and 21:00
+                                                    </p>
                                                     <FormMessage className="text-red-500 font-medium" />
                                                 </FormItem>
                                             )}
@@ -494,16 +538,16 @@ export default function CreateClassForm() {
                                             name="schedule.startDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
                                                         Start Date*
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="relative">
-                                                            <CalendarIcon className="absolute cursor-pointer left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                             <Input
                                                                 type="date"
                                                                 {...field}
-                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                                 required
                                                             />
                                                         </div>
@@ -518,16 +562,16 @@ export default function CreateClassForm() {
                                             name="schedule.endDate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="text-gray-700  dark:text-gray-200 text-base font-semibold">
+                                                    <FormLabel className="text-gray-700 dark:text-gray-200 text-base font-semibold">
                                                         End Date*
                                                     </FormLabel>
                                                     <FormControl>
                                                         <div className="relative">
-                                                            <CalendarIcon className="absolute  left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                            <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                                             <Input
                                                                 type="date"
                                                                 {...field}
-                                                                className="pl-10 cursor-pointer focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
+                                                                className="pl-10 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
                                                                 required
                                                             />
                                                         </div>
@@ -628,7 +672,7 @@ export default function CreateClassForm() {
                                         </Button>
                                         <Button
                                             type="submit"
-                                            className="px-6 cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0]  text-white rounded-lg shadow-md transition-all duration-200 font-medium"
+                                            className="px-6 cursor-pointer bg-[#657ED4] dark:bg-[#5AD3AF] hover:bg-[#4a5da0] dark:hover:bg-[#4ac2a0] text-white rounded-lg shadow-md transition-all duration-200 font-medium"
                                             disabled={loading || courseLoading}
                                         >
                                             {loading ? (

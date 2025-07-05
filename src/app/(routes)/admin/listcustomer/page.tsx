@@ -22,6 +22,16 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from '@/components/ui/pagination';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'; // Assuming you have Dialog from @radix-ui
+import { debounce } from 'lodash';
+import { Input } from '@/components/ui/input';
 
 interface Enrollment {
     _id: string;
@@ -33,8 +43,7 @@ interface Enrollment {
     createdAt?: string;
     updatedAt?: string;
 }
-import { debounce } from 'lodash';
-import { Input } from '@/components/ui/input';
+
 export default function PendingEnrollmentsList() {
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -42,6 +51,10 @@ export default function PendingEnrollmentsList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5); // Number of items per page
     const [searchQuery, setSearchQuery] = useState(''); // Thêm trạng thái tìm kiếm
+    const [approveDialogOpen, setApproveDialogOpen] = useState(false); // State for approve confirmation
+    const [rejectDialogOpen, setRejectDialogOpen] = useState(false); // State for reject confirmation
+    const [selectedEnrollmentId, setSelectedEnrollmentId] = useState<string | null>(null); // Track selected enrollment
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -84,6 +97,7 @@ export default function PendingEnrollmentsList() {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -103,8 +117,10 @@ export default function PendingEnrollmentsList() {
         try {
             toast({
                 title: 'Success',
-                description: `Enrollment ${enrollmentId} approved!`,
+                description: `Enrollment approved!`,
                 variant: 'default',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
             setEnrollments(enrollments.filter((enrollment) => enrollment._id !== enrollmentId));
         } catch (err) {
@@ -121,8 +137,10 @@ export default function PendingEnrollmentsList() {
         try {
             toast({
                 title: 'Success',
-                description: `Enrollment ${enrollmentId} rejected!`,
+                description: `Enrollment rejected!`,
                 variant: 'destructive',
+                className:
+                    'bg-[#657ED4] dark:bg-[#5AD3AF] text-white dark:text-black font-semibold',
             });
             setEnrollments(enrollments.filter((enrollment) => enrollment._id !== enrollmentId));
         } catch (err) {
@@ -162,6 +180,7 @@ export default function PendingEnrollmentsList() {
             </div>
         );
     }
+
     const debouncedSearch = debounce((query: string) => {
         setCurrentPage(1); // Reset to first page on new search
         if (query.trim() === '') {
@@ -176,11 +195,13 @@ export default function PendingEnrollmentsList() {
             setEnrollments(filteredEnrollments);
         }
     }, 300);
+
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         setSearchQuery(value); // Update search query state
         debouncedSearch(value); // Debounced search
     };
+
     return (
         <div className="p-6">
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg">
@@ -284,9 +305,10 @@ export default function PendingEnrollmentsList() {
                                                     <Button
                                                         size="sm"
                                                         className="bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-1 cursor-pointer"
-                                                        onClick={() =>
-                                                            handleApprove(enrollment._id)
-                                                        }
+                                                        onClick={() => {
+                                                            setSelectedEnrollmentId(enrollment._id);
+                                                            setApproveDialogOpen(true);
+                                                        }}
                                                     >
                                                         <CheckCircle className="w-4 h-4" />
                                                         Approve
@@ -295,7 +317,10 @@ export default function PendingEnrollmentsList() {
                                                         size="sm"
                                                         variant="destructive"
                                                         className="bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-1 cursor-pointer"
-                                                        onClick={() => handleReject(enrollment._id)}
+                                                        onClick={() => {
+                                                            setSelectedEnrollmentId(enrollment._id);
+                                                            setRejectDialogOpen(true);
+                                                        }}
                                                     >
                                                         <XCircle className="w-4 h-4" />
                                                         Reject
@@ -306,6 +331,70 @@ export default function PendingEnrollmentsList() {
                                     </TableBody>
                                 </Table>
                             </div>
+
+                            {/* Approve Confirmation Dialog */}
+                            <Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
+                                <DialogContent className="z-50 bg-amber-50">
+                                    <DialogHeader>
+                                        <DialogTitle>Confirm Approval</DialogTitle>
+                                    </DialogHeader>
+                                    <DialogDescription>
+                                        Are you sure you want to approve this enrollment?
+                                    </DialogDescription>
+                                    <DialogFooter>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setApproveDialogOpen(false)}
+                                            className="mr-2"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                if (selectedEnrollmentId) {
+                                                    handleApprove(selectedEnrollmentId);
+                                                    setApproveDialogOpen(false);
+                                                }
+                                            }}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
+                            {/* Reject Confirmation Dialog */}
+                            <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+                                <DialogContent className="z-50 bg-amber-100">
+                                    <DialogHeader>
+                                        <DialogTitle>Confirm Rejection</DialogTitle>
+                                    </DialogHeader>
+                                    <DialogDescription>
+                                        Are you sure you want to reject this enrollment?
+                                    </DialogDescription>
+                                    <DialogFooter>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setRejectDialogOpen(false)}
+                                            className="mr-2"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            className="bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-all duration-200"
+                                            variant="destructive"
+                                            onClick={() => {
+                                                if (selectedEnrollmentId) {
+                                                    handleReject(selectedEnrollmentId);
+                                                    setRejectDialogOpen(false);
+                                                }
+                                            }}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
 
                             {/* Pagination Controls */}
                             {totalPages > 1 && (

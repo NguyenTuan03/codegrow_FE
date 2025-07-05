@@ -6,7 +6,7 @@ import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { GetServicesTicketMine } from '@/lib/services/services/getservicemine';
 import { SendSupportService } from '@/lib/services/services/sendsupportservice';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Book, MessageSquare, Send, Search } from 'lucide-react';
+import { Book, MessageSquare, Send, Search } from 'lucide-react';
 import {
     Form,
     FormControl,
@@ -17,13 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -46,6 +39,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { GetClass } from '@/lib/services/class/getclass';
 import { debounce } from 'lodash';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Assuming Popover is available
 
 interface Course {
     _id: string;
@@ -87,6 +81,8 @@ export default function SupportPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isCourseOpen, setIsCourseOpen] = useState(false); // State to control Course Popover
+    const [isClassOpen, setIsClassOpen] = useState(false); // State to control Class Popover
     const limit = 6;
     const router = useRouter();
 
@@ -324,100 +320,130 @@ export default function SupportPage() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="courseId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                                <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                Course (Optional)
-                                            </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value || ''}
-                                                disabled={isSubmitting || courses.length === 0}
-                                            >
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="courseId"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                                    <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    Course (Optional)
+                                                </FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger
-                                                        className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 ${
-                                                            courses.length === 0
-                                                                ? 'text-gray-400 cursor-not-allowed'
-                                                                : ''
-                                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    <Popover
+                                                        open={isCourseOpen}
+                                                        onOpenChange={setIsCourseOpen}
                                                     >
-                                                        <SelectValue
-                                                            placeholder={
-                                                                courses.length === 0
-                                                                    ? 'No courses enrolled'
-                                                                    : 'Select a course (optional)'
-                                                            }
-                                                        />
-                                                    </SelectTrigger>
+                                                        <PopoverTrigger asChild>
+                                                            <Button
+                                                                variant="outline"
+                                                                className={`w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 ${
+                                                                    isSubmitting ||
+                                                                    courses.length === 0
+                                                                        ? 'opacity-50 cursor-not-allowed'
+                                                                        : ''
+                                                                }`}
+                                                                disabled={
+                                                                    isSubmitting ||
+                                                                    courses.length === 0
+                                                                }
+                                                            >
+                                                                {field.value
+                                                                    ? courses.find(
+                                                                          (c) =>
+                                                                              c._id === field.value,
+                                                                      )?.title || 'Select a course'
+                                                                    : 'Select a course (optional)'}
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                                            {courses.map((course) => (
+                                                                <div
+                                                                    key={course._id}
+                                                                    onClick={() => {
+                                                                        field.onChange(course._id);
+                                                                        setIsCourseOpen(false); // Close Popover after selection
+                                                                    }}
+                                                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4 cursor-pointer"
+                                                                >
+                                                                    {course.title}
+                                                                </div>
+                                                            ))}
+                                                            {courses.length === 0 && (
+                                                                <div className="text-gray-400 text-center py-2">
+                                                                    No courses enrolled
+                                                                </div>
+                                                            )}
+                                                        </PopoverContent>
+                                                    </Popover>
                                                 </FormControl>
-                                                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                                    {courses.map((course) => (
-                                                        <SelectItem
-                                                            key={course._id}
-                                                            value={course._id}
-                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4"
-                                                        >
-                                                            {course.title}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="classId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                                <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                Class (Optional)
-                                            </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value || ''}
-                                                disabled={isSubmitting || classes.length === 0}
-                                            >
+                                                <FormMessage className="text-red-500 dark:text-red-400" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="classId"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormLabel className="flex items-center text-xl font-semibold text-gray-800 dark:text-gray-200">
+                                                    <Book className="h-5 w-5 mr-2 text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                    Class (Optional)
+                                                </FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger
-                                                        className={`border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 ${
-                                                            classes.length === 0
-                                                                ? 'text-gray-400 cursor-not-allowed'
-                                                                : ''
-                                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                    <Popover
+                                                        open={isClassOpen}
+                                                        onOpenChange={setIsClassOpen}
                                                     >
-                                                        <SelectValue
-                                                            placeholder={
-                                                                classes.length === 0
-                                                                    ? 'No class enrolled'
-                                                                    : 'Select a class (optional)'
-                                                            }
-                                                        />
-                                                    </SelectTrigger>
+                                                        <PopoverTrigger asChild>
+                                                            <Button
+                                                                variant="outline"
+                                                                className={`w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-transparent transition-all duration-200 ${
+                                                                    isSubmitting ||
+                                                                    classes.length === 0
+                                                                        ? 'opacity-50 cursor-not-allowed'
+                                                                        : ''
+                                                                }`}
+                                                                disabled={
+                                                                    isSubmitting ||
+                                                                    classes.length === 0
+                                                                }
+                                                            >
+                                                                {field.value
+                                                                    ? classes.find(
+                                                                          (c) =>
+                                                                              c._id === field.value,
+                                                                      )?.title || 'Select a class'
+                                                                    : 'Select a class (optional)'}
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                                            {classes.map((course) => (
+                                                                <div
+                                                                    key={course._id}
+                                                                    onClick={() => {
+                                                                        field.onChange(course._id);
+                                                                        setIsClassOpen(false); // Close Popover after selection
+                                                                    }}
+                                                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4 cursor-pointer"
+                                                                >
+                                                                    {course.title}
+                                                                </div>
+                                                            ))}
+                                                            {classes.length === 0 && (
+                                                                <div className="text-gray-400 text-center py-2">
+                                                                    No class enrolled
+                                                                </div>
+                                                            )}
+                                                        </PopoverContent>
+                                                    </Popover>
                                                 </FormControl>
-                                                <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                                    {classes.map((course) => (
-                                                        <SelectItem
-                                                            key={course._id}
-                                                            value={course._id}
-                                                            className="hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200 py-2 px-4"
-                                                        >
-                                                            {course.title}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage className="text-red-500 dark:text-red-400" />
-                                        </FormItem>
-                                    )}
-                                />
+                                                <FormMessage className="text-red-500 dark:text-red-400" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                                 <FormField
                                     control={form.control}
                                     name="message"
@@ -506,14 +532,6 @@ export default function SupportPage() {
                                 />
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                             </div>
-                            <Button
-                                onClick={() => fetchTickets(currentPage)}
-                                className="bg-gradient-to-r from-[#657ED4] to-[#4a5da0] dark:from-[#5AD3AF] dark:to-[#4ac2a0] text-white rounded-lg px-6 py-2 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:outline-none transition-all duration-200 flex items-center hover:from-[#424c70] hover:to-[#3a4a80] dark:hover:from-[#4ac2a0] dark:hover:bg-[#3a9c80]"
-                                aria-label="Refresh tickets"
-                            >
-                                <RefreshCw className="h-5 w-5 mr-2 animate-spin-slow" />
-                                Refresh
-                            </Button>
                         </div>
                     </div>
                     {filteredTickets.length === 0 ? (

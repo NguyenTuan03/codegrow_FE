@@ -255,25 +255,6 @@ const ProfileForm = ({ profile }: { profile: Profile }) => {
                                         </FormItem>
                                     )}
                                 />
-
-                                {/* Wallet */}
-                                <FormItem>
-                                    <FormLabel className="text-gray- text-base dark:text-gray-200 font-semibold cursor-default">
-                                        Wallet
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="flex items-center space-x-2">
-                                            <Input
-                                                value={profile.wallet}
-                                                readOnly
-                                                className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg cursor-default"
-                                            />
-                                            <span className="text-gray-500 dark:text-gray-400 font-medium cursor-default">
-                                                VNĐ
-                                            </span>
-                                        </div>
-                                    </FormControl>
-                                </FormItem>
                             </div>
 
                             {/* Action Buttons */}

@@ -14,6 +14,7 @@ import { GetProgress } from '@/lib/services/api/progress';
 import { getUserDetail } from '@/lib/services/admin/getuserdetail';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     Pagination,
     PaginationContent,
@@ -21,7 +22,7 @@ import {
     PaginationLink,
     PaginationPrevious,
     PaginationNext,
-} from '@/components/ui/pagination'; // Import pagination components
+} from '@/components/ui/pagination';
 
 interface Category {
     _id: string;
@@ -73,8 +74,10 @@ const HomePage = () => {
     const [showChat, setShowChat] = useState(false);
     const [courseProgress, setCourseProgress] = useState<{ [courseId: string]: number }>({});
     const [user, setUser] = useState<User | null>(null);
-    const [currentPage, setCurrentPage] = useState(1); // State for current page
-    const [itemsPerPage] = useState(3); // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(2);
+    const [loading, setLoading] = useState<boolean>(true);
+    const router = useRouter();
 
     const benefitsRef = useRef(null);
     const skillsRef = useRef(null);
@@ -89,7 +92,6 @@ const HomePage = () => {
     const fetchProgress = async (courseId: string) => {
         try {
             const token = localStorage.getItem('token');
-            console.log('[04:15 PM +07, 22/06/2025] Token user:', token);
             if (!token) {
                 toast({
                     title: 'Lỗi',
@@ -97,28 +99,50 @@ const HomePage = () => {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
+                router.push('/login');
                 return 0;
             }
             const tokenuser = JSON.parse(token);
 
             const userId = localStorage.getItem('user');
             if (!userId) {
-                throw new Error('User ID not found in localStorage');
+                toast({
+                    title: 'Lỗi',
+                    description: 'Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+                return 0;
             }
             const user = JSON.parse(userId);
             const id = user.id;
-            const progressData = await GetProgress(tokenuser, courseId, id);
-            console.log('[04:15 PM +07, 22/06/2025] progressData:', progressData);
 
-            if (progressData?.status === 200 && progressData.metadata) {
-                return progressData.metadata.progress || 0;
+            // Sử dụng cùng thứ tự tham số như trong CourseInProgress
+            const response = await GetProgress(tokenuser, id, courseId);
+
+            if (response?.status === 200 && response.metadata) {
+                return response.metadata.progress || 0;
             }
             return 0;
         } catch (error) {
-            console.log(
-                `[04:15 PM +07, 22/06/2025] Error fetching progress for course ${courseId}:`,
-                error,
-            );
+            console.error(`Error fetching progress for course ${courseId}:`, error);
+            if (error instanceof Error && error.message.includes('Phiên đăng nhập hết hạn')) {
+                toast({
+                    title: 'Lỗi',
+                    description: 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
+                });
+                router.push('/login');
+            } else {
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load course progress. Please try again later.',
+                    variant: 'destructive',
+                    className: 'bg-[#F76F8E] text-white dark:text-black',
+                });
+            }
             return 0;
         }
     };
@@ -128,7 +152,7 @@ const HomePage = () => {
             const data = await GetAllCategory(1, 100);
             setCategories(data?.metadata?.categories || []);
         } catch (error) {
-            console.log('[04:15 PM +07, 22/06/2025] Failed to fetch categories:', error);
+            console.error('Failed to fetch categories:', error);
         }
     };
 
@@ -137,41 +161,24 @@ const HomePage = () => {
             const limit = 10;
             const data: ApiResponse = await GetCourses(1, limit);
             if (data?.metadata?.courses && data.metadata.courses.length > 0) {
-                const parsedCourses = data.metadata.courses.map((course: Course) => {
-                    let categoryObj = categories.find((cat) => cat._id === course.category);
-                    if (!categoryObj && typeof course.category === 'object') {
-                        categoryObj = course.category as Category;
-                    }
-                    return {
-                        ...course,
-                        category: categoryObj || { _id: '', name: 'Uncategorized' },
-                    };
-                });
+                // Lấy progress cho tất cả các khóa học đã enroll
+                if (user?.enrolledCourses && user.enrolledCourses.length > 0) {
+                    const progressMap: { [courseId: string]: number } = {};
 
-                const progressPromises = parsedCourses
-                    .filter((course) => user?.enrolledCourses.some((ec) => ec._id === course._id))
-                    .map(async (course) => {
+                    for (const course of user.enrolledCourses) {
                         const progress = await fetchProgress(course._id);
-                        return { courseId: course._id, progress };
-                    });
+                        progressMap[course._id] = progress;
+                    }
 
-                const progressResults = await Promise.all(progressPromises);
-                const progressMap = progressResults.reduce(
-                    (acc, { courseId, progress }) => {
-                        acc[courseId] = progress;
-                        return acc;
-                    },
-                    {} as { [courseId: string]: number },
-                );
-
-                setCourseProgress(progressMap);
+                    setCourseProgress(progressMap);
+                }
             } else {
                 throw new Error(
                     'No courses found. Please check your connection or try again later.',
                 );
             }
         } catch (error) {
-            console.log('[04:15 PM +07, 22/06/2025] Error fetching courses:', error);
+            console.error('Error fetching courses:', error);
         }
     };
 
@@ -187,14 +194,19 @@ const HomePage = () => {
             const userDetail = await getUserDetail(id);
             setUser(userDetail.metadata);
         } catch (error) {
-            console.log('[04:15 PM +07, 22/06/2025] Error fetching user detail:', error);
+            console.error('Error fetching user detail:', error);
             setUser(null);
         }
     };
 
     useEffect(() => {
-        fetchCategories();
-        fetchUserDetail();
+        const loadData = async () => {
+            setLoading(true);
+            await fetchCategories();
+            await fetchUserDetail();
+            setLoading(false);
+        };
+        loadData();
     }, []);
 
     useEffect(() => {
@@ -300,36 +312,45 @@ const HomePage = () => {
                     <div className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 cursor-default">
                         Your track
                     </div>
-                    {user && currentEnrolledCourses.length > 0 ? (
-                        currentEnrolledCourses.map((course) => (
-                            <div key={course._id} className="flex flex-col mb-4">
-                                <div className="flex flex-row items-center">
-                                    <Image
-                                        src={course.imgUrl || '/C.png'}
-                                        width={40}
-                                        height={40}
-                                        alt={course.title}
-                                    />
-                                    <div className="flex flex-col ml-4 text-xl w-full">
-                                        <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                            {course.title}
-                                        </span>
-                                        <Progress
-                                            value={courseProgress[course._id] || 0}
-                                            className="w-[200px] bg-gray-200 dark:bg-gray-600 mt-2"
+                    {loading ? (
+                        <div className="text-gray-600 dark:text-gray-400 text-sm text-center py-4">
+                            Loading course progress...
+                        </div>
+                    ) : user && currentEnrolledCourses.length > 0 ? (
+                        currentEnrolledCourses.map((course) => {
+                            const progress = courseProgress[course._id] || 0;
+
+                            return (
+                                <div key={course._id} className="flex flex-col mb-4">
+                                    <div className="flex flex-row items-center">
+                                        <Image
+                                            src={course.imgUrl || '/C.png'}
+                                            width={40}
+                                            height={40}
+                                            alt={course.title}
                                         />
-                                        <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default mt-1">
-                                            {courseProgress[course._id] || 0}% completed
+                                        <div className="flex flex-col ml-4 text-xl w-full">
+                                            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                {course.title}
+                                            </span>
+                                            <Progress
+                                                value={progress}
+                                                className="w-[200px] bg-gray-200 dark:bg-gray-600 mt-2 h-2 rounded-full [&_.progress-indicator]:bg-[#657ED4] dark:[&_.progress-indicator]:bg-[#5AD3AF]"
+                                            />
+                                            <div className="text-sm text-gray-900 dark:text-gray-300 cursor-default mt-1">
+                                                {Math.round(progress)}% completed
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
                         <div className="text-sm text-gray-600 dark:text-gray-400 cursor-default">
                             No enrolled courses yet. Start exploring courses!
                         </div>
                     )}
+
                     {/* Pagination */}
                     {user?.enrolledCourses && user.enrolledCourses.length > itemsPerPage && (
                         <div className="mt-6 flex justify-center">
@@ -394,7 +415,7 @@ const HomePage = () => {
                             </h2>
                             <p className="text-base text-gray-500 dark:text-gray-300 mb-6 font-medium cursor-default">
                                 Mentoring is a great way to reinforce your own learning, and help
-                                students learn and discover the things they don’t know.
+                                students learn and discover the things they don't know.
                             </p>
                             <div className="flex justify-center gap-4">
                                 <Button
@@ -420,12 +441,13 @@ const HomePage = () => {
                 initial="hidden"
                 animate={benefitsInView ? 'visible' : 'hidden'}
                 variants={sectionVariants}
-                className="mt-65 mb-15"
+                className="mt-16 mb-16 px-4 sm:px-6 lg:px-8 mx-auto max-w-8xl mt-65"
             >
-                <h3 className="text-center font-bold text-4xl mb-6 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
+                <h3 className="text-center font-bold text-4xl mb-12 text-[#657ED4] dark:text-[#5AD3AF] cursor-default">
                     What you get from CODEGROW
                 </h3>
-                <div className="grid mt-20 font-bold grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mx-auto">
                     {[
                         {
                             title: 'STRUCTURED COURSES',
@@ -452,22 +474,30 @@ const HomePage = () => {
                                 'Connect with a lively community of learners and mentors, where you can exchange ideas, seek help, and thrive with continuous support.',
                         },
                     ].map((item, index) => (
-                        <motion.div key={index} variants={itemVariants}>
-                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border-gray-100 dark:border-gray-700">
-                                <div className="relative w-full h-[200px] mb-4">
+                        <motion.div
+                            key={index}
+                            variants={itemVariants}
+                            className="flex flex-col h-full"
+                            whileHover={{ y: -5 }}
+                        >
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md transition duration-300 border border-gray-200 dark:border-gray-600 flex flex-col h-full">
+                                <div className="relative w-full aspect-square mb-6 mx-auto max-w-[200px]">
                                     <Image
                                         src={item.image}
                                         alt={item.title}
                                         fill
                                         className="object-contain"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="font-bold text-xl mb-3 text-gray-900 dark:text-gray-100 cursor-default text-center">
-                                    {item.title}
+                                <div className="text-center space-y-4 flex-grow">
+                                    <h4 className="font-bold text-xl text-gray-900 dark:text-gray-100">
+                                        {item.title}
+                                    </h4>
+                                    <p className="text-gray-500 dark:text-gray-300 leading-relaxed font-medium">
+                                        {item.description}
+                                    </p>
                                 </div>
-                                <p className="text-base text-gray-500 dark:text-gray-300 leading-relaxed font-medium cursor-default text-center">
-                                    {item.description}
-                                </p>
                             </div>
                         </motion.div>
                     ))}

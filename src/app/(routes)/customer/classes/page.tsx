@@ -95,12 +95,6 @@ export default function Classes() {
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            toast({
-                title: 'Error',
-                description: 'User data is missing. Please log in.',
-                variant: 'destructive',
-                className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
-            });
             return;
         }
 
@@ -245,20 +239,20 @@ export default function Classes() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="p-6 sm:p-10 mx-auto py-8 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300"
+            className="p-6 sm:p-6 mx-auto py-6 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300"
         >
             <div className="max-w-8xl mx-auto">
-                {/* Header and Search (unchanged) */}
+                {/* Header and Search */}
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4"
+                    className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-6 gap-4 p-6"
                 >
                     <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                         Available Classes
                     </h1>
-                    <div className="relative w-full sm:w-1/2 lg:w-1/3">
+                    <div className="relative w-full sm:w-1/2 lg:w-1/3 p-6">
                         <Input
                             type="text"
                             placeholder="Search by class name"
@@ -274,7 +268,7 @@ export default function Classes() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="flex justify-center items-center h-64"
+                        className="flex justify-center items-center h-64 p-6"
                     >
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5AD3AF]"></div>
                     </motion.div>
@@ -283,9 +277,10 @@ export default function Classes() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
+                        className="p-6"
                     >
                         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
-                            <CardHeader>
+                            <CardHeader className="p-6">
                                 <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                     No Classes Found
                                 </CardTitle>
@@ -301,7 +296,7 @@ export default function Classes() {
                             variants={containerVariants}
                             initial="hidden"
                             animate="show"
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
                         >
                             {filteredClasses.map((course) => {
                                 const isEnrolled = currentUserId
@@ -327,21 +322,23 @@ export default function Classes() {
                                                         ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${course.imgUrl})`
                                                         : course.bgColor
                                                           ? course.bgColor
-                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)', // Fallback gradient
                                                     backgroundColor: course.imgUrl
                                                         ? 'transparent'
-                                                        : '#5AD3AF',
+                                                        : course.bgColor
+                                                          ? course.bgColor
+                                                          : '#5AD3AF', // Fallback solid color
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
                                                     top: '-24px',
                                                 }}
                                             />
-                                            <CardHeader className="pt-4">
+                                            <CardHeader className="p-6">
                                                 <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 line-clamp-1">
                                                     {course.title}
                                                 </CardTitle>
                                             </CardHeader>
-                                            <CardContent className="space-y-3">
+                                            <CardContent className="p-6 space-y-3">
                                                 <div className="flex items-center gap-2">
                                                     <User className="h-4 w-4 text-[#657ED4] dark:text-[#5AD3AF]" />
                                                     <span className="text-xl text-gray-600 dark:text-gray-400 font-medium">
@@ -367,7 +364,7 @@ export default function Classes() {
                                                     </Badge>
                                                 </div>
                                             </CardContent>
-                                            <CardFooter className="flex justify-between">
+                                            <CardFooter className="p-6">
                                                 <motion.div
                                                     whileHover={{ scale: 1.02 }}
                                                     whileTap={{ scale: 0.98 }}
@@ -398,7 +395,7 @@ export default function Classes() {
                         <AnimatePresence>
                             {isModalOpen && selectedClass && (
                                 <motion.div
-                                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                    className="fixed inset-0 z-50 flex items-center justify-center p-6"
                                     initial="hidden"
                                     animate="visible"
                                     exit="hidden"
@@ -411,14 +408,14 @@ export default function Classes() {
                                         exit={{ opacity: 0 }}
                                     />
                                     <motion.div
-                                        className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-8 max-h-[90vh] overflow-y-auto"
+                                        className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-auto p-6 max-h-[90vh] overflow-y-auto"
                                         variants={popupVariants}
                                     >
                                         <motion.button
                                             onClick={closeModal}
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
-                                            className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
+                                            className="absolute top-6 right-6 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -435,21 +432,23 @@ export default function Classes() {
                                                 />
                                             </svg>
                                         </motion.button>
-                                        <div className="flex flex-col items-center space-y-6">
+                                        <div className="flex flex-col items-center space-y-6 p-6">
                                             <motion.div
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.1 }}
-                                                className="relative h-70 w-full overflow-hidden rounded-t-xl mb-4"
+                                                className="relative h-70 w-full overflow-hidden rounded-t-xl mb-6"
                                                 style={{
                                                     backgroundImage: selectedClass.imgUrl
                                                         ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedClass.imgUrl})`
                                                         : selectedClass.bgColor
                                                           ? selectedClass.bgColor
-                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)', // Fallback gradient
                                                     backgroundColor: selectedClass.imgUrl
                                                         ? 'transparent'
-                                                        : '#5AD3AF',
+                                                        : selectedClass.bgColor
+                                                          ? selectedClass.bgColor
+                                                          : '#5AD3AF', // Fallback solid color
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
                                                 }}
@@ -458,7 +457,7 @@ export default function Classes() {
                                                 initial={{ y: -10, opacity: 0 }}
                                                 animate={{ y: 0, opacity: 1 }}
                                                 transition={{ delay: 0.2 }}
-                                                className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default"
+                                                className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-6"
                                             >
                                                 {selectedClass.title}
                                             </motion.h3>
@@ -466,7 +465,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.3 }}
-                                                className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-4 cursor-default"
+                                                className="text-xl text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-6"
                                             >
                                                 {selectedClass.description}
                                             </motion.p>
@@ -474,7 +473,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.4 }}
-                                                className="flex flex-wrap items-center gap-4 sm:gap-6 text-xl text-gray-600 dark:text-gray-300"
+                                                className="flex flex-wrap items-center gap-6 text-xl text-gray-600 dark:text-gray-300"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
@@ -495,7 +494,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.5 }}
-                                                className="flex flex-wrap gap-2 mb-4"
+                                                className="flex flex-wrap gap-2 mb-6"
                                             >
                                                 {selectedClass.schedule.daysOfWeek.map((day) => (
                                                     <Badge
@@ -518,7 +517,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.6 }}
-                                                className="flex flex-col sm:flex-row gap-3 w-full"
+                                                className="flex flex-col sm:flex-row gap-6 w-full"
                                             >
                                                 {currentUserId &&
                                                 selectedClass.students.includes(currentUserId) ? (
@@ -569,7 +568,7 @@ export default function Classes() {
                         <AnimatePresence>
                             {isJoinModalOpen && selectedClass && (
                                 <motion.div
-                                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                    className="fixed inset-0 z-50 flex items-center justify-center p-6"
                                     initial="hidden"
                                     animate="visible"
                                     exit="hidden"
@@ -582,14 +581,14 @@ export default function Classes() {
                                         exit={{ opacity: 0 }}
                                     />
                                     <motion.div
-                                        className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 p-8 max-h-[90vh] overflow-y-auto"
+                                        className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-auto p-6 max-h-[90vh] overflow-y-auto"
                                         variants={popupVariants}
                                     >
                                         <motion.button
                                             onClick={closeJoinModal}
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
-                                            className="absolute top-4 right-4 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
+                                            className="absolute top-6 right-6 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 transition-colors cursor-pointer"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -606,12 +605,12 @@ export default function Classes() {
                                                 />
                                             </svg>
                                         </motion.button>
-                                        <div className="flex flex-col items-center space-y-6">
+                                        <div className="flex flex-col items-center space-y-6 p-6">
                                             <motion.h3
                                                 initial={{ y: -10, opacity: 0 }}
                                                 animate={{ y: 0, opacity: 1 }}
                                                 transition={{ delay: 0.2 }}
-                                                className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 cursor-default"
+                                                className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-6"
                                             >
                                                 Join {selectedClass.title}
                                             </motion.h3>
@@ -619,16 +618,18 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.1 }}
-                                                className="relative h-40 w-full overflow-hidden rounded-xl mb-4"
+                                                className="relative h-40 w-full overflow-hidden rounded-xl mb-6"
                                                 style={{
                                                     backgroundImage: selectedClass.imgUrl
                                                         ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${selectedClass.imgUrl})`
                                                         : selectedClass.bgColor
                                                           ? selectedClass.bgColor
-                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)',
+                                                          : 'linear-gradient(to bottom, #5AD3AF, #4ac2a0)', // Fallback gradient
                                                     backgroundColor: selectedClass.imgUrl
                                                         ? 'transparent'
-                                                        : '#5AD3AF',
+                                                        : selectedClass.bgColor
+                                                          ? selectedClass.bgColor
+                                                          : '#5AD3AF', // Fallback solid color
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
                                                 }}
@@ -637,7 +638,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.3 }}
-                                                className="text-lg text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-4 cursor-default"
+                                                className="text-lg text-gray-600 dark:text-gray-300 font-medium leading-relaxed text-center mb-6"
                                             >
                                                 {selectedClass.description}
                                             </motion.p>
@@ -645,7 +646,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.4 }}
-                                                className="flex flex-wrap items-center gap-4 sm:gap-6 text-lg text-gray-600 dark:text-gray-300"
+                                                className="flex flex-wrap items-center gap-6 text-lg text-gray-600 dark:text-gray-300"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Users className="w-5 h-5 text-[#657ED4] dark:text-[#5AD3AF]" />
@@ -666,7 +667,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.5 }}
-                                                className="flex flex-wrap gap-2 mb-4"
+                                                className="flex flex-wrap gap-2 mb-6"
                                             >
                                                 {selectedClass.schedule.daysOfWeek.map((day) => (
                                                     <Badge
@@ -691,11 +692,11 @@ export default function Classes() {
                                                 transition={{ delay: 0.6 }}
                                                 className="text-center text-gray-600 dark:text-gray-300"
                                             >
-                                                <p className="text-lg font-medium mb-4">
+                                                <p className="text-lg font-medium mb-6">
                                                     To join this class, please complete the contact
                                                     form with your details. Follow these steps:
                                                 </p>
-                                                <ul className="list-disc text-left pl-6 mb-4">
+                                                <ul className="list-disc text-left pl-6 mb-6">
                                                     <li>Go to the "Classroom" page.</li>
                                                     <li>
                                                         Fill out the contact form with your
@@ -710,7 +711,7 @@ export default function Classes() {
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.7 }}
-                                                className="flex flex-col sm:flex-row gap-3 w-full"
+                                                className="flex flex-col sm:flex-row gap-6 w-full"
                                             >
                                                 <motion.div
                                                     whileHover={{ scale: 1.02 }}
@@ -750,7 +751,7 @@ export default function Classes() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
-                                className="mt-16 flex justify-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md"
+                                className="mt-6 flex justify-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mx-auto"
                             >
                                 <Pagination>
                                     <PaginationContent>

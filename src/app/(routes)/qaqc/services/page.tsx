@@ -1,19 +1,10 @@
 'use client';
-
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { GetServicesTicket } from '@/lib/services/services/getallservice';
 import ServiceTicketReplyForm from '@/app/(routes)/qaqc/services/Reply-form';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import {
     Pagination,
     PaginationContent,
@@ -31,6 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Assuming Popover is available
 
 interface ServiceTicket {
     _id: string;
@@ -59,6 +51,7 @@ export default function SupportPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [isStatusOpen, setIsStatusOpen] = useState(false); // State to control Status Popover
     const limit = 3;
 
     const fetchTickets = async (page: number = 1) => {
@@ -103,6 +96,7 @@ export default function SupportPage() {
     const handleStatusFilterChange = (value: string) => {
         setStatusFilter(value);
         filterTickets(tickets, value);
+        setIsStatusOpen(false); // Close Popover after selection
     };
 
     const handlePageChange = (page: number) => {
@@ -157,46 +151,45 @@ export default function SupportPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Select onValueChange={handleStatusFilterChange} value={statusFilter}>
-                            <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer">
-                                <SelectValue placeholder="Filter by status" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg">
-                                <SelectItem
-                                    value="All"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
+                        <Popover open={isStatusOpen} onOpenChange={setIsStatusOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-[180px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] rounded-lg cursor-pointer"
+                                >
+                                    {statusFilter === 'All' ? 'Filter by status' : statusFilter}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[180px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-lg shadow-lg">
+                                <div
+                                    onClick={() => handleStatusFilterChange('All')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer py-2 px-4"
                                 >
                                     All Tickets
-                                </SelectItem>
-                                <SelectItem
-                                    value="pending"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
+                                </div>
+                                <div
+                                    onClick={() => handleStatusFilterChange('pending')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer py-2 px-4 flex items-center"
                                 >
-                                    <span className="flex items-center">
-                                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-                                        Pending
-                                    </span>
-                                </SelectItem>
-                                <SelectItem
-                                    value="resolved"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
+                                    <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                    Pending
+                                </div>
+                                <div
+                                    onClick={() => handleStatusFilterChange('resolved')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer py-2 px-4 flex items-center"
                                 >
-                                    <span className="flex items-center">
-                                        <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                        Resolved
-                                    </span>
-                                </SelectItem>
-                                <SelectItem
-                                    value="rejected"
-                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer"
+                                    <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                    Resolved
+                                </div>
+                                <div
+                                    onClick={() => handleStatusFilterChange('rejected')}
+                                    className="hover:bg-gray-100 dark:hover:bg-gray-700 text-base font-medium cursor-pointer py-2 px-4 flex items-center"
                                 >
-                                    <span className="flex items-center">
-                                        <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
-                                        Rejected
-                                    </span>
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                                    Rejected
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                         <Button
                             onClick={() => fetchTickets(currentPage)}
                             variant="outline"
@@ -495,7 +488,7 @@ export default function SupportPage() {
                                                         isActive={currentPage === pageNum}
                                                         className={
                                                             currentPage === pageNum
-                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer'
+                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer font-bold' // Added font-bold for active page
                                                                 : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer'
                                                         }
                                                     >
