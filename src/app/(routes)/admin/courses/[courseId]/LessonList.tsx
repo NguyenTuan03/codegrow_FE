@@ -304,165 +304,170 @@ export default function LessonList({ courseId, coursePrice }: LessonListProps) {
                                         Create New Lesson
                                     </DialogTitle>
                                 </DialogHeader>
-                                <form
-                                    onSubmit={(e) => {
-                                        e.preventDefault();
-                                        if (!formData.title.trim()) {
-                                            toast({
-                                                title: 'Error',
-                                                description: 'Lesson title is required.',
-                                                variant: 'destructive',
-                                            });
-                                            return;
-                                        }
-                                        if (formData.order < 0) {
-                                            toast({
-                                                title: 'Error',
-                                                description:
-                                                    'Lesson order must be a non-negative number.',
-                                                variant: 'destructive',
-                                            });
-                                            return;
-                                        }
-                                        handleCreateLesson();
-                                    }}
-                                    className="space-y-6 mt-4"
-                                >
-                                    <div>
-                                        <Label
-                                            htmlFor="title"
-                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Title <span className="text-red-500">*</span>
-                                        </Label>
-                                        <Input
-                                            id="title"
-                                            name="title"
-                                            value={formData.title}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter lesson title..."
-                                            className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label
-                                            htmlFor="content"
-                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Content
-                                        </Label>
-                                        <Textarea
-                                            id="content"
-                                            name="content"
-                                            value={formData.content}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter lesson content (optional)..."
-                                            className="mt-2 min-h-[100px] bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label
-                                            htmlFor="order"
-                                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                                        >
-                                            Order <span className="text-red-500">*</span>
-                                        </Label>
-                                        <Input
-                                            id="order"
-                                            name="order"
-                                            type="number"
-                                            value={formData.order}
-                                            onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    order: parseInt(e.target.value) || 0,
-                                                }))
+                                <div className="max-h-[400px] overflow-y-auto">
+                                    {' '}
+                                    {/* Scrollable container */}
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            if (!formData.title.trim()) {
+                                                toast({
+                                                    title: 'Error',
+                                                    description: 'Lesson title is required.',
+                                                    variant: 'destructive',
+                                                });
+                                                return;
                                             }
-                                            placeholder="Enter lesson order..."
-                                            className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
-                                            required
-                                            min="0"
-                                        />
-                                    </div>
-                                    {isFreeCourse ? (
+                                            if (formData.order < 0) {
+                                                toast({
+                                                    title: 'Error',
+                                                    description:
+                                                        'Lesson order must be a non-negative number.',
+                                                    variant: 'destructive',
+                                                });
+                                                return;
+                                            }
+                                            handleCreateLesson();
+                                        }}
+                                        className="space-y-6 mt-4"
+                                    >
                                         <div>
                                             <Label
-                                                htmlFor="free_url"
+                                                htmlFor="title"
                                                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
                                             >
-                                                Video URL
+                                                Title <span className="text-red-500">*</span>
                                             </Label>
                                             <Input
-                                                id="free_url"
-                                                name="free_url"
-                                                value={formData.free_url}
+                                                id="title"
+                                                name="title"
+                                                value={formData.title}
                                                 onChange={handleInputChange}
-                                                placeholder="Enter video URL (e.g., YouTube link)..."
+                                                placeholder="Enter lesson title..."
                                                 className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
+                                                required
                                             />
                                         </div>
-                                    ) : (
                                         <div>
                                             <Label
-                                                htmlFor="video-upload"
+                                                htmlFor="content"
                                                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
                                             >
-                                                Video
+                                                Content
                                             </Label>
-                                            <div className="flex items-center gap-4">
-                                                <label
-                                                    htmlFor="video-upload"
-                                                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                                                >
-                                                    <Upload className="h-5 w-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
-                                                    <span className="text-gray-700 dark:text-gray-300">
-                                                        Upload Video
-                                                    </span>
-                                                    <input
-                                                        id="video-upload"
-                                                        type="file"
-                                                        accept="video/mp4,video/webm,video/ogg"
-                                                        onChange={handleVideoUpload}
-                                                        className="hidden"
-                                                    />
-                                                </label>
-                                            </div>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                                                Optional: Upload a video (MP4, WebM, OGG, max 50MB)
-                                            </p>
-                                            {selectedVideo && (
-                                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                                    {selectedVideo.name}
-                                                </p>
-                                            )}
+                                            <Textarea
+                                                id="content"
+                                                name="content"
+                                                value={formData.content}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter lesson content (optional)..."
+                                                className="mt-2 min-h-[100px] max-h-[200px] overflow-y-auto bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
+                                            />
                                         </div>
-                                    )}
-                                    <div className="flex justify-end gap-3">
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={() => setIsCreateDialogOpen(false)}
-                                            className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            type="submit"
-                                            className="bg-[#657ED4] hover:bg-[#424c70] text-white cursor-pointer"
-                                            disabled={isCreating} // Disable button while loading
-                                        >
-                                            {isCreating ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Creating...
-                                                </>
-                                            ) : (
-                                                'Create Lesson'
-                                            )}
-                                        </Button>
-                                    </div>
-                                </form>
+                                        <div>
+                                            <Label
+                                                htmlFor="order"
+                                                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                            >
+                                                Order <span className="text-red-500">*</span>
+                                            </Label>
+                                            <Input
+                                                id="order"
+                                                name="order"
+                                                type="number"
+                                                value={formData.order}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        order: parseInt(e.target.value) || 0,
+                                                    }))
+                                                }
+                                                placeholder="Enter lesson order..."
+                                                className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
+                                                required
+                                                min="0"
+                                            />
+                                        </div>
+                                        {isFreeCourse ? (
+                                            <div>
+                                                <Label
+                                                    htmlFor="free_url"
+                                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                >
+                                                    Video URL
+                                                </Label>
+                                                <Input
+                                                    id="free_url"
+                                                    name="free_url"
+                                                    value={formData.free_url}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter video URL (e.g., YouTube link)..."
+                                                    className="mt-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-[#657ED4]"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <Label
+                                                    htmlFor="video-upload"
+                                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                >
+                                                    Video
+                                                </Label>
+                                                <div className="flex items-center gap-4">
+                                                    <label
+                                                        htmlFor="video-upload"
+                                                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                                                    >
+                                                        <Upload className="h-5 w-5 cursor-pointer text-[#657ED4] dark:text-[#5AD3AF]" />
+                                                        <span className="text-gray-700 dark:text-gray-300">
+                                                            Upload Video
+                                                        </span>
+                                                        <input
+                                                            id="video-upload"
+                                                            type="file"
+                                                            accept="video/mp4,video/webm,video/ogg"
+                                                            onChange={handleVideoUpload}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                </div>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                                    Optional: Upload a video (MP4, WebM, OGG, max
+                                                    50MB)
+                                                </p>
+                                                {selectedVideo && (
+                                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                                        {selectedVideo.name}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
+                                        <div className="flex justify-end gap-3">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => setIsCreateDialogOpen(false)}
+                                                className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                className="bg-[#657ED4] hover:bg-[#424c70] text-white cursor-pointer"
+                                                disabled={isCreating} // Disable button while loading
+                                            >
+                                                {isCreating ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Creating...
+                                                    </>
+                                                ) : (
+                                                    'Create Lesson'
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
                             </DialogContent>
                         </Dialog>
                     </div>
