@@ -367,6 +367,7 @@ export default function AdminCoursesPage() {
                                                         : '#657ED4',
                                                     backgroundSize: 'cover',
                                                     backgroundPosition: 'center',
+                                                    top: '-22px',
                                                 }}
                                             >
                                                 <Badge className="absolute top-3 left-3 bg-white-200 text-white dark:bg-[#657ED4] border-gray-300 px-3 py-1 text-base rounded-full shadow-sm">
@@ -395,7 +396,7 @@ export default function AdminCoursesPage() {
                                                 </p>
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-bold text-lg">
-                                                        ${course.price.toFixed(2)}
+                                                        {course.price.toFixed(2)} VNĐ
                                                     </span>
                                                     <div className="flex items-center space-x-1">
                                                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
