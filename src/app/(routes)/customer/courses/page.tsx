@@ -622,7 +622,7 @@ export default function CoursesPage() {
                                                 <CardContent className="p-4 pt-0 flex-1 flex flex-col gap-3 min-h-[50px]">
                                                     <div className="flex items-center justify-between mb-3">
                                                         <span className="font-bold text-xl">
-                                                            ${course.price.toFixed(2)}
+                                                            {course.price.toFixed(2)} VNĐ
                                                         </span>
                                                         <div className="flex items-center space-x-1">
                                                             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />

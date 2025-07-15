@@ -164,7 +164,7 @@ export default function CourseInformation({
                         <div>
                             <h3 className="font-semibold text-xl ">Price</h3>
                             <p className="text-gray-600 text-base font-bold dark:text-gray-400 ">
-                                ${courseData.price.toFixed(2)}
+                                {courseData.price.toFixed(2)} VNĐ
                             </p>
                         </div>
                         <div>
