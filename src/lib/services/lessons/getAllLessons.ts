@@ -24,7 +24,7 @@ interface ApiResponse {
 export const GetLessons = async (
     courseId: string,
     page: number = 1,
-    limit: number = 6,
+    limit: number = 100,
 ): Promise<ApiResponse> => {
     try {
         const queryParams = new URLSearchParams({

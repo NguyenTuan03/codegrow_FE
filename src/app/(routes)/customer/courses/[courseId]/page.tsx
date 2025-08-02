@@ -8,7 +8,6 @@ import { toast } from '@/components/ui/use-toast';
 import Breadcrumbs from '@/app/(routes)/customer/courses/[courseId]/Breadcrumbs';
 import CourseHeader from '@/app/(routes)/customer/courses/[courseId]/CourseHeader';
 import OverviewTab from '@/app/(routes)/customer/courses/[courseId]/OverviewTab';
-
 import MessagesTab from '@/app/(routes)/customer/courses/[courseId]/MessagesTab';
 import { GetProgress } from '@/lib/services/api/progress';
 
@@ -42,7 +41,7 @@ export default function CourseLearningPage() {
         try {
             setLoading(true);
             const courseRes = await viewDetailCourses(courseId);
-            console.log(courseRes);
+            console.log('Course API response:', courseRes);
             if (courseRes.status === 200) {
                 const parsedCourse = {
                     ...courseRes.metadata,
@@ -52,7 +51,6 @@ export default function CourseLearningPage() {
                             : courseRes.metadata.category,
                     imgUrl: courseRes.metadata.imgUrl || courseRes.metadata.image || undefined,
                 };
-
                 setCourse(parsedCourse);
             } else {
                 throw new Error('Không thể tải dữ liệu khóa học');
@@ -100,9 +98,8 @@ export default function CourseLearningPage() {
         const id = user.id;
 
         try {
-            const progressData = await GetProgress(tokenuser, id, courseId); // Fixed parameter order
-            console.log('Progress:', progressData);
-
+            const progressData = await GetProgress(tokenuser, id, courseId);
+            console.log('Progress API response:', progressData);
             if (progressData?.status === 200 && progressData.metadata) {
                 setProgress(progressData.metadata.progress || 0);
                 setCompletedLessons(
@@ -153,8 +150,10 @@ export default function CourseLearningPage() {
     };
 
     useEffect(() => {
-        fetchCourseData();
-        handleProcess();
+        if (courseId) {
+            fetchCourseData();
+            handleProcess();
+        }
     }, [courseId]);
 
     if (loading) {
@@ -194,7 +193,7 @@ export default function CourseLearningPage() {
                         {['Tổng quan', 'Thảo luận'].map((tab, i) => (
                             <TabsTrigger
                                 key={i}
-                                value={['overview', 'grades', 'notes', 'messages'][i]}
+                                value={['overview', 'messages'][i]} // Chỉ giữ lại 2 tab
                                 className="py-4 px-4 text-base font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200 border-b-2 border-transparent data-[state=active]:border-[#657ED4] dark:data-[state=active]:border-[#5AD3AF] data-[state=active]:text-[#657ED4] dark:data-[state=active]:text-[#5AD3AF] hover:text-[#657ED4] dark:hover:text-[#5AD3AF]"
                             >
                                 {tab}
@@ -214,7 +213,11 @@ export default function CourseLearningPage() {
                     </TabsContent>
 
                     <TabsContent value="messages">
-                        <MessagesTab courseId={courseId} />
+                        {courseId ? (
+                            <MessagesTab courseId={courseId} />
+                        ) : (
+                            <p>Course ID not available</p>
+                        )}
                     </TabsContent>
                 </Tabs>
             </div>
