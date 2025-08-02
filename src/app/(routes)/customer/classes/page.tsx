@@ -260,7 +260,7 @@ export default function Classes() {
                             onChange={handleSearchChange}
                             className="pl-10 pr-4 py-3 rounded-full border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] transition-all duration-300 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 cursor-pointer"
                         />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Search className="absolute left--10 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                 </motion.div>
 

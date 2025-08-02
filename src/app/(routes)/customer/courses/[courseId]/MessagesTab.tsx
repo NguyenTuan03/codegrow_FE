@@ -77,7 +77,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-
                 return;
             }
             const tokenuser = JSON.parse(token);
@@ -199,7 +198,6 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                     variant: 'destructive',
                     className: 'bg-[#F76F8E] text-white dark:text-black font-semibold',
                 });
-
                 return;
             }
             const tokenuser = JSON.parse(token);
@@ -259,7 +257,7 @@ export default function MessagesTab({ courseId }: MessagesTabProps) {
                 Discussion
             </h3>
 
-            {/* Comment Form */}
+            {/* Comment Form - Always visible */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
                 <Textarea
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#657ED4] dark:focus:ring-[#5AD3AF] focus:border-[#657ED4] dark:focus:border-[#5AD3AF] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-all duration-200"
