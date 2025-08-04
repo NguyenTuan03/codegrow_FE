@@ -22,11 +22,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // Assuming Popover is available
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface ServiceTicket {
     _id: string;
-    sender: Sender;
+    sender: Sender | null;
     message: string;
     status: string;
     qaqcReply?: string;
@@ -51,7 +51,7 @@ export default function SupportPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
-    const [isStatusOpen, setIsStatusOpen] = useState(false); // State to control Status Popover
+    const [isStatusOpen, setIsStatusOpen] = useState(false);
     const limit = 3;
 
     const fetchTickets = async (page: number = 1) => {
@@ -60,12 +60,14 @@ export default function SupportPage() {
             const response = await GetServicesTicket(page, limit);
             console.log('API Response:', response);
             if (response?.metadata?.tickets && Array.isArray(response.metadata.tickets)) {
-                const normalizedTickets = response.metadata.tickets.map(
-                    (ticket: ServiceTicket) => ({
+                const normalizedTickets = response.metadata.tickets
+                    .filter(
+                        (ticket: ServiceTicket) => ticket.sender !== null && ticket.sender.fullName,
+                    ) // Lọc ticket có sender hợp lệ
+                    .map((ticket: ServiceTicket) => ({
                         ...ticket,
                         status: ticket.status.toLowerCase(),
-                    }),
-                );
+                    }));
                 setTickets(normalizedTickets);
                 setCurrentPage(response.metadata.page || 1);
                 setTotalPages(response.metadata.totalPages || 1);
@@ -96,7 +98,7 @@ export default function SupportPage() {
     const handleStatusFilterChange = (value: string) => {
         setStatusFilter(value);
         filterTickets(tickets, value);
-        setIsStatusOpen(false); // Close Popover after selection
+        setIsStatusOpen(false);
     };
 
     const handlePageChange = (page: number) => {
@@ -261,16 +263,20 @@ export default function SupportPage() {
                                                 <TableCell className="py-4">
                                                     <div className="flex items-center">
                                                         <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 dark:bg-[#5AD3AF] text-[#657ED4] dark:text-[#5AD3AF] font-medium mr-3 cursor-default">
-                                                            {ticket.sender.fullName
-                                                                .charAt(0)
-                                                                .toUpperCase()}
+                                                            {ticket.sender?.fullName
+                                                                ? ticket.sender.fullName
+                                                                      .charAt(0)
+                                                                      .toUpperCase()
+                                                                : 'U'}{' '}
+                                                            {/* Fallback nếu null */}
                                                         </div>
                                                         <div>
                                                             <p className="font-medium text-gray-900 dark:text-white text-base cursor-default">
-                                                                {ticket.sender.fullName}
+                                                                {ticket.sender?.fullName ||
+                                                                    'Unknown Sender'}
                                                             </p>
                                                             <p className="text-base text-gray-500 dark:text-gray-400 font-medium cursor-default">
-                                                                {ticket.sender.email}
+                                                                {ticket.sender?.email || 'No email'}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -335,19 +341,22 @@ export default function SupportPage() {
                                                                             <span className="font-medium">
                                                                                 Name:
                                                                             </span>{' '}
-                                                                            {ticket.sender.fullName}
+                                                                            {ticket.sender
+                                                                                ?.fullName ||
+                                                                                'Unknown Sender'}
                                                                         </p>
                                                                         <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Email:
                                                                             </span>{' '}
-                                                                            {ticket.sender.email}
+                                                                            {ticket.sender?.email ||
+                                                                                'No email'}
                                                                         </p>
                                                                         <p className="text-gray-900 dark:text-white text-base cursor-default">
                                                                             <span className="font-medium">
                                                                                 Phone:
                                                                             </span>{' '}
-                                                                            {ticket.sender.phone ||
+                                                                            {ticket.sender?.phone ||
                                                                                 'Not provided'}
                                                                         </p>
                                                                     </div>
@@ -488,7 +497,7 @@ export default function SupportPage() {
                                                         isActive={currentPage === pageNum}
                                                         className={
                                                             currentPage === pageNum
-                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer font-bold' // Added font-bold for active page
+                                                                ? 'bg-[#657ED4] dark:bg-[#5AD3AF] text-white hover:bg-[#424c70] dark:hover:bg-[#4ac2a0] px-3 py-1 rounded-md transition-colors cursor-pointer font-bold'
                                                                 : 'text-[#657ED4] dark:text-[#5AD3AF] hover:text-[#424c70] dark:hover:text-[#4ac2a0] hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded-md transition-colors cursor-pointer'
                                                         }
                                                     >

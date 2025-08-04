@@ -23,7 +23,7 @@ interface ReviewItem {
     rating: number;
 }
 
-export const GetAllReview = async ({ page = 1, limit = 10 }: GetAllReviewParams = {}) => {
+export const GetAllReview = async ({ page = 1, limit = 100 }: GetAllReviewParams = {}) => {
     try {
         const token = localStorage.getItem('token');
 

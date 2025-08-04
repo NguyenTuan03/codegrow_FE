@@ -1,6 +1,6 @@
 import { get } from '@/lib/util/HttpRequest';
 
-export const getUser = async (page: number = 1, limit: number = 100) => {
+export const getUser = async (page: number = 1, limit: number = 300) => {
     try {
         const res = await get(`/users?page=${page}&limit=${limit}`); // Add page and limit as query parameters
 

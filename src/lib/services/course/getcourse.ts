@@ -1,6 +1,6 @@
 import { get } from '@/lib/util/HttpRequest';
 
-export const GetCourses = async (page: number = 1, limit: number = 6) => {
+export const GetCourses = async (page: number = 1, limit: number = 100) => {
     try {
         const response = get(`/course?page=${page}&limit=${limit}`);
 
