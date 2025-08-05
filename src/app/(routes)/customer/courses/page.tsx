@@ -786,7 +786,7 @@ export default function CoursesPage() {
                                                         className="flex items-center justify-between w-full mb-4"
                                                     >
                                                         <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                                                            ${selectedCourse.price.toFixed(2)}
+                                                            {selectedCourse.price.toFixed(2)}VNĐ
                                                         </span>
                                                         <div className="flex items-center space-x-1">
                                                             <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
